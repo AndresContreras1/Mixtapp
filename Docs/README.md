@@ -191,6 +191,3 @@ Como parte del desarrollo futuro de MixtApp se contempla implementar:
 La versión actual corresponde principalmente a un prototipo funcional de interfaz. Las pantallas principales y componentes visuales están siendo desarrollados antes de integrar la lógica de negocio, persistencia de datos y servicios externos.
 
 ---
-
-
-La licencia del proyecto puede modificarse posteriormente según las necesidades del equipo.
