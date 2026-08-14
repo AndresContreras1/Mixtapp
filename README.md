@@ -2,6 +2,8 @@
 
 Mixtapp es una aplicación móvil para Android enfocada en la exploración y seguimiento de música. La aplicación busca ofrecer un espacio donde los usuarios puedan descubrir álbumes, calificarlos, escribir reseñas, guardar favoritos y visualizar la actividad de otros usuarios.
 
+![](https://kommodo.ai/i/AqSULSFopnvMftpr0zhh)
+
 ---
 
 ## Características
