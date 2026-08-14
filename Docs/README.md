@@ -1,4 +1,6 @@
-!<img width="607" height="607" alt="image" src="https://github.com/user-attachments/assets/fae6fb3f-2332-4407-8de5-6734260d40ae" />
+<p align="center">
+<img width="500" height="500" alt="image" src="https://github.com/user-attachments/assets/83f40bd9-b685-42af-a5e3-2a8f3c320ff8" />
+</p>
 
 # Mixtapp
 
