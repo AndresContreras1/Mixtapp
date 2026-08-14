@@ -9,6 +9,7 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
@@ -56,3 +57,10 @@ fun MixtappTheme(
         content = content
     )
 }
+
+val DarkBackground = Color(0xFF191616)
+val SurfaceCard = Color(0xFF330512)
+val PrimaryMaroon = Color(0xFFA02249)
+val SecondaryPlum = Color(0xFF67122C)
+val AccentPink = Color(0xFFF17692)
+val TextLight = Color(0xFFEDECEC)

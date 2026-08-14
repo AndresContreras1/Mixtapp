@@ -241,7 +241,6 @@ private fun BoxScope.DecorativeCircles() {
             .clip(CircleShape)
             .background(Color.Black.copy(alpha = 0.11f))
     )
-
     Box(
         modifier = Modifier
             .size(275.dp)
