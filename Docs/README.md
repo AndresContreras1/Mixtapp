@@ -1,4 +1,4 @@
-![Logo de Mixtapp](./Docs/logo.jpg)
+![Logo](./Docs/logo.jpg)
 
 # Mixtapp
 
