@@ -1,30 +1,44 @@
 package com.example.mixtapp.ui.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
-import com.example.mixtapp.ui.theme.*
+import com.example.mixtapp.ui.theme.AccentPink
+import com.example.mixtapp.ui.theme.DarkBackground
+import com.example.mixtapp.ui.theme.PrimaryMaroon
+import com.example.mixtapp.ui.theme.SurfaceCard
+import com.example.mixtapp.ui.theme.TextLight
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
-    modifier: Modifier = Modifier // Primer parámetro opcional
+    modifier: Modifier = Modifier
 ) {
-
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -38,20 +52,22 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        Titulo(texto= stringResource(R.string.ingresar))
+        Titulo(texto = stringResource(R.string.ingresar))
 
         Spacer(modifier = Modifier.height(6.dp))
 
-        TextoDescripcion(texto = stringResource(R.string.descripcion_login))
+        TextoDescripcion(
+            texto = stringResource(R.string.descripcion_login),
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Campos de registro
-        FormularioRegistro()
+        FormularioRegistro(modifier = Modifier.fillMaxWidth())
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        DivisorOr()
+        DivisorOr(modifier = Modifier.fillMaxWidth())
 
         TextButton(onClick = {/* TO DO */}) {
             Text(text = stringResource(R.string.no_tienes_cuenta_registrate), color = AccentPink, fontSize = 13.sp)
@@ -79,6 +95,7 @@ fun Titulo(
     texto: String
 ){
     Text(
+        modifier = modifier,
         text = texto,
         color = TextLight,
         fontSize = 26.sp,
@@ -92,10 +109,10 @@ fun TextoDescripcion(
     texto: String
 ){
     Text(
+        modifier = modifier,
         text = texto,
         color = Color.Gray,
-        fontSize = 12.sp,
-        modifier = Modifier.padding(horizontal = 16.dp)
+        fontSize = 12.sp
     )
 }
 
@@ -104,9 +121,8 @@ fun FormularioRegistro(
     modifier: Modifier = Modifier
 ){
     Column(
-        modifier = modifier
+        modifier = modifier.fillMaxWidth()
     ){
-        // Campo de Email
         OutlinedTextField(
             value = "",
             onValueChange = {},
@@ -125,7 +141,6 @@ fun FormularioRegistro(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Campo de Contraseña
         OutlinedTextField(
             value = "",
             onValueChange = {},
@@ -142,8 +157,6 @@ fun FormularioRegistro(
         )
 
         Spacer(modifier = Modifier.height(28.dp))
-
-        // Botón LOGIN
 
         Button(
             onClick = {/* TO DO*/},
@@ -163,7 +176,8 @@ fun DivisorOr(
     modifier: Modifier = Modifier
 ){
     Row(
-        modifier = modifier
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         HorizontalDivider(
             modifier = Modifier.weight(1f),

@@ -57,35 +57,53 @@ fun HomeScreen(
             .background(DarkBackground)
             .padding(horizontal = 24.dp, vertical = 28.dp)
     ) {
-        HomeHeader(onOpenProfile = onOpenProfile)
+        HomeHeader(
+            onOpenProfile = onOpenProfile,
+            modifier = Modifier.fillMaxWidth()
+        )
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        FilterChips()
+        FilterChips(modifier = Modifier.fillMaxWidth())
 
         Spacer(modifier = Modifier.height(28.dp))
 
-        TrendingCard(onClick = onSelectTrack)
+        TrendingCard(
+            onClick = onSelectTrack,
+            modifier = Modifier.fillMaxWidth()
+        )
 
         Spacer(modifier = Modifier.height(28.dp))
 
-        SectionTitle(title = "Popular Albums")
+        SectionTitle(
+            title = "Popular Albums",
+            modifier = Modifier.fillMaxWidth()
+        )
 
         Spacer(modifier = Modifier.height(14.dp))
 
-        PopularAlbums(onSelectTrack = onSelectTrack)
+        PopularAlbums(
+            onSelectTrack = onSelectTrack,
+            modifier = Modifier.fillMaxWidth()
+        )
 
         Spacer(modifier = Modifier.height(28.dp))
 
-        SectionTitle(title = "Friends Activity")
+        SectionTitle(
+            title = "Friends Activity",
+            modifier = Modifier.fillMaxWidth()
+        )
 
         Spacer(modifier = Modifier.height(14.dp))
 
-        FriendsActivity()
+        FriendsActivity(modifier = Modifier.fillMaxWidth())
 
         Spacer(modifier = Modifier.weight(1f))
 
-        BottomMenu(onOpenProfile = onOpenProfile)
+        BottomMenu(
+            onOpenProfile = onOpenProfile,
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }
 
@@ -95,7 +113,7 @@ fun HomeHeader(
     modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier,
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -148,7 +166,7 @@ fun FilterChips(
     modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         HomeChip(text = "For you")
@@ -185,7 +203,6 @@ fun TrendingCard(
 ) {
     Box(
         modifier = modifier
-            .fillMaxWidth()
             .height(190.dp)
             .clip(RoundedCornerShape(12.dp))
             .background(Color(0xFF2B2125))
@@ -242,7 +259,7 @@ fun SectionTitle(
     modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier,
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -269,7 +286,7 @@ fun PopularAlbums(
     modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         AlbumPlaceholder(
@@ -345,7 +362,6 @@ fun FriendsActivity(
 ) {
     Column(
         modifier = modifier
-            .fillMaxWidth()
             .clip(RoundedCornerShape(8.dp))
             .background(SurfaceCard.copy(alpha = 0.45f))
             .border(1.dp, AccentPink.copy(alpha = 0.25f), RoundedCornerShape(8.dp))
@@ -388,7 +404,6 @@ fun BottomMenu(
 ) {
     Row(
         modifier = modifier
-            .fillMaxWidth()
             .height(44.dp),
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically

@@ -1,24 +1,47 @@
 package com.example.mixtapp.ui.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
+import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mixtapp.R
-import com.example.mixtapp.ui.theme.*
+import com.example.mixtapp.ui.theme.AccentPink
+import com.example.mixtapp.ui.theme.DarkBackground
+import com.example.mixtapp.ui.theme.PrimaryMaroon
+import com.example.mixtapp.ui.theme.SecondaryPlum
+import com.example.mixtapp.ui.theme.SurfaceCard
+import com.example.mixtapp.ui.theme.TextLight
 
 @Composable
 fun ProfileScreen(
@@ -28,162 +51,412 @@ fun ProfileScreen(
         modifier = modifier
             .fillMaxSize()
             .background(DarkBackground)
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(horizontal = 24.dp, vertical = 28.dp)
     ) {
+        ProfileHeader(modifier = Modifier.fillMaxWidth())
 
-        InformacionUsuario()
+        ProfileTabs(modifier = Modifier.fillMaxWidth())
 
-        Separador()
+        ProfileSummary(modifier = Modifier.fillMaxWidth())
 
-        Subtitulos(texto = "Favoritos")
+        ProfileDivider(modifier = Modifier.fillMaxWidth())
 
-        Spacer(modifier = Modifier.height(12.dp))
+        ProfileSectionTitle(
+            title = "FAVORITES",
+            modifier = Modifier.fillMaxWidth()
+        )
 
-        // Vitrina de 4 álbumes favoritos estilo Figma
-        Favoritos()
+        Spacer(modifier = Modifier.height(18.dp))
 
-        Spacer(modifier = Modifier.height(32.dp))
+        ProfileFavorites(modifier = Modifier.fillMaxWidth())
 
-        Separador()
+        Spacer(modifier = Modifier.height(30.dp))
 
-        Subtitulos(texto = "Actividad reciente")
+        ProfileDivider(modifier = Modifier.fillMaxWidth())
 
-        UltimaReseña()
+        ProfileSectionTitle(
+            title = "RECENT ACTIVITY",
+            modifier = Modifier.fillMaxWidth()
+        )
 
-        Separador()
+        Spacer(modifier = Modifier.height(20.dp))
 
-        Subtitulos(texto = "Calificaciones")
+        RecentActivity(modifier = Modifier.fillMaxWidth())
 
-        Calificaciones()
+        Spacer(modifier = Modifier.height(26.dp))
 
+        ProfileDivider(modifier = Modifier.fillMaxWidth())
+
+        RatingsHeader(modifier = Modifier.fillMaxWidth())
+
+        Spacer(modifier = Modifier.height(14.dp))
+
+        RatingsBars(modifier = Modifier.fillMaxWidth())
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        ProfileBottomMenu(modifier = Modifier.fillMaxWidth())
     }
 }
 
 @Composable
-fun IconoUsuario(
+fun ProfileHeader(
     modifier: Modifier = Modifier
-){
+) {
+    Column(modifier = modifier) {
+        Text(
+            text = "9:41",
+            color = Color.White,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.Bold
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Default.Settings,
+                contentDescription = "Configuracion",
+                tint = AccentPink,
+                modifier = Modifier.size(30.dp)
+            )
+
+            Text(
+                text = "username",
+                color = Color.White,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold
+            )
+
+            Text(
+                text = "...",
+                color = AccentPink,
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
+}
+
+@Composable
+fun ProfileTabs(
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .padding(top = 18.dp)
+            .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp))
+            .background(Color.Black.copy(alpha = 0.35f))
+    ) {
+        ProfileTab(text = "Profile", selected = true, modifier = Modifier.weight(1f))
+        ProfileTab(text = "Diary", selected = false, modifier = Modifier.weight(1f))
+        ProfileTab(text = "Lists", selected = false, modifier = Modifier.weight(1f))
+        ProfileTab(text = "Library", selected = false, modifier = Modifier.weight(1f))
+    }
+}
+
+@Composable
+fun ProfileTab(
+    text: String,
+    selected: Boolean,
+    modifier: Modifier = Modifier
+) {
     Box(
-        modifier = Modifier
-            .size(90.dp)
-            .clip(CircleShape)
-            .background(PrimaryMaroon),
+        modifier = modifier
+            .height(34.dp)
+            .background(
+                if (selected) PrimaryMaroon else Color.Transparent,
+                RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)
+            ),
         contentAlignment = Alignment.Center
     ) {
-        Text(stringResource(R.string.yo), color = Color.White, fontWeight = FontWeight.Bold, fontSize = 24.sp)
+        Text(
+            text = text,
+            color = if (selected) Color.White else Color.Gray,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.Bold
+        )
     }
 }
 
 @Composable
-fun InformacionUsuario(
+fun ProfileSummary(
     modifier: Modifier = Modifier
-){
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Text("username", color = Color.White, fontSize = 22.sp, fontWeight = FontWeight.Bold)
-        IconoUsuario()
-        Spacer(modifier = Modifier.height(30.dp))
-        Text("128 reviews • 64 albums • 18 lists", color = Color.Gray, fontSize = 13.sp)
-    }
-}
-
-@Composable
-fun Separador(
-    modifier: Modifier = Modifier
-){
-
+) {
     Column(
         modifier = modifier
-    ){
-        Spacer(modifier = Modifier.height(12.dp))
-        HorizontalDivider(
-            color = Color.Gray
+            .background(SurfaceCard.copy(alpha = 0.35f))
+            .padding(vertical = 14.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Box(
+            modifier = Modifier
+                .size(76.dp)
+                .clip(CircleShape)
+                .border(2.dp, PrimaryMaroon, CircleShape)
         )
-        Spacer(modifier = Modifier.height(12.dp))
+
+        Spacer(modifier = Modifier.height(14.dp))
+
+        Text(
+            text = "128 reviews · 64 albums · 18 lists",
+            color = TextLight,
+            fontSize = 12.sp
+        )
     }
 }
 
 @Composable
-fun Subtitulos(
-    modifier: Modifier = Modifier,
-    texto: String
-){
-    Text(
-        text = texto,
-        color = AccentPink,
-        fontSize = 14.sp,
-        fontWeight = FontWeight.Bold,
+fun ProfileDivider(
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .height(1.dp)
+            .background(PrimaryMaroon.copy(alpha = 0.45f))
     )
 }
 
 @Composable
-fun Favoritos(){
-    LazyRow(
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        modifier = Modifier.fillMaxWidth()
+fun ProfileSectionTitle(
+    title: String,
+    modifier: Modifier = Modifier
+) {
+    Text(
+        modifier = modifier.padding(top = 26.dp),
+        text = title,
+        color = TextLight,
+        fontSize = 18.sp,
+        fontWeight = FontWeight.Normal
+    )
+}
+
+@Composable
+fun ProfileFavorites(
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        items(4) { index ->
-            Box(
-                modifier = Modifier
-                    .size(80.dp)
-                    .background(SurfaceCard, RoundedCornerShape(8.dp)),
-                contentAlignment = Alignment.Center
-            ) {
-                Text("Fav ${index + 1}", color = Color.Gray, fontSize = 12.sp)
+        repeat(4) { index ->
+            ProfileAlbumPlaceholder(
+                label = "Album ${index + 1}",
+                modifier = Modifier.weight(1f)
+            )
+        }
+    }
+}
+
+@Composable
+fun ProfileAlbumPlaceholder(
+    label: String,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .height(98.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .background(SecondaryPlum.copy(alpha = 0.55f)),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = label,
+            color = TextLight.copy(alpha = 0.6f),
+            fontSize = 11.sp
+        )
+    }
+}
+
+@Composable
+fun RecentActivity(
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .size(96.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .background(SecondaryPlum.copy(alpha = 0.55f)),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "Album",
+                color = TextLight.copy(alpha = 0.6f),
+                fontSize = 12.sp
+            )
+        }
+
+        Spacer(modifier = Modifier.width(18.dp))
+
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(
+                text = "The Black Parade",
+                color = Color.White,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily.Serif
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = "Reviewed today · 5 stars",
+                color = TextLight,
+                fontSize = 12.sp
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Row {
+                repeat(5) {
+                    Icon(
+                        imageVector = Icons.Default.Star,
+                        contentDescription = null,
+                        tint = AccentPink,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Text(
+                text = "A loud, dramatic favorite that still feels alive on every listen.",
+                color = TextLight,
+                fontSize = 12.sp
+            )
+        }
+    }
+}
+
+@Composable
+fun RatingsHeader(
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier.padding(top = 24.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = "RATINGS",
+            color = TextLight,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Normal
+        )
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = "More activity",
+                color = AccentPink,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold
+            )
+
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = "Ver mas actividad",
+                tint = AccentPink,
+                modifier = Modifier.size(24.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun RatingsBars(
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier.height(70.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.Bottom
+    ) {
+        val heights = listOf(5, 8, 12, 6, 16, 22, 30, 48, 44, 34, 42)
+
+        Icon(
+            imageVector = Icons.Default.Star,
+            contentDescription = null,
+            tint = AccentPink,
+            modifier = Modifier
+                .padding(bottom = 4.dp)
+                .size(16.dp)
+        )
+
+        Row(
+            modifier = Modifier.weight(1f),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            verticalAlignment = Alignment.Bottom
+        ) {
+            heights.forEach { height ->
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(height.dp)
+                        .background(PrimaryMaroon.copy(alpha = 0.6f))
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.width(10.dp))
+
+        Row(
+            modifier = Modifier.padding(bottom = 4.dp)
+        ) {
+            repeat(5) {
+                Icon(
+                    imageVector = Icons.Default.Star,
+                    contentDescription = null,
+                    tint = AccentPink,
+                    modifier = Modifier.size(12.dp)
+                )
             }
         }
     }
 }
 
 @Composable
-fun UltimaReseña(
+fun ProfileBottomMenu(
     modifier: Modifier = Modifier
-){
-    Row(){
+) {
+    Row(
+        modifier = modifier.height(44.dp),
+        horizontalArrangement = Arrangement.SpaceAround,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(Icons.Default.Home, contentDescription = "Inicio", tint = TextLight, modifier = Modifier.size(22.dp))
+        Icon(Icons.Default.Search, contentDescription = "Explorar", tint = Color.Gray, modifier = Modifier.size(22.dp))
+        Icon(Icons.Default.AddCircle, contentDescription = "Agregar", tint = AccentPink, modifier = Modifier.size(32.dp))
+        Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Listas", tint = Color.Gray, modifier = Modifier.size(22.dp))
         Box(
             modifier = Modifier
-                .size(80.dp)
-                .background(SurfaceCard, RoundedCornerShape(8.dp)),
+                .size(34.dp)
+                .clip(CircleShape)
+                .background(PrimaryMaroon),
             contentAlignment = Alignment.Center
         ) {
-            // Esto cambiara por una imagen
-            Text(" Album ", color = Color.Gray, fontSize = 12.sp)
-        }
-        Spacer(modifier = Modifier.width(12.dp))
-        Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ){
-            // Informacion que luego se le pasara por argumentos a la funcion
-            Text(text="Nombre Cancion")
-            Text(text="revisado hoy · 5 estrellas")
-            Text(text="estrellas")
-        }
-    }
-
-}
-
-@Composable
-fun Calificaciones(){
-    Row(){
-
-        // Con informacion de la BDD hacer un diagrama
-        // Que cuente la cantidad de cada tipo de notas
-
-        Column(){
-            // Cambiar por imagen
-            Text(text="1 estrella")
-            Spacer(modifier= Modifier.weight(1f))
-            Text(text="5 estrellas")
+            Icon(
+                imageVector = Icons.Default.Person,
+                contentDescription = "Perfil",
+                tint = TextLight,
+                modifier = Modifier.size(20.dp)
+            )
         }
     }
 }
 
 @Composable
-@Preview
-fun ProfileScreenPreview(){
+@Preview(showBackground = true)
+fun ProfileScreenPreview() {
     ProfileScreen()
 }
