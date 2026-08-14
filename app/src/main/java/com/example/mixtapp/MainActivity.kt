@@ -18,29 +18,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            var currentScreen by remember { mutableStateOf(Screen.LOGIN) }
-
-            Scaffold(
-                modifier = Modifier.fillMaxSize(),
-                containerColor = DarkBackground
-            ) { innerPadding ->
-                when (currentScreen) {
-                    Screen.LOGIN -> LoginScreen(
-                        onLoginSuccess = { currentScreen = Screen.HOME },
-                        onNavigateToSignUp = { }
-                    )
-                    Screen.HOME -> HomeScreen(
-                        onSelectTrack = { currentScreen = Screen.TRACK_DETAIL },
-                        onOpenProfile = { currentScreen = Screen.PROFILE }
-                    )
-                    Screen.TRACK_DETAIL -> TrackDetailScreen(
-                        onBack = { currentScreen = Screen.HOME }
-                    )
-                    Screen.PROFILE -> ProfileScreen(
-                        onBackToHome = { currentScreen = Screen.HOME }
-                    )
-                }
-            }
         }
     }
 }
