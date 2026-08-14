@@ -1,4 +1,4 @@
-![Logo de Mixtapp](https://raw.githubusercontent.com/AndresContreras1/Mixtapp/master/Docs/logo.jpg)
+!<img width="607" height="607" alt="image" src="https://github.com/user-attachments/assets/fae6fb3f-2332-4407-8de5-6734260d40ae" />
 
 # Mixtapp
 
