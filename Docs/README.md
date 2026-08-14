@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="Docs/logo.png" width="200">
+  <img src="Docs/logo.jpg" width="200">
 </p>
 
 # Mixtapp
