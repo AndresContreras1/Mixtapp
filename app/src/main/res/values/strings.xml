@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">Mixtapp</string>
+    <string name="ingresar">Ingresar</string>
+    <string name="descripcion_login">Enter your account to keep rating albums and following friends.</string>
+    <string name="no_tienes_cuenta_registrate">¿No tienes cuenta? Registrate</string>
+    <string name="email">Email</string>
+    <string name="enter_your_email">Enter your Email</string>
+    <string name="contrasena">Contraseña</string>
+    <string name="o">O</string>
+    <string name="yo">YO</string>
+    <string name="favoritos">Favoritos</string>
+    <string name="actividad_reciente">Actividad reciente</string>
+    <string name="calificaciones">Calificaciones</string>
 </resources>
