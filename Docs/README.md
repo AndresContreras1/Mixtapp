@@ -1,6 +1,4 @@
-<p align="center">
-  <img src="./Docs/logo.jpg" width="300">
-</p>
+![Logo de Mixtapp](./Docs/logo.jpg)
 
 # Mixtapp
 
