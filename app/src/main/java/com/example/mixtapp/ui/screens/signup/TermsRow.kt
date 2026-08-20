@@ -29,7 +29,7 @@ import com.example.mixtapp.R
 import com.example.mixtapp.ui.theme.PalePink
 
 @Composable
-private fun TermsRow(
+fun TermsRow(
     checked: Boolean,
     onCheckedChange: () -> Unit,
     modifier: Modifier = Modifier
