@@ -39,18 +39,13 @@ import com.example.mixtapp.ui.theme.*
 
 @Composable
 fun SignUpScreen(modifier: Modifier = Modifier) {
-    var username by rememberSaveable { mutableStateOf("") }
-    var email by rememberSaveable { mutableStateOf("") }
-    var password by rememberSaveable { mutableStateOf("") }
-    var confirmPassword by rememberSaveable { mutableStateOf("") }
-    var acceptedTerms by rememberSaveable { mutableStateOf(false) }
 
     Box(
         modifier = modifier
             .fillMaxSize()
             .background(DeepBackground)
     ) {
-        DecorativeCircles()
+        AppBackground()
 
         Column(
             modifier = Modifier
@@ -59,205 +54,14 @@ fun SignUpScreen(modifier: Modifier = Modifier) {
                 .padding(horizontal = 31.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(30.dp))
+            SignUpScreen()
 
-            HeaderLogo(modifier = Modifier.fillMaxWidth())
+            SignUpForm()
 
-            Spacer(modifier = Modifier.height(20.dp))
+            SignUpFooter()
 
-            Text(
-                text = stringResource(R.string.create_account),
-                color = Color.White,
-                fontSize = 28.sp,
-                lineHeight = 32.sp,
-                fontWeight = FontWeight.Black,
-                fontFamily = FontFamily.Serif
-            )
-
-            Spacer(modifier = Modifier.height(6.dp))
-
-            Text(
-                text = stringResource(R.string.signup_description),
-                color = TextPink,
-                fontSize = 15.sp,
-                lineHeight = 20.sp,
-                fontWeight = FontWeight.Medium
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            AppTextField(
-                label = stringResource(R.string.username),
-                placeholder = stringResource(R.string.choose_username),
-                value = username,
-                onValueChange = { username = it },
-                icon = FieldIcon.User
-            )
-
-            Spacer(modifier = Modifier.height(14.dp))
-
-            AppTextField(
-                label = stringResource(R.string.email),
-                placeholder = stringResource(R.string.enter_your_email),
-                value = email,
-                onValueChange = { email = it },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                icon = FieldIcon.Email
-            )
-
-            Spacer(modifier = Modifier.height(14.dp))
-
-            AppTextField(
-                label = stringResource(R.string.password),
-                placeholder = stringResource(R.string.create_password),
-                value = password,
-                onValueChange = { password = it },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                visualTransformation = PasswordVisualTransformation(),
-                icon = FieldIcon.Lock
-            )
-
-            Spacer(modifier = Modifier.height(14.dp))
-
-            AppTextField(
-                label = stringResource(R.string.confirm_password),
-                placeholder = stringResource(R.string.repeat_password),
-                value = confirmPassword,
-                onValueChange = { confirmPassword = it },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                visualTransformation = PasswordVisualTransformation(),
-                icon = FieldIcon.Lock
-            )
-
-            Spacer(modifier = Modifier.height(14.dp))
-
-            TermsRow(
-                checked = acceptedTerms,
-                onCheckedChange = { acceptedTerms = !acceptedTerms },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Button(
-                onClick = { },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(64.dp),
-                shape = RoundedCornerShape(32.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = PrimaryPink,
-                    contentColor = Color.White
-                ),
-                elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
-            ) {
-                Text(
-                    text = stringResource(R.string.sign_up_btn),
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Black
-                )
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            OrDivider(
-                text = stringResource(R.string.o),
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Text(
-                text = buildAnnotatedString {
-                    withStyle(SpanStyle(color = Color.White)) {
-                        append(stringResource(R.string.already_have_account))
-                    }
-                    append(" ")
-                    withStyle(
-                        SpanStyle(
-                            color = Color(0xFFFF8CAA),
-                            fontWeight = FontWeight.Black
-                        )
-                    ) {
-                        append(stringResource(R.string.log_in))
-                    }
-                },
-                fontSize = 16.sp,
-                lineHeight = 20.sp
-            )
-
-            Spacer(modifier = Modifier.height(80.dp))
         }
 
-    }
-}
-
-@Composable
-private fun TermsRow(
-    checked: Boolean,
-    onCheckedChange: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.Top
-    ) {
-        Box(
-            modifier = Modifier
-                .padding(top = 2.dp)
-                .size(29.dp)
-                .clip(RoundedCornerShape(5.dp))
-                .border(
-                    width = 2.2.dp,
-                    color = PalePink,
-                    shape = RoundedCornerShape(5.dp)
-                )
-                .clickable(onClick = onCheckedChange),
-            contentAlignment = Alignment.Center
-        ) {
-            if (checked) {
-                Canvas(modifier = Modifier.size(17.dp)) {
-                    val stroke = Stroke(width = 3.4f, cap = StrokeCap.Round)
-                    drawLine(
-                        color = PalePink,
-                        start = Offset(size.width * 0.08f, size.height * 0.55f),
-                        end = Offset(size.width * 0.40f, size.height * 0.86f),
-                        strokeWidth = stroke.width,
-                        cap = StrokeCap.Round
-                    )
-                    drawLine(
-                        color = PalePink,
-                        start = Offset(size.width * 0.40f, size.height * 0.86f),
-                        end = Offset(size.width * 0.94f, size.height * 0.16f),
-                        strokeWidth = stroke.width,
-                        cap = StrokeCap.Round
-                    )
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.size(12.dp))
-
-        Text(
-            text = buildAnnotatedString {
-                withStyle(SpanStyle(color = Color.White)) {
-                    append(stringResource(R.string.agree_terms))
-                }
-                append(" ")
-                withStyle(
-                    SpanStyle(
-                        color = Color(0xFFFF8CAA),
-                        fontWeight = FontWeight.Black
-                    )
-                ) {
-                    append(stringResource(R.string.privacy))
-                }
-            },
-            fontSize = 15.5.sp,
-            lineHeight = 20.sp,
-            fontWeight = FontWeight.Black,
-            modifier = Modifier.weight(1f)
-        )
     }
 }
 
