@@ -1,19 +1,9 @@
-package com.example.mixtapp.ui.screens
+package com.example.mixtapp.ui.screens.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.automirrored.filled.List
@@ -30,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
@@ -38,23 +29,19 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mixtapp.ui.theme.AccentPink
-import com.example.mixtapp.ui.theme.DarkBackground
-import com.example.mixtapp.ui.theme.PrimaryMaroon
-import com.example.mixtapp.ui.theme.SecondaryPlum
-import com.example.mixtapp.ui.theme.SurfaceCard
-import com.example.mixtapp.ui.theme.TextLight
+import com.example.mixtapp.R
+import com.example.mixtapp.ui.theme.*
 
 @Composable
 fun HomeScreen(
     onSelectTrack: () -> Unit,
     onOpenProfile: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(DarkBackground)
+            .background(DeepBackground)
             .padding(horizontal = 24.dp, vertical = 28.dp)
     ) {
         HomeHeader(onOpenProfile = onOpenProfile)
@@ -69,7 +56,7 @@ fun HomeScreen(
 
         Spacer(modifier = Modifier.height(28.dp))
 
-        SectionTitle(title = "Popular Albums")
+        SectionTitle(title = stringResource(R.string.popular_albums))
 
         Spacer(modifier = Modifier.height(14.dp))
 
@@ -77,7 +64,7 @@ fun HomeScreen(
 
         Spacer(modifier = Modifier.height(28.dp))
 
-        SectionTitle(title = "Friends Activity")
+        SectionTitle(title = stringResource(R.string.friends_activity))
 
         Spacer(modifier = Modifier.height(14.dp))
 
@@ -92,7 +79,7 @@ fun HomeScreen(
 @Composable
 fun HomeHeader(
     onOpenProfile: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -104,7 +91,7 @@ fun HomeHeader(
                 withStyle(SpanStyle(color = Color.White)) {
                     append("Mixt")
                 }
-                withStyle(SpanStyle(color = PrimaryMaroon)) {
+                withStyle(SpanStyle(color = LogoPink)) {
                     append("app")
                 }
             },
@@ -116,8 +103,8 @@ fun HomeHeader(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(
                 imageVector = Icons.Default.Search,
-                contentDescription = "Buscar",
-                tint = AccentPink,
+                contentDescription = stringResource(R.string.search_icon),
+                tint = TextPink,
                 modifier = Modifier.size(32.dp)
             )
 
@@ -127,13 +114,13 @@ fun HomeHeader(
                 modifier = Modifier
                     .size(46.dp)
                     .clip(CircleShape)
-                    .background(SecondaryPlum)
+                    .background(CircleWine)
                     .clickable { onOpenProfile() },
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "YO",
-                    color = TextLight.copy(alpha = 0.75f),
+                    text = stringResource(R.string.yo),
+                    color = Color.White.copy(alpha = 0.75f),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily.Serif
@@ -145,27 +132,28 @@ fun HomeHeader(
 
 @Composable
 fun FilterChips(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        HomeChip(text = "For you")
-        HomeChip(text = "Trending")
-        HomeChip(text = "Friends")
+        HomeChip(text = stringResource(R.string.for_you), isSelected = true)
+        HomeChip(text = stringResource(R.string.trending), isSelected = false)
+        HomeChip(text = stringResource(R.string.friends), isSelected = false)
     }
 }
 
 @Composable
 fun HomeChip(
     text: String,
-    modifier: Modifier = Modifier
+    isSelected: Boolean,
+    modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(20.dp))
-            .background(PrimaryMaroon)
+            .background(if (isSelected) PrimaryPink else FieldBackground)
             .padding(horizontal = 18.dp, vertical = 12.dp),
         contentAlignment = Alignment.Center
     ) {
@@ -181,23 +169,23 @@ fun HomeChip(
 @Composable
 fun TrendingCard(
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier
             .fillMaxWidth()
             .height(190.dp)
             .clip(RoundedCornerShape(12.dp))
-            .background(Color(0xFF2B2125))
-            .border(1.dp, PrimaryMaroon.copy(alpha = 0.5f), RoundedCornerShape(12.dp))
+            .background(FieldBackground.copy(alpha = 0.5f))
+            .border(1.dp, FieldBorder.copy(alpha = 0.5f), RoundedCornerShape(12.dp))
             .clickable { onClick() }
             .padding(14.dp)
     ) {
         Text(
-            text = "Now trending",
+            text = stringResource(R.string.now_trending),
             modifier = Modifier
                 .clip(RoundedCornerShape(18.dp))
-                .background(PrimaryMaroon)
+                .background(PrimaryPink)
                 .padding(horizontal = 12.dp, vertical = 8.dp),
             color = Color.White,
             fontSize = 13.sp,
@@ -219,7 +207,7 @@ fun TrendingCard(
                     Icon(
                         imageVector = Icons.Default.Star,
                         contentDescription = null,
-                        tint = AccentPink,
+                        tint = TextPink,
                         modifier = Modifier.size(14.dp)
                     )
                 }
@@ -228,7 +216,7 @@ fun TrendingCard(
 
                 Text(
                     text = "128k plays this week",
-                    color = TextLight,
+                    color = PalePink,
                     fontSize = 12.sp
                 )
             }
@@ -239,7 +227,7 @@ fun TrendingCard(
 @Composable
 fun SectionTitle(
     title: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -255,8 +243,8 @@ fun SectionTitle(
         )
 
         Text(
-            text = "See all",
-            color = PrimaryMaroon,
+            text = stringResource(R.string.see_all),
+            color = TextPink,
             fontSize = 13.sp,
             fontWeight = FontWeight.Bold
         )
@@ -266,7 +254,7 @@ fun SectionTitle(
 @Composable
 fun PopularAlbums(
     onSelectTrack: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -298,7 +286,7 @@ fun AlbumPlaceholder(
     title: String,
     artist: String,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier.clickable { onClick() },
@@ -309,12 +297,12 @@ fun AlbumPlaceholder(
                 .fillMaxWidth()
                 .height(96.dp)
                 .clip(RoundedCornerShape(12.dp))
-                .background(SurfaceCard),
+                .background(FieldBackground),
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = "Album",
-                color = TextLight.copy(alpha = 0.55f),
+                color = TextPink.copy(alpha = 0.55f),
                 fontSize = 12.sp
             )
         }
@@ -331,7 +319,7 @@ fun AlbumPlaceholder(
 
         Text(
             text = artist,
-            color = Color.Gray,
+            color = PalePink.copy(alpha = 0.7f),
             fontSize = 11.sp,
             fontWeight = FontWeight.Bold,
             maxLines = 1
@@ -341,14 +329,14 @@ fun AlbumPlaceholder(
 
 @Composable
 fun FriendsActivity(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(8.dp))
-            .background(SurfaceCard.copy(alpha = 0.45f))
-            .border(1.dp, AccentPink.copy(alpha = 0.25f), RoundedCornerShape(8.dp))
+            .background(FieldBackground.copy(alpha = 0.45f))
+            .border(1.dp, FieldBorder.copy(alpha = 0.25f), RoundedCornerShape(8.dp))
             .padding(16.dp)
     ) {
         Row {
@@ -356,7 +344,7 @@ fun FriendsActivity(
                 Icon(
                     imageVector = Icons.Default.Star,
                     contentDescription = null,
-                    tint = AccentPink,
+                    tint = TextPink,
                     modifier = Modifier.size(18.dp)
                 )
             }
@@ -366,7 +354,7 @@ fun FriendsActivity(
 
         Text(
             text = "Random Access Memories - Daft Punk",
-            color = Color.Gray,
+            color = PalePink,
             fontSize = 14.sp,
             fontWeight = FontWeight.Bold
         )
@@ -375,7 +363,7 @@ fun FriendsActivity(
 
         Text(
             text = "\"A masterpiece from start to finish.\"",
-            color = TextLight,
+            color = Color.White.copy(alpha = 0.9f),
             fontSize = 12.sp
         )
     }
@@ -384,25 +372,26 @@ fun FriendsActivity(
 @Composable
 fun BottomMenu(
     onOpenProfile: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .height(44.dp),
+            .height(56.dp)
+            .background(DeepBackground),
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(Icons.Default.Home, contentDescription = "Inicio", tint = TextLight, modifier = Modifier.size(22.dp))
-        Icon(Icons.Default.Search, contentDescription = "Explorar", tint = Color.Gray, modifier = Modifier.size(22.dp))
-        Icon(Icons.Default.AddCircle, contentDescription = "Agregar", tint = AccentPink, modifier = Modifier.size(32.dp))
-        Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Listas", tint = Color.Gray, modifier = Modifier.size(22.dp))
+        Icon(Icons.Default.Home, contentDescription = stringResource(R.string.home_label), tint = Color.White, modifier = Modifier.size(24.dp))
+        Icon(Icons.Default.Search, contentDescription = stringResource(R.string.explore_label), tint = PalePink, modifier = Modifier.size(24.dp))
+        Icon(Icons.Default.AddCircle, contentDescription = stringResource(R.string.add_label), tint = PrimaryPink, modifier = Modifier.size(36.dp))
+        Icon(Icons.AutoMirrored.Filled.List, contentDescription = stringResource(R.string.lists_label), tint = PalePink, modifier = Modifier.size(24.dp))
         Icon(
             imageVector = Icons.Default.Person,
-            contentDescription = "Perfil",
-            tint = Color.Gray,
+            contentDescription = stringResource(R.string.profile_label),
+            tint = PalePink,
             modifier = Modifier
-                .size(22.dp)
+                .size(24.dp)
                 .clickable { onOpenProfile() }
         )
     }

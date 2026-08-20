@@ -1,8 +1,8 @@
-package com.example.mixtapp.ui.screens
+package com.example.mixtapp.ui.screens.profile
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,7 +27,7 @@ fun ProfileScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(DarkBackground)
+            .background(DeepBackground)
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -36,27 +36,27 @@ fun ProfileScreen(
 
         Separador()
 
-        Subtitulos(texto = "Favoritos")
+        Subtitulos(texto = stringResource(R.string.favoritos))
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Vitrina de 4 álbumes favoritos estilo Figma
         Favoritos()
 
         Spacer(modifier = Modifier.height(32.dp))
 
         Separador()
 
-        Subtitulos(texto = "Actividad reciente")
+        Subtitulos(texto = stringResource(R.string.actividad_reciente))
 
         UltimaReseña()
 
+        Spacer(modifier = Modifier.height(24.dp))
+
         Separador()
 
-        Subtitulos(texto = "Calificaciones")
+        Subtitulos(texto = stringResource(R.string.calificaciones))
 
         Calificaciones()
-
     }
 }
 
@@ -68,10 +68,16 @@ fun IconoUsuario(
         modifier = Modifier
             .size(90.dp)
             .clip(CircleShape)
-            .background(PrimaryMaroon),
+            .background(CircleWine)
+            .border(2.dp, PrimaryPink, CircleShape),
         contentAlignment = Alignment.Center
     ) {
-        Text(stringResource(R.string.yo), color = Color.White, fontWeight = FontWeight.Bold, fontSize = 24.sp)
+        Text(
+            text = stringResource(R.string.yo),
+            color = Color.White,
+            fontWeight = FontWeight.Bold,
+            fontSize = 24.sp
+        )
     }
 }
 
@@ -83,10 +89,20 @@ fun InformacionUsuario(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text("username", color = Color.White, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+        Text(
+            text = "username",
+            color = Color.White,
+            fontSize = 22.sp,
+            fontWeight = FontWeight.Bold
+        )
+        Spacer(modifier = Modifier.height(16.dp))
         IconoUsuario()
         Spacer(modifier = Modifier.height(30.dp))
-        Text("128 reviews • 64 albums • 18 lists", color = Color.Gray, fontSize = 13.sp)
+        Text(
+            text = stringResource(R.string.user_stats),
+            color = PalePink,
+            fontSize = 13.sp
+        )
     }
 }
 
@@ -94,13 +110,13 @@ fun InformacionUsuario(
 fun Separador(
     modifier: Modifier = Modifier
 ){
-
     Column(
         modifier = modifier
     ){
         Spacer(modifier = Modifier.height(12.dp))
         HorizontalDivider(
-            color = Color.Gray
+            color = FieldBorder.copy(alpha = 0.3f),
+            thickness = 1.dp
         )
         Spacer(modifier = Modifier.height(12.dp))
     }
@@ -113,7 +129,7 @@ fun Subtitulos(
 ){
     Text(
         text = texto,
-        color = AccentPink,
+        color = TextPink,
         fontSize = 14.sp,
         fontWeight = FontWeight.Bold,
     )
@@ -129,10 +145,15 @@ fun Favoritos(){
             Box(
                 modifier = Modifier
                     .size(80.dp)
-                    .background(SurfaceCard, RoundedCornerShape(8.dp)),
+                    .background(FieldBackground, RoundedCornerShape(8.dp))
+                    .border(1.dp, FieldBorder.copy(alpha = 0.5f), RoundedCornerShape(8.dp)),
                 contentAlignment = Alignment.Center
             ) {
-                Text("Fav ${index + 1}", color = Color.Gray, fontSize = 12.sp)
+                Text(
+                    text = "Fav ${index + 1}",
+                    color = PalePink.copy(alpha = 0.6f),
+                    fontSize = 12.sp
+                )
             }
         }
     }
@@ -142,48 +163,65 @@ fun Favoritos(){
 fun UltimaReseña(
     modifier: Modifier = Modifier
 ){
-    Row(){
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ){
         Box(
             modifier = Modifier
                 .size(80.dp)
-                .background(SurfaceCard, RoundedCornerShape(8.dp)),
+                .background(FieldBackground, RoundedCornerShape(8.dp))
+                .border(1.dp, FieldBorder.copy(alpha = 0.5f), RoundedCornerShape(8.dp)),
             contentAlignment = Alignment.Center
         ) {
-            // Esto cambiara por una imagen
-            Text(" Album ", color = Color.Gray, fontSize = 12.sp)
+            Text(
+                text = " Album ",
+                color = PalePink.copy(alpha = 0.6f),
+                fontSize = 12.sp
+            )
         }
-        Spacer(modifier = Modifier.width(12.dp))
+        Spacer(modifier = Modifier.width(16.dp))
         Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            verticalArrangement = Arrangement.Center
         ){
-            // Informacion que luego se le pasara por argumentos a la funcion
-            Text(text="Nombre Cancion")
-            Text(text="revisado hoy · 5 estrellas")
-            Text(text="estrellas")
+            Text(
+                text = "Nombre Canción",
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp
+            )
+            Text(
+                text = "${stringResource(R.string.reviewed_today)} • 5 estrellas",
+                color = PalePink,
+                fontSize = 12.sp
+            )
         }
     }
-
 }
 
 @Composable
 fun Calificaciones(){
-    Row(){
-
-        // Con informacion de la BDD hacer un diagrama
-        // Que cuente la cantidad de cada tipo de notas
-
-        Column(){
-            // Cambiar por imagen
-            Text(text="1 estrella")
-            Spacer(modifier= Modifier.weight(1f))
-            Text(text="5 estrellas")
-        }
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ){
+        Text(
+            text = stringResource(R.string.star_rating_format, 1),
+            color = PalePink,
+            fontSize = 12.sp
+        )
+        Text(
+            text = stringResource(R.string.star_rating_format, 5),
+            color = PalePink,
+            fontSize = 12.sp
+        )
     }
 }
 
 @Composable
 @Preview
 fun ProfileScreenPreview(){
-    ProfileScreen()
+    MixtappTheme(dynamicColor = false) {
+        ProfileScreen()
+    }
 }
