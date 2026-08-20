@@ -6,9 +6,44 @@
     <string name="email">Email</string>
     <string name="enter_your_email">Enter your Email</string>
     <string name="contrasena">Contraseña</string>
-    <string name="o">O</string>
+    <string name="o">OR</string>
     <string name="yo">YO</string>
-    <string name="favoritos">Favoritos</string>
-    <string name="actividad_reciente">Actividad reciente</string>
-    <string name="calificaciones">Calificaciones</string>
+    <string name="favoritos">Favorites</string>
+    <string name="actividad_reciente">Recent activity</string>
+    <string name="calificaciones">Ratings</string>
+
+    <!-- SignUp / Login Extra -->
+    <string name="create_account">Create Account</string>
+    <string name="signup_description">Start tracking your albums, ratings, and\nfavorite listens.</string>
+    <string name="username">Username</string>
+    <string name="choose_username">Choose a username</string>
+    <string name="password">Password</string>
+    <string name="create_password">Create password</string>
+    <string name="confirm_password">Confirm</string>
+    <string name="repeat_password">Repeat password</string>
+    <string name="agree_terms">I agree to the Mixtapp terms</string>
+    <string name="privacy">Privacy</string>
+    <string name="sign_up_btn">SIGN UP</string>
+    <string name="already_have_account">Already have an Account?  </string>
+    <string name="log_in">Log in</string>
+
+    <!-- Home Extra -->
+    <string name="search_icon">Search</string>
+    <string name="for_you">For you</string>
+    <string name="trending">Trending</string>
+    <string name="friends">Friends</string>
+    <string name="now_trending">Now trending</string>
+    <string name="popular_albums">Popular Albums</string>
+    <string name="see_all">See all</string>
+    <string name="friends_activity">Friends Activity</string>
+    <string name="home_label">Home</string>
+    <string name="explore_label">Explore</string>
+    <string name="add_label">Add</string>
+    <string name="lists_label">Lists</string>
+    <string name="profile_label">Profile</string>
+
+    <!-- Profile Extra -->
+    <string name="user_stats">128 reviews • 64 albums • 18 lists</string>
+    <string name="star_rating_format">%d stars</string>
+    <string name="reviewed_today">reviewed today</string>
 </resources>
