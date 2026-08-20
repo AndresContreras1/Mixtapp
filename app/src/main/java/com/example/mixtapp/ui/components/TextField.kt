@@ -137,25 +137,25 @@ fun AppTextField(
         Text(
             text = label,
             color = Color.White,
-            fontSize = 16.sp,
-            lineHeight = 20.sp,
+            fontSize = 15.sp,
+            lineHeight = 18.sp,
             fontWeight = FontWeight.Black
         )
 
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(4.dp))
 
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(73.dp)
-                .clip(RoundedCornerShape(13.dp))
+                .height(64.dp)
+                .clip(RoundedCornerShape(12.dp))
                 .background(FieldBackground.copy(alpha = 0.91f))
                 .border(
                     width = 1.2.dp,
                     color = FieldBorder,
-                    shape = RoundedCornerShape(13.dp)
+                    shape = RoundedCornerShape(12.dp)
                 )
-                .padding(horizontal = 30.dp),
+                .padding(horizontal = 24.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             FieldIconView(

@@ -14,7 +14,7 @@
 
     <!-- SignUp / Login Extra -->
     <string name="create_account">Crear cuenta</string>
-    <string name="signup_description">Empieza a seguir tus albums, calificaciones y \ntus canciones favoritas.</string>
+    <string name="signup_description">Empieza a seguir tus albums, calificaciones y tus canciones favoritas.</string>
     <string name="username">nombre de usuario</string>
     <string name="choose_username">Elije un nombre de usuario</string>
     <string name="password">contraseña</string>

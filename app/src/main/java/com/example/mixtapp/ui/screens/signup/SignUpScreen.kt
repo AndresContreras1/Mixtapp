@@ -59,34 +59,34 @@ fun SignUpScreen(modifier: Modifier = Modifier) {
                 .padding(horizontal = 31.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(86.dp))
+            Spacer(modifier = Modifier.height(30.dp))
 
             HeaderLogo(modifier = Modifier.fillMaxWidth())
 
-            Spacer(modifier = Modifier.height(46.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
             Text(
                 text = stringResource(R.string.create_account),
                 color = Color.White,
-                fontSize = 31.sp,
-                lineHeight = 36.sp,
+                fontSize = 28.sp,
+                lineHeight = 32.sp,
                 fontWeight = FontWeight.Black,
                 fontFamily = FontFamily.Serif
             )
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(6.dp))
 
             Text(
                 text = stringResource(R.string.signup_description),
                 color = TextPink,
-                fontSize = 17.sp,
-                lineHeight = 23.sp,
+                fontSize = 15.sp,
+                lineHeight = 20.sp,
                 fontWeight = FontWeight.Medium
             )
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            FigmaTextField(
+            AppTextField(
                 label = stringResource(R.string.username),
                 placeholder = stringResource(R.string.choose_username),
                 value = username,
@@ -96,7 +96,7 @@ fun SignUpScreen(modifier: Modifier = Modifier) {
 
             Spacer(modifier = Modifier.height(14.dp))
 
-            FigmaTextField(
+            AppTextField(
                 label = stringResource(R.string.email),
                 placeholder = stringResource(R.string.enter_your_email),
                 value = email,
@@ -107,7 +107,7 @@ fun SignUpScreen(modifier: Modifier = Modifier) {
 
             Spacer(modifier = Modifier.height(14.dp))
 
-            FigmaTextField(
+            AppTextField(
                 label = stringResource(R.string.password),
                 placeholder = stringResource(R.string.create_password),
                 value = password,
@@ -119,7 +119,7 @@ fun SignUpScreen(modifier: Modifier = Modifier) {
 
             Spacer(modifier = Modifier.height(14.dp))
 
-            FigmaTextField(
+            AppTextField(
                 label = stringResource(R.string.confirm_password),
                 placeholder = stringResource(R.string.repeat_password),
                 value = confirmPassword,
@@ -129,7 +129,7 @@ fun SignUpScreen(modifier: Modifier = Modifier) {
                 icon = FieldIcon.Lock
             )
 
-            Spacer(modifier = Modifier.height(29.dp))
+            Spacer(modifier = Modifier.height(14.dp))
 
             TermsRow(
                 checked = acceptedTerms,
@@ -137,14 +137,14 @@ fun SignUpScreen(modifier: Modifier = Modifier) {
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(26.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             Button(
                 onClick = { },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(82.dp),
-                shape = RoundedCornerShape(41.dp),
+                    .height(64.dp),
+                shape = RoundedCornerShape(32.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = PrimaryPink,
                     contentColor = Color.White
@@ -153,25 +153,26 @@ fun SignUpScreen(modifier: Modifier = Modifier) {
             ) {
                 Text(
                     text = stringResource(R.string.sign_up_btn),
-                    fontSize = 20.sp,
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.Black
                 )
             }
 
-            Spacer(modifier = Modifier.height(19.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-            FigmaOrDivider(
+            OrDivider(
                 text = stringResource(R.string.o),
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(22.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             Text(
                 text = buildAnnotatedString {
                     withStyle(SpanStyle(color = Color.White)) {
                         append(stringResource(R.string.already_have_account))
                     }
+                    append(" ")
                     withStyle(
                         SpanStyle(
                             color = Color(0xFFFF8CAA),
@@ -181,21 +182,13 @@ fun SignUpScreen(modifier: Modifier = Modifier) {
                         append(stringResource(R.string.log_in))
                     }
                 },
-                fontSize = 19.sp,
-                lineHeight = 24.sp
+                fontSize = 16.sp,
+                lineHeight = 20.sp
             )
 
-            Spacer(modifier = Modifier.height(68.dp))
+            Spacer(modifier = Modifier.height(80.dp))
         }
 
-        Box(
-            modifier = Modifier
-                .size(39.dp)
-                .align(Alignment.BottomCenter)
-                .offset(y = (-15).dp)
-                .clip(CircleShape)
-                .background(PrimaryPink.copy(alpha = 0.78f))
-        )
     }
 }
 
@@ -207,10 +200,11 @@ private fun TermsRow(
 ) {
     Row(
         modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.Top
     ) {
         Box(
             modifier = Modifier
+                .padding(top = 2.dp)
                 .size(29.dp)
                 .clip(RoundedCornerShape(5.dp))
                 .border(
@@ -245,18 +239,24 @@ private fun TermsRow(
         Spacer(modifier = Modifier.size(12.dp))
 
         Text(
-            text = stringResource(R.string.agree_terms),
-            color = Color.White,
+            text = buildAnnotatedString {
+                withStyle(SpanStyle(color = Color.White)) {
+                    append(stringResource(R.string.agree_terms))
+                }
+                append(" ")
+                withStyle(
+                    SpanStyle(
+                        color = Color(0xFFFF8CAA),
+                        fontWeight = FontWeight.Black
+                    )
+                ) {
+                    append(stringResource(R.string.privacy))
+                }
+            },
             fontSize = 15.5.sp,
+            lineHeight = 20.sp,
             fontWeight = FontWeight.Black,
             modifier = Modifier.weight(1f)
-        )
-
-        Text(
-            text = stringResource(R.string.privacy),
-            color = Color(0xFFFF8CAA),
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Black
         )
     }
 }
