@@ -1,0 +1,56 @@
+package com.example.mixtapp.ui.screens.profile
+
+import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.example.mixtapp.ui.theme.*
+import com.example.mixtapp.ui.components.BottomNav
+
+@Composable
+fun ProfileScreen(
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(DeepBackground)
+    ) {
+        Column(modifier = Modifier.fillMaxSize()) {
+
+            ProfileHeader()
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+
+                ProfileAvatarSection()
+
+                FavoriteSection()
+                
+                RecentActivitySection()
+                
+                RatingsSection()
+
+            }
+            
+            BottomNav()
+        }
+    }
+}
+
+@Composable
+@Preview(showBackground = true, device = "spec:width=393dp,height=852dp")
+fun ProfileScreenPreview() {
+    MixtappTheme(dynamicColor = false) {
+        ProfileScreen()
+    }
+}

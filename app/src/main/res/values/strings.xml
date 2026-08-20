@@ -1,14 +1,49 @@
 <resources>
     <string name="app_name">Mixtapp</string>
     <string name="ingresar">Ingresar</string>
-    <string name="descripcion_login">Enter your account to keep rating albums and following friends.</string>
+    <string name="descripcion_login">Ingresa a tu cuenta para seguir calificando albums o para seguir a tus amigos.</string>
     <string name="no_tienes_cuenta_registrate">¿No tienes cuenta? Registrate</string>
     <string name="email">Email</string>
-    <string name="enter_your_email">Enter your Email</string>
+    <string name="enter_your_email">Ingresa tu email</string>
     <string name="contrasena">Contraseña</string>
     <string name="o">O</string>
     <string name="yo">YO</string>
     <string name="favoritos">Favoritos</string>
     <string name="actividad_reciente">Actividad reciente</string>
     <string name="calificaciones">Calificaciones</string>
+
+    <!-- SignUp / Login Extra -->
+    <string name="create_account">Crear cuenta</string>
+    <string name="signup_description">Empieza a seguir tus albums, calificaciones y tus canciones favoritas.</string>
+    <string name="username">nombre de usuario</string>
+    <string name="choose_username">Elije un nombre de usuario</string>
+    <string name="password">contraseña</string>
+    <string name="create_password">Crear contraseña</string>
+    <string name="confirm_password">Confirmar</string>
+    <string name="repeat_password">Repite tu contraseña</string>
+    <string name="agree_terms">Acepto los terminos y condiciones de Mixtapp</string>
+    <string name="privacy">privacidad</string>
+    <string name="sign_up_btn">Registrarse</string>
+    <string name="already_have_account">Ya tienes una cuenta?</string>
+    <string name="log_in">Iniciar sesion</string>
+
+    <!-- Home Extra -->
+    <string name="search_icon">Search</string>
+    <string name="for_you">For you</string>
+    <string name="trending">Trending</string>
+    <string name="friends">Friends</string>
+    <string name="now_trending">Now trending</string>
+    <string name="popular_albums">Popular Albums</string>
+    <string name="see_all">See all</string>
+    <string name="friends_activity">Friends Activity</string>
+    <string name="home_label">Home</string>
+    <string name="explore_label">Explore</string>
+    <string name="add_label">Add</string>
+    <string name="lists_label">Lists</string>
+    <string name="profile_label">Profile</string>
+
+    <!-- Profile Extra -->
+    <string name="user_stats">128 reviews • 64 albums • 18 lists</string>
+    <string name="star_rating_format">%d stars</string>
+    <string name="reviewed_today">reviewed today</string>
 </resources>
