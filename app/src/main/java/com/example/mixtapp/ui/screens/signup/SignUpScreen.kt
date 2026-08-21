@@ -1,6 +1,5 @@
 package com.example.mixtapp.ui.screens.signup
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -26,7 +25,6 @@ fun SignUpScreen(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(DeepBackground)
     ) {
         AppBackground()
 
@@ -63,10 +61,18 @@ fun SignUpScreen(modifier: Modifier = Modifier) {
     }
 }
 
-@Preview(showBackground = true, widthDp = 393, heightDp = 852)
+@Preview(showBackground = true, widthDp = 393, heightDp = 852, name = "SignUp Light")
 @Composable
-fun SignUpScreenPreview() {
-    MixtappTheme(dynamicColor = false) {
+fun SignUpScreenLightPreview() {
+    MixtappTheme(darkTheme = false, dynamicColor = false) {
+        SignUpScreen()
+    }
+}
+
+@Preview(showBackground = true, widthDp = 393, heightDp = 852, name = "SignUp Dark")
+@Composable
+fun SignUpScreenDarkPreview() {
+    MixtappTheme(darkTheme = true, dynamicColor = false) {
         SignUpScreen()
     }
 }

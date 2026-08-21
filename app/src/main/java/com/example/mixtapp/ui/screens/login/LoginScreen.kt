@@ -1,6 +1,5 @@
 package com.example.mixtapp.ui.screens.login
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -25,7 +24,6 @@ fun LoginScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(DeepBackground)
     ) {
 
         AppBackground()
@@ -54,9 +52,17 @@ fun LoginScreen(
 }
 
 @Composable
-@Preview(showBackground = true, widthDp = 393, heightDp = 852)
-fun LoginScreenPreview() {
-    MixtappTheme(dynamicColor = false) {
+@Preview(showBackground = true, widthDp = 393, heightDp = 852, name = "Login Light")
+fun LoginScreenLightPreview() {
+    MixtappTheme(darkTheme = false, dynamicColor = false) {
+        LoginScreen()
+    }
+}
+
+@Composable
+@Preview(showBackground = true, widthDp = 393, heightDp = 852, name = "Login Dark")
+fun LoginScreenDarkPreview() {
+    MixtappTheme(darkTheme = true, dynamicColor = false) {
         LoginScreen()
     }
 }

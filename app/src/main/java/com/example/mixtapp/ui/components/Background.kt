@@ -3,6 +3,7 @@ package com.example.mixtapp.ui.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -12,7 +13,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.ui.theme.CircleBerry
 import com.example.mixtapp.ui.theme.CircleWine
-import com.example.mixtapp.ui.theme.DeepBackground
 
 @Composable
 fun AppBackground(
@@ -21,7 +21,7 @@ fun AppBackground(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(DeepBackground)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         DecorativeCircles()
     }
