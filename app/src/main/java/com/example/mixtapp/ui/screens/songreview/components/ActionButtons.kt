@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -24,13 +25,18 @@ import com.example.mixtapp.ui.theme.PrimaryPink
 import com.example.mixtapp.ui.theme.SurfaceCard
 
 @Composable
-fun ActionButtons() {
+fun ActionButtons(
+    isSaved: Boolean,
+    isLiked: Boolean,
+    onSaveClick: () -> Unit,
+    onLikeClick: () -> Unit
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Button(
-            onClick = { },
+            onClick = onSaveClick,
             modifier = Modifier.weight(1f),
             colors = ButtonDefaults.buttonColors(containerColor = SurfaceCard),
             shape = RoundedCornerShape(8.dp),
@@ -38,20 +44,25 @@ fun ActionButtons() {
         ) {
             Icon(Icons.Default.Check, null, modifier = Modifier.size(18.dp), tint = PrimaryPink)
             Spacer(modifier = Modifier.width(8.dp))
-            Text("Save", color = PrimaryPink)
+            Text(if (isSaved) "Saved" else "Save", color = PrimaryPink)
         }
 
         Button(
-            onClick = { },
+            onClick = onLikeClick,
             modifier = Modifier.weight(1f),
             colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
             shape = RoundedCornerShape(8.dp),
             border = BorderStroke(1.dp, Color.White.copy(alpha = 0.3f)),
             contentPadding = PaddingValues(vertical = 12.dp)
         ) {
-            Icon(Icons.Outlined.FavoriteBorder, null, modifier = Modifier.size(18.dp), tint = Color.White)
+            Icon(
+                if (isLiked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                null,
+                modifier = Modifier.size(18.dp),
+                tint = if (isLiked) PrimaryPink else Color.White
+            )
             Spacer(modifier = Modifier.width(8.dp))
-            Text("Like", color = Color.White)
+            Text(if (isLiked) "Liked" else "Like", color = Color.White)
         }
     }
 }

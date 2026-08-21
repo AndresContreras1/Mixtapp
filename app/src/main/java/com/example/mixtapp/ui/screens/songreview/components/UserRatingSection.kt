@@ -1,6 +1,7 @@
 package com.example.mixtapp.ui.screens.songreview.components
 
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,7 +24,10 @@ import androidx.compose.ui.unit.sp
 import com.example.mixtapp.ui.theme.PrimaryPink
 
 @Composable
-fun UserRatingSection() {
+fun UserRatingSection(
+    rating: Int,
+    onRatingChange: (Int) -> Unit
+) {
     Surface(
         color = Color.Transparent,
         shape = RoundedCornerShape(16.dp),
@@ -43,12 +47,19 @@ fun UserRatingSection() {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                repeat(5) {
+                repeat(5) { index ->
+                    val starRating = index + 1
                     Icon(
                         Icons.Filled.Star,
                         null,
-                        tint = PrimaryPink,
-                        modifier = Modifier.size(28.dp)
+                        tint = if (starRating <= rating) {
+                            PrimaryPink
+                        } else {
+                            Color.White.copy(alpha = 0.3f)
+                        },
+                        modifier = Modifier
+                            .size(28.dp)
+                            .clickable { onRatingChange(starRating) }
                     )
                 }
             }
