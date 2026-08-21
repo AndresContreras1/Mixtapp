@@ -35,8 +35,6 @@ fun SignUpScreen(modifier: Modifier = Modifier) {
 
             SignUpHeader()
 
-            SignUpScreen()
-
             SignUpForm()
 
             SignUpFooter()

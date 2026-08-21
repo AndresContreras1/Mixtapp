@@ -10,13 +10,16 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
@@ -28,6 +31,9 @@ import com.example.mixtapp.ui.theme.PrimaryPink
 fun LoginForm(
     modifier: Modifier = Modifier
 ){
+    var email by remember { mutableStateOf("") }
+    var contrasena by remember { mutableStateOf("") }
+
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -35,8 +41,8 @@ fun LoginForm(
         AppTextField(
             label = stringResource(R.string.email),
             placeholder = stringResource(R.string.enter_your_email),
-            value = "",
-            onValueChange = {},
+            value = email,
+            onValueChange = { email = it },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             icon = FieldIcon.Email
         )
@@ -46,11 +52,11 @@ fun LoginForm(
         AppTextField(
             label = stringResource(R.string.contrasena),
             placeholder = stringResource(R.string.password),
-            value = "",
-            onValueChange = {},
+            value = contrasena,
+            onValueChange = { contrasena = it },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            visualTransformation = PasswordVisualTransformation(),
-            icon = FieldIcon.Lock
+            icon = FieldIcon.Lock,
+            isPassword = true
         )
 
         Spacer(modifier = Modifier.height(28.dp))

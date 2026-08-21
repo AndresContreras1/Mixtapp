@@ -10,23 +10,33 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.components.AppTextField
 import com.example.mixtapp.ui.components.FieldIcon
+import androidx.compose.runtime.setValue
 import com.example.mixtapp.ui.theme.PrimaryPink
+
 
 @Composable
 fun SignUpForm(
     modifier: Modifier = Modifier
 ){
+    var usuario by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var contrasena by remember { mutableStateOf("") }
+    var confirmarContrasena by remember { mutableStateOf("") }
+    var terminos by remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier
@@ -34,8 +44,8 @@ fun SignUpForm(
         AppTextField(
             label = stringResource(R.string.username),
             placeholder = stringResource(R.string.choose_username),
-            value = "",
-            onValueChange = {},
+            value = usuario,
+            onValueChange = { usuario = it},
             icon = FieldIcon.User
         )
 
@@ -44,8 +54,8 @@ fun SignUpForm(
         AppTextField(
             label = stringResource(R.string.email),
             placeholder = stringResource(R.string.enter_your_email),
-            value = "",
-            onValueChange = {},
+            value = email,
+            onValueChange = {email = it},
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             icon = FieldIcon.Email
         )
@@ -55,11 +65,11 @@ fun SignUpForm(
         AppTextField(
             label = stringResource(R.string.password),
             placeholder = stringResource(R.string.create_password),
-            value = "",
-            onValueChange = {},
+            value = contrasena,
+            onValueChange = { contrasena = it},
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            visualTransformation = PasswordVisualTransformation(),
-            icon = FieldIcon.Lock
+            icon = FieldIcon.Lock,
+            isPassword = true
         )
 
         Spacer(modifier = Modifier.height(14.dp))
@@ -67,19 +77,19 @@ fun SignUpForm(
         AppTextField(
             label = stringResource(R.string.confirm_password),
             placeholder = stringResource(R.string.repeat_password),
-            value = "",
-            onValueChange = {},
+            value = confirmarContrasena,
+            onValueChange = { confirmarContrasena = it},
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            visualTransformation = PasswordVisualTransformation(),
-            icon = FieldIcon.Lock
+            icon = FieldIcon.Lock,
+            isPassword = true
         )
 
         Spacer(modifier = Modifier.height(14.dp))
 
 
         TermsRow(
-            checked = false,
-            onCheckedChange = {},
+            checked = terminos,
+            onCheckedChange = { terminos = !terminos },
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -106,4 +116,10 @@ fun SignUpForm(
 
         Spacer(modifier = Modifier.height(12.dp))
     }
+}
+
+@Preview
+@Composable
+fun SignUpFormPreview(){
+    SignUpForm()
 }

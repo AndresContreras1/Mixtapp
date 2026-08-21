@@ -16,7 +16,7 @@
     <string name="create_account">Crear cuenta</string>
     <string name="signup_description">Empieza a seguir tus albums, calificaciones y tus canciones favoritas.</string>
     <string name="username">nombre de usuario</string>
-    <string name="choose_username">Elije un nombre de usuario</string>
+    <string name="choose_username">Ingresa tu usuario</string>
     <string name="password">contraseña</string>
     <string name="create_password">Crear contraseña</string>
     <string name="confirm_password">Confirmar</string>
