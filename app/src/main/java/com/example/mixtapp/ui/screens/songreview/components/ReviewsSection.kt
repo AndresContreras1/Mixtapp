@@ -1,0 +1,126 @@
+package com.example.mixtapp.ui.screens.songreview.components
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.mixtapp.ui.theme.PrimaryPink
+import com.example.mixtapp.ui.theme.SurfaceCard
+
+@Composable
+fun ReviewsSection() {
+    Column {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Reviews",
+                color = Color.White,
+                fontSize = 24.sp,
+                fontFamily = FontFamily.Serif,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = "Write One",
+                color = PrimaryPink,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        ReviewItem(
+            author = "Priya",
+            daysAgo = "3d ago",
+            rating = 5,
+            content = "\"The Sharpest Lives\" is an absolute rush on The Black Parade, blending dark, frantic energy with an insanely catchy hook. Gerard Way's theatrical vocals and the sharp guitar work turn chaotic self-destruction into one of My Chemical Romance's most addictive anthems.",
+            likes = 24
+        )
+    }
+}
+
+@Composable
+private fun ReviewItem(author: String, daysAgo: String, rating: Int, content: String, likes: Int) {
+    Surface(
+        color = Color.Transparent,
+        shape = RoundedCornerShape(16.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(1.dp, Color.White.copy(alpha = 0.2f), RoundedCornerShape(16.dp))
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(SurfaceCard),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(author.take(2).lowercase(), color = PrimaryPink, fontWeight = FontWeight.Bold)
+                }
+                Spacer(modifier = Modifier.width(12.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(author, color = Color.White, fontWeight = FontWeight.Bold)
+                    Row {
+                        repeat(rating) {
+                            Icon(Icons.Filled.Star, null, tint = PrimaryPink, modifier = Modifier.size(12.dp))
+                        }
+                    }
+                }
+                Text(daysAgo, color = Color.White.copy(alpha = 0.4f), fontSize = 10.sp)
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Text(
+                text = content,
+                color = Color.White.copy(alpha = 0.9f),
+                fontSize = 12.sp,
+                lineHeight = 18.sp
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Outlined.FavoriteBorder, null, tint = Color.White.copy(alpha = 0.6f), modifier = Modifier.size(14.dp))
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(likes.toString(), color = Color.White.copy(alpha = 0.6f), fontSize = 12.sp)
+                Spacer(modifier = Modifier.width(16.dp))
+                Text("Reply", color = Color.White.copy(alpha = 0.6f), fontSize = 12.sp)
+            }
+        }
+    }
+}
