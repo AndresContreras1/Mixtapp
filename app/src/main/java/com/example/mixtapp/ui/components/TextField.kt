@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -36,6 +37,14 @@ import com.example.mixtapp.ui.theme.FieldBackground
 import com.example.mixtapp.ui.theme.FieldBorder
 import com.example.mixtapp.ui.theme.PalePink
 import com.example.mixtapp.ui.theme.TextPink
+import androidx.compose.material3.IconButton
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.painterResource
+import com.example.mixtapp.R
 
 @Composable
 fun FieldIconView(
@@ -131,8 +140,18 @@ fun AppTextField(
     icon: FieldIcon,
     modifier: Modifier = Modifier,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-    visualTransformation: VisualTransformation = VisualTransformation.None
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    isPassword: Boolean = false,
 ) {
+    var passwordVisible by remember { mutableStateOf(false) }
+
+    val currentTransformation =
+        if (isPassword && !passwordVisible) {
+            PasswordVisualTransformation()
+        } else {
+            visualTransformation
+        }
+
     Column(modifier = modifier.fillMaxWidth()) {
         Text(
             text = label,
@@ -171,25 +190,57 @@ fun AppTextField(
                 modifier = Modifier.weight(1f),
                 singleLine = true,
                 textStyle = TextStyle(
-                    color = PalePink,
-                    fontSize = 20.sp,
-                    lineHeight = 24.sp,
+                    color = Color.White,
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.Normal
                 ),
                 cursorBrush = SolidColor(PalePink),
                 keyboardOptions = keyboardOptions,
-                visualTransformation = visualTransformation,
+                visualTransformation = currentTransformation,
                 decorationBox = { innerTextField ->
-                    Box(contentAlignment = Alignment.CenterStart) {
-                        if (value.isEmpty()) {
-                            Text(
-                                text = placeholder,
-                                color = TextPink.copy(alpha = 0.88f),
-                                fontSize = 20.sp,
-                                lineHeight = 24.sp
-                            )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier.weight(1f),
+                            contentAlignment = Alignment.CenterStart
+                        ) {
+                            if (value.isEmpty()) {
+                                Text(
+                                    text = placeholder,
+                                    color = TextPink.copy(alpha = 0.88f),
+                                    fontSize = 18.sp,
+                                )
+                            }
+                            innerTextField()
                         }
-                        innerTextField()
+
+                        if (isPassword) {
+                            IconButton(
+                                onClick = {
+                                    passwordVisible = !passwordVisible
+                                },
+                                modifier = Modifier.size(24.dp)
+                            ) {
+                                Icon(
+                                    painter = painterResource(
+                                        id = if (passwordVisible) {
+                                            R.drawable.visible
+                                        } else {
+                                            R.drawable.invisible
+                                        }
+                                    ),
+                                    contentDescription = if (passwordVisible) {
+                                        "Ocultar contraseña"
+                                    } else {
+                                        "Mostrar contraseña"
+                                    },
+                                    tint = PalePink,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
+                        }
                     }
                 }
             )

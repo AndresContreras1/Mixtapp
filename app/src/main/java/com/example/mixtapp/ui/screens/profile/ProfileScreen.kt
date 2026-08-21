@@ -9,6 +9,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.ui.theme.*
 import com.example.mixtapp.ui.components.BottomNav
+import com.example.mixtapp.ui.screens.profile.components.FavoriteSection
+import com.example.mixtapp.ui.screens.profile.components.ProfileAvatarSection
+import com.example.mixtapp.ui.screens.profile.components.ProfileHeader
+import com.example.mixtapp.ui.screens.profile.components.RatingsSection
+import com.example.mixtapp.ui.screens.profile.components.RecentActivitySection
 
 @Composable
 fun ProfileScreen(
@@ -35,9 +40,9 @@ fun ProfileScreen(
                 ProfileAvatarSection()
 
                 FavoriteSection()
-                
+
                 RecentActivitySection()
-                
+
                 RatingsSection()
 
             }
