@@ -12,12 +12,16 @@ import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.components.AppBackground
 import com.example.mixtapp.ui.components.BottomNav
+import com.example.mixtapp.ui.screens.home.components.FilterChips
+import com.example.mixtapp.ui.screens.home.components.FriendsActivity
+import com.example.mixtapp.ui.screens.home.components.HomeHeader
+import com.example.mixtapp.ui.screens.home.components.PopularAlbums
+import com.example.mixtapp.ui.screens.home.components.SectionTitle
+import com.example.mixtapp.ui.screens.home.components.TrendingCard
 import com.example.mixtapp.ui.theme.*
 
 @Composable
 fun HomeScreen(
-    onSelectTrack: () -> Unit,
-    onOpenProfile: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -37,7 +41,7 @@ fun HomeScreen(
                     .verticalScroll(rememberScrollState())
                     .padding(horizontal = 24.dp, vertical = 28.dp)
             ) {
-                HomeHeader(onOpenProfile = onOpenProfile)
+                HomeHeader()
 
                 Spacer(modifier = Modifier.height(24.dp))
 
@@ -45,7 +49,7 @@ fun HomeScreen(
 
                 Spacer(modifier = Modifier.height(28.dp))
 
-                TrendingCard(onClick = onSelectTrack)
+                TrendingCard()
 
                 Spacer(modifier = Modifier.height(28.dp))
 
@@ -53,7 +57,7 @@ fun HomeScreen(
 
                 Spacer(modifier = Modifier.height(14.dp))
 
-                PopularAlbums(onSelectTrack = onSelectTrack)
+                PopularAlbums()
 
                 Spacer(modifier = Modifier.height(28.dp))
 
@@ -73,7 +77,5 @@ fun HomeScreen(
 @Preview(showBackground = true)
 fun HomeScreenPreview() {
     HomeScreen(
-        onSelectTrack = {},
-        onOpenProfile = {}
     )
 }

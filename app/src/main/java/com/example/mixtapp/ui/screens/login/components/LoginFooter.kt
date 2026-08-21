@@ -1,4 +1,4 @@
-package com.example.mixtapp.ui.screens.Login
+package com.example.mixtapp.ui.screens.login.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

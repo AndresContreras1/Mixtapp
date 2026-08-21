@@ -1,4 +1,4 @@
-package com.example.mixtapp.ui.screens.signup
+package com.example.mixtapp.ui.screens.signup.components
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.border

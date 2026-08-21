@@ -1,4 +1,4 @@
-package com.example.mixtapp.ui.screens.home
+package com.example.mixtapp.ui.screens.home.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -34,8 +34,7 @@ import com.example.mixtapp.ui.theme.TextPink
 
 @Composable
 fun HomeHeader(
-    onOpenProfile: () -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -71,7 +70,7 @@ fun HomeHeader(
                     .size(46.dp)
                     .clip(CircleShape)
                     .background(CircleWine)
-                    .clickable { onOpenProfile() },
+                    .clickable {},
                 contentAlignment = Alignment.Center
             ) {
                 Text(

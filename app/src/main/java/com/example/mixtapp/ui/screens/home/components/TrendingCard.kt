@@ -1,4 +1,4 @@
-package com.example.mixtapp.ui.screens.home
+package com.example.mixtapp.ui.screens.home.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -39,7 +39,6 @@ import com.example.mixtapp.ui.theme.TextPink
 
 @Composable
 fun TrendingCard(
-    onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -49,7 +48,7 @@ fun TrendingCard(
             .clip(RoundedCornerShape(12.dp))
             .background(FieldBackground.copy(alpha = 0.5f))
             .border(1.dp, FieldBorder.copy(alpha = 0.5f), RoundedCornerShape(12.dp))
-            .clickable { onClick() }
+            .clickable {}
     ) {
         Image(
             painter = painterResource(id = R.drawable.finisterra_portada),

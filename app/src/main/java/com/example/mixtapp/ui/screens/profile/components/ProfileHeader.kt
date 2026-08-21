@@ -1,4 +1,4 @@
-package com.example.mixtapp.ui.screens.profile
+package com.example.mixtapp.ui.screens.profile.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

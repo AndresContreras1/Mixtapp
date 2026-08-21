@@ -1,4 +1,4 @@
-package com.example.mixtapp.ui.screens.Login
+package com.example.mixtapp.ui.screens.login
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -10,6 +10,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.ui.components.*
+import com.example.mixtapp.ui.screens.login.components.LoginFooter
+import com.example.mixtapp.ui.screens.login.components.LoginForm
+import com.example.mixtapp.ui.screens.login.components.LoginHeader
 import com.example.mixtapp.ui.theme.*
 
 @Composable
