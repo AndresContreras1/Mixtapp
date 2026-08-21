@@ -10,9 +10,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -24,20 +21,24 @@ import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.components.AppTextField
 import com.example.mixtapp.ui.components.FieldIcon
-import androidx.compose.runtime.setValue
 import com.example.mixtapp.ui.theme.PrimaryPink
 
 
 @Composable
 fun SignUpForm(
+    usuario: String,
+    onUsuarioChange: (String) -> Unit,
+    email: String,
+    onEmailChange: (String) -> Unit,
+    contrasena: String,
+    onContrasenaChange: (String) -> Unit,
+    confirmarContrasena: String,
+    onConfirmarContrasenaChange: (String) -> Unit,
+    terminos: Boolean,
+    onTerminosChange: (Boolean) -> Unit,
+    onSignUpClick: () -> Unit,
     modifier: Modifier = Modifier
 ){
-    var usuario by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var contrasena by remember { mutableStateOf("") }
-    var confirmarContrasena by remember { mutableStateOf("") }
-    var terminos by remember { mutableStateOf(false) }
-
     Column(
         modifier = modifier
     ) {
@@ -45,7 +46,7 @@ fun SignUpForm(
             label = stringResource(R.string.username),
             placeholder = stringResource(R.string.choose_username),
             value = usuario,
-            onValueChange = { usuario = it},
+            onValueChange = onUsuarioChange,
             icon = FieldIcon.User
         )
 
@@ -55,7 +56,7 @@ fun SignUpForm(
             label = stringResource(R.string.email),
             placeholder = stringResource(R.string.enter_your_email),
             value = email,
-            onValueChange = {email = it},
+            onValueChange = onEmailChange,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             icon = FieldIcon.Email
         )
@@ -66,7 +67,7 @@ fun SignUpForm(
             label = stringResource(R.string.password),
             placeholder = stringResource(R.string.create_password),
             value = contrasena,
-            onValueChange = { contrasena = it},
+            onValueChange = onContrasenaChange,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             icon = FieldIcon.Lock,
             isPassword = true
@@ -78,7 +79,7 @@ fun SignUpForm(
             label = stringResource(R.string.confirm_password),
             placeholder = stringResource(R.string.repeat_password),
             value = confirmarContrasena,
-            onValueChange = { confirmarContrasena = it},
+            onValueChange = onConfirmarContrasenaChange,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             icon = FieldIcon.Lock,
             isPassword = true
@@ -89,14 +90,14 @@ fun SignUpForm(
 
         TermsRow(
             checked = terminos,
-            onCheckedChange = { terminos = !terminos },
+            onCheckedChange = { onTerminosChange(!terminos) },
             modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-            onClick = { },
+            onClick = onSignUpClick,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(64.dp),
@@ -121,5 +122,17 @@ fun SignUpForm(
 @Preview
 @Composable
 fun SignUpFormPreview(){
-    SignUpForm()
+    SignUpForm(
+        usuario = "",
+        onUsuarioChange = {},
+        email = "",
+        onEmailChange = {},
+        contrasena = "",
+        onContrasenaChange = {},
+        confirmarContrasena = "",
+        onConfirmarContrasenaChange = {},
+        terminos = false,
+        onTerminosChange = {},
+        onSignUpClick = {}
+    )
 }

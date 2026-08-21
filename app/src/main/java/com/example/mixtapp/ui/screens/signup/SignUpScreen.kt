@@ -17,6 +17,11 @@ import com.example.mixtapp.ui.theme.*
 
 @Composable
 fun SignUpScreen(modifier: Modifier = Modifier) {
+    var usuario by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var contrasena by remember { mutableStateOf("") }
+    var confirmarContrasena by remember { mutableStateOf("") }
+    var terminos by remember { mutableStateOf(false) }
 
     Box(
         modifier = modifier
@@ -35,7 +40,21 @@ fun SignUpScreen(modifier: Modifier = Modifier) {
 
             SignUpHeader()
 
-            SignUpForm()
+            SignUpForm(
+                usuario = usuario,
+                onUsuarioChange = { usuario = it },
+                email = email,
+                onEmailChange = { email = it },
+                contrasena = contrasena,
+                onContrasenaChange = { contrasena = it },
+                confirmarContrasena = confirmarContrasena,
+                onConfirmarContrasenaChange = { confirmarContrasena = it },
+                terminos = terminos,
+                onTerminosChange = { terminos = it },
+                onSignUpClick = {
+                    // Acción del boton registro
+                }
+            )
 
             SignUpFooter()
 

@@ -19,6 +19,9 @@ import com.example.mixtapp.ui.theme.*
 fun LoginScreen(
     modifier: Modifier = Modifier
 ) {
+    var email by remember { mutableStateOf("") }
+    var contrasena by remember { mutableStateOf("") }
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -37,7 +40,12 @@ fun LoginScreen(
 
             LoginHeader()
 
-            LoginForm()
+            LoginForm(
+                email = email,
+                onEmailChange = { email = it },
+                contrasena = contrasena,
+                onContrasenaChange = { contrasena = it}
+            )
 
             LoginFooter()
         }

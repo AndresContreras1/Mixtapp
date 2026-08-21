@@ -10,10 +10,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,10 +25,13 @@ import com.example.mixtapp.ui.theme.PrimaryPink
 
 @Composable
 fun LoginForm(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    email: String,
+    onEmailChange: (String) -> Unit,
+    contrasena: String,
+    onContrasenaChange: (String) -> Unit
 ){
-    var email by remember { mutableStateOf("") }
-    var contrasena by remember { mutableStateOf("") }
+
 
     Column(
         modifier = modifier,
@@ -42,7 +41,7 @@ fun LoginForm(
             label = stringResource(R.string.email),
             placeholder = stringResource(R.string.enter_your_email),
             value = email,
-            onValueChange = { email = it },
+            onValueChange = { onEmailChange },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             icon = FieldIcon.Email
         )
@@ -53,7 +52,7 @@ fun LoginForm(
             label = stringResource(R.string.contrasena),
             placeholder = stringResource(R.string.password),
             value = contrasena,
-            onValueChange = { contrasena = it },
+            onValueChange = { onContrasenaChange },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             icon = FieldIcon.Lock,
             isPassword = true
