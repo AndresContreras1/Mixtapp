@@ -11,7 +11,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.components.AppBackground
-import com.example.mixtapp.ui.components.BottomNav
 import com.example.mixtapp.ui.screens.home.components.FilterChips
 import com.example.mixtapp.ui.screens.home.components.FriendsActivity
 import com.example.mixtapp.ui.screens.home.components.HomeHeader
@@ -68,7 +67,6 @@ fun HomeScreen(
                 FriendsActivity()
             }
 
-            BottomNav()
         }
     }
 }
