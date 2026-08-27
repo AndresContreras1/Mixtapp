@@ -29,11 +29,12 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mixtapp.data.local.SongReviewItemUi
 import com.example.mixtapp.ui.theme.PrimaryPink
 import com.example.mixtapp.ui.theme.SurfaceCard
 
 @Composable
-fun ReviewsSection() {
+fun ReviewsSection(reviews: List<SongReviewItemUi>) {
     Column {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -57,13 +58,15 @@ fun ReviewsSection() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        ReviewItem(
-            author = "Priya",
-            daysAgo = "3d ago",
-            rating = 5,
-            content = "\"The Sharpest Lives\" is an absolute rush on The Black Parade, blending dark, frantic energy with an insanely catchy hook. Gerard Way's theatrical vocals and the sharp guitar work turn chaotic self-destruction into one of My Chemical Romance's most addictive anthems.",
-            likes = 24
-        )
+        reviews.forEach { review ->
+            ReviewItem(
+                author = review.author,
+                daysAgo = review.daysAgo,
+                rating = review.rating,
+                content = review.content,
+                likes = review.likes
+            )
+        }
     }
 }
 
