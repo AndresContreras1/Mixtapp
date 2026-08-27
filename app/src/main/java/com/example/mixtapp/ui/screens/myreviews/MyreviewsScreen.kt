@@ -18,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.data.local.LocalMyReviewsProvider
-import com.example.mixtapp.ui.components.BottomNav
 import com.example.mixtapp.ui.screens.myreviews.components.MyReviewCard
 import com.example.mixtapp.ui.screens.myreviews.components.MyReviewsFilter
 import com.example.mixtapp.ui.screens.myreviews.components.MyReviewsHeader
@@ -65,7 +64,6 @@ fun MyReviewsScreen(modifier: Modifier = Modifier) {
                 }
             }
 
-            BottomNav()
         }
     }
 }

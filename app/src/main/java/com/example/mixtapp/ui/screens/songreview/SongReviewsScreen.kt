@@ -20,7 +20,6 @@ import androidx.compose.ui.unit.sp
 import com.example.mixtapp.data.local.LocalSongReviewProvider
 import com.example.mixtapp.data.local.SongReviewUi
 import com.example.mixtapp.ui.components.AppBackground
-import com.example.mixtapp.ui.components.BottomNav
 import com.example.mixtapp.ui.screens.songreview.components.*
 import com.example.mixtapp.ui.theme.DeepBackground
 import com.example.mixtapp.ui.theme.TextPink
@@ -103,7 +102,6 @@ fun SongReviewsScreen(
                 ReviewsSection(reviews = songReview.reviews)
             }
 
-            BottomNav()
         }
     }
 }

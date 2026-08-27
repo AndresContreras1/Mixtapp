@@ -15,7 +15,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.mixtapp.ui.components.BottomNav
 import com.example.mixtapp.ui.screens.review.components.AlbumReviewCard
 import com.example.mixtapp.ui.screens.review.components.MoodVibeSection
 import com.example.mixtapp.ui.screens.review.components.ReviewActionsCard
@@ -127,7 +126,6 @@ fun WriteReviewScreen(
                 }
             }
 
-            BottomNav()
         }
     }
 }
