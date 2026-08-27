@@ -1,5 +1,6 @@
 package com.example.mixtapp.ui.screens.signup.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,6 +22,7 @@ import com.example.mixtapp.ui.components.OrDivider
 
 @Composable
 fun SignUpFooter(
+    onLoginClick: () -> Unit,
     modifier: Modifier = Modifier
 ){
     Column(
@@ -49,7 +51,8 @@ fun SignUpFooter(
                 }
             },
             fontSize = 16.sp,
-            lineHeight = 20.sp
+            lineHeight = 20.sp,
+            modifier = Modifier.clickable { onLoginClick() }
         )
 
         Spacer(modifier = Modifier.height(80.dp))

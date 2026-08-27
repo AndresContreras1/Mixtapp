@@ -26,8 +26,8 @@ import com.example.mixtapp.ui.theme.TextPink
 
 @Composable
 fun SongReviewsScreen(
-    modifier: Modifier = Modifier,
-    songReview: SongReviewUi = LocalSongReviewProvider.songReview
+    songReview: SongReviewUi,
+    modifier: Modifier = Modifier
 ) {
     var userRating by rememberSaveable(songReview.title) { mutableStateOf(songReview.userRating) }
     var isSaved by rememberSaveable(songReview.title) { mutableStateOf(songReview.isSaved) }
@@ -109,5 +109,5 @@ fun SongReviewsScreen(
 @Preview(showBackground = true)
 @Composable
 fun SongReviewsScreenPreview() {
-    SongReviewsScreen()
+    SongReviewsScreen(songReview = LocalSongReviewProvider.songReview)
 }

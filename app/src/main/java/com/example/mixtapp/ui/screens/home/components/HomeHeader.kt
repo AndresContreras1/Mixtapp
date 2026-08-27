@@ -34,6 +34,8 @@ import com.example.mixtapp.ui.theme.TextPink
 
 @Composable
 fun HomeHeader(
+    onSearchClick: () -> Unit,
+    onProfileClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -60,7 +62,9 @@ fun HomeHeader(
                 imageVector = Icons.Default.Search,
                 contentDescription = stringResource(R.string.search_icon),
                 tint = TextPink,
-                modifier = Modifier.size(32.dp)
+                modifier = Modifier
+                    .size(32.dp)
+                    .clickable { onSearchClick() }
             )
 
             Spacer(modifier = Modifier.width(14.dp))
@@ -70,7 +74,7 @@ fun HomeHeader(
                     .size(46.dp)
                     .clip(CircleShape)
                     .background(CircleWine)
-                    .clickable {},
+                    .clickable { onProfileClick() },
                 contentAlignment = Alignment.Center
             ) {
                 Text(

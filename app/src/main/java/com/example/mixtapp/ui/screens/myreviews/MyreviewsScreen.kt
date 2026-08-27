@@ -24,7 +24,10 @@ import com.example.mixtapp.ui.screens.myreviews.components.MyReviewsHeader
 import com.example.mixtapp.ui.theme.DeepBackground
 
 @Composable
-fun MyReviewsScreen(modifier: Modifier = Modifier) {
+fun MyReviewsScreen(
+    onReviewClick: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
     var selectedFilter by rememberSaveable { mutableStateOf("Recent") }
 
     val reviews = LocalMyReviewsProvider.reviews.let { list ->
@@ -60,7 +63,11 @@ fun MyReviewsScreen(modifier: Modifier = Modifier) {
                 contentPadding = PaddingValues(horizontal = 20.dp, vertical = 16.dp),
             ) {
                 items(reviews, key = { it.id }) { review ->
-                    MyReviewCard(review, modifier = Modifier.padding(bottom = 16.dp))
+                    MyReviewCard(
+                        review = review,
+                        onReviewClick = onReviewClick,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
                 }
             }
 
@@ -71,5 +78,5 @@ fun MyReviewsScreen(modifier: Modifier = Modifier) {
 @Preview(showBackground = true, device = "spec:width=393dp,height=852dp")
 @Composable
 fun MyReviewsScreenPreview() {
-        MyReviewsScreen()
+        MyReviewsScreen(onReviewClick = {})
 }

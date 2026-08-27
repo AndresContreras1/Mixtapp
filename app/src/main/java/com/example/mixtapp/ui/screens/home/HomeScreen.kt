@@ -21,6 +21,10 @@ import com.example.mixtapp.ui.theme.*
 
 @Composable
 fun HomeScreen(
+    onAlbumClick: () -> Unit,
+    onSearchClick: () -> Unit,
+    onProfileClick: () -> Unit,
+    onFollowingClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -40,7 +44,10 @@ fun HomeScreen(
                     .verticalScroll(rememberScrollState())
                     .padding(horizontal = 24.dp, vertical = 28.dp)
             ) {
-                HomeHeader()
+                HomeHeader(
+                    onSearchClick = onSearchClick,
+                    onProfileClick = onProfileClick
+                )
 
                 Spacer(modifier = Modifier.height(24.dp))
 
@@ -48,19 +55,25 @@ fun HomeScreen(
 
                 Spacer(modifier = Modifier.height(28.dp))
 
-                TrendingCard()
+                TrendingCard(onClick = onAlbumClick)
 
                 Spacer(modifier = Modifier.height(28.dp))
 
-                SectionTitle(title = stringResource(R.string.popular_albums))
+                SectionTitle(
+                    title = stringResource(R.string.popular_albums),
+                    onSeeAllClick = onSearchClick
+                )
 
                 Spacer(modifier = Modifier.height(14.dp))
 
-                PopularAlbums()
+                PopularAlbums(onAlbumClick = onAlbumClick)
 
                 Spacer(modifier = Modifier.height(28.dp))
 
-                SectionTitle(title = stringResource(R.string.friends_activity))
+                SectionTitle(
+                    title = stringResource(R.string.friends_activity),
+                    onSeeAllClick = onFollowingClick
+                )
 
                 Spacer(modifier = Modifier.height(14.dp))
 
@@ -75,5 +88,9 @@ fun HomeScreen(
 @Preview(showBackground = true)
 fun HomeScreenPreview() {
     HomeScreen(
+        onAlbumClick = {},
+        onSearchClick = {},
+        onProfileClick = {},
+        onFollowingClick = {}
     )
 }

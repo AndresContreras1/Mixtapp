@@ -46,4 +46,8 @@
     <string name="user_stats">128 reviews • 64 albums • 18 lists</string>
     <string name="star_rating_format">%d stars</string>
     <string name="reviewed_today">reviewed today</string>
+
+    <!-- Validacion -->
+    <string name="password_corta">La contraseña debe tener al menos 6 caracteres</string>
+    <string name="passwords_no_coinciden">Las contraseñas no coinciden</string>
 </resources>

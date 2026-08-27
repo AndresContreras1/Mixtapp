@@ -10,6 +10,7 @@ import com.example.mixtapp.R
 
 @Composable
 fun PopularAlbums(
+    onAlbumClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -21,21 +22,21 @@ fun PopularAlbums(
             artist = "Måneskin",
             imageRes = R.drawable.teatro_dira_vol_i_portada,
             modifier = Modifier.weight(1f),
-            onClick = {}
+            onClick = onAlbumClick
         )
         AlbumItem(
             title = "Rush!",
             artist = "Måneskin",
             imageRes = R.drawable.rush_portada,
             modifier = Modifier.weight(1f),
-            onClick = {}
+            onClick = onAlbumClick
         )
         AlbumItem(
             title = "Finisterra",
             artist = "Mägo de Oz",
             imageRes = R.drawable.finisterra_portada,
             modifier = Modifier.weight(1f),
-            onClick = {}
+            onClick = onAlbumClick
         )
     }
 }

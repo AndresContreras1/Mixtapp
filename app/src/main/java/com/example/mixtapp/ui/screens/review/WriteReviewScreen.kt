@@ -32,11 +32,11 @@ private const val MaxReviewLength = 500
 
 @Composable
 fun WriteReviewScreen(
-    modifier: Modifier = Modifier,
-    album: ReviewAlbumUi = fromZeroAlbum,
+    album: ReviewAlbumUi,
+    onCancel: () -> Unit,
+    onPostReview: (ReviewDraftUi) -> Unit,
     moods: List<String> = defaultReviewMoods,
-    onCancel: () -> Unit = {},
-    onPostReview: (ReviewDraftUi) -> Unit = {},
+    modifier: Modifier = Modifier,
 ) {
     var rating by rememberSaveable { mutableStateOf(0) }
     var reviewText by rememberSaveable { mutableStateOf("") }
@@ -145,6 +145,10 @@ private val defaultReviewMoods = listOf(
 @Composable
 fun WriteReviewScreenPreview() {
     MixtappTheme(dynamicColor = false) {
-        WriteReviewScreen()
+        WriteReviewScreen(
+            album = fromZeroAlbum,
+            onCancel = {},
+            onPostReview = {}
+        )
     }
 }

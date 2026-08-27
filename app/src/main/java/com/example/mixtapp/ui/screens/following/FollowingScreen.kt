@@ -18,7 +18,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.data.local.LocalFollowingProvider
 import com.example.mixtapp.ui.screens.following.components.FollowingBackground
-import com.example.mixtapp.ui.screens.following.components.FollowingBottomBar
 import com.example.mixtapp.ui.screens.following.components.FollowingFilters
 import com.example.mixtapp.ui.screens.following.components.FollowingHeader
 import com.example.mixtapp.ui.screens.following.components.FollowingReviewCard
@@ -28,8 +27,9 @@ import com.example.mixtapp.ui.theme.DeepBackground
 
 @Composable
 fun FollowingScreen(
+    following: FollowingUi,
+    onCommentsClick: () -> Unit,
     modifier: Modifier = Modifier,
-    following: FollowingUi = LocalFollowingProvider.following,
 ) {
     var friendQuery by rememberSaveable { mutableStateOf("") }
     var selectedFilter by rememberSaveable { mutableStateOf(following.filters.first()) }
@@ -99,11 +99,11 @@ fun FollowingScreen(
                                 sharedReviewIds + review.id
                             }
                         },
+                        onCommentsClick = onCommentsClick,
                     )
                 }
             }
 
-            FollowingBottomBar()
         }
     }
 }
@@ -111,5 +111,8 @@ fun FollowingScreen(
 @Preview(showBackground = true, device = "spec:width=393dp,height=852dp")
 @Composable
 fun FollowingScreenPreview() {
-    FollowingScreen()
+    FollowingScreen(
+        following = LocalFollowingProvider.following,
+        onCommentsClick = {}
+    )
 }

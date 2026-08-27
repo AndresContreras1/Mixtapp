@@ -50,6 +50,7 @@ fun FollowingReviewCard(
     isShared: Boolean,
     onLikeClick: () -> Unit,
     onShareClick: () -> Unit,
+    onCommentsClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Surface(
@@ -146,9 +147,11 @@ fun FollowingReviewCard(
 
                 Icon(
                     imageVector = Icons.Outlined.ChatBubbleOutline,
-                    contentDescription = null,
+                    contentDescription = "Open discussion",
                     tint = PalePink.copy(alpha = 0.55f),
-                    modifier = Modifier.size(15.dp),
+                    modifier = Modifier
+                        .size(15.dp)
+                        .clickable { onCommentsClick() },
                 )
                 Text(
                     text = review.comments.toString(),

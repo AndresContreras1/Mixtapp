@@ -21,15 +21,17 @@ import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.components.AppTextField
 import com.example.mixtapp.ui.components.FieldIcon
+import com.example.mixtapp.ui.theme.PalePink
 import com.example.mixtapp.ui.theme.PrimaryPink
 
 @Composable
 fun LoginForm(
-    modifier: Modifier = Modifier,
     email: String,
     onEmailChange: (String) -> Unit,
     contrasena: String,
-    onContrasenaChange: (String) -> Unit
+    onContrasenaChange: (String) -> Unit,
+    onLoginClick: () -> Unit,
+    modifier: Modifier = Modifier
 ){
 
 
@@ -41,7 +43,7 @@ fun LoginForm(
             label = stringResource(R.string.email),
             placeholder = stringResource(R.string.enter_your_email),
             value = email,
-            onValueChange = { onEmailChange },
+            onValueChange = onEmailChange,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             icon = FieldIcon.Email
         )
@@ -52,16 +54,26 @@ fun LoginForm(
             label = stringResource(R.string.contrasena),
             placeholder = stringResource(R.string.password),
             value = contrasena,
-            onValueChange = { onContrasenaChange },
+            onValueChange = onContrasenaChange,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             icon = FieldIcon.Lock,
             isPassword = true
         )
 
+        if (contrasena.isNotEmpty() && contrasena.length < 6) {
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = stringResource(R.string.password_corta),
+                color = PalePink,
+                fontSize = 14.sp
+            )
+        }
+
         Spacer(modifier = Modifier.height(28.dp))
 
         Button(
-            onClick = { },
+            onClick = onLoginClick,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(82.dp),

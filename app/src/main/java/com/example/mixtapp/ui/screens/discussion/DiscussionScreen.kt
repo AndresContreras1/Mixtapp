@@ -19,7 +19,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.data.local.LocalDiscussionProvider
 import com.example.mixtapp.ui.screens.discussion.components.CommentsDivider
-import com.example.mixtapp.ui.screens.discussion.components.DiscussionBottomBar
 import com.example.mixtapp.ui.screens.discussion.components.DiscussionHeader
 import com.example.mixtapp.ui.screens.discussion.components.DiscussionReviewCard
 import com.example.mixtapp.ui.screens.discussion.components.ThreadCommentItem
@@ -28,9 +27,9 @@ import com.example.mixtapp.ui.theme.DeepBackground
 
 @Composable
 fun DiscussionScreen(
+    discussion: DiscussionUi,
+    onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
-    discussion: DiscussionUi = LocalDiscussionProvider.discussion,
-    onBackClick: () -> Unit = {},
 ) {
     var isReviewLiked by rememberSaveable(discussion.review.id) {
         mutableStateOf(discussion.review.isLiked)
@@ -94,7 +93,6 @@ fun DiscussionScreen(
                 }
             }
 
-            DiscussionBottomBar()
         }
     }
 }
@@ -102,5 +100,8 @@ fun DiscussionScreen(
 @Preview(showBackground = true, device = "spec:width=393dp,height=852dp")
 @Composable
 fun DiscussionScreenPreview() {
-    DiscussionScreen()
+    DiscussionScreen(
+        discussion = LocalDiscussionProvider.discussion,
+        onBackClick = {}
+    )
 }
