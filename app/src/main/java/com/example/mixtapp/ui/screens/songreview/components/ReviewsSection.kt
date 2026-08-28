@@ -29,7 +29,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mixtapp.data.local.SongReviewItemUi
+import com.example.mixtapp.ui.screens.songreview.model.SongReviewItemUi
 import com.example.mixtapp.ui.theme.PrimaryPink
 import com.example.mixtapp.ui.theme.SurfaceCard
 

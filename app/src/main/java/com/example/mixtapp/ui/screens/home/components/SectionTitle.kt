@@ -1,5 +1,6 @@
 package com.example.mixtapp.ui.screens.home.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,6 +19,7 @@ import com.example.mixtapp.ui.theme.TextPink
 @Composable
 fun SectionTitle(
     title: String,
+    onSeeAllClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -37,7 +39,8 @@ fun SectionTitle(
             text = stringResource(R.string.see_all),
             color = TextPink,
             fontSize = 13.sp,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.clickable { onSeeAllClick() }
         )
     }
 }

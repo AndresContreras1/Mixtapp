@@ -18,7 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.data.local.LocalSongReviewProvider
-import com.example.mixtapp.data.local.SongReviewUi
+import com.example.mixtapp.ui.screens.songreview.model.SongReviewUi
 import com.example.mixtapp.ui.components.AppBackground
 import com.example.mixtapp.ui.screens.songreview.components.*
 import com.example.mixtapp.ui.theme.DeepBackground
@@ -26,8 +26,8 @@ import com.example.mixtapp.ui.theme.TextPink
 
 @Composable
 fun SongReviewsScreen(
-    modifier: Modifier = Modifier,
-    songReview: SongReviewUi = LocalSongReviewProvider.songReview
+    songReview: SongReviewUi,
+    modifier: Modifier = Modifier
 ) {
     var userRating by rememberSaveable(songReview.title) { mutableStateOf(songReview.userRating) }
     var isSaved by rememberSaveable(songReview.title) { mutableStateOf(songReview.isSaved) }
@@ -109,5 +109,5 @@ fun SongReviewsScreen(
 @Preview(showBackground = true)
 @Composable
 fun SongReviewsScreenPreview() {
-    SongReviewsScreen()
+    SongReviewsScreen(songReview = LocalSongReviewProvider.songs.first())
 }

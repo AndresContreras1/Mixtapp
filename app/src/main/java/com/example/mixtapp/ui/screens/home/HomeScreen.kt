@@ -10,6 +10,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
+import com.example.mixtapp.data.local.LocalSongReviewProvider
 import com.example.mixtapp.ui.components.AppBackground
 import com.example.mixtapp.ui.screens.home.components.FilterChips
 import com.example.mixtapp.ui.screens.home.components.FriendsActivity
@@ -17,10 +18,17 @@ import com.example.mixtapp.ui.screens.home.components.HomeHeader
 import com.example.mixtapp.ui.screens.home.components.PopularAlbums
 import com.example.mixtapp.ui.screens.home.components.SectionTitle
 import com.example.mixtapp.ui.screens.home.components.TrendingCard
+import com.example.mixtapp.ui.screens.songreview.model.SongReviewUi
 import com.example.mixtapp.ui.theme.*
 
 @Composable
 fun HomeScreen(
+    albums: List<SongReviewUi>,
+    trending: SongReviewUi,
+    onAlbumClick: (String) -> Unit,
+    onSearchClick: () -> Unit,
+    onProfileClick: () -> Unit,
+    onFollowingClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -40,7 +48,10 @@ fun HomeScreen(
                     .verticalScroll(rememberScrollState())
                     .padding(horizontal = 24.dp, vertical = 28.dp)
             ) {
-                HomeHeader()
+                HomeHeader(
+                    onSearchClick = onSearchClick,
+                    onProfileClick = onProfileClick
+                )
 
                 Spacer(modifier = Modifier.height(24.dp))
 
@@ -48,19 +59,31 @@ fun HomeScreen(
 
                 Spacer(modifier = Modifier.height(28.dp))
 
-                TrendingCard()
+                TrendingCard(
+                    album = trending,
+                    onClick = onAlbumClick
+                )
 
                 Spacer(modifier = Modifier.height(28.dp))
 
-                SectionTitle(title = stringResource(R.string.popular_albums))
+                SectionTitle(
+                    title = stringResource(R.string.popular_albums),
+                    onSeeAllClick = onSearchClick
+                )
 
                 Spacer(modifier = Modifier.height(14.dp))
 
-                PopularAlbums()
+                PopularAlbums(
+                    albums = albums,
+                    onAlbumClick = onAlbumClick
+                )
 
                 Spacer(modifier = Modifier.height(28.dp))
 
-                SectionTitle(title = stringResource(R.string.friends_activity))
+                SectionTitle(
+                    title = stringResource(R.string.friends_activity),
+                    onSeeAllClick = onFollowingClick
+                )
 
                 Spacer(modifier = Modifier.height(14.dp))
 
@@ -75,5 +98,11 @@ fun HomeScreen(
 @Preview(showBackground = true)
 fun HomeScreenPreview() {
     HomeScreen(
+        albums = LocalSongReviewProvider.popularSongs,
+        trending = LocalSongReviewProvider.trendingSong,
+        onAlbumClick = {},
+        onSearchClick = {},
+        onProfileClick = {},
+        onFollowingClick = {}
     )
 }

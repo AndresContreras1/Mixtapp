@@ -16,6 +16,8 @@ import com.example.mixtapp.ui.theme.*
 
 @Composable
 fun LoginScreen(
+    onLoginClick: () -> Unit,
+    onSignUpClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var email by remember { mutableStateOf("") }
@@ -42,10 +44,11 @@ fun LoginScreen(
                 email = email,
                 onEmailChange = { email = it },
                 contrasena = contrasena,
-                onContrasenaChange = { contrasena = it}
+                onContrasenaChange = { contrasena = it },
+                onLoginClick = onLoginClick
             )
 
-            LoginFooter()
+            LoginFooter(onSignUpClick = onSignUpClick)
         }
 
     }
@@ -55,7 +58,7 @@ fun LoginScreen(
 @Preview(showBackground = true, widthDp = 393, heightDp = 852, name = "Login Light")
 fun LoginScreenLightPreview() {
     MixtappTheme(darkTheme = false, dynamicColor = false) {
-        LoginScreen()
+        LoginScreen(onLoginClick = {}, onSignUpClick = {})
     }
 }
 
@@ -63,6 +66,6 @@ fun LoginScreenLightPreview() {
 @Preview(showBackground = true, widthDp = 393, heightDp = 852, name = "Login Dark")
 fun LoginScreenDarkPreview() {
     MixtappTheme(darkTheme = true, dynamicColor = false) {
-        LoginScreen()
+        LoginScreen(onLoginClick = {}, onSignUpClick = {})
     }
 }

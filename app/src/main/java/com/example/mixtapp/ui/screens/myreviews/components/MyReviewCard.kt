@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,13 +41,18 @@ import com.example.mixtapp.ui.theme.PrimaryPink
 import com.example.mixtapp.ui.theme.TextPink
 
 @Composable
-fun MyReviewCard(review: MyReviewUi, modifier: Modifier = Modifier) {
+fun MyReviewCard(
+    review: MyReviewUi,
+    onReviewClick: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
     Box(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(14.dp))
             .background(Color(0xFF171314))
             .border(BorderStroke(1.dp, FieldBorder.copy(alpha = 0.5f)), RoundedCornerShape(14.dp))
+            .clickable { onReviewClick(review.songId) }
             .padding(16.dp)
     ) {
         // Badge de score, arriba a la derecha

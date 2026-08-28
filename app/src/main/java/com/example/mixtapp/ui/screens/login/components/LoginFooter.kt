@@ -22,6 +22,7 @@ import com.example.mixtapp.ui.components.OrDivider
 
 @Composable
 fun LoginFooter(
+    onSignUpClick: () -> Unit,
     modifier: Modifier = Modifier
 ){
     Column(
@@ -35,7 +36,7 @@ fun LoginFooter(
 
         Spacer(modifier = Modifier.height(22.dp))
 
-        TextButton(onClick = { /* Navigate to Sign Up */ }) {
+        TextButton(onClick = onSignUpClick) {
             Text(
                 text = buildAnnotatedString {
                     withStyle(SpanStyle(color = Color.White)) {

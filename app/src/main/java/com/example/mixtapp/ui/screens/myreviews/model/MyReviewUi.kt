@@ -4,6 +4,7 @@ import androidx.annotation.DrawableRes
 
 data class MyReviewUi(
     val id: String,
+    val songId: String,      // el album que abre esta resena
     val title: String,
     val artist: String,
     @DrawableRes val coverRes: Int,

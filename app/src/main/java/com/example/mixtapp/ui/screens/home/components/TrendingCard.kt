@@ -31,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.ui.screens.songreview.model.SongReviewUi
 import com.example.mixtapp.ui.theme.FieldBackground
 import com.example.mixtapp.ui.theme.FieldBorder
 import com.example.mixtapp.ui.theme.PalePink
@@ -39,6 +40,8 @@ import com.example.mixtapp.ui.theme.TextPink
 
 @Composable
 fun TrendingCard(
+    album: SongReviewUi,
+    onClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -48,10 +51,10 @@ fun TrendingCard(
             .clip(RoundedCornerShape(12.dp))
             .background(FieldBackground.copy(alpha = 0.5f))
             .border(1.dp, FieldBorder.copy(alpha = 0.5f), RoundedCornerShape(12.dp))
-            .clickable {}
+            .clickable { onClick(album.id) }
     ) {
         Image(
-            painter = painterResource(id = R.drawable.finisterra_portada),
+            painter = painterResource(id = album.coverRes),
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop,
@@ -74,7 +77,7 @@ fun TrendingCard(
                 modifier = Modifier.align(Alignment.BottomStart)
             ) {
                 Text(
-                    text = "Mägo de Oz - Finisterra",
+                    text = "${album.artist} - ${album.title}",
                     color = Color.White,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold

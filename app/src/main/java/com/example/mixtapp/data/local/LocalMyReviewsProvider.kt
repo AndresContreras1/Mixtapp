@@ -7,6 +7,7 @@ object LocalMyReviewsProvider {
     val reviews = listOf(
         MyReviewUi(
             id = "1",
+            songId = "2",
             title = "Rush",
             artist = "Maneskin",
             coverRes = R.drawable.rush_portada,
@@ -17,6 +18,7 @@ object LocalMyReviewsProvider {
         ),
         MyReviewUi(
             id = "2",
+            songId = "4",
             title = "From Zero",
             artist = "Linkin Park",
             coverRes = R.drawable.from_zero,
@@ -27,6 +29,7 @@ object LocalMyReviewsProvider {
         ),
         MyReviewUi(
             id = "3",
+            songId = "1",
             title = "Teatro d'ira: Vol. I",
             artist = "Maneskin",
             coverRes = R.drawable.teatro_dira_vol_i_portada,
@@ -37,6 +40,7 @@ object LocalMyReviewsProvider {
         ),
         MyReviewUi(
             id = "4",
+            songId = "3",
             title = "Finisterra",
             artist = "Mago de Oz",
             coverRes = R.drawable.finisterra_portada,
