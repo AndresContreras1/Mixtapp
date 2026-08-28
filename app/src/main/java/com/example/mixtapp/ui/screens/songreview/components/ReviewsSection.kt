@@ -34,8 +34,11 @@ import com.example.mixtapp.ui.theme.PrimaryPink
 import com.example.mixtapp.ui.theme.SurfaceCard
 
 @Composable
-fun ReviewsSection(reviews: List<SongReviewItemUi>) {
-    Column {
+fun ReviewsSection(
+    reviews: List<SongReviewItemUi>,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,

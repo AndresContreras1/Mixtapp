@@ -30,6 +30,8 @@ fun LoginForm(
     onEmailChange: (String) -> Unit,
     contrasena: String,
     onContrasenaChange: (String) -> Unit,
+    passwordVisible: Boolean,
+    onPasswordVisibleChange: () -> Unit,
     onLoginClick: () -> Unit,
     modifier: Modifier = Modifier
 ){
@@ -57,7 +59,9 @@ fun LoginForm(
             onValueChange = onContrasenaChange,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             icon = FieldIcon.Lock,
-            isPassword = true
+            isPassword = true,
+            passwordVisible = passwordVisible,
+            onPasswordVisibleChange = onPasswordVisibleChange
         )
 
         if (contrasena.isNotEmpty() && contrasena.length < 6) {

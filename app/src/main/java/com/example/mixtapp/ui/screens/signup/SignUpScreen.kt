@@ -29,6 +29,8 @@ fun SignUpScreen(
     var contrasena by remember { mutableStateOf("") }
     var confirmarContrasena by remember { mutableStateOf("") }
     var terminos by remember { mutableStateOf(false) }
+    var contrasenaVisible by remember { mutableStateOf(false) }
+    var confirmarVisible by remember { mutableStateOf(false) }
 
     Box(
         modifier = modifier
@@ -55,6 +57,10 @@ fun SignUpScreen(
                 onContrasenaChange = { contrasena = it },
                 confirmarContrasena = confirmarContrasena,
                 onConfirmarContrasenaChange = { confirmarContrasena = it },
+                contrasenaVisible = contrasenaVisible,
+                onContrasenaVisibleChange = { contrasenaVisible = !contrasenaVisible },
+                confirmarVisible = confirmarVisible,
+                onConfirmarVisibleChange = { confirmarVisible = !confirmarVisible },
                 terminos = terminos,
                 onTerminosChange = { terminos = it },
                 onSignUpClick = onSignUpSuccess

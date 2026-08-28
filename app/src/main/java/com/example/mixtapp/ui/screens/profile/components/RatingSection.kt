@@ -27,8 +27,8 @@ import com.example.mixtapp.ui.theme.PrimaryPink
 import com.example.mixtapp.ui.theme.TextPink
 
 @Composable
-fun RatingsSection() {
-    Column(modifier = Modifier.fillMaxWidth()) {
+fun RatingsSection(modifier: Modifier = Modifier) {
+    Column(modifier = modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,

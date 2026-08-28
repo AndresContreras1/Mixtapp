@@ -32,8 +32,8 @@ import com.example.mixtapp.ui.theme.PrimaryPink
 import com.example.mixtapp.ui.theme.TextPink
 
 @Composable
-fun RecentActivitySection() {
-    Column(modifier = Modifier.fillMaxWidth()) {
+fun RecentActivitySection(modifier: Modifier = Modifier) {
+    Column(modifier = modifier.fillMaxWidth()) {
         Text(
             text = stringResource(R.string.actividad_reciente).uppercase(),
             color = TextPink,

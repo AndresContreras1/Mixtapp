@@ -39,10 +39,6 @@ import com.example.mixtapp.ui.theme.PalePink
 import com.example.mixtapp.ui.theme.TextPink
 import androidx.compose.material3.IconButton
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.painterResource
 import com.example.mixtapp.R
 
@@ -142,9 +138,9 @@ fun AppTextField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     isPassword: Boolean = false,
+    passwordVisible: Boolean = false,
+    onPasswordVisibleChange: () -> Unit = {},
 ) {
-    var passwordVisible by remember { mutableStateOf(false) }
-
     val currentTransformation =
         if (isPassword && !passwordVisible) {
             PasswordVisualTransformation()
@@ -218,9 +214,7 @@ fun AppTextField(
 
                         if (isPassword) {
                             IconButton(
-                                onClick = {
-                                    passwordVisible = !passwordVisible
-                                },
+                                onClick = onPasswordVisibleChange,
                                 modifier = Modifier.size(24.dp)
                             ) {
                                 Icon(

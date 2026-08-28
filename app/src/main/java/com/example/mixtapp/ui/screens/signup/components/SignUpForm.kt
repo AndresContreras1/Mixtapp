@@ -34,6 +34,10 @@ fun SignUpForm(
     onContrasenaChange: (String) -> Unit,
     confirmarContrasena: String,
     onConfirmarContrasenaChange: (String) -> Unit,
+    contrasenaVisible: Boolean,
+    onContrasenaVisibleChange: () -> Unit,
+    confirmarVisible: Boolean,
+    onConfirmarVisibleChange: () -> Unit,
     terminos: Boolean,
     onTerminosChange: (Boolean) -> Unit,
     onSignUpClick: () -> Unit,
@@ -70,7 +74,9 @@ fun SignUpForm(
             onValueChange = onContrasenaChange,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             icon = FieldIcon.Lock,
-            isPassword = true
+            isPassword = true,
+            passwordVisible = contrasenaVisible,
+            onPasswordVisibleChange = onContrasenaVisibleChange
         )
 
         Spacer(modifier = Modifier.height(14.dp))
@@ -82,7 +88,9 @@ fun SignUpForm(
             onValueChange = onConfirmarContrasenaChange,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             icon = FieldIcon.Lock,
-            isPassword = true
+            isPassword = true,
+            passwordVisible = confirmarVisible,
+            onPasswordVisibleChange = onConfirmarVisibleChange
         )
 
         Spacer(modifier = Modifier.height(14.dp))
@@ -131,6 +139,10 @@ fun SignUpFormPreview(){
         onContrasenaChange = {},
         confirmarContrasena = "",
         onConfirmarContrasenaChange = {},
+        contrasenaVisible = false,
+        onContrasenaVisibleChange = {},
+        confirmarVisible = false,
+        onConfirmarVisibleChange = {},
         terminos = false,
         onTerminosChange = {},
         onSignUpClick = {}

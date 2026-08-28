@@ -1,6 +1,7 @@
 package com.example.mixtapp.ui.screens.home.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,12 +21,14 @@ import com.example.mixtapp.ui.theme.PrimaryPink
 fun HomeChip(
     text: String,
     isSelected: Boolean,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(20.dp))
             .background(if (isSelected) PrimaryPink else FieldBackground)
+            .clickable { onClick() }
             .padding(horizontal = 18.dp, vertical = 12.dp),
         contentAlignment = Alignment.Center
     ) {

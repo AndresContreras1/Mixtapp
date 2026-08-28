@@ -22,6 +22,7 @@ fun LoginScreen(
 ) {
     var email by remember { mutableStateOf("") }
     var contrasena by remember { mutableStateOf("") }
+    var passwordVisible by remember { mutableStateOf(false) }
 
     Box(
         modifier = modifier
@@ -45,6 +46,8 @@ fun LoginScreen(
                 onEmailChange = { email = it },
                 contrasena = contrasena,
                 onContrasenaChange = { contrasena = it },
+                passwordVisible = passwordVisible,
+                onPasswordVisibleChange = { passwordVisible = !passwordVisible },
                 onLoginClick = onLoginClick
             )
 

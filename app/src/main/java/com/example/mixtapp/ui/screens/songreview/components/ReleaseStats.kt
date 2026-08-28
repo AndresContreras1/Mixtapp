@@ -25,11 +25,16 @@ import androidx.compose.ui.unit.sp
 import com.example.mixtapp.ui.theme.PrimaryPink
 
 @Composable
-fun ReleaseStats(rating: String, ratingCount: String, recommendRate: String) {
+fun ReleaseStats(
+    rating: String,
+    ratingCount: String,
+    recommendRate: String,
+    modifier: Modifier = Modifier
+) {
     Surface(
         color = Color.Transparent,
         shape = RoundedCornerShape(16.dp),
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .border(1.dp, Color.White.copy(alpha = 0.2f), RoundedCornerShape(16.dp))
     ) {

@@ -25,8 +25,8 @@ import com.example.mixtapp.ui.theme.FieldBackground
 import com.example.mixtapp.ui.theme.TextPink
 
 @Composable
-fun FavoriteSection() {
-    Column(modifier = Modifier.fillMaxWidth()) {
+fun FavoriteSection(modifier: Modifier = Modifier) {
+    Column(modifier = modifier.fillMaxWidth()) {
         Text(
             text = stringResource(R.string.favoritos).uppercase(),
             color = TextPink,
