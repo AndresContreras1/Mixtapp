@@ -5,6 +5,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -31,6 +35,13 @@ fun HomeScreen(
     onFollowingClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val filters = listOf(
+        stringResource(R.string.for_you),
+        stringResource(R.string.trending),
+        stringResource(R.string.friends)
+    )
+    var selectedFilter by remember { mutableStateOf(filters.first()) }
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -55,7 +66,11 @@ fun HomeScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                FilterChips()
+                FilterChips(
+                    filters = filters,
+                    selected = selectedFilter,
+                    onFilterSelected = { selectedFilter = it }
+                )
 
                 Spacer(modifier = Modifier.height(28.dp))
 

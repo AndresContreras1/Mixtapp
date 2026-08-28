@@ -12,11 +12,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ReleaseImage(coverRes: Int) {
+fun ReleaseImage(
+    coverRes: Int,
+    modifier: Modifier = Modifier
+) {
     Image(
         painter = painterResource(id = coverRes),
         contentDescription = null,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .aspectRatio(1f)
             .clip(RoundedCornerShape(24.dp)),

@@ -22,8 +22,11 @@ import com.example.mixtapp.ui.theme.PalePink
 import com.example.mixtapp.ui.theme.PrimaryPink
 
 @Composable
-fun ProfileAvatarSection() {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+fun ProfileAvatarSection(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Spacer(modifier = Modifier.height(24.dp))
         Box(
             modifier = Modifier

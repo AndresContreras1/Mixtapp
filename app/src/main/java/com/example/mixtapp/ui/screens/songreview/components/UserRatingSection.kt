@@ -26,12 +26,13 @@ import com.example.mixtapp.ui.theme.PrimaryPink
 @Composable
 fun UserRatingSection(
     rating: Int,
-    onRatingChange: (Int) -> Unit
+    onRatingChange: (Int) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Surface(
         color = Color.Transparent,
         shape = RoundedCornerShape(16.dp),
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .border(1.dp, Color.White.copy(alpha = 0.2f), RoundedCornerShape(16.dp))
     ) {

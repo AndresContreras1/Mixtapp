@@ -1,6 +1,7 @@
 package com.example.mixtapp.ui.screens.profile.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,9 +31,13 @@ import com.example.mixtapp.ui.theme.DeepBackground
 import com.example.mixtapp.ui.theme.PalePink
 
 @Composable
-fun ProfileHeader() {
+fun ProfileHeader(
+    selectedTab: String,
+    onTabSelected: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .background(DeepBackground)
     ) {
@@ -74,13 +79,14 @@ fun ProfileHeader() {
         ) {
             val tabs = listOf("Profile", "Diary", "Lists", "Library")
             tabs.forEach { tab ->
-                val isSelected = tab == "Profile"
+                val isSelected = tab == selectedTab
                 Box(
                     modifier = Modifier
                         .weight(1f)
                         .padding(2.dp)
                         .clip(RoundedCornerShape(6.dp))
                         .background(if (isSelected) CircleWine else Color.Transparent)
+                        .clickable { onTabSelected(tab) }
                         .padding(vertical = 8.dp),
                     contentAlignment = Alignment.Center
                 ) {

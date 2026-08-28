@@ -16,8 +16,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun ReleaseTags(tags: List<String>) {
+fun ReleaseTags(
+    tags: List<String>,
+    modifier: Modifier = Modifier
+) {
     Row(
+        modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         tags.forEach { tag ->

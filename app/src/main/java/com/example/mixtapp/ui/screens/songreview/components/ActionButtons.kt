@@ -29,10 +29,11 @@ fun ActionButtons(
     isSaved: Boolean,
     isLiked: Boolean,
     onSaveClick: () -> Unit,
-    onLikeClick: () -> Unit
+    onLikeClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Button(

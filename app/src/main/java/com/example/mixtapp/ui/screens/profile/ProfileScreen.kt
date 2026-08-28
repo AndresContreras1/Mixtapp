@@ -18,6 +18,8 @@ import com.example.mixtapp.ui.screens.profile.components.RecentActivitySection
 fun ProfileScreen(
     modifier: Modifier = Modifier
 ) {
+    var selectedTab by remember { mutableStateOf("Profile") }
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -25,7 +27,10 @@ fun ProfileScreen(
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
 
-            ProfileHeader()
+            ProfileHeader(
+                selectedTab = selectedTab,
+                onTabSelected = { selectedTab = it }
+            )
 
             Column(
                 modifier = Modifier
