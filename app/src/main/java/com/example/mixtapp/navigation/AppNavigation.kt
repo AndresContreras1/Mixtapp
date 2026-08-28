@@ -1,10 +1,15 @@
 package com.example.mixtapp.navigation
 
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
+import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalDiscussionProvider
 import com.example.mixtapp.data.local.LocalFollowingProvider
 import com.example.mixtapp.data.local.LocalSongReviewProvider
@@ -29,7 +34,9 @@ sealed class Screen(val route: String) {
     object WriteReview : Screen(route = "writeReview")
     object MyReviews : Screen(route = "myReviews")
     object Profile : Screen(route = "profile")
-    object SongDetail : Screen(route = "songDetail")
+    object SongDetail : Screen(route = "songDetail") {
+        fun createRoute(songId: String) = "songDetail/$songId"
+    }
     object Following : Screen(route = "following")
     object Discussion : Screen(route = "discussion")
 }
@@ -72,7 +79,11 @@ fun AppNavigation(
 
         composable(route = Screen.Home.route) {
             HomeScreen(
-                onAlbumClick = { navController.navigate(Screen.SongDetail.route) },
+                albums = LocalSongReviewProvider.popularSongs,
+                trending = LocalSongReviewProvider.trendingSong,
+                onAlbumClick = { songId ->
+                    navController.navigate(Screen.SongDetail.createRoute(songId = songId))
+                },
                 onSearchClick = { navController.navigate(Screen.Search.route) },
                 onProfileClick = { navController.navigate(Screen.Profile.route) },
                 onFollowingClick = { navController.navigate(Screen.Following.route) }
@@ -93,7 +104,9 @@ fun AppNavigation(
 
         composable(route = Screen.MyReviews.route) {
             MyReviewsScreen(
-                onReviewClick = { navController.navigate(Screen.SongDetail.route) }
+                onReviewClick = { songId ->
+                    navController.navigate(Screen.SongDetail.createRoute(songId = songId))
+                }
             )
         }
 
@@ -101,10 +114,21 @@ fun AppNavigation(
             ProfileScreen()
         }
 
-        composable(route = Screen.SongDetail.route) {
-            SongReviewsScreen(
-                songReview = LocalSongReviewProvider.songReview
-            )
+        composable(
+            route = "songDetail/{songId}",
+            arguments = listOf(navArgument(name = "songId") { type = NavType.StringType })
+        ) {
+            // Obtener los parametros
+            val songId = it.arguments?.getString("songId") ?: ""
+
+            // Buscar la cancion
+            val song = LocalSongReviewProvider.songs.find { cancion -> cancion.id == songId }
+
+            if (song == null) {
+                Text(text = stringResource(R.string.cancion_no_encontrada))
+            } else {
+                SongReviewsScreen(songReview = song)
+            }
         }
 
         composable(route = Screen.Following.route) {

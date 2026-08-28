@@ -52,7 +52,7 @@ fun MyReviewCard(
             .clip(RoundedCornerShape(14.dp))
             .background(Color(0xFF171314))
             .border(BorderStroke(1.dp, FieldBorder.copy(alpha = 0.5f)), RoundedCornerShape(14.dp))
-            .clickable { onReviewClick(review.id) }
+            .clickable { onReviewClick(review.songId) }
             .padding(16.dp)
     ) {
         // Badge de score, arriba a la derecha
