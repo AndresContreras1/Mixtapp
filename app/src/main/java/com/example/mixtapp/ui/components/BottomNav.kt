@@ -42,13 +42,21 @@ import com.example.mixtapp.ui.theme.PrimaryPink
 data class BottomNavItem(
     val filledIcon: ImageVector,
     val outlineIcon: ImageVector,
-    val route: String
+    // Patron de la ruta, para saber si el item esta seleccionado
+    val route: String,
+    // Ruta concreta a la que navega, distinta cuando la ruta lleva un id
+    val destination: String = route
 )
 
 val bottomNavItems = listOf(
     BottomNavItem(Icons.Filled.Home, Icons.Outlined.Home, Screen.Home.route),
     BottomNavItem(Icons.Filled.Search, Icons.Outlined.Search, Screen.Search.route),
-    BottomNavItem(Icons.Filled.Add, Icons.Outlined.Add, Screen.WriteReview.route),
+    BottomNavItem(
+        Icons.Filled.Add,
+        Icons.Outlined.Add,
+        Screen.WriteReview.route,
+        Screen.WriteReview.createRoute(albumId = Screen.WriteReview.DEFAULT_ALBUM_ID)
+    ),
     BottomNavItem(
         Icons.AutoMirrored.Filled.List,
         Icons.AutoMirrored.Outlined.List,
@@ -87,7 +95,7 @@ fun BottomNav(
                             .size(44.dp)
                             .clip(CircleShape)
                             .background(PrimaryPink)
-                            .clickable { navController.navigate(item.route) },
+                            .clickable { navController.navigate(item.destination) },
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
@@ -103,7 +111,7 @@ fun BottomNav(
                             .size(36.dp)
                             .clip(CircleShape)
                             .background(CircleWine.copy(alpha = 0.5f))
-                            .clickable { navController.navigate(item.route) },
+                            .clickable { navController.navigate(item.destination) },
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
@@ -120,7 +128,7 @@ fun BottomNav(
                         tint = PalePink.copy(alpha = 0.6f),
                         modifier = Modifier
                             .size(28.dp)
-                            .clickable { navController.navigate(item.route) }
+                            .clickable { navController.navigate(item.destination) }
                     )
                 }
             }

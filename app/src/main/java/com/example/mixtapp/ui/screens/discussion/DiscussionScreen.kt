@@ -9,14 +9,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalDiscussionProvider
 import com.example.mixtapp.ui.screens.discussion.components.CommentsDivider
 import com.example.mixtapp.ui.screens.discussion.components.DiscussionHeader
@@ -25,23 +27,53 @@ import com.example.mixtapp.ui.screens.discussion.components.ThreadCommentItem
 import com.example.mixtapp.ui.screens.discussion.model.DiscussionUi
 import com.example.mixtapp.ui.theme.DeepBackground
 
+// Recibe solo el id de la resena; el ViewModel se encarga de buscar la discusion
 @Composable
 fun DiscussionScreen(
-    discussion: DiscussionUi,
+    reviewId: String,
+    discussionViewModel: DiscussionViewModel,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var isReviewLiked by rememberSaveable(discussion.review.id) {
-        mutableStateOf(discussion.review.isLiked)
-    }
-    var isReviewShared by rememberSaveable(discussion.review.id) {
-        mutableStateOf(discussion.review.isShared)
-    }
-    var likedCommentIds by rememberSaveable(discussion.review.id) {
-        mutableStateOf(discussion.comments.filter { it.isLiked }.map { it.id }.toSet())
-    }
-    var replyingToCommentId by rememberSaveable { mutableStateOf<String?>(null) }
+    val state by discussionViewModel.uiState.collectAsState()
 
+    LaunchedEffect(Unit) {
+        discussionViewModel.getDiscussionByReviewId(reviewId = reviewId)
+    }
+
+    if (state.discussion == null) {
+        Text(text = stringResource(R.string.discusion_no_encontrada))
+    } else {
+        DiscussionScreenContent(
+            discussion = state.discussion!!,
+            isReviewLiked = state.isReviewLiked,
+            isReviewShared = state.isReviewShared,
+            likedCommentIds = state.likedCommentIds,
+            replyingToCommentId = state.replyingToCommentId,
+            onBackClick = onBackClick,
+            onReviewLikeClick = { discussionViewModel.darQuitarLikeResena() },
+            onReviewShareClick = { discussionViewModel.compartirQuitarResena() },
+            onCommentLikeClick = { discussionViewModel.darQuitarLikeComentario(commentId = it) },
+            onCommentReplyClick = { discussionViewModel.responderComentario(commentId = it) },
+            modifier = modifier,
+        )
+    }
+}
+
+@Composable
+fun DiscussionScreenContent(
+    discussion: DiscussionUi,
+    isReviewLiked: Boolean,
+    isReviewShared: Boolean,
+    likedCommentIds: Set<String>,
+    replyingToCommentId: String?,
+    onBackClick: () -> Unit,
+    onReviewLikeClick: () -> Unit,
+    onReviewShareClick: () -> Unit,
+    onCommentLikeClick: (String) -> Unit,
+    onCommentReplyClick: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -65,8 +97,8 @@ fun DiscussionScreen(
                         review = discussion.review,
                         isLiked = isReviewLiked,
                         isShared = isReviewShared,
-                        onLikeClick = { isReviewLiked = !isReviewLiked },
-                        onShareClick = { isReviewShared = !isReviewShared },
+                        onLikeClick = onReviewLikeClick,
+                        onShareClick = onReviewShareClick,
                     )
                 }
 
@@ -81,14 +113,8 @@ fun DiscussionScreen(
                         comment = comment,
                         isLiked = comment.id in likedCommentIds,
                         isReplying = replyingToCommentId == comment.id,
-                        onLikeClick = {
-                            likedCommentIds = if (comment.id in likedCommentIds) {
-                                likedCommentIds - comment.id
-                            } else {
-                                likedCommentIds + comment.id
-                            }
-                        },
-                        onReplyClick = { replyingToCommentId = comment.id },
+                        onLikeClick = { onCommentLikeClick(comment.id) },
+                        onReplyClick = { onCommentReplyClick(comment.id) },
                     )
                 }
             }
@@ -100,8 +126,16 @@ fun DiscussionScreen(
 @Preview(showBackground = true, device = "spec:width=393dp,height=852dp")
 @Composable
 fun DiscussionScreenPreview() {
-    DiscussionScreen(
-        discussion = LocalDiscussionProvider.discussion,
-        onBackClick = {}
+    DiscussionScreenContent(
+        discussion = LocalDiscussionProvider.discussions.first(),
+        isReviewLiked = false,
+        isReviewShared = false,
+        likedCommentIds = emptySet(),
+        replyingToCommentId = null,
+        onBackClick = {},
+        onReviewLikeClick = {},
+        onReviewShareClick = {},
+        onCommentLikeClick = {},
+        onCommentReplyClick = {},
     )
 }
