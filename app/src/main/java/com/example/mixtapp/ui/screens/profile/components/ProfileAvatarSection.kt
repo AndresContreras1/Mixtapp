@@ -22,7 +22,12 @@ import com.example.mixtapp.ui.theme.PalePink
 import com.example.mixtapp.ui.theme.PrimaryPink
 
 @Composable
-fun ProfileAvatarSection(modifier: Modifier = Modifier) {
+fun ProfileAvatarSection(
+    reviewsCount: Int,
+    albumsCount: Int,
+    listsCount: Int,
+    modifier: Modifier = Modifier
+) {
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -37,7 +42,7 @@ fun ProfileAvatarSection(modifier: Modifier = Modifier) {
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = stringResource(R.string.user_stats),
+            text = stringResource(R.string.user_stats, reviewsCount, albumsCount, listsCount),
             color = PalePink.copy(alpha = 0.8f),
             fontSize = 14.sp
         )

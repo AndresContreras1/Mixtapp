@@ -8,16 +8,18 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.mixtapp.data.local.LocalFollowingProvider
 import com.example.mixtapp.ui.screens.discussion.DiscussionScreen
 import com.example.mixtapp.ui.screens.discussion.DiscussionViewModel
 import com.example.mixtapp.ui.screens.following.FollowingScreen
+import com.example.mixtapp.ui.screens.following.FollowingViewModel
 import com.example.mixtapp.ui.screens.home.HomeScreen
 import com.example.mixtapp.ui.screens.home.HomeViewModel
 import com.example.mixtapp.ui.screens.login.LoginScreen
 import com.example.mixtapp.ui.screens.login.LoginViewModel
 import com.example.mixtapp.ui.screens.myreviews.MyReviewsScreen
+import com.example.mixtapp.ui.screens.myreviews.MyReviewsViewModel
 import com.example.mixtapp.ui.screens.profile.ProfileScreen
+import com.example.mixtapp.ui.screens.profile.ProfileViewModel
 import com.example.mixtapp.ui.screens.review.WriteReviewScreen
 import com.example.mixtapp.ui.screens.review.WriteReviewViewModel
 import com.example.mixtapp.ui.screens.search.SearchScreen
@@ -133,7 +135,10 @@ fun AppNavigation(
         }
 
         composable(route = Screen.MyReviews.route) {
+            val myReviewsViewModel: MyReviewsViewModel = viewModel()
+
             MyReviewsScreen(
+                myReviewsViewModel = myReviewsViewModel,
                 onReviewClick = { songId ->
                     navController.navigate(Screen.SongDetail.createRoute(songId = songId))
                 }
@@ -141,7 +146,9 @@ fun AppNavigation(
         }
 
         composable(route = Screen.Profile.route) {
-            ProfileScreen()
+            val profileViewModel: ProfileViewModel = viewModel()
+
+            ProfileScreen(profileViewModel = profileViewModel)
         }
 
         composable(
@@ -159,8 +166,10 @@ fun AppNavigation(
         }
 
         composable(route = Screen.Following.route) {
+            val followingViewModel: FollowingViewModel = viewModel()
+
             FollowingScreen(
-                following = LocalFollowingProvider.following,
+                followingViewModel = followingViewModel,
                 onCommentsClick = { reviewId ->
                     navController.navigate(Screen.Discussion.createRoute(reviewId = reviewId))
                 }

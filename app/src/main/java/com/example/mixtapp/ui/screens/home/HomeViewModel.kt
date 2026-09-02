@@ -1,6 +1,7 @@
 package com.example.mixtapp.ui.screens.home
 
 import androidx.lifecycle.ViewModel
+import com.example.mixtapp.data.local.LocalFriendActivityProvider
 import com.example.mixtapp.data.local.LocalSongReviewProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,6 +23,7 @@ class HomeViewModel : ViewModel() {
             it.copy(
                 albums = LocalSongReviewProvider.popularSongs,
                 trending = LocalSongReviewProvider.trendingSong,
+                friendActivity = LocalFriendActivityProvider.friendActivity,
             )
         }
     }

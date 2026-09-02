@@ -26,13 +26,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.ui.screens.profile.model.RecentActivityUi
 import com.example.mixtapp.ui.theme.FieldBackground
 import com.example.mixtapp.ui.theme.PalePink
 import com.example.mixtapp.ui.theme.PrimaryPink
 import com.example.mixtapp.ui.theme.TextPink
 
 @Composable
-fun RecentActivitySection(modifier: Modifier = Modifier) {
+fun RecentActivitySection(
+    activity: RecentActivityUi,
+    modifier: Modifier = Modifier
+) {
     Column(modifier = modifier.fillMaxWidth()) {
         Text(
             text = stringResource(R.string.actividad_reciente).uppercase(),
@@ -51,19 +55,19 @@ fun RecentActivitySection(modifier: Modifier = Modifier) {
             Spacer(modifier = Modifier.width(16.dp))
             Column {
                 Text(
-                    text = "The Black Parade",
+                    text = activity.albumTitle,
                     color = Color.White,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Black
                 )
                 Text(
-                    text = "${stringResource(R.string.reviewed_today)} · 5 stars",
+                    text = "${stringResource(R.string.reviewed_today)} · ${activity.rating} stars",
                     color = PalePink.copy(alpha = 0.6f),
                     fontSize = 13.sp
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                    repeat(5) {
+                    repeat(activity.rating) {
                         Icon(
                             imageVector = Icons.Default.Star,
                             contentDescription = null,
@@ -74,7 +78,7 @@ fun RecentActivitySection(modifier: Modifier = Modifier) {
                 }
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "A loud, dramatic favorite that still feels alive on every listen.",
+                    text = activity.comment,
                     color = PalePink.copy(alpha = 0.9f),
                     fontSize = 13.sp,
                     lineHeight = 18.sp

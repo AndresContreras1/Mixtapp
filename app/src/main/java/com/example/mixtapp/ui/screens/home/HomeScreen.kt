@@ -12,6 +12,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
+import com.example.mixtapp.data.local.LocalFriendActivityProvider
 import com.example.mixtapp.data.local.LocalSongReviewProvider
 import com.example.mixtapp.ui.components.AppBackground
 import com.example.mixtapp.ui.screens.home.components.FilterChips
@@ -20,6 +21,7 @@ import com.example.mixtapp.ui.screens.home.components.HomeHeader
 import com.example.mixtapp.ui.screens.home.components.PopularAlbums
 import com.example.mixtapp.ui.screens.home.components.SectionTitle
 import com.example.mixtapp.ui.screens.home.components.TrendingCard
+import com.example.mixtapp.ui.screens.home.model.FriendActivityUi
 import com.example.mixtapp.ui.screens.songreview.model.SongReviewUi
 import com.example.mixtapp.ui.theme.*
 
@@ -34,10 +36,11 @@ fun HomeScreen(
 ) {
     val state by homeViewModel.uiState.collectAsState()
 
-    if (state.trending != null) {
+    if (state.trending != null && state.friendActivity != null) {
         HomeScreenContent(
             albums = state.albums,
             trending = state.trending!!,
+            friendActivity = state.friendActivity!!,
             selectedFilterIndex = state.selectedFilterIndex,
             onFilterSelected = { homeViewModel.updateSelectedFilter(index = it) },
             onAlbumClick = onAlbumClick,
@@ -53,6 +56,7 @@ fun HomeScreen(
 fun HomeScreenContent(
     albums: List<SongReviewUi>,
     trending: SongReviewUi,
+    friendActivity: FriendActivityUi,
     selectedFilterIndex: Int,
     onFilterSelected: (Int) -> Unit,
     onAlbumClick: (String) -> Unit,
@@ -127,7 +131,7 @@ fun HomeScreenContent(
 
                 Spacer(modifier = Modifier.height(14.dp))
 
-                FriendsActivity()
+                FriendsActivity(activity = friendActivity)
             }
 
         }
@@ -140,6 +144,7 @@ fun HomeScreenPreview() {
     HomeScreenContent(
         albums = LocalSongReviewProvider.popularSongs,
         trending = LocalSongReviewProvider.trendingSong,
+        friendActivity = LocalFriendActivityProvider.friendActivity,
         selectedFilterIndex = 0,
         onFilterSelected = {},
         onAlbumClick = {},

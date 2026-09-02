@@ -43,7 +43,8 @@
     <string name="profile_label">Profile</string>
 
     <!-- Profile Extra -->
-    <string name="user_stats">128 reviews • 64 albums • 18 lists</string>
+    <string name="user_stats">%1$d reviews • %2$d albums • %3$d lists</string>
+    <string name="more_activity">More activity</string>
     <string name="star_rating_format">%d stars</string>
     <string name="reviewed_today">reviewed today</string>
 

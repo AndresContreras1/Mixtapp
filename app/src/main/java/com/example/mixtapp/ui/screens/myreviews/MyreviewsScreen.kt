@@ -10,10 +10,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -21,25 +19,38 @@ import com.example.mixtapp.data.local.LocalMyReviewsProvider
 import com.example.mixtapp.ui.screens.myreviews.components.MyReviewCard
 import com.example.mixtapp.ui.screens.myreviews.components.MyReviewsFilter
 import com.example.mixtapp.ui.screens.myreviews.components.MyReviewsHeader
+import com.example.mixtapp.ui.screens.myreviews.model.MyReviewUi
 import com.example.mixtapp.ui.theme.DeepBackground
 
 @Composable
 fun MyReviewsScreen(
+    myReviewsViewModel: MyReviewsViewModel,
     onReviewClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var selectedFilter by rememberSaveable { mutableStateOf("Recent") }
+    val state by myReviewsViewModel.uiState.collectAsState()
 
-    val reviews = LocalMyReviewsProvider.reviews.let { list ->
-        when (selectedFilter) {
-            "Top Rated" -> list.sortedByDescending { it.score }
-            "A-Z" -> list.sortedBy { it.title }
-            "5" -> list.filter { it.score == 5 }
-            "4" -> list.filter { it.score == 4 }
-            else -> list
-        }
-    }
+    MyReviewsScreenContent(
+        username = state.username,
+        joinDate = state.joinDate,
+        reviews = state.reviews,
+        selectedFilter = state.selectedFilter,
+        onFilterSelected = { myReviewsViewModel.updateSelectedFilter(filtro = it) },
+        onReviewClick = onReviewClick,
+        modifier = modifier
+    )
+}
 
+@Composable
+fun MyReviewsScreenContent(
+    username: String,
+    joinDate: String,
+    reviews: List<MyReviewUi>,
+    selectedFilter: String,
+    onFilterSelected: (String) -> Unit,
+    onReviewClick: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -48,13 +59,13 @@ fun MyReviewsScreen(
         Column(modifier = Modifier.fillMaxSize()) {
             Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
                 MyReviewsHeader(
-                    username = "Yourname",
-                    joinDate = "march 2025",
+                    username = username,
+                    joinDate = joinDate,
                     modifier = Modifier.padding(top = 24.dp)
                 )
                 MyReviewsFilter(
                     selected = selectedFilter,
-                    onFilterSelected = { selectedFilter = it },
+                    onFilterSelected = onFilterSelected,
                 )
             }
 
@@ -78,5 +89,12 @@ fun MyReviewsScreen(
 @Preview(showBackground = true, device = "spec:width=393dp,height=852dp")
 @Composable
 fun MyReviewsScreenPreview() {
-        MyReviewsScreen(onReviewClick = {})
+    MyReviewsScreenContent(
+        username = "Yourname",
+        joinDate = "march 2025",
+        reviews = LocalMyReviewsProvider.reviews,
+        selectedFilter = "Recent",
+        onFilterSelected = {},
+        onReviewClick = {}
+    )
 }

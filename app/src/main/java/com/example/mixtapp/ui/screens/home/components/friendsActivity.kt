@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mixtapp.ui.screens.home.model.FriendActivityUi
 import com.example.mixtapp.ui.theme.FieldBackground
 import com.example.mixtapp.ui.theme.FieldBorder
 import com.example.mixtapp.ui.theme.PalePink
@@ -28,6 +29,7 @@ import com.example.mixtapp.ui.theme.TextPink
 
 @Composable
 fun FriendsActivity(
+    activity: FriendActivityUi,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -39,7 +41,7 @@ fun FriendsActivity(
             .padding(16.dp)
     ) {
         Row {
-            repeat(5) {
+            repeat(activity.rating) {
                 Icon(
                     imageVector = Icons.Default.Star,
                     contentDescription = null,
@@ -52,7 +54,7 @@ fun FriendsActivity(
         Spacer(modifier = Modifier.height(12.dp))
 
         Text(
-            text = "Random Access Memories - Daft Punk",
+            text = "${activity.albumTitle} - ${activity.artistName}",
             color = PalePink,
             fontSize = 14.sp,
             fontWeight = FontWeight.Bold
@@ -61,7 +63,7 @@ fun FriendsActivity(
         Spacer(modifier = Modifier.height(6.dp))
 
         Text(
-            text = "\"A masterpiece from start to finish.\"",
+            text = "\"${activity.quote}\"",
             color = Color.White.copy(alpha = 0.9f),
             fontSize = 12.sp
         )
