@@ -10,10 +10,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -25,17 +23,17 @@ import com.example.mixtapp.ui.theme.DeepBackground
 
 @Composable
 fun SearchScreen(
+    searchViewModel: SearchViewModel,
     modifier: Modifier = Modifier,
 ) {
-    var query by rememberSaveable { mutableStateOf("") }
-    var selectedCategoryId by rememberSaveable { mutableStateOf<String?>(null) }
+    val state by searchViewModel.uiState.collectAsState()
 
     SearchScreenContent(
-        query = query,
-        onQueryChange = { query = it },
-        categories = LocalSearchCategories.categories,
-        selectedCategoryId = selectedCategoryId,
-        onCategoryClick = { selectedCategoryId = it },
+        query = state.query,
+        onQueryChange = { searchViewModel.updateQuery(query = it) },
+        categories = state.categories,
+        selectedCategoryId = state.selectedCategoryId,
+        onCategoryClick = { searchViewModel.updateSelectedCategory(categoryId = it) },
         modifier = modifier,
     )
 }
@@ -82,5 +80,11 @@ fun SearchScreenContent(
 @Preview(showBackground = true, device = "spec:width=393dp,height=852dp")
 @Composable
 fun SearchScreenPreview() {
-    SearchScreen()
+    SearchScreenContent(
+        query = "",
+        onQueryChange = {},
+        categories = LocalSearchCategories.categories,
+        selectedCategoryId = null,
+        onCategoryClick = {},
+    )
 }

@@ -20,18 +20,58 @@ import com.example.mixtapp.ui.theme.*
 
 @Composable
 fun SignUpScreen(
+    signUpViewModel: SignUpViewModel,
     onSignUpSuccess: () -> Unit,
     onLoginClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var usuario by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var contrasena by remember { mutableStateOf("") }
-    var confirmarContrasena by remember { mutableStateOf("") }
-    var terminos by remember { mutableStateOf(false) }
-    var contrasenaVisible by remember { mutableStateOf(false) }
-    var confirmarVisible by remember { mutableStateOf(false) }
+    val state by signUpViewModel.uiState.collectAsState()
 
+    SignUpScreenContent(
+        usuario = state.usuario,
+        onUsuarioChange = { signUpViewModel.updateUsuario(usuario = it) },
+        email = state.email,
+        onEmailChange = { signUpViewModel.updateEmail(email = it) },
+        contrasena = state.contrasena,
+        onContrasenaChange = { signUpViewModel.updateContrasena(contrasena = it) },
+        confirmarContrasena = state.confirmarContrasena,
+        onConfirmarContrasenaChange = {
+            signUpViewModel.updateConfirmarContrasena(confirmarContrasena = it)
+        },
+        contrasenaVisible = state.contrasenaVisible,
+        onContrasenaVisibleChange = { signUpViewModel.mostrarEsconderContrasena() },
+        confirmarVisible = state.confirmarVisible,
+        onConfirmarVisibleChange = { signUpViewModel.mostrarEsconderConfirmar() },
+        terminos = state.terminos,
+        onTerminosChange = { signUpViewModel.updateTerminos(terminos = it) },
+        mostrarErrorContrasenas = state.mostrarErrorContrasenas,
+        onSignUpClick = onSignUpSuccess,
+        onLoginClick = onLoginClick,
+        modifier = modifier
+    )
+}
+
+@Composable
+fun SignUpScreenContent(
+    usuario: String,
+    onUsuarioChange: (String) -> Unit,
+    email: String,
+    onEmailChange: (String) -> Unit,
+    contrasena: String,
+    onContrasenaChange: (String) -> Unit,
+    confirmarContrasena: String,
+    onConfirmarContrasenaChange: (String) -> Unit,
+    contrasenaVisible: Boolean,
+    onContrasenaVisibleChange: () -> Unit,
+    confirmarVisible: Boolean,
+    onConfirmarVisibleChange: () -> Unit,
+    terminos: Boolean,
+    onTerminosChange: (Boolean) -> Unit,
+    mostrarErrorContrasenas: Boolean,
+    onSignUpClick: () -> Unit,
+    onLoginClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -50,23 +90,23 @@ fun SignUpScreen(
 
             SignUpForm(
                 usuario = usuario,
-                onUsuarioChange = { usuario = it },
+                onUsuarioChange = onUsuarioChange,
                 email = email,
-                onEmailChange = { email = it },
+                onEmailChange = onEmailChange,
                 contrasena = contrasena,
-                onContrasenaChange = { contrasena = it },
+                onContrasenaChange = onContrasenaChange,
                 confirmarContrasena = confirmarContrasena,
-                onConfirmarContrasenaChange = { confirmarContrasena = it },
+                onConfirmarContrasenaChange = onConfirmarContrasenaChange,
                 contrasenaVisible = contrasenaVisible,
-                onContrasenaVisibleChange = { contrasenaVisible = !contrasenaVisible },
+                onContrasenaVisibleChange = onContrasenaVisibleChange,
                 confirmarVisible = confirmarVisible,
-                onConfirmarVisibleChange = { confirmarVisible = !confirmarVisible },
+                onConfirmarVisibleChange = onConfirmarVisibleChange,
                 terminos = terminos,
-                onTerminosChange = { terminos = it },
-                onSignUpClick = onSignUpSuccess
+                onTerminosChange = onTerminosChange,
+                onSignUpClick = onSignUpClick
             )
 
-            if (confirmarContrasena.isNotEmpty() && contrasena != confirmarContrasena) {
+            if (mostrarErrorContrasenas) {
                 Text(
                     text = stringResource(R.string.passwords_no_coinciden),
                     color = PalePink,
@@ -85,7 +125,25 @@ fun SignUpScreen(
 @Composable
 fun SignUpScreenLightPreview() {
     MixtappTheme(darkTheme = false, dynamicColor = false) {
-        SignUpScreen(onSignUpSuccess = {}, onLoginClick = {})
+        SignUpScreenContent(
+            usuario = "",
+            onUsuarioChange = {},
+            email = "",
+            onEmailChange = {},
+            contrasena = "",
+            onContrasenaChange = {},
+            confirmarContrasena = "",
+            onConfirmarContrasenaChange = {},
+            contrasenaVisible = false,
+            onContrasenaVisibleChange = {},
+            confirmarVisible = false,
+            onConfirmarVisibleChange = {},
+            terminos = false,
+            onTerminosChange = {},
+            mostrarErrorContrasenas = false,
+            onSignUpClick = {},
+            onLoginClick = {}
+        )
     }
 }
 
@@ -93,6 +151,24 @@ fun SignUpScreenLightPreview() {
 @Composable
 fun SignUpScreenDarkPreview() {
     MixtappTheme(darkTheme = true, dynamicColor = false) {
-        SignUpScreen(onSignUpSuccess = {}, onLoginClick = {})
+        SignUpScreenContent(
+            usuario = "",
+            onUsuarioChange = {},
+            email = "",
+            onEmailChange = {},
+            contrasena = "",
+            onContrasenaChange = {},
+            confirmarContrasena = "",
+            onConfirmarContrasenaChange = {},
+            contrasenaVisible = false,
+            onContrasenaVisibleChange = {},
+            confirmarVisible = false,
+            onConfirmarVisibleChange = {},
+            terminos = false,
+            onTerminosChange = {},
+            mostrarErrorContrasenas = false,
+            onSignUpClick = {},
+            onLoginClick = {}
+        )
     }
 }

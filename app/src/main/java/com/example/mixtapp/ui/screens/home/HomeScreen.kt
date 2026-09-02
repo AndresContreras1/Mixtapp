@@ -5,10 +5,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -27,8 +25,36 @@ import com.example.mixtapp.ui.theme.*
 
 @Composable
 fun HomeScreen(
+    homeViewModel: HomeViewModel,
+    onAlbumClick: (String) -> Unit,
+    onSearchClick: () -> Unit,
+    onProfileClick: () -> Unit,
+    onFollowingClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val state by homeViewModel.uiState.collectAsState()
+
+    if (state.trending != null) {
+        HomeScreenContent(
+            albums = state.albums,
+            trending = state.trending!!,
+            selectedFilterIndex = state.selectedFilterIndex,
+            onFilterSelected = { homeViewModel.updateSelectedFilter(index = it) },
+            onAlbumClick = onAlbumClick,
+            onSearchClick = onSearchClick,
+            onProfileClick = onProfileClick,
+            onFollowingClick = onFollowingClick,
+            modifier = modifier
+        )
+    }
+}
+
+@Composable
+fun HomeScreenContent(
     albums: List<SongReviewUi>,
     trending: SongReviewUi,
+    selectedFilterIndex: Int,
+    onFilterSelected: (Int) -> Unit,
     onAlbumClick: (String) -> Unit,
     onSearchClick: () -> Unit,
     onProfileClick: () -> Unit,
@@ -40,7 +66,6 @@ fun HomeScreen(
         stringResource(R.string.trending),
         stringResource(R.string.friends)
     )
-    var selectedFilter by remember { mutableStateOf(filters.first()) }
 
     Box(
         modifier = modifier
@@ -68,8 +93,8 @@ fun HomeScreen(
 
                 FilterChips(
                     filters = filters,
-                    selected = selectedFilter,
-                    onFilterSelected = { selectedFilter = it }
+                    selected = filters[selectedFilterIndex],
+                    onFilterSelected = { onFilterSelected(filters.indexOf(it)) }
                 )
 
                 Spacer(modifier = Modifier.height(28.dp))
@@ -112,9 +137,11 @@ fun HomeScreen(
 @Composable
 @Preview(showBackground = true)
 fun HomeScreenPreview() {
-    HomeScreen(
+    HomeScreenContent(
         albums = LocalSongReviewProvider.popularSongs,
         trending = LocalSongReviewProvider.trendingSong,
+        selectedFilterIndex = 0,
+        onFilterSelected = {},
         onAlbumClick = {},
         onSearchClick = {},
         onProfileClick = {},

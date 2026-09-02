@@ -9,18 +9,21 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.mixtapp.data.local.LocalFollowingProvider
-import com.example.mixtapp.data.local.LocalSongReviewProvider
 import com.example.mixtapp.ui.screens.discussion.DiscussionScreen
 import com.example.mixtapp.ui.screens.discussion.DiscussionViewModel
 import com.example.mixtapp.ui.screens.following.FollowingScreen
 import com.example.mixtapp.ui.screens.home.HomeScreen
+import com.example.mixtapp.ui.screens.home.HomeViewModel
 import com.example.mixtapp.ui.screens.login.LoginScreen
+import com.example.mixtapp.ui.screens.login.LoginViewModel
 import com.example.mixtapp.ui.screens.myreviews.MyReviewsScreen
 import com.example.mixtapp.ui.screens.profile.ProfileScreen
 import com.example.mixtapp.ui.screens.review.WriteReviewScreen
 import com.example.mixtapp.ui.screens.review.WriteReviewViewModel
 import com.example.mixtapp.ui.screens.search.SearchScreen
+import com.example.mixtapp.ui.screens.search.SearchViewModel
 import com.example.mixtapp.ui.screens.signup.SignUpScreen
+import com.example.mixtapp.ui.screens.signup.SignUpViewModel
 import com.example.mixtapp.ui.screens.songreview.SongReviewsScreen
 import com.example.mixtapp.ui.screens.songreview.SongReviewsViewModel
 
@@ -62,7 +65,10 @@ fun AppNavigation(
         modifier = modifier
     ) {
         composable(route = Screen.Login.route) {
+            val loginViewModel: LoginViewModel = viewModel()
+
             LoginScreen(
+                loginViewModel = loginViewModel,
                 onLoginClick = {
                     navController.navigate(Screen.Home.route) {
                         popUpTo(0) { inclusive = true }
@@ -75,7 +81,10 @@ fun AppNavigation(
         }
 
         composable(route = Screen.SignUp.route) {
+            val signUpViewModel: SignUpViewModel = viewModel()
+
             SignUpScreen(
+                signUpViewModel = signUpViewModel,
                 onSignUpSuccess = {
                     navController.navigate(Screen.Home.route) {
                         popUpTo(0) { inclusive = true }
@@ -88,9 +97,10 @@ fun AppNavigation(
         }
 
         composable(route = Screen.Home.route) {
+            val homeViewModel: HomeViewModel = viewModel()
+
             HomeScreen(
-                albums = LocalSongReviewProvider.popularSongs,
-                trending = LocalSongReviewProvider.trendingSong,
+                homeViewModel = homeViewModel,
                 onAlbumClick = { songId ->
                     navController.navigate(Screen.SongDetail.createRoute(songId = songId))
                 },
@@ -101,7 +111,9 @@ fun AppNavigation(
         }
 
         composable(route = Screen.Search.route) {
-            SearchScreen()
+            val searchViewModel: SearchViewModel = viewModel()
+
+            SearchScreen(searchViewModel = searchViewModel)
         }
 
         composable(
