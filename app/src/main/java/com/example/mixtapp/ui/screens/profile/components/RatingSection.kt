@@ -27,7 +27,10 @@ import com.example.mixtapp.ui.theme.PrimaryPink
 import com.example.mixtapp.ui.theme.TextPink
 
 @Composable
-fun RatingsSection(modifier: Modifier = Modifier) {
+fun RatingsSection(
+    ratingBars: List<Float>,
+    modifier: Modifier = Modifier
+) {
     Column(modifier = modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -42,7 +45,7 @@ fun RatingsSection(modifier: Modifier = Modifier) {
             )
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = "More activity",
+                    text = stringResource(R.string.more_activity),
                     color = PrimaryPink,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold
@@ -64,8 +67,7 @@ fun RatingsSection(modifier: Modifier = Modifier) {
             verticalAlignment = Alignment.Bottom,
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            val values = listOf(0.1f, 0.2f, 0.15f, 0.3f, 0.4f, 0.35f, 0.5f, 0.8f, 1f, 0.7f, 0.6f)
-            values.forEach { h ->
+            ratingBars.forEach { h ->
                 Box(
                     modifier = Modifier
                         .weight(1f)

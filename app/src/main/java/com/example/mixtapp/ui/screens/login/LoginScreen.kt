@@ -16,14 +16,38 @@ import com.example.mixtapp.ui.theme.*
 
 @Composable
 fun LoginScreen(
+    loginViewModel: LoginViewModel,
     onLoginClick: () -> Unit,
     onSignUpClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var email by remember { mutableStateOf("") }
-    var contrasena by remember { mutableStateOf("") }
-    var passwordVisible by remember { mutableStateOf(false) }
+    val state by loginViewModel.uiState.collectAsState()
 
+    LoginScreenContent(
+        email = state.email,
+        onEmailChange = { loginViewModel.updateEmail(email = it) },
+        contrasena = state.contrasena,
+        onContrasenaChange = { loginViewModel.updateContrasena(contrasena = it) },
+        passwordVisible = state.passwordVisible,
+        onPasswordVisibleChange = { loginViewModel.mostrarEsconderContrasena() },
+        onLoginClick = onLoginClick,
+        onSignUpClick = onSignUpClick,
+        modifier = modifier
+    )
+}
+
+@Composable
+fun LoginScreenContent(
+    email: String,
+    onEmailChange: (String) -> Unit,
+    contrasena: String,
+    onContrasenaChange: (String) -> Unit,
+    passwordVisible: Boolean,
+    onPasswordVisibleChange: () -> Unit,
+    onLoginClick: () -> Unit,
+    onSignUpClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -43,11 +67,11 @@ fun LoginScreen(
 
             LoginForm(
                 email = email,
-                onEmailChange = { email = it },
+                onEmailChange = onEmailChange,
                 contrasena = contrasena,
-                onContrasenaChange = { contrasena = it },
+                onContrasenaChange = onContrasenaChange,
                 passwordVisible = passwordVisible,
-                onPasswordVisibleChange = { passwordVisible = !passwordVisible },
+                onPasswordVisibleChange = onPasswordVisibleChange,
                 onLoginClick = onLoginClick
             )
 
@@ -61,7 +85,16 @@ fun LoginScreen(
 @Preview(showBackground = true, widthDp = 393, heightDp = 852, name = "Login Light")
 fun LoginScreenLightPreview() {
     MixtappTheme(darkTheme = false, dynamicColor = false) {
-        LoginScreen(onLoginClick = {}, onSignUpClick = {})
+        LoginScreenContent(
+            email = "",
+            onEmailChange = {},
+            contrasena = "",
+            onContrasenaChange = {},
+            passwordVisible = false,
+            onPasswordVisibleChange = {},
+            onLoginClick = {},
+            onSignUpClick = {}
+        )
     }
 }
 
@@ -69,6 +102,15 @@ fun LoginScreenLightPreview() {
 @Preview(showBackground = true, widthDp = 393, heightDp = 852, name = "Login Dark")
 fun LoginScreenDarkPreview() {
     MixtappTheme(darkTheme = true, dynamicColor = false) {
-        LoginScreen(onLoginClick = {}, onSignUpClick = {})
+        LoginScreenContent(
+            email = "",
+            onEmailChange = {},
+            contrasena = "",
+            onContrasenaChange = {},
+            passwordVisible = false,
+            onPasswordVisibleChange = {},
+            onLoginClick = {},
+            onSignUpClick = {}
+        )
     }
 }
