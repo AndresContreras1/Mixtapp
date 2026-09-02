@@ -28,7 +28,7 @@ import com.example.mixtapp.ui.theme.DeepBackground
 @Composable
 fun FollowingScreen(
     following: FollowingUi,
-    onCommentsClick: () -> Unit,
+    onCommentsClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var friendQuery by rememberSaveable { mutableStateOf("") }
@@ -99,7 +99,7 @@ fun FollowingScreen(
                                 sharedReviewIds + review.id
                             }
                         },
-                        onCommentsClick = onCommentsClick,
+                        onCommentsClick = { onCommentsClick(review.id) },
                     )
                 }
             }

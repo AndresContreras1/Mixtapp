@@ -6,33 +6,65 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalSongReviewProvider
-import com.example.mixtapp.ui.screens.songreview.model.SongReviewUi
 import com.example.mixtapp.ui.components.AppBackground
 import com.example.mixtapp.ui.screens.songreview.components.*
+import com.example.mixtapp.ui.screens.songreview.model.SongReviewUi
 import com.example.mixtapp.ui.theme.DeepBackground
 import com.example.mixtapp.ui.theme.TextPink
 
+// Recibe solo el id; el ViewModel se encarga de buscar la cancion
 @Composable
 fun SongReviewsScreen(
-    songReview: SongReviewUi,
+    songId: String,
+    songReviewsViewModel: SongReviewsViewModel,
     modifier: Modifier = Modifier
 ) {
-    var userRating by rememberSaveable(songReview.title) { mutableStateOf(songReview.userRating) }
-    var isSaved by rememberSaveable(songReview.title) { mutableStateOf(songReview.isSaved) }
-    var isLiked by rememberSaveable(songReview.title) { mutableStateOf(songReview.isLiked) }
+    val state by songReviewsViewModel.uiState.collectAsState()
 
+    LaunchedEffect(Unit) {
+        songReviewsViewModel.getSongById(songId = songId)
+    }
+
+    if (state.song == null) {
+        Text(text = stringResource(R.string.cancion_no_encontrada))
+    } else {
+        SongReviewsScreenContent(
+            songReview = state.song!!,
+            userRating = state.userRating,
+            isSaved = state.isSaved,
+            isLiked = state.isLiked,
+            onRatingChange = { songReviewsViewModel.updateUserRating(rating = it) },
+            onSaveClick = { songReviewsViewModel.guardarQuitarGuardado() },
+            onLikeClick = { songReviewsViewModel.darQuitarLike() },
+            modifier = modifier
+        )
+    }
+}
+
+@Composable
+fun SongReviewsScreenContent(
+    songReview: SongReviewUi,
+    userRating: Int,
+    isSaved: Boolean,
+    isLiked: Boolean,
+    onRatingChange: (Int) -> Unit,
+    onSaveClick: () -> Unit,
+    onLikeClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -85,7 +117,7 @@ fun SongReviewsScreen(
 
                 UserRatingSection(
                     rating = userRating,
-                    onRatingChange = { userRating = it }
+                    onRatingChange = onRatingChange
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -93,8 +125,8 @@ fun SongReviewsScreen(
                 ActionButtons(
                     isSaved = isSaved,
                     isLiked = isLiked,
-                    onSaveClick = { isSaved = !isSaved },
-                    onLikeClick = { isLiked = !isLiked }
+                    onSaveClick = onSaveClick,
+                    onLikeClick = onLikeClick
                 )
 
                 Spacer(modifier = Modifier.height(32.dp))
@@ -109,5 +141,15 @@ fun SongReviewsScreen(
 @Preview(showBackground = true)
 @Composable
 fun SongReviewsScreenPreview() {
-    SongReviewsScreen(songReview = LocalSongReviewProvider.songs.first())
+    val song = LocalSongReviewProvider.songs.first()
+
+    SongReviewsScreenContent(
+        songReview = song,
+        userRating = song.userRating,
+        isSaved = song.isSaved,
+        isLiked = song.isLiked,
+        onRatingChange = {},
+        onSaveClick = {},
+        onLikeClick = {}
+    )
 }

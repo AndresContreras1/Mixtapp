@@ -3,18 +3,22 @@ package com.example.mixtapp.ui.screens.review
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.mixtapp.R
+import com.example.mixtapp.data.local.LocalReviewAlbumProvider
 import com.example.mixtapp.ui.screens.review.components.AlbumReviewCard
 import com.example.mixtapp.ui.screens.review.components.MoodVibeSection
 import com.example.mixtapp.ui.screens.review.components.ReviewActionsCard
@@ -24,35 +28,71 @@ import com.example.mixtapp.ui.screens.review.components.ReviewRatingCard
 import com.example.mixtapp.ui.screens.review.components.WriteReviewBackground
 import com.example.mixtapp.ui.screens.review.model.ReviewAlbumUi
 import com.example.mixtapp.ui.screens.review.model.ReviewDraftUi
-import com.example.mixtapp.ui.screens.review.model.fromZeroAlbum
 import com.example.mixtapp.ui.theme.DeepBackground
 import com.example.mixtapp.ui.theme.MixtappTheme
 
-private const val MaxReviewLength = 500
-
+// Recibe solo el id; el ViewModel se encarga de buscar el album
 @Composable
 fun WriteReviewScreen(
-    album: ReviewAlbumUi,
+    albumId: String,
+    writeReviewViewModel: WriteReviewViewModel,
     onCancel: () -> Unit,
     onPostReview: (ReviewDraftUi) -> Unit,
     moods: List<String> = defaultReviewMoods,
     modifier: Modifier = Modifier,
 ) {
-    var rating by rememberSaveable { mutableStateOf(0) }
-    var reviewText by rememberSaveable { mutableStateOf("") }
-    var selectedMoods by rememberSaveable { mutableStateOf(emptyList<String>()) }
-    var listenedDate by rememberSaveable { mutableStateOf("13/08/2026") }
-    var isFavorite by rememberSaveable { mutableStateOf(false) }
-    var hasPosted by rememberSaveable { mutableStateOf(false) }
+    val state by writeReviewViewModel.uiState.collectAsState()
 
-    val draft = ReviewDraftUi(
-        rating = rating,
-        review = reviewText,
-        moods = selectedMoods,
-        listenedDate = listenedDate,
-        isFavorite = isFavorite,
-    )
+    LaunchedEffect(Unit) {
+        writeReviewViewModel.getAlbumById(albumId = albumId)
+    }
 
+    if (state.album == null) {
+        Text(text = stringResource(R.string.album_no_encontrado))
+    } else {
+        WriteReviewScreenContent(
+            album = state.album!!,
+            rating = state.rating,
+            reviewText = state.reviewText,
+            selectedMoods = state.selectedMoods,
+            listenedDate = state.listenedDate,
+            isFavorite = state.isFavorite,
+            hasPosted = state.hasPosted,
+            moods = moods,
+            onCancel = onCancel,
+            onRatingChange = { writeReviewViewModel.updateRating(rating = it) },
+            onReviewChange = { writeReviewViewModel.updateReviewText(reviewText = it) },
+            onMoodClick = { writeReviewViewModel.seleccionarQuitarMood(mood = it) },
+            onDateChange = { writeReviewViewModel.updateListenedDate(listenedDate = it) },
+            onFavoriteChange = { writeReviewViewModel.updateIsFavorite(isFavorite = it) },
+            onPostClick = {
+                writeReviewViewModel.publicarResena()
+                onPostReview(writeReviewViewModel.crearBorrador())
+            },
+            modifier = modifier,
+        )
+    }
+}
+
+@Composable
+fun WriteReviewScreenContent(
+    album: ReviewAlbumUi,
+    rating: Int,
+    reviewText: String,
+    selectedMoods: List<String>,
+    listenedDate: String,
+    isFavorite: Boolean,
+    hasPosted: Boolean,
+    moods: List<String>,
+    onCancel: () -> Unit,
+    onRatingChange: (Int) -> Unit,
+    onReviewChange: (String) -> Unit,
+    onMoodClick: (String) -> Unit,
+    onDateChange: (String) -> Unit,
+    onFavoriteChange: (Boolean) -> Unit,
+    onPostClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -67,7 +107,7 @@ fun WriteReviewScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f),
-                contentPadding = androidx.compose.foundation.layout.PaddingValues(
+                contentPadding = PaddingValues(
                     start = 24.dp,
                     top = 22.dp,
                     end = 24.dp,
@@ -81,7 +121,7 @@ fun WriteReviewScreen(
                 item {
                     ReviewRatingCard(
                         rating = rating,
-                        onRatingChange = { rating = it },
+                        onRatingChange = onRatingChange,
                         modifier = Modifier.padding(top = 22.dp)
                     )
                 }
@@ -90,7 +130,7 @@ fun WriteReviewScreen(
                     ReviewFormSection(
                         reviewText = reviewText,
                         maxLength = MaxReviewLength,
-                        onReviewChange = { reviewText = it.take(MaxReviewLength) },
+                        onReviewChange = onReviewChange,
                         modifier = Modifier.padding(top = 22.dp)
                     )
                 }
@@ -99,13 +139,7 @@ fun WriteReviewScreen(
                     MoodVibeSection(
                         moods = moods,
                         selectedMoods = selectedMoods,
-                        onMoodClick = { mood ->
-                            selectedMoods = if (mood in selectedMoods) {
-                                selectedMoods - mood
-                            } else {
-                                selectedMoods + mood
-                            }
-                        },
+                        onMoodClick = onMoodClick,
                         modifier = Modifier.padding(top = 22.dp)
                     )
                 }
@@ -115,12 +149,9 @@ fun WriteReviewScreen(
                         listenedDate = listenedDate,
                         isFavorite = isFavorite,
                         hasPosted = hasPosted,
-                        onDateChange = { listenedDate = it },
-                        onFavoriteChange = { isFavorite = it },
-                        onPostClick = {
-                            hasPosted = true
-                            onPostReview(draft)
-                        },
+                        onDateChange = onDateChange,
+                        onFavoriteChange = onFavoriteChange,
+                        onPostClick = onPostClick,
                         modifier = Modifier.padding(top = 22.dp)
                     )
                 }
@@ -130,25 +161,26 @@ fun WriteReviewScreen(
     }
 }
 
-private val defaultReviewMoods = listOf(
-    "Melancholic",
-    "Nostalgic",
-    "Intense",
-    "Chill",
-    "Romantic",
-    "Energetic",
-    "Ethereal",
-    "Playful",
-)
-
 @Preview(showBackground = true, device = "spec:width=393dp,height=852dp")
 @Composable
 fun WriteReviewScreenPreview() {
     MixtappTheme(dynamicColor = false) {
-        WriteReviewScreen(
-            album = fromZeroAlbum,
+        WriteReviewScreenContent(
+            album = LocalReviewAlbumProvider.albums.first(),
+            rating = 0,
+            reviewText = "",
+            selectedMoods = emptyList(),
+            listenedDate = "13/08/2026",
+            isFavorite = false,
+            hasPosted = false,
+            moods = defaultReviewMoods,
             onCancel = {},
-            onPostReview = {}
+            onRatingChange = {},
+            onReviewChange = {},
+            onMoodClick = {},
+            onDateChange = {},
+            onFavoriteChange = {},
+            onPostClick = {},
         )
     }
 }

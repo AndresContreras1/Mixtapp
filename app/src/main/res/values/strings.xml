@@ -51,4 +51,6 @@
     <string name="password_corta">La contraseña debe tener al menos 6 caracteres</string>
     <string name="passwords_no_coinciden">Las contraseñas no coinciden</string>
     <string name="cancion_no_encontrada">No se encontro la cancion</string>
+    <string name="discusion_no_encontrada">No se encontro la discusion</string>
+    <string name="album_no_encontrado">No se encontro el album</string>
 </resources>
