@@ -49,6 +49,9 @@
     <string name="reviewed_today">reviewed today</string>
 
     <!-- Validacion -->
+    <string name="error_campos_obligatorios">Todos los campos son obligatorios</string>
+    <string name="error_email_invalido">El correo debe contener una arroba</string>
+    <string name="error_terminos">Debes aceptar los terminos y condiciones</string>
     <string name="password_corta">La contraseña debe tener al menos 6 caracteres</string>
     <string name="passwords_no_coinciden">Las contraseñas no coinciden</string>
     <string name="cancion_no_encontrada">No se encontro la cancion</string>

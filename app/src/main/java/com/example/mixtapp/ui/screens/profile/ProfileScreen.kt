@@ -26,6 +26,7 @@ fun ProfileScreen(
     if (state.profile != null) {
         ProfileScreenContent(
             profile = state.profile!!,
+            tabs = state.tabs,
             selectedTab = state.selectedTab,
             onTabSelected = { profileViewModel.updateSelectedTab(tab = it) },
             modifier = modifier
@@ -36,6 +37,7 @@ fun ProfileScreen(
 @Composable
 fun ProfileScreenContent(
     profile: ProfileUi,
+    tabs: List<String>,
     selectedTab: String,
     onTabSelected: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -48,6 +50,7 @@ fun ProfileScreenContent(
         Column(modifier = Modifier.fillMaxSize()) {
 
             ProfileHeader(
+                tabs = tabs,
                 selectedTab = selectedTab,
                 onTabSelected = onTabSelected
             )
@@ -85,7 +88,8 @@ fun ProfileScreenPreview() {
     MixtappTheme(dynamicColor = false) {
         ProfileScreenContent(
             profile = LocalProfileProvider.profile,
-            selectedTab = "Profile",
+            tabs = profileTabs,
+            selectedTab = profileTabs.first(),
             onTabSelected = {}
         )
     }

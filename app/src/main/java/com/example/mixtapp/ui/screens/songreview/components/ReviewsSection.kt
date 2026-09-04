@@ -29,6 +29,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mixtapp.ui.components.StarRating
 import com.example.mixtapp.ui.screens.songreview.model.SongReviewItemUi
 import com.example.mixtapp.ui.theme.PrimaryPink
 import com.example.mixtapp.ui.theme.SurfaceCard
@@ -100,11 +101,17 @@ private fun ReviewItem(author: String, daysAgo: String, rating: Int, content: St
                 Spacer(modifier = Modifier.width(12.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(author, color = Color.White, fontWeight = FontWeight.Bold)
-                    Row {
-                        repeat(rating) {
-                            Icon(Icons.Filled.Star, null, tint = PrimaryPink, modifier = Modifier.size(12.dp))
-                        }
-                    }
+                    StarRating(
+                        rating = rating,
+                        // Solo se dibujan las estrellas obtenidas, sin ranuras vacias
+                        starCount = rating,
+                        starSize = 12.dp,
+                        spacing = 0.dp,
+                        filledTint = PrimaryPink,
+                        emptyTint = PrimaryPink,
+                        emptyIcon = Icons.Filled.Star,
+                        onRatingChange = null
+                    )
                 }
                 Text(daysAgo, color = Color.White.copy(alpha = 0.4f), fontSize = 10.sp)
             }

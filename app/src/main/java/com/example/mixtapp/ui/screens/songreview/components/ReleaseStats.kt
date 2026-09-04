@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mixtapp.ui.components.StarRating
 import com.example.mixtapp.ui.theme.PrimaryPink
 
 @Composable
@@ -67,16 +68,16 @@ private fun StatItem(value: String, label: String?, showStars: Boolean = false, 
             fontFamily = FontFamily.Serif
         )
         if (showStars) {
-            Row {
-                repeat(5) {
-                    Icon(
-                        Icons.Filled.Star,
-                        null,
-                        tint = PrimaryPink,
-                        modifier = Modifier.size(12.dp)
-                    )
-                }
-            }
+            StarRating(
+                rating = 5,
+                starCount = 5,
+                starSize = 12.dp,
+                spacing = 0.dp,
+                filledTint = PrimaryPink,
+                emptyTint = PrimaryPink,
+                emptyIcon = Icons.Filled.Star,
+                onRatingChange = null
+            )
         }
         if (label != null) {
             Text(

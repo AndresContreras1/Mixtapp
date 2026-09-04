@@ -12,7 +12,7 @@ data class FollowingStoryUi(
     val id: String,
     val label: String,
     val initials: String,
-    val isAddAction: Boolean = false,
+    val isAddAction: Boolean,
 )
 
 data class FollowingReviewUi(
@@ -27,6 +27,6 @@ data class FollowingReviewUi(
     val reviewText: String,
     val likes: Int,
     val comments: Int,
-    val isLiked: Boolean = false,
-    val isShared: Boolean = false,
+    val isLiked: Boolean,
+    val isShared: Boolean,
 )

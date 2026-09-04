@@ -32,6 +32,8 @@ import com.example.mixtapp.ui.theme.PalePink
 
 @Composable
 fun ProfileHeader(
+    // Las pestanas llegan del ViewModel, no se declaran aqui
+    tabs: List<String>,
     selectedTab: String,
     onTabSelected: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -77,7 +79,6 @@ fun ProfileHeader(
                 .background(Color.White.copy(alpha = 0.05f)),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            val tabs = listOf("Profile", "Diary", "Lists", "Library")
             tabs.forEach { tab ->
                 val isSelected = tab == selectedTab
                 Box(

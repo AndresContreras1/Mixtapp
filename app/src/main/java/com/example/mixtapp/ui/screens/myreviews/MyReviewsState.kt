@@ -7,5 +7,7 @@ data class MyReviewsState(
     val joinDate: String = "",
     // Ya vienen ordenadas o filtradas por el ViewModel
     val reviews: List<MyReviewUi> = emptyList(),
-    val selectedFilter: String = "Recent",
+    // Los filtros los provee el ViewModel; el componente solo los pinta
+    val filters: List<String> = emptyList(),
+    val selectedFilter: String = "",
 )

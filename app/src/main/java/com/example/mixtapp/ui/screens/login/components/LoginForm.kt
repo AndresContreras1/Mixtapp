@@ -32,6 +32,8 @@ fun LoginForm(
     onContrasenaChange: (String) -> Unit,
     passwordVisible: Boolean,
     onPasswordVisibleChange: () -> Unit,
+    // La regla de la longitud minima la aplica el ViewModel; aqui solo se pinta el aviso
+    mostrarErrorContrasena: Boolean,
     onLoginClick: () -> Unit,
     modifier: Modifier = Modifier
 ){
@@ -64,7 +66,7 @@ fun LoginForm(
             onPasswordVisibleChange = onPasswordVisibleChange
         )
 
-        if (contrasena.isNotEmpty() && contrasena.length < 6) {
+        if (mostrarErrorContrasena) {
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(

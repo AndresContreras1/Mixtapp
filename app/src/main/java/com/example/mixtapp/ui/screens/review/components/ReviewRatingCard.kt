@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mixtapp.ui.components.StarRating
 import com.example.mixtapp.ui.theme.FieldBorder
 import com.example.mixtapp.ui.theme.PrimaryPink
 import com.example.mixtapp.ui.theme.TextPink
@@ -53,19 +54,16 @@ fun ReviewRatingCard(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-            repeat(5) { index ->
-                val starRating = index + 1
-                Icon(
-                    imageVector = Icons.Default.Star,
-                    contentDescription = "$starRating stars",
-                    tint = if (starRating <= rating) PrimaryPink else PrimaryPink.copy(alpha = 0.62f),
-                    modifier = Modifier
-                        .size(30.dp)
-                        .clickable { onRatingChange(starRating) }
-                )
-            }
-        }
+        StarRating(
+            rating = rating,
+            starCount = 5,
+            starSize = 30.dp,
+            spacing = 6.dp,
+            filledTint = PrimaryPink,
+            emptyTint = PrimaryPink.copy(alpha = 0.62f),
+            emptyIcon = Icons.Default.Star,
+            onRatingChange = onRatingChange
+        )
 
         Spacer(modifier = Modifier.height(8.dp))
 

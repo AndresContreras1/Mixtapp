@@ -31,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.ui.components.StarRating
 import com.example.mixtapp.ui.screens.songreview.model.SongReviewUi
 import com.example.mixtapp.ui.theme.FieldBackground
 import com.example.mixtapp.ui.theme.FieldBorder
@@ -84,14 +85,16 @@ fun TrendingCard(
                 )
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    repeat(5) {
-                        Icon(
-                            imageVector = Icons.Default.Star,
-                            contentDescription = null,
-                            tint = TextPink,
-                            modifier = Modifier.size(14.dp)
-                        )
-                    }
+                    StarRating(
+                        rating = 5,
+                        starCount = 5,
+                        starSize = 14.dp,
+                        spacing = 0.dp,
+                        filledTint = TextPink,
+                        emptyTint = TextPink,
+                        emptyIcon = Icons.Default.Star,
+                        onRatingChange = null
+                    )
 
                     Spacer(modifier = Modifier.width(10.dp))
 

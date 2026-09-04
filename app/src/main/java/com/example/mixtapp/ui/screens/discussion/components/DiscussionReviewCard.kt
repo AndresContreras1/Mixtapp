@@ -36,6 +36,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mixtapp.ui.components.StarRating
 import com.example.mixtapp.ui.screens.discussion.model.DiscussionReviewUi
 import com.example.mixtapp.ui.theme.CircleWine
 import com.example.mixtapp.ui.theme.FieldBorder
@@ -93,16 +94,17 @@ fun DiscussionReviewCard(
                         fontFamily = FontFamily.Serif,
                         fontWeight = FontWeight.Bold,
                     )
-                    Row(modifier = Modifier.padding(top = 4.dp)) {
-                        repeat(5) { index ->
-                            Icon(
-                                imageVector = Icons.Filled.Star,
-                                contentDescription = null,
-                                tint = if (index < review.rating) PrimaryPink else TextPink.copy(alpha = 0.32f),
-                                modifier = Modifier.size(14.dp),
-                            )
-                        }
-                    }
+                    StarRating(
+                        rating = review.rating,
+                        starCount = 5,
+                        starSize = 14.dp,
+                        spacing = 0.dp,
+                        filledTint = PrimaryPink,
+                        emptyTint = TextPink.copy(alpha = 0.32f),
+                        emptyIcon = Icons.Filled.Star,
+                        onRatingChange = null,
+                        modifier = Modifier.padding(top = 4.dp),
+                    )
                 }
             }
 

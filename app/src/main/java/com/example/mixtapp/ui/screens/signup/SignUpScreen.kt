@@ -21,7 +21,6 @@ import com.example.mixtapp.ui.theme.*
 @Composable
 fun SignUpScreen(
     signUpViewModel: SignUpViewModel,
-    onSignUpSuccess: () -> Unit,
     onLoginClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -43,9 +42,10 @@ fun SignUpScreen(
         confirmarVisible = state.confirmarVisible,
         onConfirmarVisibleChange = { signUpViewModel.mostrarEsconderConfirmar() },
         terminos = state.terminos,
-        onTerminosChange = { signUpViewModel.updateTerminos(terminos = it) },
+        onTerminosClick = { signUpViewModel.alternarTerminos() },
         mostrarErrorContrasenas = state.mostrarErrorContrasenas,
-        onSignUpClick = onSignUpSuccess,
+        errorMessageRes = state.errorMessageRes,
+        onSignUpClick = { signUpViewModel.signUpButtonPressed() },
         onLoginClick = onLoginClick,
         modifier = modifier
     )
@@ -66,8 +66,9 @@ fun SignUpScreenContent(
     confirmarVisible: Boolean,
     onConfirmarVisibleChange: () -> Unit,
     terminos: Boolean,
-    onTerminosChange: (Boolean) -> Unit,
+    onTerminosClick: () -> Unit,
     mostrarErrorContrasenas: Boolean,
+    errorMessageRes: Int?,
     onSignUpClick: () -> Unit,
     onLoginClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -102,13 +103,23 @@ fun SignUpScreenContent(
                 confirmarVisible = confirmarVisible,
                 onConfirmarVisibleChange = onConfirmarVisibleChange,
                 terminos = terminos,
-                onTerminosChange = onTerminosChange,
+                onTerminosClick = onTerminosClick,
                 onSignUpClick = onSignUpClick
             )
 
+            // Aviso mientras se escribe: las dos contrasenas no coinciden
             if (mostrarErrorContrasenas) {
                 Text(
                     text = stringResource(R.string.passwords_no_coinciden),
+                    color = PalePink,
+                    fontSize = 14.sp
+                )
+            }
+
+            // Error del intento de crear la cuenta, calculado por el ViewModel
+            if (errorMessageRes != null) {
+                Text(
+                    text = stringResource(errorMessageRes),
                     color = PalePink,
                     fontSize = 14.sp
                 )
@@ -139,8 +150,9 @@ fun SignUpScreenLightPreview() {
             confirmarVisible = false,
             onConfirmarVisibleChange = {},
             terminos = false,
-            onTerminosChange = {},
+            onTerminosClick = {},
             mostrarErrorContrasenas = false,
+            errorMessageRes = null,
             onSignUpClick = {},
             onLoginClick = {}
         )
@@ -165,8 +177,9 @@ fun SignUpScreenDarkPreview() {
             confirmarVisible = false,
             onConfirmarVisibleChange = {},
             terminos = false,
-            onTerminosChange = {},
+            onTerminosClick = {},
             mostrarErrorContrasenas = false,
+            errorMessageRes = null,
             onSignUpClick = {},
             onLoginClick = {}
         )

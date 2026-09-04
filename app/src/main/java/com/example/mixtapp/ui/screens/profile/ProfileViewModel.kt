@@ -7,6 +7,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
+// Pestanas de la pantalla de perfil
+val profileTabs = listOf("Profile", "Diary", "Lists", "Library")
+
 class ProfileViewModel : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfileState())
@@ -18,7 +21,13 @@ class ProfileViewModel : ViewModel() {
     }
 
     private fun getProfile() {
-        _uiState.update { it.copy(profile = LocalProfileProvider.profile) }
+        _uiState.update {
+            it.copy(
+                profile = LocalProfileProvider.profile,
+                tabs = profileTabs,
+                selectedTab = profileTabs.first(),
+            )
+        }
     }
 
     fun updateSelectedTab(tab: String) {

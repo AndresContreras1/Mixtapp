@@ -12,11 +12,11 @@ object LocalFollowingProvider {
         filters = listOf("All", "Reviews", "Ratings", "Lists"),
         stories = listOf(
             FollowingStoryUi(id = "log", label = "Your log", initials = "+", isAddAction = true),
-            FollowingStoryUi(id = "jen", label = "Jen", initials = "J"),
-            FollowingStoryUi(id = "jhon", label = "Jhon", initials = "Jh"),
-            FollowingStoryUi(id = "vik", label = "Vik", initials = "V"),
-            FollowingStoryUi(id = "liz", label = "Liz", initials = "Lz"),
-            FollowingStoryUi(id = "bob", label = "Bob", initials = "B"),
+            FollowingStoryUi(id = "jen", label = "Jen", initials = "J", isAddAction = false),
+            FollowingStoryUi(id = "jhon", label = "Jhon", initials = "Jh", isAddAction = false),
+            FollowingStoryUi(id = "vik", label = "Vik", initials = "V", isAddAction = false),
+            FollowingStoryUi(id = "liz", label = "Liz", initials = "Lz", isAddAction = false),
+            FollowingStoryUi(id = "bob", label = "Bob", initials = "B", isAddAction = false),
         ),
         reviews = listOf(
             FollowingReviewUi(
@@ -31,6 +31,8 @@ object LocalFollowingProvider {
                 reviewText = "\"Toxicity\" is pure chaotic genius. Blending heavy, erratic riffs with Serj Tankian's manic vocals, System of a Down turns societal overload into an insanely catchy, immortal metal anthem.",
                 likes = 24,
                 comments = 1,
+                isLiked = false,
+                isShared = false,
             ),
             FollowingReviewUi(
                 id = "from-zero-jhon",
@@ -44,6 +46,8 @@ object LocalFollowingProvider {
                 reviewText = "From Zero is a fiery, seamless rebirth for Linkin Park. Blending raw, heavy nostalgia with fresh, high-voltage energy-fueled by Emily Armstrong's powerhouse vocals-it proves the band can honor their iconic legacy while stepping boldly into a new era.",
                 likes = 24,
                 comments = 1,
+                isLiked = false,
+                isShared = false,
             ),
         ),
     )
