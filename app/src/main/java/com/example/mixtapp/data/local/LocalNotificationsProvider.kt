@@ -1,0 +1,82 @@
+package com.example.mixtapp.data.local
+
+import com.example.mixtapp.R
+import com.example.mixtapp.ui.screens.notifications.model.NotificationUi
+
+object LocalNotificationsProvider {
+    val notifications = listOf(
+        NotificationUi(
+            id = "1",
+            actorInitials = "KA",
+            actorName = "Kai",
+            message = "liked your review of Maneskin",
+            highlightedWord = "Maneskin",
+            timeAgo = "4 min ago",
+            thumbnailRes = R.drawable.teatro_dira_vol_i_portada,
+            isRead = false,
+            section = "Today",
+        ),
+        NotificationUi(
+            id = "2",
+            actorInitials = "DR",
+            actorName = "Daniela",
+            message = "started following you",
+            timeAgo = "4 min ago",
+            isRead = false,
+            section = "Today",
+        ),
+        NotificationUi(
+            id = "3",
+            actorInitials = "MS",
+            actorName = "Mae",
+            message = "commented on your review of Maneskin",
+            highlightedWord = "Maneskin",
+            timeAgo = "32 min ago",
+            thumbnailRes = R.drawable.teatro_dira_vol_i_portada,
+            isRead = false,
+            section = "Today",
+        ),
+        NotificationUi(
+            id = "4",
+            actorInitials = "NR",
+            actorName = "Nico",
+            message = "replied to your comment - \"Yes! That context made it hit even harder on relisten.\" Maneskin",
+            highlightedWord = "Maneskin",
+            timeAgo = "32 min ago",
+            thumbnailRes = R.drawable.teatro_dira_vol_i_portada,
+            isRead = false,
+            section = "Today",
+        ),
+        NotificationUi(
+            id = "5",
+            actorInitials = "MX",
+            actorName = "MixtApp",
+            message = "Your review of Maneskin reached 50 likes!",
+            highlightedWord = "Maneskin",
+            timeAgo = "2h ago",
+            thumbnailRes = R.drawable.teatro_dira_vol_i_portada,
+            isRead = true,
+            section = "Today",
+        ),
+        NotificationUi(
+            id = "6",
+            actorInitials = "KA",
+            actorName = "Kai",
+            message = "liked your review of Maneskin",
+            highlightedWord = "Maneskin",
+            timeAgo = "1d ago",
+            thumbnailRes = R.drawable.teatro_dira_vol_i_portada,
+            isRead = true,
+            section = "Earlier",
+        ),
+        NotificationUi(
+            id = "7",
+            actorInitials = "DR",
+            actorName = "Daniela",
+            message = "started following you",
+            timeAgo = "2d ago",
+            isRead = true,
+            section = "Earlier",
+        ),
+    )
+}

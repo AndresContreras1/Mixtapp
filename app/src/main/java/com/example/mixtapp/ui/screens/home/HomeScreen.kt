@@ -32,6 +32,7 @@ fun HomeScreen(
     onSearchClick: () -> Unit,
     onProfileClick: () -> Unit,
     onFollowingClick: () -> Unit,
+    onNotificationsClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val state by homeViewModel.uiState.collectAsState()
@@ -47,6 +48,7 @@ fun HomeScreen(
             onSearchClick = onSearchClick,
             onProfileClick = onProfileClick,
             onFollowingClick = onFollowingClick,
+            onNotificationsClick = onNotificationsClick,
             modifier = modifier
         )
     }
@@ -63,6 +65,7 @@ fun HomeScreenContent(
     onSearchClick: () -> Unit,
     onProfileClick: () -> Unit,
     onFollowingClick: () -> Unit,
+    onNotificationsClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val filters = listOf(
@@ -90,7 +93,8 @@ fun HomeScreenContent(
             ) {
                 HomeHeader(
                     onSearchClick = onSearchClick,
-                    onProfileClick = onProfileClick
+                    onProfileClick = onProfileClick,
+                    onNotificationsClick = onNotificationsClick
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -150,6 +154,7 @@ fun HomeScreenPreview() {
         onAlbumClick = {},
         onSearchClick = {},
         onProfileClick = {},
-        onFollowingClick = {}
+        onFollowingClick = {},
+        onNotificationsClick = {}
     )
 }
