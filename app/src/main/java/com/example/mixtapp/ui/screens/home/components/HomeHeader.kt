@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -36,6 +37,7 @@ import com.example.mixtapp.ui.theme.TextPink
 fun HomeHeader(
     onSearchClick: () -> Unit,
     onProfileClick: () -> Unit,
+    onNotificationsClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -65,6 +67,17 @@ fun HomeHeader(
                 modifier = Modifier
                     .size(32.dp)
                     .clickable { onSearchClick() }
+            )
+
+            Spacer(modifier = Modifier.width(14.dp))
+
+            Icon(
+                imageVector = Icons.Default.Notifications,
+                contentDescription = "Notifications",
+                tint = TextPink,
+                modifier = Modifier
+                    .size(30.dp)
+                    .clickable { onNotificationsClick() }
             )
 
             Spacer(modifier = Modifier.width(14.dp))

@@ -18,6 +18,8 @@ import com.example.mixtapp.ui.screens.login.LoginScreen
 import com.example.mixtapp.ui.screens.login.LoginViewModel
 import com.example.mixtapp.ui.screens.myreviews.MyReviewsScreen
 import com.example.mixtapp.ui.screens.myreviews.MyReviewsViewModel
+import com.example.mixtapp.ui.screens.notifications.NotificationsScreen
+import com.example.mixtapp.ui.screens.notifications.NotificationsViewModel
 import com.example.mixtapp.ui.screens.profile.ProfileScreen
 import com.example.mixtapp.ui.screens.profile.ProfileViewModel
 import com.example.mixtapp.ui.screens.review.WriteReviewScreen
@@ -38,6 +40,7 @@ sealed class Screen(val route: String) {
     object MyReviews : Screen(route = "myReviews")
     object Profile : Screen(route = "profile")
     object Following : Screen(route = "following")
+    object Notifications : Screen(route = "notifications")
 
     // Las pantallas de detalle reciben un id por la ruta
     object SongDetail : Screen(route = "songDetail/{songId}") {
@@ -108,7 +111,8 @@ fun AppNavigation(
                 },
                 onSearchClick = { navController.navigate(Screen.Search.route) },
                 onProfileClick = { navController.navigate(Screen.Profile.route) },
-                onFollowingClick = { navController.navigate(Screen.Following.route) }
+                onFollowingClick = { navController.navigate(Screen.Following.route) },
+                onNotificationsClick = { navController.navigate(Screen.Notifications.route) }
             )
         }
 
@@ -173,6 +177,15 @@ fun AppNavigation(
                 onCommentsClick = { reviewId ->
                     navController.navigate(Screen.Discussion.createRoute(reviewId = reviewId))
                 }
+            )
+        }
+
+        composable(route = Screen.Notifications.route) {
+            val notificationsViewModel: NotificationsViewModel = viewModel()
+
+            NotificationsScreen(
+                notificationsViewModel = notificationsViewModel,
+                onBackClick = { navController.popBackStack() }
             )
         }
 
