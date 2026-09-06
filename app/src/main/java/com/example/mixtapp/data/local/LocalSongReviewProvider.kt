@@ -21,6 +21,7 @@ object LocalSongReviewProvider {
             isLiked = false,
             reviews = listOf(
                 SongReviewItemUi(
+                    id = "review-1",
                     author = "Priya",
                     daysAgo = "2d ago",
                     rating = 5,
@@ -43,6 +44,7 @@ object LocalSongReviewProvider {
             isLiked = false,
             reviews = listOf(
                 SongReviewItemUi(
+                    id = "review-2",
                     author = "Leo",
                     daysAgo = "5d ago",
                     rating = 4,
@@ -65,6 +67,7 @@ object LocalSongReviewProvider {
             isLiked = false,
             reviews = listOf(
                 SongReviewItemUi(
+                    id = "review-3",
                     author = "Alex",
                     daysAgo = "1w ago",
                     rating = 5,
@@ -87,6 +90,7 @@ object LocalSongReviewProvider {
             isLiked = false,
             reviews = listOf(
                 SongReviewItemUi(
+                    id = "review-4",
                     author = "Soph",
                     daysAgo = "4d ago",
                     rating = 4,
@@ -109,6 +113,7 @@ object LocalSongReviewProvider {
             isLiked = false,
             reviews = listOf(
                 SongReviewItemUi(
+                    id = "review-5",
                     author = "Priya",
                     daysAgo = "3d ago",
                     rating = 5,

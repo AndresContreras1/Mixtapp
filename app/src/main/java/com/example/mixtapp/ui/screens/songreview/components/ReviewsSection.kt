@@ -25,10 +25,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mixtapp.R
 import com.example.mixtapp.ui.components.StarRating
 import com.example.mixtapp.ui.screens.songreview.model.SongReviewItemUi
 import com.example.mixtapp.ui.theme.PrimaryPink
@@ -75,11 +77,18 @@ fun ReviewsSection(
 }
 
 @Composable
-private fun ReviewItem(author: String, daysAgo: String, rating: Int, content: String, likes: Int) {
+private fun ReviewItem(
+    author: String,
+    daysAgo: String,
+    rating: Int,
+    content: String,
+    likes: Int,
+    modifier: Modifier = Modifier
+) {
     Surface(
         color = Color.Transparent,
         shape = RoundedCornerShape(16.dp),
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .border(1.dp, Color.White.copy(alpha = 0.2f), RoundedCornerShape(16.dp))
     ) {
@@ -132,7 +141,11 @@ private fun ReviewItem(author: String, daysAgo: String, rating: Int, content: St
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(likes.toString(), color = Color.White.copy(alpha = 0.6f), fontSize = 12.sp)
                 Spacer(modifier = Modifier.width(16.dp))
-                Text("Reply", color = Color.White.copy(alpha = 0.6f), fontSize = 12.sp)
+                Text(
+                    text = stringResource(R.string.reply),
+                    color = Color.White.copy(alpha = 0.6f),
+                    fontSize = 12.sp
+                )
             }
         }
     }
