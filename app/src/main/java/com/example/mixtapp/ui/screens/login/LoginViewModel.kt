@@ -1,16 +1,24 @@
 package com.example.mixtapp.ui.screens.login
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
+import com.example.mixtapp.data.repository.AuthRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 // Longitud minima de la contrasena. La comparten los dos formularios de la app
 const val MinPasswordLength = 6
 
-class LoginViewModel : ViewModel() {
+@HiltViewModel
+class LoginViewModel @Inject constructor(
+    private val authRepository: AuthRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(LoginState())
     val uiState: StateFlow<LoginState> = _uiState.asStateFlow()
@@ -54,11 +62,27 @@ class LoginViewModel : ViewModel() {
             else -> null
         }
 
-        _uiState.update {
-            it.copy(
-                errorMessageRes = errorRes,
-                navigate = errorRes == null,
-            )
+        // Si el formulario no pasa las validaciones locales no se consulta a Firebase
+        if (errorRes != null) {
+            _uiState.update { it.copy(errorMessageRes = errorRes, navigate = false) }
+            return
+        }
+
+        signIn(email = estado.email, contrasena = estado.contrasena)
+    }
+
+    // signIn es suspend, asi que se lanza la corrutina donde se necesita
+    private fun signIn(email: String, contrasena: String) {
+        viewModelScope.launch {
+            try {
+                authRepository.signIn(email = email, password = contrasena)
+                // Autorizar la navegacion va dentro del try: si Firebase falla, no se entra
+                _uiState.update { it.copy(errorMessageRes = null, navigate = true) }
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(errorMessageRes = R.string.error_credenciales, navigate = false)
+                }
+            }
         }
     }
 }

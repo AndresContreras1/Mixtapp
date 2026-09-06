@@ -1,14 +1,22 @@
 package com.example.mixtapp.ui.screens.signup
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
+import com.example.mixtapp.data.repository.AuthRepository
 import com.example.mixtapp.ui.screens.login.MinPasswordLength
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class SignUpViewModel : ViewModel() {
+@HiltViewModel
+class SignUpViewModel @Inject constructor(
+    private val authRepository: AuthRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SignUpState())
     val uiState: StateFlow<SignUpState> = _uiState.asStateFlow()
@@ -84,11 +92,27 @@ class SignUpViewModel : ViewModel() {
             else -> null
         }
 
-        _uiState.update {
-            it.copy(
-                errorMessageRes = errorRes,
-                navigate = errorRes == null,
-            )
+        // Si el formulario no pasa las validaciones locales no se consulta a Firebase
+        if (errorRes != null) {
+            _uiState.update { it.copy(errorMessageRes = errorRes, navigate = false) }
+            return
+        }
+
+        signUp(email = estado.email, contrasena = estado.contrasena)
+    }
+
+    // signUp es suspend, asi que se lanza la corrutina donde se necesita
+    private fun signUp(email: String, contrasena: String) {
+        viewModelScope.launch {
+            try {
+                authRepository.signUp(email = email, password = contrasena)
+                // Autorizar la navegacion va dentro del try: si Firebase falla, no se entra
+                _uiState.update { it.copy(errorMessageRes = null, navigate = true) }
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(errorMessageRes = R.string.error_registro, navigate = false)
+                }
+            }
         }
     }
 }

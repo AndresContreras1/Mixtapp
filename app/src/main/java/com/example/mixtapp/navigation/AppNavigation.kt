@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -32,9 +32,12 @@ import com.example.mixtapp.ui.screens.signup.SignUpScreen
 import com.example.mixtapp.ui.screens.signup.SignUpViewModel
 import com.example.mixtapp.ui.screens.songreview.SongReviewsScreen
 import com.example.mixtapp.ui.screens.songreview.SongReviewsViewModel
+import com.example.mixtapp.ui.screens.splash.SplashScreen
+import com.example.mixtapp.ui.screens.splash.SplashViewModel
 
 // Definicion de las rutas de la aplicacion
 sealed class Screen(val route: String) {
+    object Splash : Screen(route = "splash")
     object Login : Screen(route = "login")
     object SignUp : Screen(route = "signUp")
     object Home : Screen(route = "home")
@@ -68,11 +71,29 @@ fun AppNavigation(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Login.route,
+        startDestination = Screen.Splash.route,
         modifier = modifier
     ) {
+        composable(route = Screen.Splash.route) {
+            val splashViewModel: SplashViewModel = hiltViewModel()
+
+            SplashScreen(
+                splashViewModel = splashViewModel,
+                navigateToHome = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                },
+                navigateToLogin = {
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            )
+        }
+
         composable(route = Screen.Login.route) {
-            val loginViewModel: LoginViewModel = viewModel()
+            val loginViewModel: LoginViewModel = hiltViewModel()
             val state by loginViewModel.uiState.collectAsState()
 
             // El ViewModel valida el formulario y autoriza; la navegacion solo ejecuta
@@ -91,7 +112,7 @@ fun AppNavigation(
         }
 
         composable(route = Screen.SignUp.route) {
-            val signUpViewModel: SignUpViewModel = viewModel()
+            val signUpViewModel: SignUpViewModel = hiltViewModel()
             val state by signUpViewModel.uiState.collectAsState()
 
             // El ViewModel valida el formulario y autoriza; la navegacion solo ejecuta
@@ -110,7 +131,7 @@ fun AppNavigation(
         }
 
         composable(route = Screen.Home.route) {
-            val homeViewModel: HomeViewModel = viewModel()
+            val homeViewModel: HomeViewModel = hiltViewModel()
 
             HomeScreen(
                 homeViewModel = homeViewModel,
@@ -125,7 +146,7 @@ fun AppNavigation(
         }
 
         composable(route = Screen.Search.route) {
-            val searchViewModel: SearchViewModel = viewModel()
+            val searchViewModel: SearchViewModel = hiltViewModel()
 
             SearchScreen(searchViewModel = searchViewModel)
         }
@@ -136,7 +157,7 @@ fun AppNavigation(
         ) {
             // Solo se obtiene el id; buscar el album es tarea del ViewModel
             val albumId = it.arguments?.getString("albumId") ?: ""
-            val writeReviewViewModel: WriteReviewViewModel = viewModel()
+            val writeReviewViewModel: WriteReviewViewModel = hiltViewModel()
 
             WriteReviewScreen(
                 albumId = albumId,
@@ -147,7 +168,7 @@ fun AppNavigation(
         }
 
         composable(route = Screen.MyReviews.route) {
-            val myReviewsViewModel: MyReviewsViewModel = viewModel()
+            val myReviewsViewModel: MyReviewsViewModel = hiltViewModel()
 
             MyReviewsScreen(
                 myReviewsViewModel = myReviewsViewModel,
@@ -158,7 +179,7 @@ fun AppNavigation(
         }
 
         composable(route = Screen.Profile.route) {
-            val profileViewModel: ProfileViewModel = viewModel()
+            val profileViewModel: ProfileViewModel = hiltViewModel()
 
             ProfileScreen(profileViewModel = profileViewModel)
         }
@@ -169,7 +190,7 @@ fun AppNavigation(
         ) {
             // Solo se obtiene el id; buscar la cancion es tarea del ViewModel
             val songId = it.arguments?.getString("songId") ?: ""
-            val songReviewsViewModel: SongReviewsViewModel = viewModel()
+            val songReviewsViewModel: SongReviewsViewModel = hiltViewModel()
 
             SongReviewsScreen(
                 songId = songId,
@@ -178,7 +199,7 @@ fun AppNavigation(
         }
 
         composable(route = Screen.Following.route) {
-            val followingViewModel: FollowingViewModel = viewModel()
+            val followingViewModel: FollowingViewModel = hiltViewModel()
 
             FollowingScreen(
                 followingViewModel = followingViewModel,
@@ -189,7 +210,7 @@ fun AppNavigation(
         }
 
         composable(route = Screen.Notifications.route) {
-            val notificationsViewModel: NotificationsViewModel = viewModel()
+            val notificationsViewModel: NotificationsViewModel = hiltViewModel()
 
             NotificationsScreen(
                 notificationsViewModel = notificationsViewModel,
@@ -203,7 +224,7 @@ fun AppNavigation(
         ) {
             // Solo se obtiene el id; buscar la discusion es tarea del ViewModel
             val reviewId = it.arguments?.getString("reviewId") ?: ""
-            val discussionViewModel: DiscussionViewModel = viewModel()
+            val discussionViewModel: DiscussionViewModel = hiltViewModel()
 
             DiscussionScreen(
                 reviewId = reviewId,

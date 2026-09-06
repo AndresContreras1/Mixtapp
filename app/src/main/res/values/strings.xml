@@ -58,4 +58,6 @@
     <string name="discusion_no_encontrada">No se encontro la discusion</string>
     <string name="album_no_encontrado">No se encontro el album</string>
     <string name="reply">Reply</string>
+    <string name="error_credenciales">Correo o contraseña incorrectos</string>
+    <string name="error_registro">No se pudo crear la cuenta. Intenta con otro correo</string>
 </resources>

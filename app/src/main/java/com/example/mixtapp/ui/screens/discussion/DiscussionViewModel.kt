@@ -1,13 +1,16 @@
 package com.example.mixtapp.ui.screens.discussion
 
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import com.example.mixtapp.data.local.LocalDiscussionProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import javax.inject.Inject
 
-class DiscussionViewModel : ViewModel() {
+@HiltViewModel
+class DiscussionViewModel @Inject constructor() : ViewModel() {
 
     private val _uiState = MutableStateFlow(DiscussionState())
     val uiState: StateFlow<DiscussionState> = _uiState.asStateFlow()

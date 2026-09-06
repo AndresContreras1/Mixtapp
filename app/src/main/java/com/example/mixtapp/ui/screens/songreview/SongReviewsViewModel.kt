@@ -1,13 +1,16 @@
 package com.example.mixtapp.ui.screens.songreview
 
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import com.example.mixtapp.data.local.LocalSongReviewProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import javax.inject.Inject
 
-class SongReviewsViewModel : ViewModel() {
+@HiltViewModel
+class SongReviewsViewModel @Inject constructor() : ViewModel() {
 
     private val _uiState = MutableStateFlow(SongReviewsState())
     val uiState: StateFlow<SongReviewsState> = _uiState.asStateFlow()
