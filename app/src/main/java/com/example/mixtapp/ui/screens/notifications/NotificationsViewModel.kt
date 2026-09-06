@@ -1,14 +1,17 @@
 package com.example.mixtapp.ui.screens.notifications
 
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import com.example.mixtapp.data.local.LocalNotificationsProvider
 import com.example.mixtapp.ui.screens.notifications.model.NotificationUi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import javax.inject.Inject
 
-class NotificationsViewModel : ViewModel() {
+@HiltViewModel
+class NotificationsViewModel @Inject constructor() : ViewModel() {
 
     private val _uiState = MutableStateFlow(NotificationsState())
     val uiState: StateFlow<NotificationsState> = _uiState.asStateFlow()

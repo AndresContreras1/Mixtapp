@@ -1,6 +1,7 @@
 package com.example.mixtapp.ui.screens.myreviews
 
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import com.example.mixtapp.data.local.LocalMyReviewsProvider
 import com.example.mixtapp.data.local.LocalProfileProvider
 import com.example.mixtapp.ui.screens.myreviews.model.MyReviewUi
@@ -8,12 +9,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import javax.inject.Inject
 
 // Filtros de la pantalla. Viven en el mismo archivo que el when que los interpreta
 // para que no se puedan desalinear: si se renombra uno, el otro esta a la vista
 val myReviewsFilters = listOf("Recent", "Top Rated", "A-Z", "5", "4")
 
-class MyReviewsViewModel : ViewModel() {
+@HiltViewModel
+class MyReviewsViewModel @Inject constructor() : ViewModel() {
 
     private val _uiState = MutableStateFlow(MyReviewsState())
     val uiState: StateFlow<MyReviewsState> = _uiState.asStateFlow()

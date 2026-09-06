@@ -1,17 +1,20 @@
 package com.example.mixtapp.ui.screens.review
 
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import com.example.mixtapp.data.local.LocalReviewAlbumProvider
 import com.example.mixtapp.ui.screens.review.model.ReviewDraftUi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import javax.inject.Inject
 
 // Limite de caracteres de la resena
 const val MaxReviewLength = 500
 
-class WriteReviewViewModel : ViewModel() {
+@HiltViewModel
+class WriteReviewViewModel @Inject constructor() : ViewModel() {
 
     private val _uiState = MutableStateFlow(WriteReviewState())
     val uiState: StateFlow<WriteReviewState> = _uiState.asStateFlow()
