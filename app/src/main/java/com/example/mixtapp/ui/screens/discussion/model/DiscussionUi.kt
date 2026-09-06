@@ -28,6 +28,6 @@ data class DiscussionCommentUi(
     val timeAgo: String,
     val content: String,
     val likes: Int,
-    val isReply: Boolean = false,
-    val isLiked: Boolean = false,
+    val isReply: Boolean,
+    val isLiked: Boolean,
 )

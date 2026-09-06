@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.ui.components.StarRating
 import com.example.mixtapp.ui.theme.CircleWine
 import com.example.mixtapp.ui.theme.PrimaryPink
 import com.example.mixtapp.ui.theme.TextPink
@@ -82,11 +83,16 @@ fun RatingsSection(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Icon(Icons.Default.Star, null, tint = PrimaryPink.copy(alpha = 0.5f), modifier = Modifier.size(12.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
-                repeat(5) {
-                    Icon(Icons.Default.Star, null, tint = PrimaryPink.copy(alpha = 0.5f), modifier = Modifier.size(12.dp))
-                }
-            }
+            StarRating(
+                rating = 5,
+                starCount = 5,
+                starSize = 12.dp,
+                spacing = 2.dp,
+                filledTint = PrimaryPink.copy(alpha = 0.5f),
+                emptyTint = PrimaryPink.copy(alpha = 0.5f),
+                emptyIcon = Icons.Default.Star,
+                onRatingChange = null
+            )
         }
         Spacer(modifier = Modifier.height(80.dp))
     }

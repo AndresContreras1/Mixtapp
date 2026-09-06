@@ -23,10 +23,10 @@ import com.example.mixtapp.ui.theme.FieldBorder
 import com.example.mixtapp.ui.theme.PalePink
 import com.example.mixtapp.ui.theme.PrimaryPink
 
-private val filters = listOf("Recent", "Top Rated", "A-Z", "5", "4")
-
 @Composable
 fun MyReviewsFilter(
+    // Los filtros llegan del ViewModel, no se declaran aqui
+    filters: List<String>,
     selected: String,
     onFilterSelected: (String) -> Unit,
     modifier: Modifier = Modifier,

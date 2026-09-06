@@ -1,6 +1,8 @@
 package com.example.mixtapp.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -71,14 +73,17 @@ fun AppNavigation(
     ) {
         composable(route = Screen.Login.route) {
             val loginViewModel: LoginViewModel = viewModel()
+            val state by loginViewModel.uiState.collectAsState()
+
+            // El ViewModel valida el formulario y autoriza; la navegacion solo ejecuta
+            if (state.navigate) {
+                navController.navigate(Screen.Home.route) {
+                    popUpTo(0) { inclusive = true }
+                }
+            }
 
             LoginScreen(
                 loginViewModel = loginViewModel,
-                onLoginClick = {
-                    navController.navigate(Screen.Home.route) {
-                        popUpTo(0) { inclusive = true }
-                    }
-                },
                 onSignUpClick = {
                     navController.navigate(Screen.SignUp.route)
                 }
@@ -87,14 +92,17 @@ fun AppNavigation(
 
         composable(route = Screen.SignUp.route) {
             val signUpViewModel: SignUpViewModel = viewModel()
+            val state by signUpViewModel.uiState.collectAsState()
+
+            // El ViewModel valida el formulario y autoriza; la navegacion solo ejecuta
+            if (state.navigate) {
+                navController.navigate(Screen.Home.route) {
+                    popUpTo(0) { inclusive = true }
+                }
+            }
 
             SignUpScreen(
                 signUpViewModel = signUpViewModel,
-                onSignUpSuccess = {
-                    navController.navigate(Screen.Home.route) {
-                        popUpTo(0) { inclusive = true }
-                    }
-                },
                 onLoginClick = {
                     navController.navigate(Screen.Login.route)
                 }

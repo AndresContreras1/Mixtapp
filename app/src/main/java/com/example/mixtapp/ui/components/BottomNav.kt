@@ -45,24 +45,42 @@ data class BottomNavItem(
     // Patron de la ruta, para saber si el item esta seleccionado
     val route: String,
     // Ruta concreta a la que navega, distinta cuando la ruta lleva un id
-    val destination: String = route
+    val destination: String
 )
 
 val bottomNavItems = listOf(
-    BottomNavItem(Icons.Filled.Home, Icons.Outlined.Home, Screen.Home.route),
-    BottomNavItem(Icons.Filled.Search, Icons.Outlined.Search, Screen.Search.route),
     BottomNavItem(
-        Icons.Filled.Add,
-        Icons.Outlined.Add,
-        Screen.WriteReview.route,
-        Screen.WriteReview.createRoute(albumId = Screen.WriteReview.DEFAULT_ALBUM_ID)
+        filledIcon = Icons.Filled.Home,
+        outlineIcon = Icons.Outlined.Home,
+        route = Screen.Home.route,
+        destination = Screen.Home.route
     ),
     BottomNavItem(
-        Icons.AutoMirrored.Filled.List,
-        Icons.AutoMirrored.Outlined.List,
-        Screen.MyReviews.route
+        filledIcon = Icons.Filled.Search,
+        outlineIcon = Icons.Outlined.Search,
+        route = Screen.Search.route,
+        destination = Screen.Search.route
     ),
-    BottomNavItem(Icons.Filled.Person, Icons.Outlined.Person, Screen.Profile.route)
+    BottomNavItem(
+        filledIcon = Icons.Filled.Add,
+        outlineIcon = Icons.Outlined.Add,
+        route = Screen.WriteReview.route,
+        destination = Screen.WriteReview.createRoute(
+            albumId = Screen.WriteReview.DEFAULT_ALBUM_ID
+        )
+    ),
+    BottomNavItem(
+        filledIcon = Icons.AutoMirrored.Filled.List,
+        outlineIcon = Icons.AutoMirrored.Outlined.List,
+        route = Screen.MyReviews.route,
+        destination = Screen.MyReviews.route
+    ),
+    BottomNavItem(
+        filledIcon = Icons.Filled.Person,
+        outlineIcon = Icons.Outlined.Person,
+        route = Screen.Profile.route,
+        destination = Screen.Profile.route
+    )
 )
 
 @Composable

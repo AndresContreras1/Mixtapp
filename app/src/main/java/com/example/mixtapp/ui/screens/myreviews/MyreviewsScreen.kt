@@ -34,6 +34,7 @@ fun MyReviewsScreen(
         username = state.username,
         joinDate = state.joinDate,
         reviews = state.reviews,
+        filters = state.filters,
         selectedFilter = state.selectedFilter,
         onFilterSelected = { myReviewsViewModel.updateSelectedFilter(filtro = it) },
         onReviewClick = onReviewClick,
@@ -46,6 +47,7 @@ fun MyReviewsScreenContent(
     username: String,
     joinDate: String,
     reviews: List<MyReviewUi>,
+    filters: List<String>,
     selectedFilter: String,
     onFilterSelected: (String) -> Unit,
     onReviewClick: (String) -> Unit,
@@ -64,6 +66,7 @@ fun MyReviewsScreenContent(
                     modifier = Modifier.padding(top = 24.dp)
                 )
                 MyReviewsFilter(
+                    filters = filters,
                     selected = selectedFilter,
                     onFilterSelected = onFilterSelected,
                 )
@@ -93,7 +96,8 @@ fun MyReviewsScreenPreview() {
         username = "Yourname",
         joinDate = "march 2025",
         reviews = LocalMyReviewsProvider.reviews,
-        selectedFilter = "Recent",
+        filters = myReviewsFilters,
+        selectedFilter = myReviewsFilters.first(),
         onFilterSelected = {},
         onReviewClick = {}
     )

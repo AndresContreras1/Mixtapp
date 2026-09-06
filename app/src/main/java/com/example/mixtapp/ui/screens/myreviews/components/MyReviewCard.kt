@@ -34,6 +34,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mixtapp.ui.components.StarRating
 import com.example.mixtapp.ui.screens.myreviews.model.MyReviewUi
 import com.example.mixtapp.ui.theme.FieldBorder
 import com.example.mixtapp.ui.theme.PalePink
@@ -141,16 +142,16 @@ private fun ReviewCardHeader(
                 maxLines = 1
             )
             Spacer(modifier = Modifier.height(6.dp))
-            Row {
-                repeat(5) { i ->
-                    Icon(
-                        imageVector = if (i < review.rating) Icons.Default.Star else Icons.Default.StarBorder,
-                        contentDescription = null,
-                        tint = TextPink,
-                        modifier = Modifier.size(15.dp)
-                    )
-                }
-            }
+            StarRating(
+                rating = review.rating,
+                starCount = 5,
+                starSize = 15.dp,
+                spacing = 0.dp,
+                filledTint = TextPink,
+                emptyTint = TextPink,
+                emptyIcon = Icons.Default.StarBorder,
+                onRatingChange = null
+            )
         }
     }
 }

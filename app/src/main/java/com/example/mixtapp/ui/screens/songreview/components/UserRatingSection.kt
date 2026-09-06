@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mixtapp.ui.components.StarRating
 import com.example.mixtapp.ui.theme.PrimaryPink
 
 @Composable
@@ -45,25 +46,16 @@ fun UserRatingSection(
                 fontSize = 14.sp
             )
             Spacer(modifier = Modifier.height(8.dp))
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                repeat(5) { index ->
-                    val starRating = index + 1
-                    Icon(
-                        Icons.Filled.Star,
-                        null,
-                        tint = if (starRating <= rating) {
-                            PrimaryPink
-                        } else {
-                            Color.White.copy(alpha = 0.3f)
-                        },
-                        modifier = Modifier
-                            .size(28.dp)
-                            .clickable { onRatingChange(starRating) }
-                    )
-                }
-            }
+            StarRating(
+                rating = rating,
+                starCount = 5,
+                starSize = 28.dp,
+                spacing = 8.dp,
+                filledTint = PrimaryPink,
+                emptyTint = Color.White.copy(alpha = 0.3f),
+                emptyIcon = Icons.Filled.Star,
+                onRatingChange = onRatingChange
+            )
         }
     }
 }

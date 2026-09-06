@@ -9,6 +9,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
+// Filtros de la pantalla. Viven en el mismo archivo que el when que los interpreta
+// para que no se puedan desalinear: si se renombra uno, el otro esta a la vista
+val myReviewsFilters = listOf("Recent", "Top Rated", "A-Z", "5", "4")
+
 class MyReviewsViewModel : ViewModel() {
 
     private val _uiState = MutableStateFlow(MyReviewsState())
@@ -21,12 +25,15 @@ class MyReviewsViewModel : ViewModel() {
 
     private fun getReviews() {
         val perfil = LocalProfileProvider.profile
+        val filtroInicial = myReviewsFilters.first()
 
         _uiState.update {
             it.copy(
                 username = perfil.username,
                 joinDate = perfil.joinDate,
-                reviews = aplicarFiltro(filtro = it.selectedFilter),
+                filters = myReviewsFilters,
+                selectedFilter = filtroInicial,
+                reviews = aplicarFiltro(filtro = filtroInicial),
             )
         }
     }

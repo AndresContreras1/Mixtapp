@@ -39,7 +39,8 @@ fun SignUpForm(
     confirmarVisible: Boolean,
     onConfirmarVisibleChange: () -> Unit,
     terminos: Boolean,
-    onTerminosChange: (Boolean) -> Unit,
+    // Alternar la casilla lo hace el ViewModel; aqui solo se avisa del clic
+    onTerminosClick: () -> Unit,
     onSignUpClick: () -> Unit,
     modifier: Modifier = Modifier
 ){
@@ -98,7 +99,7 @@ fun SignUpForm(
 
         TermsRow(
             checked = terminos,
-            onCheckedChange = { onTerminosChange(!terminos) },
+            onCheckedChange = onTerminosClick,
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -144,7 +145,7 @@ fun SignUpFormPreview(){
         confirmarVisible = false,
         onConfirmarVisibleChange = {},
         terminos = false,
-        onTerminosChange = {},
+        onTerminosClick = {},
         onSignUpClick = {}
     )
 }

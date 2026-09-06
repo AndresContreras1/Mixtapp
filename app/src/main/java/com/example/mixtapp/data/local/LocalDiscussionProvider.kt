@@ -58,6 +58,8 @@ private val sharedComments = listOf(
         timeAgo = "3h ago",
         content = "My only gripe is that it ends too soon. I wanted 20 more minutes of this world. Is there a deluxe edition or anything?",
         likes = 12,
+        isReply = false,
+        isLiked = false,
     ),
     DiscussionCommentUi(
         id = "comment-leo",
@@ -67,6 +69,7 @@ private val sharedComments = listOf(
         content = "Nothing announced yet sadly. There are some live recordings floating around from the tour though.",
         likes = 4,
         isReply = true,
+        isLiked = false,
     ),
     DiscussionCommentUi(
         id = "comment-alex-1",
@@ -75,6 +78,8 @@ private val sharedComments = listOf(
         timeAgo = "2h ago",
         content = "Hard disagree on the 4 stars tbh. Some of the mid-album tracks drag for me. Still great, but a 3 for me personally.",
         likes = 6,
+        isReply = false,
+        isLiked = false,
     ),
     DiscussionCommentUi(
         id = "comment-soph",
@@ -83,6 +88,8 @@ private val sharedComments = listOf(
         timeAgo = "1h ago",
         content = "Which tracks specifically? I'm curious because I felt the opposite -- the pacing felt intentional.",
         likes = 4,
+        isReply = false,
+        isLiked = false,
     ),
     DiscussionCommentUi(
         id = "comment-alex-2",
@@ -92,5 +99,6 @@ private val sharedComments = listOf(
         content = "Tracks 6 and 7 mostly. Good on their own but slow the momentum imo.",
         likes = 1,
         isReply = true,
+        isLiked = false,
     ),
 )
