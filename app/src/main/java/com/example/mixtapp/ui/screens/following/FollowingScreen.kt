@@ -5,11 +5,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalFollowingProvider
 import com.example.mixtapp.ui.screens.following.components.FollowingBackground
 import com.example.mixtapp.ui.screens.following.components.FollowingList
@@ -25,7 +28,9 @@ fun FollowingScreen(
 ) {
     val state by followingViewModel.uiState.collectAsState()
 
-    if (state.following != null) {
+    if (state.following == null) {
+        Text(text = stringResource(R.string.resenas_no_encontradas))
+    } else {
         FollowingScreenContent(
             following = state.following!!,
             friendQuery = state.friendQuery,

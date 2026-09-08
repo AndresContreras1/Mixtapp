@@ -2,11 +2,14 @@ package com.example.mixtapp.ui.screens.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalFriendActivityProvider
 import com.example.mixtapp.data.local.LocalSongReviewProvider
 import com.example.mixtapp.ui.components.AppBackground
@@ -27,7 +30,9 @@ fun HomeScreen(
 ) {
     val state by homeViewModel.uiState.collectAsState()
 
-    if (state.trending != null && state.friendActivity != null) {
+    if (state.trending == null || state.friendActivity == null) {
+        Text(text = stringResource(R.string.contenido_no_encontrado))
+    } else {
         HomeScreenContent(
             albums = state.albums,
             trending = state.trending!!,

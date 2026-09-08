@@ -11,12 +11,13 @@ import com.example.mixtapp.navigation.NavigationLogic
 import com.example.mixtapp.ui.components.BottomNav
 
 @Composable
-fun Mixtapp() {
+fun Mixtapp(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
     val navBackStackEntry = navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry.value?.destination?.route
 
     Scaffold(
+        modifier = modifier,
         bottomBar = {
             if (NavigationLogic.shouldShowBottomBar(currentRoute)) {
                 BottomNav(navController = navController)

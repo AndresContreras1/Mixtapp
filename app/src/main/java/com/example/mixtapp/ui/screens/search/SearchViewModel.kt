@@ -2,7 +2,7 @@ package com.example.mixtapp.ui.screens.search
 
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import com.example.mixtapp.data.local.LocalSearchCategories
+import com.example.mixtapp.data.local.LocalSearchCategoriesProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,7 +21,7 @@ class SearchViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun getCategories() {
-        _uiState.update { it.copy(categories = LocalSearchCategories.categories) }
+        _uiState.update { it.copy(categories = LocalSearchCategoriesProvider.categories) }
     }
 
     fun updateQuery(query: String) {

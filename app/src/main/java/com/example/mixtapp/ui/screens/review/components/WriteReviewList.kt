@@ -24,6 +24,7 @@ fun WriteReviewList(
     onReviewChange: (String) -> Unit,
     onMoodClick: (String) -> Unit,
     onDateChange: (String) -> Unit,
+    onDatePickerClick: () -> Unit,
     onFavoriteChange: (Boolean) -> Unit,
     onPostClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -73,6 +74,7 @@ fun WriteReviewList(
                 isFavorite = isFavorite,
                 hasPosted = hasPosted,
                 onDateChange = onDateChange,
+                onDatePickerClick = onDatePickerClick,
                 onFavoriteChange = onFavoriteChange,
                 onPostClick = onPostClick,
                 modifier = Modifier.padding(top = 22.dp)

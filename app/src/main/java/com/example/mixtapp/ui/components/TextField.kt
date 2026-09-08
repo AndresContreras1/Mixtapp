@@ -41,12 +41,12 @@ fun AppTextField(
     value: String,
     onValueChange: (String) -> Unit,
     icon: FieldIcon,
-    modifier: Modifier = Modifier,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     isPassword: Boolean = false,
     passwordVisible: Boolean = false,
     onPasswordVisibleChange: () -> Unit = {},
+    modifier: Modifier = Modifier,
 ) {
     val currentTransformation =
         if (isPassword && !passwordVisible) {

@@ -15,7 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.mixtapp.data.local.LocalSearchCategories
+import com.example.mixtapp.data.local.LocalSearchCategoriesProvider
 import com.example.mixtapp.ui.screens.search.components.BrowseBySection
 import com.example.mixtapp.ui.screens.search.components.SearchHeader
 import com.example.mixtapp.ui.screens.search.model.SearchCategoryUi
@@ -85,7 +85,7 @@ fun SearchScreenPreview() {
         SearchScreenContent(
             query = "",
             onQueryChange = {},
-            categories = LocalSearchCategories.categories,
+            categories = LocalSearchCategoriesProvider.categories,
             selectedCategoryId = null,
             onCategoryClick = {},
         )
