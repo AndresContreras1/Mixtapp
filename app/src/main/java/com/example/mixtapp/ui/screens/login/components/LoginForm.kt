@@ -4,10 +4,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -34,6 +36,7 @@ fun LoginForm(
     onPasswordVisibleChange: () -> Unit,
     // La regla de la longitud minima la aplica el ViewModel; aqui solo se pinta el aviso
     mostrarErrorContrasena: Boolean,
+    cargando: Boolean,
     onLoginClick: () -> Unit,
     modifier: Modifier = Modifier
 ){
@@ -83,18 +86,29 @@ fun LoginForm(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(82.dp),
+            enabled = !cargando,
             shape = RoundedCornerShape(41.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = PrimaryPink,
-                contentColor = Color.White
+                contentColor = Color.White,
+                disabledContainerColor = PrimaryPink,
+                disabledContentColor = Color.White
             ),
             elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
         ) {
-            Text(
-                text = stringResource(R.string.ingresar).uppercase(),
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Black
-            )
+            if (cargando) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(28.dp),
+                    color = Color.White,
+                    strokeWidth = 3.dp
+                )
+            } else {
+                Text(
+                    text = stringResource(R.string.ingresar).uppercase(),
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Black
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(19.dp))

@@ -20,6 +20,7 @@ import com.example.mixtapp.ui.screens.search.components.BrowseBySection
 import com.example.mixtapp.ui.screens.search.components.SearchHeader
 import com.example.mixtapp.ui.screens.search.model.SearchCategoryUi
 import com.example.mixtapp.ui.theme.DeepBackground
+import com.example.mixtapp.ui.theme.MixtappTheme
 
 @Composable
 fun SearchScreen(
@@ -80,11 +81,13 @@ fun SearchScreenContent(
 @Preview(showBackground = true, device = "spec:width=393dp,height=852dp")
 @Composable
 fun SearchScreenPreview() {
-    SearchScreenContent(
-        query = "",
-        onQueryChange = {},
-        categories = LocalSearchCategories.categories,
-        selectedCategoryId = null,
-        onCategoryClick = {},
-    )
+    MixtappTheme(darkTheme = true, dynamicColor = false) {
+        SearchScreenContent(
+            query = "",
+            onQueryChange = {},
+            categories = LocalSearchCategories.categories,
+            selectedCategoryId = null,
+            onCategoryClick = {},
+        )
+    }
 }

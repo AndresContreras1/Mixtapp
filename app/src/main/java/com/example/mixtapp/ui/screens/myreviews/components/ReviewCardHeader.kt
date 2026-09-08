@@ -18,10 +18,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mixtapp.R
 import com.example.mixtapp.ui.components.StarRating
 import com.example.mixtapp.ui.screens.myreviews.model.MyReviewUi
 import com.example.mixtapp.ui.theme.PalePink
@@ -39,7 +41,7 @@ fun ReviewCardHeader(
     ) {
         Image(
             painter = painterResource(id = review.coverRes),
-            contentDescription = review.title,
+            contentDescription = stringResource(R.string.album_cover, review.title),
             modifier = Modifier
                 .size(56.dp)
                 .clip(RoundedCornerShape(10.dp)),

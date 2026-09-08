@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
@@ -19,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mixtapp.R
 import com.example.mixtapp.ui.theme.LogoPink
 
 @Composable
@@ -28,13 +30,16 @@ fun HeaderLogo(modifier: Modifier = Modifier) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
+        val nombreClaro = stringResource(R.string.logo_mixt)
+        val nombreRosa = stringResource(R.string.logo_app)
+
         Text(
             text = buildAnnotatedString {
                 withStyle(SpanStyle(color = Color.White)) {
-                    append("Mixt")
+                    append(nombreClaro)
                 }
                 withStyle(SpanStyle(color = LogoPink)) {
-                    append("app")
+                    append(nombreRosa)
                 }
             },
             fontSize = 47.sp,

@@ -1,4 +1,4 @@
-package com.example.mixtapp.ui.screens.discussion.components
+package com.example.mixtapp.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -13,20 +13,28 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
-import com.example.mixtapp.ui.screens.discussion.model.DiscussionReviewUi
-import com.example.mixtapp.ui.theme.CircleWine
 import com.example.mixtapp.ui.theme.PalePink
-import com.example.mixtapp.ui.theme.PrimaryPink
 import com.example.mixtapp.ui.theme.TextPink
 
 @Composable
 fun ReviewAuthorRow(
-    review: DiscussionReviewUi,
+    reviewerName: String,
+    avatarText: String,
+    reviewedAt: String,
+    avatarSize: Dp,
+    avatarBrush: Brush,
+    avatarTextColor: Color,
+    nameFontSize: TextUnit,
+    dateFontSize: TextUnit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -35,15 +43,15 @@ fun ReviewAuthorRow(
     ) {
         Box(
             modifier = Modifier
-                .size(40.dp)
+                .size(avatarSize)
                 .clip(CircleShape)
-                .background(CircleWine),
+                .background(avatarBrush),
             contentAlignment = Alignment.Center,
         ) {
             Text(
-                text = review.reviewerAvatarText,
-                color = PrimaryPink,
-                fontSize = 14.sp,
+                text = avatarText,
+                color = avatarTextColor,
+                fontSize = nameFontSize,
                 fontWeight = FontWeight.Black,
             )
         }
@@ -51,24 +59,24 @@ fun ReviewAuthorRow(
         Spacer(modifier = Modifier.width(10.dp))
 
         Text(
-            text = review.reviewerName,
+            text = reviewerName,
             color = PalePink,
-            fontSize = 14.sp,
+            fontSize = nameFontSize,
             fontWeight = FontWeight.Bold,
         )
         Text(
             text = stringResource(R.string.reviewed),
             color = TextPink.copy(alpha = 0.56f),
-            fontSize = 14.sp,
+            fontSize = nameFontSize,
             fontWeight = FontWeight.Bold,
         )
 
         Spacer(modifier = Modifier.weight(1f))
 
         Text(
-            text = review.reviewedAt,
+            text = reviewedAt,
             color = TextPink.copy(alpha = 0.58f),
-            fontSize = 11.sp,
+            fontSize = dateFontSize,
             fontWeight = FontWeight.Bold,
         )
     }

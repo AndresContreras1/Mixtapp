@@ -21,6 +21,7 @@ import com.example.mixtapp.ui.screens.myreviews.components.MyReviewsFilter
 import com.example.mixtapp.ui.screens.myreviews.components.MyReviewsHeader
 import com.example.mixtapp.ui.screens.myreviews.model.MyReviewUi
 import com.example.mixtapp.ui.theme.DeepBackground
+import com.example.mixtapp.ui.theme.MixtappTheme
 
 @Composable
 fun MyReviewsScreen(
@@ -92,13 +93,15 @@ fun MyReviewsScreenContent(
 @Preview(showBackground = true, device = "spec:width=393dp,height=852dp")
 @Composable
 fun MyReviewsScreenPreview() {
-    MyReviewsScreenContent(
-        username = "Yourname",
-        joinDate = "march 2025",
-        reviews = LocalMyReviewsProvider.reviews,
-        filters = myReviewsFilters,
-        selectedFilter = myReviewsFilters.first(),
-        onFilterSelected = {},
-        onReviewClick = {}
-    )
+    MixtappTheme(darkTheme = true, dynamicColor = false) {
+        MyReviewsScreenContent(
+            username = "Yourname",
+            joinDate = "march 2025",
+            reviews = LocalMyReviewsProvider.reviews,
+            filters = myReviewsFilters,
+            selectedFilter = myReviewsFilters.first(),
+            onFilterSelected = {},
+            onReviewClick = {}
+        )
+    }
 }

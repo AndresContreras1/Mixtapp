@@ -5,6 +5,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.theme.PalePink
@@ -22,11 +23,9 @@ fun PasswordVisibilityIcon(
                 R.drawable.invisible
             }
         ),
-        contentDescription = if (passwordVisible) {
-            "Ocultar contraseña"
-        } else {
-            "Mostrar contraseña"
-        },
+        contentDescription = stringResource(
+            if (passwordVisible) R.string.ocultar_contrasena else R.string.mostrar_contrasena
+        ),
         tint = PalePink,
         modifier = modifier.size(18.dp)
     )

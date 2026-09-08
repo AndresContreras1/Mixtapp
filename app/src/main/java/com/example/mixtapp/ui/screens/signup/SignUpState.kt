@@ -17,4 +17,5 @@ data class SignUpState(
     @StringRes val errorMessageRes: Int? = null,
     // La navegacion solo entra a Home cuando el ViewModel lo autoriza
     val navigate: Boolean = false,
+    val cargando: Boolean = false,
 )

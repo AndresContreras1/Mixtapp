@@ -34,6 +34,7 @@ fun LoginScreen(
         onPasswordVisibleChange = { loginViewModel.mostrarEsconderContrasena() },
         mostrarErrorContrasena = state.mostrarErrorContrasena,
         errorMessageRes = state.errorMessageRes,
+        cargando = state.cargando,
         onLoginClick = { loginViewModel.loginButtonPressed() },
         onSignUpClick = onSignUpClick,
         modifier = modifier
@@ -50,6 +51,7 @@ fun LoginScreenContent(
     onPasswordVisibleChange: () -> Unit,
     mostrarErrorContrasena: Boolean,
     errorMessageRes: Int?,
+    cargando: Boolean,
     onLoginClick: () -> Unit,
     onSignUpClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -64,6 +66,7 @@ fun LoginScreenContent(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .imePadding()
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 31.dp),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -79,6 +82,7 @@ fun LoginScreenContent(
                 passwordVisible = passwordVisible,
                 onPasswordVisibleChange = onPasswordVisibleChange,
                 mostrarErrorContrasena = mostrarErrorContrasena,
+                cargando = cargando,
                 onLoginClick = onLoginClick
             )
 
@@ -110,6 +114,7 @@ fun LoginScreenLightPreview() {
             onPasswordVisibleChange = {},
             mostrarErrorContrasena = false,
             errorMessageRes = null,
+            cargando = false,
             onLoginClick = {},
             onSignUpClick = {}
         )
@@ -129,6 +134,7 @@ fun LoginScreenDarkPreview() {
             onPasswordVisibleChange = {},
             mostrarErrorContrasena = false,
             errorMessageRes = null,
+            cargando = false,
             onLoginClick = {},
             onSignUpClick = {}
         )

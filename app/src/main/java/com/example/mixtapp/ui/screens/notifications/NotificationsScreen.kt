@@ -21,6 +21,7 @@ import com.example.mixtapp.ui.screens.notifications.components.NotificationsHead
 import com.example.mixtapp.ui.screens.notifications.components.NotificationsTabs
 import com.example.mixtapp.ui.screens.notifications.model.NotificationUi
 import com.example.mixtapp.ui.theme.DeepBackground
+import com.example.mixtapp.ui.theme.MixtappTheme
 
 @Composable
 fun NotificationsScreen(
@@ -97,11 +98,13 @@ fun NotificationsScreenContent(
 fun NotificationsScreenPreview() {
     val todas = com.example.mixtapp.data.local.LocalNotificationsProvider.notifications
 
-    NotificationsScreenContent(
-        notifications = todas,
-        unreadCount = todas.count { !it.isRead },
-        selectedTab = "All",
-        onTabSelected = {},
-        onBackClick = {},
-    )
+    MixtappTheme(darkTheme = true, dynamicColor = false) {
+        NotificationsScreenContent(
+            notifications = todas,
+            unreadCount = todas.count { !it.isRead },
+            selectedTab = "All",
+            onTabSelected = {},
+            onBackClick = {},
+        )
+    }
 }

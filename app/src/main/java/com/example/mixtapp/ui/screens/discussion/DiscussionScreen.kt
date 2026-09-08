@@ -26,6 +26,7 @@ import com.example.mixtapp.ui.screens.discussion.components.DiscussionReviewCard
 import com.example.mixtapp.ui.screens.discussion.components.ThreadCommentItem
 import com.example.mixtapp.ui.screens.discussion.model.DiscussionUi
 import com.example.mixtapp.ui.theme.DeepBackground
+import com.example.mixtapp.ui.theme.MixtappTheme
 
 // Recibe solo el id de la resena; el ViewModel se encarga de buscar la discusion
 @Composable
@@ -126,16 +127,18 @@ fun DiscussionScreenContent(
 @Preview(showBackground = true, device = "spec:width=393dp,height=852dp")
 @Composable
 fun DiscussionScreenPreview() {
-    DiscussionScreenContent(
-        discussion = LocalDiscussionProvider.discussions.first(),
-        isReviewLiked = false,
-        isReviewShared = false,
-        likedCommentIds = emptySet(),
-        replyingToCommentId = null,
-        onBackClick = {},
-        onReviewLikeClick = {},
-        onReviewShareClick = {},
-        onCommentLikeClick = {},
-        onCommentReplyClick = {},
-    )
+    MixtappTheme(darkTheme = true, dynamicColor = false) {
+        DiscussionScreenContent(
+            discussion = LocalDiscussionProvider.discussions.first(),
+            isReviewLiked = false,
+            isReviewShared = false,
+            likedCommentIds = emptySet(),
+            replyingToCommentId = null,
+            onBackClick = {},
+            onReviewLikeClick = {},
+            onReviewShareClick = {},
+            onCommentLikeClick = {},
+            onCommentReplyClick = {},
+        )
+    }
 }

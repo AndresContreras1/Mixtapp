@@ -13,11 +13,19 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mixtapp.R
+import com.example.mixtapp.ui.components.ReviewActionsRow
+import com.example.mixtapp.ui.components.ReviewAlbumRow
+import com.example.mixtapp.ui.components.ReviewAuthorRow
 import com.example.mixtapp.ui.screens.discussion.model.DiscussionReviewUi
+import com.example.mixtapp.ui.theme.CircleWine
 import com.example.mixtapp.ui.theme.FieldBorder
+import com.example.mixtapp.ui.theme.PrimaryPink
 
 @Composable
 fun DiscussionReviewCard(
@@ -36,11 +44,28 @@ fun DiscussionReviewCard(
         shape = RoundedCornerShape(12.dp),
     ) {
         Column(modifier = Modifier.padding(14.dp)) {
-            ReviewAuthorRow(review = review)
+            ReviewAuthorRow(
+                reviewerName = review.reviewerName,
+                avatarText = review.reviewerAvatarText,
+                reviewedAt = review.reviewedAt,
+                avatarSize = 40.dp,
+                avatarBrush = SolidColor(CircleWine),
+                avatarTextColor = PrimaryPink,
+                nameFontSize = 14.sp,
+                dateFontSize = 11.sp,
+            )
 
             Spacer(modifier = Modifier.height(14.dp))
 
-            DiscussionAlbumRow(review = review)
+            ReviewAlbumRow(
+                coverRes = review.coverRes,
+                albumTitle = review.albumTitle,
+                artistName = review.artistName,
+                rating = review.rating,
+                coverSize = 80.dp,
+                coverCorner = 10.dp,
+                starSize = 14.dp,
+            )
 
             Text(
                 text = review.reviewText,
@@ -58,13 +83,17 @@ fun DiscussionReviewCard(
                 fontWeight = FontWeight.Bold,
             )
 
-            DiscussionReviewActions(
+            ReviewActionsRow(
                 likes = review.likes,
-                commentsCount = review.commentsCount,
                 isLiked = isLiked,
-                isShared = isShared,
                 onLikeClick = onLikeClick,
+                commentsLabel = stringResource(R.string.comments_count, review.commentsCount),
+                onCommentsClick = null,
+                isShared = isShared,
                 onShareClick = onShareClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 9.dp),
             )
         }
     }

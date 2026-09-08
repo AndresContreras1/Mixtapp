@@ -4,9 +4,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -17,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.theme.PrimaryPink
 
 
@@ -37,6 +40,7 @@ fun SignUpForm(
     terminos: Boolean,
     // Alternar la casilla lo hace el ViewModel; aqui solo se avisa del clic
     onTerminosClick: () -> Unit,
+    cargando: Boolean,
     onSignUpClick: () -> Unit,
     modifier: Modifier = Modifier
 ){
@@ -74,18 +78,29 @@ fun SignUpForm(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(64.dp),
+            enabled = !cargando,
             shape = RoundedCornerShape(32.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = PrimaryPink,
-                contentColor = Color.White
+                contentColor = Color.White,
+                disabledContainerColor = PrimaryPink,
+                disabledContentColor = Color.White
             ),
             elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
         ) {
-            Text(
-                text = stringResource(R.string.sign_up_btn),
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Black
-            )
+            if (cargando) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp),
+                    color = Color.White,
+                    strokeWidth = 3.dp
+                )
+            } else {
+                Text(
+                    text = stringResource(R.string.sign_up_btn),
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Black
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -95,21 +110,24 @@ fun SignUpForm(
 @Preview
 @Composable
 fun SignUpFormPreview(){
-    SignUpForm(
-        usuario = "",
-        onUsuarioChange = {},
-        email = "",
-        onEmailChange = {},
-        contrasena = "",
-        onContrasenaChange = {},
-        confirmarContrasena = "",
-        onConfirmarContrasenaChange = {},
-        contrasenaVisible = false,
-        onContrasenaVisibleChange = {},
-        confirmarVisible = false,
-        onConfirmarVisibleChange = {},
-        terminos = false,
-        onTerminosClick = {},
-        onSignUpClick = {}
-    )
+    MixtappTheme(darkTheme = true, dynamicColor = false) {
+        SignUpForm(
+            usuario = "",
+            onUsuarioChange = {},
+            email = "",
+            onEmailChange = {},
+            contrasena = "",
+            onContrasenaChange = {},
+            confirmarContrasena = "",
+            onConfirmarContrasenaChange = {},
+            contrasenaVisible = false,
+            onContrasenaVisibleChange = {},
+            confirmarVisible = false,
+            onConfirmarVisibleChange = {},
+            terminos = false,
+            onTerminosClick = {},
+            cargando = false,
+            onSignUpClick = {}
+        )
+    }
 }

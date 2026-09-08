@@ -20,7 +20,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.mixtapp.R
 import com.example.mixtapp.ui.theme.PrimaryPink
 import com.example.mixtapp.ui.theme.SurfaceCard
 
@@ -45,7 +47,10 @@ fun ActionButtons(
         ) {
             Icon(Icons.Default.Check, null, modifier = Modifier.size(18.dp), tint = PrimaryPink)
             Spacer(modifier = Modifier.width(8.dp))
-            Text(if (isSaved) "Saved" else "Save", color = PrimaryPink)
+            Text(
+                text = stringResource(if (isSaved) R.string.saved else R.string.save),
+                color = PrimaryPink
+            )
         }
 
         Button(
@@ -63,7 +68,10 @@ fun ActionButtons(
                 tint = if (isLiked) PrimaryPink else Color.White
             )
             Spacer(modifier = Modifier.width(8.dp))
-            Text(if (isLiked) "Liked" else "Like", color = Color.White)
+            Text(
+                text = stringResource(if (isLiked) R.string.liked else R.string.like),
+                color = Color.White
+            )
         }
     }
 }

@@ -42,6 +42,7 @@ fun SignUpScreen(
         onTerminosClick = { signUpViewModel.alternarTerminos() },
         mostrarErrorContrasenas = state.mostrarErrorContrasenas,
         errorMessageRes = state.errorMessageRes,
+        cargando = state.cargando,
         onSignUpClick = { signUpViewModel.signUpButtonPressed() },
         onLoginClick = onLoginClick,
         modifier = modifier
@@ -66,6 +67,7 @@ fun SignUpScreenContent(
     onTerminosClick: () -> Unit,
     mostrarErrorContrasenas: Boolean,
     errorMessageRes: Int?,
+    cargando: Boolean,
     onSignUpClick: () -> Unit,
     onLoginClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -79,6 +81,7 @@ fun SignUpScreenContent(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .imePadding()
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 31.dp),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -101,6 +104,7 @@ fun SignUpScreenContent(
                 onConfirmarVisibleChange = onConfirmarVisibleChange,
                 terminos = terminos,
                 onTerminosClick = onTerminosClick,
+                cargando = cargando,
                 onSignUpClick = onSignUpClick
             )
 
@@ -136,6 +140,7 @@ private fun SignUpScreenContentPreview() {
         onTerminosClick = {},
         mostrarErrorContrasenas = false,
         errorMessageRes = null,
+        cargando = false,
         onSignUpClick = {},
         onLoginClick = {}
     )

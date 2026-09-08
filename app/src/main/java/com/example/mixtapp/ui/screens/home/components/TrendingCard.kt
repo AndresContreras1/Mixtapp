@@ -56,7 +56,7 @@ fun TrendingCard(
     ) {
         Image(
             painter = painterResource(id = album.coverRes),
-            contentDescription = null,
+            contentDescription = stringResource(R.string.album_cover, album.title),
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop,
             alpha = 0.4f

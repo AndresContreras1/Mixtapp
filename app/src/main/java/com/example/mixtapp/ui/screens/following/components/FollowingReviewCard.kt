@@ -10,12 +10,19 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mixtapp.ui.components.ReviewActionsRow
+import com.example.mixtapp.ui.components.ReviewAlbumRow
+import com.example.mixtapp.ui.components.ReviewAuthorRow
 import com.example.mixtapp.ui.screens.following.model.FollowingReviewUi
+import com.example.mixtapp.ui.theme.CircleBerry
+import com.example.mixtapp.ui.theme.CircleWine
 import com.example.mixtapp.ui.theme.FieldBorder
+import com.example.mixtapp.ui.theme.PalePink
 
 @Composable
 fun FollowingReviewCard(
@@ -36,9 +43,29 @@ fun FollowingReviewCard(
         shape = RoundedCornerShape(12.dp),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            FollowingReviewAuthorRow(review = review)
+            ReviewAuthorRow(
+                reviewerName = review.reviewerName,
+                avatarText = review.reviewerInitials,
+                reviewedAt = review.reviewedAt,
+                avatarSize = 44.dp,
+                avatarBrush = Brush.linearGradient(
+                    colors = listOf(CircleBerry, Color(0xFFF5C25E), CircleWine)
+                ),
+                avatarTextColor = PalePink,
+                nameFontSize = 15.sp,
+                dateFontSize = 12.sp,
+            )
 
-            FollowingAlbumRow(review = review)
+            ReviewAlbumRow(
+                coverRes = review.coverRes,
+                albumTitle = review.albumTitle,
+                artistName = review.artistName,
+                rating = review.rating,
+                coverSize = 88.dp,
+                coverCorner = 12.dp,
+                starSize = 16.dp,
+                modifier = Modifier.padding(top = 18.dp),
+            )
 
             Text(
                 text = review.reviewText,
@@ -56,14 +83,15 @@ fun FollowingReviewCard(
                 fontWeight = FontWeight.Bold,
             )
 
-            FollowingReviewActions(
+            ReviewActionsRow(
                 likes = review.likes,
-                comments = review.comments,
                 isLiked = isLiked,
-                isShared = isShared,
                 onLikeClick = onLikeClick,
-                onShareClick = onShareClick,
+                commentsLabel = review.comments.toString(),
                 onCommentsClick = onCommentsClick,
+                isShared = isShared,
+                onShareClick = onShareClick,
+                modifier = Modifier.padding(top = 10.dp),
             )
         }
     }

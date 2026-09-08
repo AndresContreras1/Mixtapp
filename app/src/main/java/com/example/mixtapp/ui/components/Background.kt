@@ -13,6 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.ui.theme.CircleBerry
 import com.example.mixtapp.ui.theme.CircleWine
+import com.example.mixtapp.ui.theme.MixtappTheme
 
 @Composable
 fun AppBackground(
@@ -58,5 +59,7 @@ fun BoxScope.DecorativeCircles() {
 @Composable
 @Preview(showBackground = true)
 fun DecorativeCirclesPreview() {
-    AppBackground()
+    MixtappTheme(darkTheme = true, dynamicColor = false) {
+        AppBackground()
+    }
 }

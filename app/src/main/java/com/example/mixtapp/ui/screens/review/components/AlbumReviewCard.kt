@@ -48,7 +48,7 @@ fun AlbumReviewCard(
     ) {
         Image(
             painter = painterResource(id = album.coverRes),
-            contentDescription = album.title,
+            contentDescription = stringResource(R.string.album_cover, album.title),
             modifier = Modifier
                 .size(58.dp)
                 .clip(RoundedCornerShape(8.dp)),
