@@ -97,8 +97,8 @@ fun ProfileScreenPreview() {
         ProfileScreenContent(
             profile = LocalProfileProvider.profile,
             usuario = "usuario",
-            tabs = profileTabs,
-            selectedTab = profileTabs.first(),
+            tabs = LocalProfileProvider.tabs,
+            selectedTab = LocalProfileProvider.tabs.first(),
             onTabSelected = {},
             onLogoutClick = {}
         )

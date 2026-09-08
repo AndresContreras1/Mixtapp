@@ -1,5 +1,7 @@
 package com.example.mixtapp.ui.screens.discussion.model
 
+import androidx.annotation.DrawableRes
+
 data class DiscussionUi(
     val review: DiscussionReviewUi,
     val comments: List<DiscussionCommentUi>,
@@ -10,7 +12,7 @@ data class DiscussionReviewUi(
     val reviewerName: String,
     val reviewerAvatarText: String,
     val reviewedAt: String,
-    val coverRes: Int,
+    @DrawableRes val coverRes: Int,
     val albumTitle: String,
     val artistName: String,
     val rating: Int,
