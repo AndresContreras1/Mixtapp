@@ -5,6 +5,10 @@ import com.example.mixtapp.ui.screens.review.model.ReviewAlbumUi
 
 object LocalReviewAlbumProvider {
 
+    val fechaEscuchaInicial = "13/08/2026"
+
+    val fechaEscuchaSugerida = "20/08/2026"
+
     // Moods disponibles al escribir una resena
     val moods = listOf(
         "Melancholic",

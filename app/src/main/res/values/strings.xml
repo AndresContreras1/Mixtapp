@@ -52,6 +52,9 @@
     <string name="cancion_no_encontrada">No se encontro la cancion</string>
     <string name="discusion_no_encontrada">No se encontro la discusion</string>
     <string name="album_no_encontrado">No se encontro el album</string>
+    <string name="resenas_no_encontradas">No se encontraron las resenas</string>
+    <string name="contenido_no_encontrado">No se encontro el contenido</string>
+    <string name="perfil_no_encontrado">No se encontro el perfil</string>
     <string name="reply">Reply</string>
     <string name="error_credenciales">Correo o contraseña incorrectos</string>
     <string name="error_registro">No se pudo crear la cuenta. Intenta con otro correo</string>
@@ -137,6 +140,7 @@
 
     <!-- Accesibilidad -->
     <string name="album_cover">Carátula de %1$s</string>
+    <string name="elegir_fecha_escucha">Elegir la fecha de escucha</string>
     <string name="mostrar_contrasena">Mostrar contraseña</string>
     <string name="ocultar_contrasena">Ocultar contraseña</string>
     <string name="nav_home">Inicio</string>

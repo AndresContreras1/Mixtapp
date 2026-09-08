@@ -4,9 +4,12 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -35,6 +38,7 @@ import com.example.mixtapp.ui.theme.PrimaryPink
 fun DateListenedRow(
     listenedDate: String,
     onDateChange: (String) -> Unit,
+    onDatePickerClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -68,21 +72,31 @@ fun DateListenedRow(
             BasicTextField(
                 value = listenedDate,
                 onValueChange = { onDateChange(it.take(10)) },
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight(),
                 singleLine = true,
                 textStyle = TextStyle(
                     color = PalePink.copy(alpha = 0.72f),
                     fontSize = 14.sp
-                )
+                ),
+                decorationBox = { innerTextField ->
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.CenterStart
+                    ) {
+                        innerTextField()
+                    }
+                }
             )
 
             Spacer(modifier = Modifier.width(6.dp))
 
             Icon(
                 imageVector = Icons.Default.DateRange,
-                contentDescription = null,
+                contentDescription = stringResource(R.string.elegir_fecha_escucha),
                 tint = PrimaryPink,
-                modifier = Modifier.clickable { onDateChange("20/08/2026") }
+                modifier = Modifier.clickable { onDatePickerClick() }
             )
         }
     }

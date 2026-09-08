@@ -24,6 +24,7 @@ fun ReviewActionsCard(
     isFavorite: Boolean,
     hasPosted: Boolean,
     onDateChange: (String) -> Unit,
+    onDatePickerClick: () -> Unit,
     onFavoriteChange: (Boolean) -> Unit,
     onPostClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -39,7 +40,8 @@ fun ReviewActionsCard(
         ) {
             DateListenedRow(
                 listenedDate = listenedDate,
-                onDateChange = onDateChange
+                onDateChange = onDateChange,
+                onDatePickerClick = onDatePickerClick
             )
 
             Spacer(modifier = Modifier.height(14.dp))

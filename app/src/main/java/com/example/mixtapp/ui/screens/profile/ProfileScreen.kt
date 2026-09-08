@@ -2,11 +2,14 @@ package com.example.mixtapp.ui.screens.profile
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalProfileProvider
 import com.example.mixtapp.ui.screens.profile.components.FavoriteSection
 import com.example.mixtapp.ui.screens.profile.components.LogoutButton
@@ -24,7 +27,9 @@ fun ProfileScreen(
 ) {
     val state by profileViewModel.uiState.collectAsState()
 
-    if (state.profile != null) {
+    if (state.profile == null) {
+        Text(text = stringResource(R.string.perfil_no_encontrado))
+    } else {
         ProfileScreenContent(
             profile = state.profile!!,
             usuario = state.usuario,

@@ -2,7 +2,7 @@ package com.example.mixtapp.data.local
 
 import com.example.mixtapp.ui.screens.search.model.SearchCategoryUi
 
-object LocalSearchCategories {
+object LocalSearchCategoriesProvider {
     val categories = listOf(
         SearchCategoryUi(
             id = "release-date",

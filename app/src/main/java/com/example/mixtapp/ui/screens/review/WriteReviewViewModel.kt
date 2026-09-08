@@ -53,6 +53,10 @@ class WriteReviewViewModel @Inject constructor() : ViewModel() {
         _uiState.update { it.copy(listenedDate = listenedDate) }
     }
 
+    fun usarFechaSugerida() {
+        _uiState.update { it.copy(listenedDate = LocalReviewAlbumProvider.fechaEscuchaSugerida) }
+    }
+
     fun updateIsFavorite(isFavorite: Boolean) {
         _uiState.update { it.copy(isFavorite = isFavorite) }
     }
