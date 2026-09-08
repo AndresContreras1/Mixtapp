@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1020210410534",
+    "project_id": "mixtapp-720eb",
+    "storage_bucket": "mixtapp-720eb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1020210410534:android:28ad77417c8e17ff9962e7",
+        "android_client_info": {
+          "package_name": "com.example.mixtapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBgeNDsYvH_5XyOM1mpmZ21yml-gSmQjE0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
