@@ -18,9 +18,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mixtapp.R
 import com.example.mixtapp.ui.screens.home.model.FriendActivityUi
 import com.example.mixtapp.ui.theme.FieldBackground
 import com.example.mixtapp.ui.theme.FieldBorder
@@ -54,7 +56,7 @@ fun FriendsActivity(
         Spacer(modifier = Modifier.height(12.dp))
 
         Text(
-            text = "${activity.albumTitle} - ${activity.artistName}",
+            text = stringResource(R.string.titulo_guion_subtitulo, activity.albumTitle, activity.artistName),
             color = PalePink,
             fontSize = 14.sp,
             fontWeight = FontWeight.Bold
@@ -63,7 +65,7 @@ fun FriendsActivity(
         Spacer(modifier = Modifier.height(6.dp))
 
         Text(
-            text = "\"${activity.quote}\"",
+            text = stringResource(R.string.cita_entre_comillas, activity.quote),
             color = Color.White.copy(alpha = 0.9f),
             fontSize = 12.sp
         )

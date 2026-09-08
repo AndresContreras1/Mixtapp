@@ -73,7 +73,7 @@ fun HomeHeader(
 
             Icon(
                 imageVector = Icons.Default.Notifications,
-                contentDescription = "Notifications",
+                contentDescription = stringResource(R.string.notifications_icon),
                 tint = TextPink,
                 modifier = Modifier
                     .size(30.dp)

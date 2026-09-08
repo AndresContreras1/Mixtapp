@@ -14,10 +14,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mixtapp.R
 import com.example.mixtapp.ui.theme.CircleWine
 
 @Composable
@@ -53,7 +55,7 @@ fun SearchHeader(
             Spacer(modifier = Modifier.height(118.dp))
 
             Text(
-                text = "Search",
+                text = stringResource(R.string.search_title),
                 modifier = Modifier.align(Alignment.CenterHorizontally),
                 color = Color.White,
                 fontSize = 31.sp,

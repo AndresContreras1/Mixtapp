@@ -18,10 +18,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mixtapp.R
 import com.example.mixtapp.ui.components.StarRating
 import com.example.mixtapp.ui.theme.PrimaryPink
 
@@ -47,9 +49,9 @@ fun ReleaseStats(
         ) {
             StatItem(value = rating, label = null, showStars = true, modifier = Modifier.weight(1f))
             VerticalDivider(color = Color.White.copy(alpha = 0.2f), modifier = Modifier.height(30.dp))
-            StatItem(value = ratingCount, label = "ratings", modifier = Modifier.weight(1f))
+            StatItem(value = ratingCount, label = stringResource(R.string.ratings_label), modifier = Modifier.weight(1f))
             VerticalDivider(color = Color.White.copy(alpha = 0.2f), modifier = Modifier.height(30.dp))
-            StatItem(value = recommendRate, label = "recommend", modifier = Modifier.weight(1f))
+            StatItem(value = recommendRate, label = stringResource(R.string.recommend_label), modifier = Modifier.weight(1f))
         }
     }
 }

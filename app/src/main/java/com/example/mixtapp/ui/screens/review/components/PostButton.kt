@@ -13,9 +13,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mixtapp.R
 import com.example.mixtapp.ui.theme.FieldBorder
 import com.example.mixtapp.ui.theme.PrimaryPink
 
@@ -36,7 +38,11 @@ fun PostButton(
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = if (hasPosted) "POSTED" else "POST",
+            text = if (hasPosted) {
+                stringResource(R.string.posted)
+            } else {
+                stringResource(R.string.post)
+            },
             color = PrimaryPink,
             fontSize = 14.sp,
             fontWeight = FontWeight.Black
