@@ -16,8 +16,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mixtapp.R
 import com.example.mixtapp.ui.theme.PalePink
 import com.example.mixtapp.ui.theme.PrimaryPink
 
@@ -38,7 +40,7 @@ fun FollowingReviewActions(
     ) {
         Icon(
             imageVector = if (isLiked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-            contentDescription = "Like review",
+            contentDescription = stringResource(R.string.like_review),
             tint = if (isLiked) PrimaryPink else PalePink.copy(alpha = 0.55f),
             modifier = Modifier
                 .size(16.dp)
@@ -54,7 +56,7 @@ fun FollowingReviewActions(
 
         Icon(
             imageVector = Icons.Outlined.ChatBubbleOutline,
-            contentDescription = "Open discussion",
+            contentDescription = stringResource(R.string.open_discussion),
             tint = PalePink.copy(alpha = 0.55f),
             modifier = Modifier
                 .size(15.dp)
@@ -70,7 +72,7 @@ fun FollowingReviewActions(
 
         Icon(
             imageVector = Icons.Outlined.Share,
-            contentDescription = "Share review",
+            contentDescription = stringResource(R.string.share_review),
             tint = if (isShared) PrimaryPink else PalePink.copy(alpha = 0.6f),
             modifier = Modifier
                 .size(18.dp)

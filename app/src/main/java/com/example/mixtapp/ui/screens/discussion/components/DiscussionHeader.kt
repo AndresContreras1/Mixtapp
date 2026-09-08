@@ -1,7 +1,9 @@
 package com.example.mixtapp.ui.screens.discussion.components
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,11 +17,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mixtapp.R
 import com.example.mixtapp.ui.theme.PalePink
 import com.example.mixtapp.ui.theme.TextPink
 
@@ -57,7 +65,7 @@ fun DiscussionHeader(
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                contentDescription = "Back",
+                contentDescription = stringResource(R.string.back),
                 tint = TextPink.copy(alpha = 0.72f),
                 modifier = Modifier
                     .size(30.dp)
@@ -65,7 +73,7 @@ fun DiscussionHeader(
             )
 
             Text(
-                text = "Discussion",
+                text = stringResource(R.string.discussion),
                 color = Color.White,
                 fontSize = 25.sp,
                 fontFamily = FontFamily.Serif,
@@ -75,7 +83,7 @@ fun DiscussionHeader(
             Spacer(modifier = Modifier.weight(1f))
 
             Text(
-                text = "$commentsCount comments",
+                text = stringResource(R.string.comments_count, commentsCount),
                 color = PalePink,
                 fontSize = 13.sp,
                 fontFamily = FontFamily.Serif,
@@ -97,31 +105,31 @@ private fun StatusIcons(modifier: Modifier = Modifier) {
             verticalAlignment = Alignment.Bottom,
         ) {
             listOf(9.dp, 13.dp, 17.dp).forEach { barHeight ->
-                androidx.compose.foundation.layout.Box(
+                Box(
                     modifier = Modifier
                         .size(width = 4.dp, height = barHeight)
                         .then(Modifier),
                 ) {
-                    androidx.compose.foundation.Canvas(modifier = Modifier.matchParentSize()) {
+                    Canvas(modifier = Modifier.matchParentSize()) {
                         drawRoundRect(color = Color.White)
                     }
                 }
             }
         }
 
-        androidx.compose.foundation.Canvas(modifier = Modifier.size(width = 39.dp, height = 18.dp)) {
+        Canvas(modifier = Modifier.size(width = 39.dp, height = 18.dp)) {
             drawRoundRect(
                 color = Color.White,
-                topLeft = androidx.compose.ui.geometry.Offset.Zero,
-                size = androidx.compose.ui.geometry.Size(35.dp.toPx(), 15.dp.toPx()),
-                cornerRadius = androidx.compose.ui.geometry.CornerRadius(5.dp.toPx()),
-                style = androidx.compose.ui.graphics.drawscope.Stroke(width = 2.6.dp.toPx()),
+                topLeft = Offset.Zero,
+                size = Size(35.dp.toPx(), 15.dp.toPx()),
+                cornerRadius = CornerRadius(5.dp.toPx()),
+                style = Stroke(width = 2.6.dp.toPx()),
             )
             drawRoundRect(
                 color = Color.White,
-                topLeft = androidx.compose.ui.geometry.Offset(5.dp.toPx(), 4.dp.toPx()),
-                size = androidx.compose.ui.geometry.Size(24.dp.toPx(), 7.dp.toPx()),
-                cornerRadius = androidx.compose.ui.geometry.CornerRadius(2.dp.toPx()),
+                topLeft = Offset(5.dp.toPx(), 4.dp.toPx()),
+                size = Size(24.dp.toPx(), 7.dp.toPx()),
+                cornerRadius = CornerRadius(2.dp.toPx()),
             )
         }
     }

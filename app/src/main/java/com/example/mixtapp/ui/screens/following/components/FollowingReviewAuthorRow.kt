@@ -15,9 +15,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mixtapp.R
 import com.example.mixtapp.ui.screens.following.model.FollowingReviewUi
 import com.example.mixtapp.ui.theme.CircleBerry
 import com.example.mixtapp.ui.theme.CircleWine
@@ -61,7 +63,7 @@ fun FollowingReviewAuthorRow(
             fontWeight = FontWeight.Bold,
         )
         Text(
-            text = " Reviewed",
+            text = stringResource(R.string.reviewed),
             color = TextPink.copy(alpha = 0.56f),
             fontSize = 15.sp,
             fontWeight = FontWeight.Bold,

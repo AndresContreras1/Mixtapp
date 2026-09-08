@@ -16,10 +16,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mixtapp.R
 import com.example.mixtapp.ui.theme.CircleWine
 import com.example.mixtapp.ui.theme.PalePink
 import com.example.mixtapp.ui.theme.PrimaryPink
@@ -59,7 +61,7 @@ fun MyReviewsHeader(
                     fontFamily = FontFamily.Serif
                 )
                 Text(
-                    text = "Join $joinDate",
+                    text = stringResource(R.string.join_date, joinDate),
                     color = PalePink.copy(alpha = 0.6f),
                     fontSize = 13.sp
                 )
@@ -69,7 +71,7 @@ fun MyReviewsHeader(
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
-            text = "My reviews",
+            text = stringResource(R.string.my_reviews),
             color = Color.White,
             fontSize = 26.sp,
             fontWeight = FontWeight.Black,

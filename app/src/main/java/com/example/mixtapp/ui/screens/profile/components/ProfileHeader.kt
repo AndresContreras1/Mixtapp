@@ -32,6 +32,8 @@ import com.example.mixtapp.ui.theme.PalePink
 
 @Composable
 fun ProfileHeader(
+    // El usuario sale del correo de Firebase, ya recortado por el ViewModel
+    usuario: String,
     // Las pestanas llegan del ViewModel, no se declaran aqui
     tabs: List<String>,
     selectedTab: String,
@@ -58,7 +60,7 @@ fun ProfileHeader(
                 modifier = Modifier.size(28.dp)
             )
             Text(
-                text = "username",
+                text = usuario,
                 color = Color.White,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Black

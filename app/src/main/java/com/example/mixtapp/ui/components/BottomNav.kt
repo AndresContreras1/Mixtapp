@@ -10,17 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.automirrored.outlined.List
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -30,6 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -38,50 +28,6 @@ import com.example.mixtapp.navigation.Screen
 import com.example.mixtapp.ui.theme.CircleWine
 import com.example.mixtapp.ui.theme.PalePink
 import com.example.mixtapp.ui.theme.PrimaryPink
-
-data class BottomNavItem(
-    val filledIcon: ImageVector,
-    val outlineIcon: ImageVector,
-    // Patron de la ruta, para saber si el item esta seleccionado
-    val route: String,
-    // Ruta concreta a la que navega, distinta cuando la ruta lleva un id
-    val destination: String
-)
-
-val bottomNavItems = listOf(
-    BottomNavItem(
-        filledIcon = Icons.Filled.Home,
-        outlineIcon = Icons.Outlined.Home,
-        route = Screen.Home.route,
-        destination = Screen.Home.route
-    ),
-    BottomNavItem(
-        filledIcon = Icons.Filled.Search,
-        outlineIcon = Icons.Outlined.Search,
-        route = Screen.Search.route,
-        destination = Screen.Search.route
-    ),
-    BottomNavItem(
-        filledIcon = Icons.Filled.Add,
-        outlineIcon = Icons.Outlined.Add,
-        route = Screen.WriteReview.route,
-        destination = Screen.WriteReview.createRoute(
-            albumId = Screen.WriteReview.DEFAULT_ALBUM_ID
-        )
-    ),
-    BottomNavItem(
-        filledIcon = Icons.AutoMirrored.Filled.List,
-        outlineIcon = Icons.AutoMirrored.Outlined.List,
-        route = Screen.MyReviews.route,
-        destination = Screen.MyReviews.route
-    ),
-    BottomNavItem(
-        filledIcon = Icons.Filled.Person,
-        outlineIcon = Icons.Outlined.Person,
-        route = Screen.Profile.route,
-        destination = Screen.Profile.route
-    )
-)
 
 @Composable
 fun BottomNav(
@@ -108,37 +54,25 @@ fun BottomNav(
                 val icon = if (isSelected) item.filledIcon else item.outlineIcon
 
                 when (item.route) {
-                    Screen.WriteReview.route -> Box(
-                        modifier = Modifier
-                            .size(44.dp)
-                            .clip(CircleShape)
-                            .background(PrimaryPink)
-                            .clickable { navController.navigate(item.destination) },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = icon,
-                            contentDescription = item.route,
-                            tint = Color.White,
-                            modifier = Modifier.size(30.dp)
-                        )
-                    }
+                    Screen.WriteReview.route -> CircledNavIcon(
+                        icon = icon,
+                        contentDescription = item.route,
+                        circleSize = 44.dp,
+                        circleColor = PrimaryPink,
+                        iconSize = 30.dp,
+                        iconTint = Color.White,
+                        onClick = { navController.navigate(item.destination) }
+                    )
 
-                    Screen.Profile.route -> Box(
-                        modifier = Modifier
-                            .size(36.dp)
-                            .clip(CircleShape)
-                            .background(CircleWine.copy(alpha = 0.5f))
-                            .clickable { navController.navigate(item.destination) },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = icon,
-                            contentDescription = item.route,
-                            tint = PrimaryPink,
-                            modifier = Modifier.size(28.dp)
-                        )
-                    }
+                    Screen.Profile.route -> CircledNavIcon(
+                        icon = icon,
+                        contentDescription = item.route,
+                        circleSize = 36.dp,
+                        circleColor = CircleWine.copy(alpha = 0.5f),
+                        iconSize = 28.dp,
+                        iconTint = PrimaryPink,
+                        onClick = { navController.navigate(item.destination) }
+                    )
 
                     else -> Icon(
                         imageVector = icon,
@@ -151,6 +85,34 @@ fun BottomNav(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun CircledNavIcon(
+    icon: ImageVector,
+    contentDescription: String,
+    circleSize: Dp,
+    circleColor: Color,
+    iconSize: Dp,
+    iconTint: Color,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .size(circleSize)
+            .clip(CircleShape)
+            .background(circleColor)
+            .clickable { onClick() },
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = contentDescription,
+            tint = iconTint,
+            modifier = Modifier.size(iconSize)
+        )
     }
 }
 

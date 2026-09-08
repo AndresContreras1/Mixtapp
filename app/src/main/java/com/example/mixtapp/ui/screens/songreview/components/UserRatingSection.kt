@@ -19,8 +19,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mixtapp.R
 import com.example.mixtapp.ui.components.StarRating
 import com.example.mixtapp.ui.theme.PrimaryPink
 
@@ -41,7 +43,7 @@ fun UserRatingSection(
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = "Your rating",
+                text = stringResource(R.string.your_rating),
                 color = Color.White.copy(alpha = 0.6f),
                 fontSize = 14.sp
             )

@@ -8,4 +8,8 @@ data class ProfileState(
     // Las pestanas las provee el ViewModel; el componente solo las pinta
     val tabs: List<String> = emptyList(),
     val selectedTab: String = "",
+    // Nombre de usuario que sale del correo de Firebase, ya sin la arroba
+    val usuario: String = "",
+    // Lo pone el ViewModel al cerrar sesion; la navegacion solo lo ejecuta
+    val sesionCerrada: Boolean = false,
 )

@@ -21,10 +21,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mixtapp.R
 import com.example.mixtapp.ui.screens.review.model.ReviewAlbumUi
 import com.example.mixtapp.ui.theme.FieldBorder
 import com.example.mixtapp.ui.theme.PalePink
@@ -66,7 +68,7 @@ fun AlbumReviewCard(
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "${album.artist} · ${album.year} · ${album.genre}",
+                text = stringResource(R.string.album_meta, album.artist, album.year, album.genre),
                 color = PalePink.copy(alpha = 0.72f),
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Bold,

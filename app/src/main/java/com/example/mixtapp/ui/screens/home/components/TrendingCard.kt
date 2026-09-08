@@ -78,7 +78,7 @@ fun TrendingCard(
                 modifier = Modifier.align(Alignment.BottomStart)
             ) {
                 Text(
-                    text = "${album.artist} - ${album.title}",
+                    text = stringResource(R.string.titulo_guion_subtitulo, album.artist, album.title),
                     color = Color.White,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold
@@ -99,7 +99,7 @@ fun TrendingCard(
                     Spacer(modifier = Modifier.width(10.dp))
 
                     Text(
-                        text = "128k plays this week",
+                        text = stringResource(R.string.plays_this_week),
                         color = PalePink,
                         fontSize = 12.sp
                     )
