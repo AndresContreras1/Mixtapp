@@ -17,10 +17,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mixtapp.R
 import com.example.mixtapp.ui.theme.PrimaryPink
 
 @Composable
@@ -35,7 +37,7 @@ fun NotificationsHeader(
     ) {
         Icon(
             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-            contentDescription = "Back",
+            contentDescription = stringResource(R.string.back),
             tint = Color.White,
             modifier = Modifier
                 .size(28.dp)
@@ -45,7 +47,7 @@ fun NotificationsHeader(
         Spacer(modifier = Modifier.width(16.dp))
 
         Text(
-            text = "Notifications",
+            text = stringResource(R.string.notifications_title),
             color = Color.White,
             fontSize = 26.sp,
             fontWeight = FontWeight.Black,

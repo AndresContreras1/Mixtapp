@@ -9,6 +9,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.data.local.LocalProfileProvider
 import com.example.mixtapp.ui.screens.profile.components.FavoriteSection
+import com.example.mixtapp.ui.screens.profile.components.LogoutButton
 import com.example.mixtapp.ui.screens.profile.components.ProfileAvatarSection
 import com.example.mixtapp.ui.screens.profile.components.ProfileHeader
 import com.example.mixtapp.ui.screens.profile.components.RatingsSection
@@ -26,9 +27,11 @@ fun ProfileScreen(
     if (state.profile != null) {
         ProfileScreenContent(
             profile = state.profile!!,
+            usuario = state.usuario,
             tabs = state.tabs,
             selectedTab = state.selectedTab,
             onTabSelected = { profileViewModel.updateSelectedTab(tab = it) },
+            onLogoutClick = { profileViewModel.cerrarSesion() },
             modifier = modifier
         )
     }
@@ -37,9 +40,11 @@ fun ProfileScreen(
 @Composable
 fun ProfileScreenContent(
     profile: ProfileUi,
+    usuario: String,
     tabs: List<String>,
     selectedTab: String,
     onTabSelected: (String) -> Unit,
+    onLogoutClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -50,6 +55,7 @@ fun ProfileScreenContent(
         Column(modifier = Modifier.fillMaxSize()) {
 
             ProfileHeader(
+                usuario = usuario,
                 tabs = tabs,
                 selectedTab = selectedTab,
                 onTabSelected = onTabSelected
@@ -76,6 +82,8 @@ fun ProfileScreenContent(
 
                 RatingsSection(ratingBars = profile.ratingBars)
 
+                LogoutButton(onLogoutClick = onLogoutClick)
+
             }
 
         }
@@ -88,9 +96,11 @@ fun ProfileScreenPreview() {
     MixtappTheme(dynamicColor = false) {
         ProfileScreenContent(
             profile = LocalProfileProvider.profile,
+            usuario = "usuario",
             tabs = profileTabs,
             selectedTab = profileTabs.first(),
-            onTabSelected = {}
+            onTabSelected = {},
+            onLogoutClick = {}
         )
     }
 }

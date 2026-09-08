@@ -36,11 +36,6 @@
     <string name="popular_albums">Popular Albums</string>
     <string name="see_all">See all</string>
     <string name="friends_activity">Friends Activity</string>
-    <string name="home_label">Home</string>
-    <string name="explore_label">Explore</string>
-    <string name="add_label">Add</string>
-    <string name="lists_label">Lists</string>
-    <string name="profile_label">Profile</string>
 
     <!-- Profile Extra -->
     <string name="user_stats">%1$d reviews • %2$d albums • %3$d lists</string>
@@ -60,4 +55,69 @@
     <string name="reply">Reply</string>
     <string name="error_credenciales">Correo o contraseña incorrectos</string>
     <string name="error_registro">No se pudo crear la cuenta. Intenta con otro correo</string>
+
+    <!-- Discussion -->
+    <string name="comments">Comments</string>
+    <string name="discussion">Discussion</string>
+    <string name="comments_count">%1$d comments</string>
+    <string name="replying">Replying</string>
+    <string name="reviewed">" Reviewed"</string>
+
+    <!-- Descripciones de los iconos, para lectores de pantalla -->
+    <string name="like_comment">Like comment</string>
+    <string name="back">Back</string>
+    <string name="like_review">Like review</string>
+    <string name="share_review">Share review</string>
+    <string name="open_discussion">Open discussion</string>
+    <string name="notifications_icon">Notifications</string>
+
+    <!-- Following -->
+    <string name="following_title">Following</string>
+    <string name="following_followers_count">%1$d following • %2$d followers</string>
+    <string name="find_friends">Find friends</string>
+
+    <!-- Home -->
+    <string name="titulo_guion_subtitulo">%1$s - %2$s</string>
+    <string name="cita_entre_comillas">\"%1$s\"</string>
+    <string name="plays_this_week">128k plays this week</string>
+
+    <!-- My reviews -->
+    <string name="join_date">Join %1$s</string>
+    <string name="my_reviews">My reviews</string>
+    <string name="duracion_fecha">"%1$s   %2$s"</string>
+
+    <!-- Notifications -->
+    <string name="notifications_title">Notifications</string>
+
+    <!-- Profile -->
+    <string name="reviewed_today_rating">%1$s · %2$d stars</string>
+    <string name="cerrar_sesion">Cerrar sesion</string>
+
+    <!-- Write review -->
+    <string name="album_meta">%1$s · %2$s · %3$s</string>
+    <string name="date_listened">Date Listened</string>
+    <string name="when_did_you_listen">When did you listen?</string>
+    <string name="favorite">Favorite</string>
+    <string name="mark_as_favorite">Mark as favorite?</string>
+    <string name="mood_vibe">"M o o d  &amp;  v i b e"</string>
+    <string name="review_section_title">R e v i e w</string>
+    <string name="review_placeholder">What did this album make you feel? Any standout tracks?\nWould you recommend it?</string>
+    <string name="contador_caracteres">%1$d/%2$d</string>
+    <string name="cancel">Cancel</string>
+    <string name="write_review">Write Review</string>
+    <string name="your_rating">Your rating</string>
+    <string name="tap_to_rate">Tap to rate</string>
+    <string name="post">POST</string>
+    <string name="posted">POSTED</string>
+
+    <!-- Search -->
+    <string name="browse_by">Browse by</string>
+    <string name="search_title">Search</string>
+    <string name="search_placeholder">Find albums, artists, friends...</string>
+
+    <!-- Song review -->
+    <string name="reviews">Reviews</string>
+    <string name="write_one">Write One</string>
+    <string name="ratings_label">ratings</string>
+    <string name="recommend_label">recommend</string>
 </resources>

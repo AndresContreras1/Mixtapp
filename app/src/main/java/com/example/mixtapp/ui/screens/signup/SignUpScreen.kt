@@ -3,16 +3,13 @@ package com.example.mixtapp.ui.screens.signup
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.example.mixtapp.R
 import com.example.mixtapp.ui.components.*
+import com.example.mixtapp.ui.screens.signup.components.SignUpErrorMessages
 import com.example.mixtapp.ui.screens.signup.components.SignUpFooter
 import com.example.mixtapp.ui.screens.signup.components.SignUpForm
 import com.example.mixtapp.ui.screens.signup.components.SignUpHeader
@@ -107,23 +104,10 @@ fun SignUpScreenContent(
                 onSignUpClick = onSignUpClick
             )
 
-            // Aviso mientras se escribe: las dos contrasenas no coinciden
-            if (mostrarErrorContrasenas) {
-                Text(
-                    text = stringResource(R.string.passwords_no_coinciden),
-                    color = PalePink,
-                    fontSize = 14.sp
-                )
-            }
-
-            // Error del intento de crear la cuenta, calculado por el ViewModel
-            if (errorMessageRes != null) {
-                Text(
-                    text = stringResource(errorMessageRes),
-                    color = PalePink,
-                    fontSize = 14.sp
-                )
-            }
+            SignUpErrorMessages(
+                mostrarErrorContrasenas = mostrarErrorContrasenas,
+                errorMessageRes = errorMessageRes
+            )
 
             SignUpFooter(onLoginClick = onLoginClick)
 
@@ -132,30 +116,36 @@ fun SignUpScreenContent(
     }
 }
 
+// Las dos previews solo cambian el tema, asi que el formulario vacio se arma una sola vez
+@Composable
+private fun SignUpScreenContentPreview() {
+    SignUpScreenContent(
+        usuario = "",
+        onUsuarioChange = {},
+        email = "",
+        onEmailChange = {},
+        contrasena = "",
+        onContrasenaChange = {},
+        confirmarContrasena = "",
+        onConfirmarContrasenaChange = {},
+        contrasenaVisible = false,
+        onContrasenaVisibleChange = {},
+        confirmarVisible = false,
+        onConfirmarVisibleChange = {},
+        terminos = false,
+        onTerminosClick = {},
+        mostrarErrorContrasenas = false,
+        errorMessageRes = null,
+        onSignUpClick = {},
+        onLoginClick = {}
+    )
+}
+
 @Preview(showBackground = true, widthDp = 393, heightDp = 852, name = "SignUp Light")
 @Composable
 fun SignUpScreenLightPreview() {
     MixtappTheme(darkTheme = false, dynamicColor = false) {
-        SignUpScreenContent(
-            usuario = "",
-            onUsuarioChange = {},
-            email = "",
-            onEmailChange = {},
-            contrasena = "",
-            onContrasenaChange = {},
-            confirmarContrasena = "",
-            onConfirmarContrasenaChange = {},
-            contrasenaVisible = false,
-            onContrasenaVisibleChange = {},
-            confirmarVisible = false,
-            onConfirmarVisibleChange = {},
-            terminos = false,
-            onTerminosClick = {},
-            mostrarErrorContrasenas = false,
-            errorMessageRes = null,
-            onSignUpClick = {},
-            onLoginClick = {}
-        )
+        SignUpScreenContentPreview()
     }
 }
 
@@ -163,25 +153,6 @@ fun SignUpScreenLightPreview() {
 @Composable
 fun SignUpScreenDarkPreview() {
     MixtappTheme(darkTheme = true, dynamicColor = false) {
-        SignUpScreenContent(
-            usuario = "",
-            onUsuarioChange = {},
-            email = "",
-            onEmailChange = {},
-            contrasena = "",
-            onContrasenaChange = {},
-            confirmarContrasena = "",
-            onConfirmarContrasenaChange = {},
-            contrasenaVisible = false,
-            onContrasenaVisibleChange = {},
-            confirmarVisible = false,
-            onConfirmarVisibleChange = {},
-            terminos = false,
-            onTerminosClick = {},
-            mostrarErrorContrasenas = false,
-            errorMessageRes = null,
-            onSignUpClick = {},
-            onLoginClick = {}
-        )
+        SignUpScreenContentPreview()
     }
 }

@@ -20,10 +20,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mixtapp.R
 import com.example.mixtapp.ui.theme.FieldBackground
 import com.example.mixtapp.ui.theme.FieldBorder
 import com.example.mixtapp.ui.theme.PalePink
@@ -76,7 +78,7 @@ fun SearchTextField(
                 ) {
                     if (value.isEmpty()) {
                         Text(
-                            text = "Find albums, artists, friends...",
+                            text = stringResource(R.string.search_placeholder),
                             color = TextPink.copy(alpha = 0.78f),
                             fontSize = 18.sp,
                             lineHeight = 22.sp,

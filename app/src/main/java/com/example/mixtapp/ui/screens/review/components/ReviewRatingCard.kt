@@ -21,9 +21,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mixtapp.R
 import com.example.mixtapp.ui.components.StarRating
 import com.example.mixtapp.ui.theme.FieldBorder
 import com.example.mixtapp.ui.theme.PrimaryPink
@@ -46,7 +48,7 @@ fun ReviewRatingCard(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Your rating",
+            text = stringResource(R.string.your_rating),
             color = TextPink.copy(alpha = 0.82f),
             fontSize = 17.sp,
             fontWeight = FontWeight.Black
@@ -68,7 +70,7 @@ fun ReviewRatingCard(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "Tap to rate",
+            text = stringResource(R.string.tap_to_rate),
             color = TextPink.copy(alpha = 0.76f),
             fontSize = 13.sp,
             fontWeight = FontWeight.Bold

@@ -61,7 +61,11 @@ fun RecentActivitySection(
                     fontWeight = FontWeight.Black
                 )
                 Text(
-                    text = "${stringResource(R.string.reviewed_today)} · ${activity.rating} stars",
+                    text = stringResource(
+                        R.string.reviewed_today_rating,
+                        stringResource(R.string.reviewed_today),
+                        activity.rating,
+                    ),
                     color = PalePink.copy(alpha = 0.6f),
                     fontSize = 13.sp
                 )

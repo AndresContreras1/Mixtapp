@@ -17,10 +17,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mixtapp.R
 import com.example.mixtapp.ui.theme.FieldBorder
 import com.example.mixtapp.ui.theme.PalePink
 
@@ -33,7 +35,7 @@ fun ReviewFormSection(
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         Text(
-            text = "R e v i e w",
+            text = stringResource(R.string.review_section_title),
             color = PalePink,
             fontSize = 18.sp,
             fontWeight = FontWeight.Normal
@@ -64,7 +66,7 @@ fun ReviewFormSection(
                 decorationBox = { innerTextField ->
                     if (reviewText.isBlank()) {
                         Text(
-                            text = "What did this album make you feel? Any standout tracks?\nWould you recommend it?",
+                            text = stringResource(R.string.review_placeholder),
                             color = PalePink.copy(alpha = 0.68f),
                             fontSize = 12.sp,
                             lineHeight = 16.sp
@@ -75,7 +77,7 @@ fun ReviewFormSection(
             )
 
             Text(
-                text = "${reviewText.length}/$maxLength",
+                text = stringResource(R.string.contador_caracteres, reviewText.length, maxLength),
                 color = PalePink.copy(alpha = 0.8f),
                 fontSize = 11.sp,
                 fontWeight = FontWeight.Bold,
