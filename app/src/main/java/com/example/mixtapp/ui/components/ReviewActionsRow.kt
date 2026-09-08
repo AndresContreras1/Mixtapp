@@ -1,10 +1,8 @@
-package com.example.mixtapp.ui.screens.discussion.components
+package com.example.mixtapp.ui.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
@@ -25,19 +23,18 @@ import com.example.mixtapp.ui.theme.PalePink
 import com.example.mixtapp.ui.theme.PrimaryPink
 
 @Composable
-fun DiscussionReviewActions(
+fun ReviewActionsRow(
     likes: Int,
-    commentsCount: Int,
     isLiked: Boolean,
-    isShared: Boolean,
     onLikeClick: () -> Unit,
+    commentsLabel: String,
+    onCommentsClick: (() -> Unit)?,
+    isShared: Boolean,
     onShareClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(top = 9.dp),
+        modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
@@ -58,12 +55,24 @@ fun DiscussionReviewActions(
 
         Icon(
             imageVector = Icons.Outlined.ChatBubbleOutline,
-            contentDescription = null,
+            contentDescription = if (onCommentsClick == null) {
+                null
+            } else {
+                stringResource(R.string.open_discussion)
+            },
             tint = PalePink.copy(alpha = 0.55f),
-            modifier = Modifier.size(15.dp),
+            modifier = Modifier
+                .size(15.dp)
+                .then(
+                    if (onCommentsClick == null) {
+                        Modifier
+                    } else {
+                        Modifier.clickable { onCommentsClick() }
+                    }
+                ),
         )
         Text(
-            text = stringResource(R.string.comments_count, commentsCount),
+            text = commentsLabel,
             color = PalePink.copy(alpha = 0.55f),
             fontSize = 12.sp,
         )

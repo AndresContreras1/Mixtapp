@@ -5,7 +5,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.mixtapp.ui.components.AppChip
+import com.example.mixtapp.ui.theme.FieldBackground
 
 @Composable
 fun FilterChips(
@@ -19,10 +22,14 @@ fun FilterChips(
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         filters.forEach { filter ->
-            HomeChip(
+            AppChip(
                 text = filter,
                 isSelected = filter == selected,
-                onClick = { onFilterSelected(filter) }
+                onClick = { onFilterSelected(filter) },
+                unselectedContainerColor = FieldBackground,
+                unselectedBorderColor = null,
+                unselectedTextColor = Color.White,
+                verticalPadding = 12.dp
             )
         }
     }

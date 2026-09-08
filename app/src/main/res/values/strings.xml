@@ -120,4 +120,25 @@
     <string name="write_one">Write One</string>
     <string name="ratings_label">ratings</string>
     <string name="recommend_label">recommend</string>
+    <string name="save">Save</string>
+    <string name="saved">Saved</string>
+    <string name="like">Like</string>
+    <string name="liked">Liked</string>
+
+    <!-- Logo -->
+    <string name="logo_mixt">Mixt</string>
+    <string name="logo_app">app</string>
+
+    <!-- Barra de estado del diseno -->
+    <string name="status_bar_time">9:41</string>
+
+    <!-- Accesibilidad -->
+    <string name="album_cover">Carátula de %1$s</string>
+    <string name="mostrar_contrasena">Mostrar contraseña</string>
+    <string name="ocultar_contrasena">Ocultar contraseña</string>
+    <string name="nav_home">Inicio</string>
+    <string name="nav_search">Buscar</string>
+    <string name="nav_write_review">Escribir reseña</string>
+    <string name="nav_my_reviews">Mis reseñas</string>
+    <string name="nav_profile">Perfil</string>
 </resources>

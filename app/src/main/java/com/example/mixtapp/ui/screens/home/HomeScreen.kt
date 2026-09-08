@@ -91,16 +91,18 @@ fun HomeScreenContent(
 @Composable
 @Preview(showBackground = true)
 fun HomeScreenPreview() {
-    HomeScreenContent(
-        albums = LocalSongReviewProvider.popularSongs,
-        trending = LocalSongReviewProvider.trendingSong,
-        friendActivity = LocalFriendActivityProvider.friendActivity,
-        selectedFilterIndex = 0,
-        onFilterSelected = {},
-        onAlbumClick = {},
-        onSearchClick = {},
-        onProfileClick = {},
-        onFollowingClick = {},
-        onNotificationsClick = {}
-    )
+    MixtappTheme(darkTheme = true, dynamicColor = false) {
+        HomeScreenContent(
+            albums = LocalSongReviewProvider.popularSongs,
+            trending = LocalSongReviewProvider.trendingSong,
+            friendActivity = LocalFriendActivityProvider.friendActivity,
+            selectedFilterIndex = 0,
+            onFilterSelected = {},
+            onAlbumClick = {},
+            onSearchClick = {},
+            onProfileClick = {},
+            onFollowingClick = {},
+            onNotificationsClick = {}
+        )
+    }
 }

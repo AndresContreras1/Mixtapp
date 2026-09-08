@@ -15,6 +15,7 @@ import com.example.mixtapp.ui.screens.following.components.FollowingBackground
 import com.example.mixtapp.ui.screens.following.components.FollowingList
 import com.example.mixtapp.ui.screens.following.model.FollowingUi
 import com.example.mixtapp.ui.theme.DeepBackground
+import com.example.mixtapp.ui.theme.MixtappTheme
 
 @Composable
 fun FollowingScreen(
@@ -94,18 +95,20 @@ fun FollowingScreenContent(
 fun FollowingScreenPreview() {
     val following = LocalFollowingProvider.following
 
-    FollowingScreenContent(
-        following = following,
-        friendQuery = "",
-        selectedFilter = following.filters.first(),
-        selectedStoryId = null,
-        likedReviewIds = emptyList(),
-        sharedReviewIds = emptyList(),
-        onFriendQueryChange = {},
-        onFilterSelected = {},
-        onStoryClick = {},
-        onLikeClick = {},
-        onShareClick = {},
-        onCommentsClick = {},
-    )
+    MixtappTheme(darkTheme = true, dynamicColor = false) {
+        FollowingScreenContent(
+            following = following,
+            friendQuery = "",
+            selectedFilter = following.filters.first(),
+            selectedStoryId = null,
+            likedReviewIds = emptyList(),
+            sharedReviewIds = emptyList(),
+            onFriendQueryChange = {},
+            onFilterSelected = {},
+            onStoryClick = {},
+            onLikeClick = {},
+            onShareClick = {},
+            onCommentsClick = {},
+        )
+    }
 }

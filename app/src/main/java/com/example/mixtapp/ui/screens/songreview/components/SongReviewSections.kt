@@ -33,7 +33,7 @@ fun SongReviewSections(
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 24.dp, vertical = 28.dp)
     ) {
-        ReleaseImage(coverRes = songReview.coverRes)
+        ReleaseImage(coverRes = songReview.coverRes, albumTitle = songReview.title)
 
         Spacer(modifier = Modifier.height(24.dp))
 

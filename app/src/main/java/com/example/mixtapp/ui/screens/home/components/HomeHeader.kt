@@ -45,13 +45,16 @@ fun HomeHeader(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
+        val nombreClaro = stringResource(R.string.logo_mixt)
+        val nombreRosa = stringResource(R.string.logo_app)
+
         Text(
             text = buildAnnotatedString {
                 withStyle(SpanStyle(color = Color.White)) {
-                    append("Mixt")
+                    append(nombreClaro)
                 }
                 withStyle(SpanStyle(color = LogoPink)) {
-                    append("app")
+                    append(nombreRosa)
                 }
             },
             fontSize = 36.sp,

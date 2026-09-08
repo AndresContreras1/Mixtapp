@@ -48,7 +48,7 @@ fun FavoriteRow(
 
         Icon(
             imageVector = Icons.Default.Favorite,
-            contentDescription = null,
+            contentDescription = stringResource(R.string.favorite),
             tint = if (isFavorite) PrimaryPink else PrimaryPink.copy(alpha = 0.78f),
             modifier = Modifier
                 .size(36.dp)

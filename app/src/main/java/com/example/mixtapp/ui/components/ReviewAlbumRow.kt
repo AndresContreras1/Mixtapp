@@ -1,4 +1,4 @@
-package com.example.mixtapp.ui.screens.following.components
+package com.example.mixtapp.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -18,30 +18,37 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mixtapp.ui.components.StarRating
-import com.example.mixtapp.ui.screens.following.model.FollowingReviewUi
+import com.example.mixtapp.R
 import com.example.mixtapp.ui.theme.PrimaryPink
 import com.example.mixtapp.ui.theme.TextPink
 
 @Composable
-fun FollowingAlbumRow(
-    review: FollowingReviewUi,
+fun ReviewAlbumRow(
+    coverRes: Int,
+    albumTitle: String,
+    artistName: String,
+    rating: Int,
+    coverSize: Dp,
+    coverCorner: Dp,
+    starSize: Dp,
     modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = modifier.padding(top = 18.dp),
+        modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Image(
-            painter = painterResource(id = review.coverRes),
-            contentDescription = null,
+            painter = painterResource(id = coverRes),
+            contentDescription = stringResource(R.string.album_cover, albumTitle),
             modifier = Modifier
-                .size(88.dp)
-                .clip(RoundedCornerShape(12.dp)),
+                .size(coverSize)
+                .clip(RoundedCornerShape(coverCorner)),
             contentScale = ContentScale.Crop,
         )
 
@@ -49,7 +56,7 @@ fun FollowingAlbumRow(
 
         Column {
             Text(
-                text = review.albumTitle,
+                text = albumTitle,
                 color = Color.White,
                 fontSize = 22.sp,
                 lineHeight = 25.sp,
@@ -57,7 +64,7 @@ fun FollowingAlbumRow(
                 fontWeight = FontWeight.Black,
             )
             Text(
-                text = review.artistName,
+                text = artistName,
                 color = TextPink.copy(alpha = 0.74f),
                 fontSize = 14.sp,
                 lineHeight = 18.sp,
@@ -65,9 +72,9 @@ fun FollowingAlbumRow(
                 fontWeight = FontWeight.Bold,
             )
             StarRating(
-                rating = review.rating,
+                rating = rating,
                 starCount = 5,
-                starSize = 16.dp,
+                starSize = starSize,
                 spacing = 0.dp,
                 filledTint = PrimaryPink,
                 emptyTint = TextPink.copy(alpha = 0.32f),

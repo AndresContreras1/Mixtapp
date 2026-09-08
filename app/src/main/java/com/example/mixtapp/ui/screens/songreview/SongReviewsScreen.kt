@@ -16,6 +16,7 @@ import com.example.mixtapp.ui.components.AppBackground
 import com.example.mixtapp.ui.screens.songreview.components.SongReviewSections
 import com.example.mixtapp.ui.screens.songreview.model.SongReviewUi
 import com.example.mixtapp.ui.theme.DeepBackground
+import com.example.mixtapp.ui.theme.MixtappTheme
 
 // Recibe solo el id; el ViewModel se encarga de buscar la cancion
 @Composable
@@ -89,13 +90,15 @@ fun SongReviewsScreenContent(
 fun SongReviewsScreenPreview() {
     val song = LocalSongReviewProvider.songs.first()
 
-    SongReviewsScreenContent(
-        songReview = song,
-        userRating = song.userRating,
-        isSaved = song.isSaved,
-        isLiked = song.isLiked,
-        onRatingChange = {},
-        onSaveClick = {},
-        onLikeClick = {}
-    )
+    MixtappTheme(darkTheme = true, dynamicColor = false) {
+        SongReviewsScreenContent(
+            songReview = song,
+            userRating = song.userRating,
+            isSaved = song.isSaved,
+            isLiked = song.isLiked,
+            onRatingChange = {},
+            onSaveClick = {},
+            onLikeClick = {}
+        )
+    }
 }

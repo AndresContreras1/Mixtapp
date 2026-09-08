@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -26,6 +27,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.mixtapp.navigation.Screen
 import com.example.mixtapp.ui.theme.CircleWine
+import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.theme.PalePink
 import com.example.mixtapp.ui.theme.PrimaryPink
 
@@ -56,7 +58,7 @@ fun BottomNav(
                 when (item.route) {
                     Screen.WriteReview.route -> CircledNavIcon(
                         icon = icon,
-                        contentDescription = item.route,
+                        contentDescription = stringResource(item.label),
                         circleSize = 44.dp,
                         circleColor = PrimaryPink,
                         iconSize = 30.dp,
@@ -66,7 +68,7 @@ fun BottomNav(
 
                     Screen.Profile.route -> CircledNavIcon(
                         icon = icon,
-                        contentDescription = item.route,
+                        contentDescription = stringResource(item.label),
                         circleSize = 36.dp,
                         circleColor = CircleWine.copy(alpha = 0.5f),
                         iconSize = 28.dp,
@@ -76,7 +78,7 @@ fun BottomNav(
 
                     else -> Icon(
                         imageVector = icon,
-                        contentDescription = item.route,
+                        contentDescription = stringResource(item.label),
                         tint = PalePink.copy(alpha = 0.6f),
                         modifier = Modifier
                             .size(28.dp)
@@ -119,5 +121,7 @@ private fun CircledNavIcon(
 @Composable
 @Preview
 fun BottomNavPreview() {
-    BottomNav(navController = rememberNavController())
+    MixtappTheme(darkTheme = true, dynamicColor = false) {
+        BottomNav(navController = rememberNavController())
+    }
 }

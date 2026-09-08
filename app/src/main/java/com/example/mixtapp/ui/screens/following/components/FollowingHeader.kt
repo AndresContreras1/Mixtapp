@@ -41,7 +41,7 @@ fun FollowingHeader(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = "9:41",
+                text = stringResource(R.string.status_bar_time),
                 color = Color.White,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
