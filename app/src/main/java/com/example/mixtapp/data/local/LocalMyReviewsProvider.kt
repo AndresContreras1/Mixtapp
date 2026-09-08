@@ -4,6 +4,9 @@ import com.example.mixtapp.R
 import com.example.mixtapp.ui.screens.myreviews.model.MyReviewUi
 
 object LocalMyReviewsProvider {
+
+    val filters = listOf("Recent", "Top Rated", "A-Z", "5", "4")
+
     val reviews = listOf(
         MyReviewUi(
             id = "1",

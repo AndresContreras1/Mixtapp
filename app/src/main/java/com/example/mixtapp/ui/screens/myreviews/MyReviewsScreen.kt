@@ -98,8 +98,8 @@ fun MyReviewsScreenPreview() {
             username = "Yourname",
             joinDate = "march 2025",
             reviews = LocalMyReviewsProvider.reviews,
-            filters = myReviewsFilters,
-            selectedFilter = myReviewsFilters.first(),
+            filters = LocalMyReviewsProvider.filters,
+            selectedFilter = LocalMyReviewsProvider.filters.first(),
             onFilterSelected = {},
             onReviewClick = {}
         )

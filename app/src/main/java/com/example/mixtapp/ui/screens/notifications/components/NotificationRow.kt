@@ -21,12 +21,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mixtapp.R
 import com.example.mixtapp.ui.screens.notifications.model.NotificationUi
 import com.example.mixtapp.ui.theme.CircleWine
 import com.example.mixtapp.ui.theme.PalePink
@@ -76,7 +78,7 @@ fun NotificationRow(notification: NotificationUi, modifier: Modifier = Modifier)
             Spacer(modifier = Modifier.width(10.dp))
             Image(
                 painter = painterResource(id = res),
-                contentDescription = null,
+                contentDescription = stringResource(R.string.notification_thumbnail),
                 modifier = Modifier
                     .size(44.dp)
                     .clip(RoundedCornerShape(8.dp)),

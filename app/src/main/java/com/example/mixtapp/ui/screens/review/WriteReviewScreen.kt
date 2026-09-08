@@ -29,7 +29,6 @@ fun WriteReviewScreen(
     writeReviewViewModel: WriteReviewViewModel,
     onCancel: () -> Unit,
     onPostReview: (ReviewDraftUi) -> Unit,
-    moods: List<String> = defaultReviewMoods,
     modifier: Modifier = Modifier,
 ) {
     val state by writeReviewViewModel.uiState.collectAsState()
@@ -49,7 +48,7 @@ fun WriteReviewScreen(
             listenedDate = state.listenedDate,
             isFavorite = state.isFavorite,
             hasPosted = state.hasPosted,
-            moods = moods,
+            moods = state.moods,
             onCancel = onCancel,
             onRatingChange = { writeReviewViewModel.updateRating(rating = it) },
             onReviewChange = { writeReviewViewModel.updateReviewText(reviewText = it) },
@@ -128,7 +127,7 @@ fun WriteReviewScreenPreview() {
             listenedDate = "13/08/2026",
             isFavorite = false,
             hasPosted = false,
-            moods = defaultReviewMoods,
+            moods = LocalReviewAlbumProvider.moods,
             onCancel = {},
             onRatingChange = {},
             onReviewChange = {},

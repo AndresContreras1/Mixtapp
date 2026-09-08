@@ -25,6 +25,7 @@ class NotificationsViewModel @Inject constructor() : ViewModel() {
 
         _uiState.update {
             it.copy(
+                tabs = LocalNotificationsProvider.tabs,
                 notifications = aplicarFiltro(tab = it.selectedTab),
                 unreadCount = todas.count { n -> !n.isRead },
             )
@@ -43,6 +44,10 @@ class NotificationsViewModel @Inject constructor() : ViewModel() {
     // Filtrar es logica de negocio, no de la pantalla
     private fun aplicarFiltro(tab: String): List<NotificationUi> {
         val todas = LocalNotificationsProvider.notifications
-        return if (tab == "Unread") todas.filter { !it.isRead } else todas
+        return if (tab == LocalNotificationsProvider.TAB_UNREAD) {
+            todas.filter { !it.isRead }
+        } else {
+            todas
+        }
     }
 }

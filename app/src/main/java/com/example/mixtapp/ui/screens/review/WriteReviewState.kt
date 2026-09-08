@@ -8,6 +8,7 @@ data class WriteReviewState(
     val rating: Int = 0,
     val reviewText: String = "",
     val selectedMoods: List<String> = emptyList(),
+    val moods: List<String> = emptyList(),
     val listenedDate: String = "13/08/2026",
     val isFavorite: Boolean = false,
     val hasPosted: Boolean = false,

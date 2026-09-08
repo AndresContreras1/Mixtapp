@@ -10,9 +10,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
-// Pestanas de la pantalla de perfil
-val profileTabs = listOf("Profile", "Diary", "Lists", "Library")
-
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val authRepository: AuthRepository
@@ -29,12 +26,13 @@ class ProfileViewModel @Inject constructor(
     private fun getProfile() {
         // Recortar el correo es logica, asi que se hace aqui y no en el componente
         val usuario = authRepository.currentUser?.email?.substringBefore("@") ?: ""
+        val pestanas = LocalProfileProvider.tabs
 
         _uiState.update {
             it.copy(
                 profile = LocalProfileProvider.profile,
-                tabs = profileTabs,
-                selectedTab = profileTabs.first(),
+                tabs = pestanas,
+                selectedTab = pestanas.first(),
                 usuario = usuario,
             )
         }

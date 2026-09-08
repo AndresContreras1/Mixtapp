@@ -5,6 +5,8 @@ import com.example.mixtapp.ui.screens.profile.model.RecentActivityUi
 
 object LocalProfileProvider {
 
+    val tabs = listOf("Profile", "Diary", "Lists", "Library")
+
     val profile = ProfileUi(
         id = "yourname",
         username = "Yourname",

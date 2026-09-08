@@ -15,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.mixtapp.data.local.LocalNotificationsProvider
 import com.example.mixtapp.ui.screens.notifications.components.NotificationRow
 import com.example.mixtapp.ui.screens.notifications.components.NotificationSectionLabel
 import com.example.mixtapp.ui.screens.notifications.components.NotificationsHeader
@@ -33,6 +34,8 @@ fun NotificationsScreen(
 
     NotificationsScreenContent(
         notifications = state.notifications,
+        tabs = state.tabs,
+        unreadTab = state.unreadTab,
         unreadCount = state.unreadCount,
         selectedTab = state.selectedTab,
         onTabSelected = { notificationsViewModel.updateSelectedTab(tab = it) },
@@ -44,6 +47,8 @@ fun NotificationsScreen(
 @Composable
 fun NotificationsScreenContent(
     notifications: List<NotificationUi>,
+    tabs: List<String>,
+    unreadTab: String,
     unreadCount: Int,
     selectedTab: String,
     onTabSelected: (String) -> Unit,
@@ -66,6 +71,8 @@ fun NotificationsScreenContent(
                     modifier = Modifier.padding(top = 24.dp, bottom = 16.dp),
                 )
                 NotificationsTabs(
+                    tabs = tabs,
+                    unreadTab = unreadTab,
                     unreadCount = unreadCount,
                     selectedTab = selectedTab,
                     onTabSelected = onTabSelected,
@@ -96,13 +103,15 @@ fun NotificationsScreenContent(
 @Preview(showBackground = true, device = "spec:width=393dp,height=852dp")
 @Composable
 fun NotificationsScreenPreview() {
-    val todas = com.example.mixtapp.data.local.LocalNotificationsProvider.notifications
+    val todas = LocalNotificationsProvider.notifications
 
     MixtappTheme(darkTheme = true, dynamicColor = false) {
         NotificationsScreenContent(
             notifications = todas,
+            tabs = LocalNotificationsProvider.tabs,
+            unreadTab = LocalNotificationsProvider.TAB_UNREAD,
             unreadCount = todas.count { !it.isRead },
-            selectedTab = "All",
+            selectedTab = LocalNotificationsProvider.TAB_ALL,
             onTabSelected = {},
             onBackClick = {},
         )

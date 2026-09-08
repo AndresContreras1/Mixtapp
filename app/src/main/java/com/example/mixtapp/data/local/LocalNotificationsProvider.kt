@@ -4,6 +4,12 @@ import com.example.mixtapp.R
 import com.example.mixtapp.ui.screens.notifications.model.NotificationUi
 
 object LocalNotificationsProvider {
+
+    const val TAB_ALL = "All"
+    const val TAB_UNREAD = "Unread"
+
+    val tabs = listOf(TAB_ALL, TAB_UNREAD)
+
     val notifications = listOf(
         NotificationUi(
             id = "1",

@@ -1,5 +1,7 @@
 package com.example.mixtapp.ui.screens.following.model
 
+import androidx.annotation.DrawableRes
+
 data class FollowingUi(
     val followingCount: Int,
     val followersCount: Int,
@@ -20,7 +22,7 @@ data class FollowingReviewUi(
     val reviewerName: String,
     val reviewerInitials: String,
     val reviewedAt: String,
-    val coverRes: Int,
+    @DrawableRes val coverRes: Int,
     val albumTitle: String,
     val artistName: String,
     val rating: Int,

@@ -19,6 +19,14 @@ class WriteReviewViewModel @Inject constructor() : ViewModel() {
     private val _uiState = MutableStateFlow(WriteReviewState())
     val uiState: StateFlow<WriteReviewState> = _uiState.asStateFlow()
 
+    init {
+        getMoods()
+    }
+
+    private fun getMoods() {
+        _uiState.update { it.copy(moods = LocalReviewAlbumProvider.moods) }
+    }
+
     // Buscar el album es responsabilidad del ViewModel, no de la navegacion
     fun getAlbumById(albumId: String) {
         val album = LocalReviewAlbumProvider.albums.find { it.id == albumId }
@@ -66,15 +74,3 @@ class WriteReviewViewModel @Inject constructor() : ViewModel() {
         )
     }
 }
-
-// Moods disponibles al escribir una resena
-val defaultReviewMoods = listOf(
-    "Melancholic",
-    "Nostalgic",
-    "Intense",
-    "Chill",
-    "Romantic",
-    "Energetic",
-    "Ethereal",
-    "Playful",
-)
