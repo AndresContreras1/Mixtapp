@@ -1,6 +1,7 @@
 package com.example.mixtapp.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -68,9 +69,11 @@ fun AppNavigation(
             val state by loginViewModel.uiState.collectAsState()
 
             // El ViewModel valida el formulario y autoriza; la navegacion solo ejecuta
-            if (state.navigate) {
-                navController.navigate(Screen.Home.route) {
-                    popUpTo(0) { inclusive = true }
+            LaunchedEffect(state.navigate) {
+                if (state.navigate) {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
                 }
             }
 
@@ -87,9 +90,11 @@ fun AppNavigation(
             val state by signUpViewModel.uiState.collectAsState()
 
             // El ViewModel valida el formulario y autoriza; la navegacion solo ejecuta
-            if (state.navigate) {
-                navController.navigate(Screen.Home.route) {
-                    popUpTo(0) { inclusive = true }
+            LaunchedEffect(state.navigate) {
+                if (state.navigate) {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
                 }
             }
 
@@ -154,9 +159,11 @@ fun AppNavigation(
             val state by profileViewModel.uiState.collectAsState()
 
             // El ViewModel cierra la sesion y autoriza; la navegacion solo ejecuta
-            if (state.sesionCerrada) {
-                navController.navigate(Screen.Login.route) {
-                    popUpTo(0) { inclusive = true }
+            LaunchedEffect(state.sesionCerrada) {
+                if (state.sesionCerrada) {
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
                 }
             }
 

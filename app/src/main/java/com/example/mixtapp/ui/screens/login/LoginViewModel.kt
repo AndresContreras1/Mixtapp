@@ -49,6 +49,8 @@ class LoginViewModel @Inject constructor(
     fun loginButtonPressed() {
         val estado = _uiState.value
 
+        if (estado.cargando) return
+
         val errorRes = when {
             estado.email.isBlank() || estado.contrasena.isBlank() ->
                 R.string.error_campos_obligatorios
@@ -74,13 +76,21 @@ class LoginViewModel @Inject constructor(
     // signIn es suspend, asi que se lanza la corrutina donde se necesita
     private fun signIn(email: String, contrasena: String) {
         viewModelScope.launch {
-            try {
-                authRepository.signIn(email = email, password = contrasena)
-                // Autorizar la navegacion va dentro del try: si Firebase falla, no se entra
-                _uiState.update { it.copy(errorMessageRes = null, navigate = true) }
-            } catch (e: Exception) {
+            _uiState.update { it.copy(cargando = true, errorMessageRes = null) }
+
+            val exito = authRepository.signIn(email = email, password = contrasena)
+
+            if (exito) {
                 _uiState.update {
-                    it.copy(errorMessageRes = R.string.error_credenciales, navigate = false)
+                    it.copy(cargando = false, errorMessageRes = null, navigate = true)
+                }
+            } else {
+                _uiState.update {
+                    it.copy(
+                        cargando = false,
+                        errorMessageRes = R.string.error_credenciales,
+                        navigate = false,
+                    )
                 }
             }
         }

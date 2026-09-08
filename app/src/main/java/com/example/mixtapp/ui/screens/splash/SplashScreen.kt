@@ -1,6 +1,7 @@
 package com.example.mixtapp.ui.screens.splash
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 
@@ -14,11 +15,13 @@ fun SplashScreen(
 ) {
     val state by splashViewModel.uiState.collectAsState()
 
-    if (!state.verificando) {
-        if (state.hayUsuario) {
-            navigateToHome()
-        } else {
-            navigateToLogin()
+    LaunchedEffect(state.verificando, state.hayUsuario) {
+        if (!state.verificando) {
+            if (state.hayUsuario) {
+                navigateToHome()
+            } else {
+                navigateToLogin()
+            }
         }
     }
 }
