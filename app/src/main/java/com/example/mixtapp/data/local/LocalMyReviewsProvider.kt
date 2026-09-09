@@ -5,7 +5,19 @@ import com.example.mixtapp.ui.screens.myreviews.model.MyReviewUi
 
 object LocalMyReviewsProvider {
 
-    val filters = listOf("Recent", "Top Rated", "A-Z", "5", "4")
+    const val FILTER_RECENT = "Recent"
+    const val FILTER_TOP_RATED = "Top Rated"
+    const val FILTER_A_Z = "A-Z"
+    const val FILTER_SCORE_5 = "5"
+    const val FILTER_SCORE_4 = "4"
+
+    val filters = listOf(
+        FILTER_RECENT,
+        FILTER_TOP_RATED,
+        FILTER_A_Z,
+        FILTER_SCORE_5,
+        FILTER_SCORE_4,
+    )
 
     val reviews = listOf(
         MyReviewUi(

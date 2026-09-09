@@ -52,10 +52,10 @@ class MyReviewsViewModel @Inject constructor() : ViewModel() {
         val todas = LocalMyReviewsProvider.reviews
 
         return when (filtro) {
-            "Top Rated" -> todas.sortedByDescending { it.score }
-            "A-Z" -> todas.sortedBy { it.title }
-            "5" -> todas.filter { it.score == 5 }
-            "4" -> todas.filter { it.score == 4 }
+            LocalMyReviewsProvider.FILTER_TOP_RATED -> todas.sortedByDescending { it.score }
+            LocalMyReviewsProvider.FILTER_A_Z -> todas.sortedBy { it.title }
+            LocalMyReviewsProvider.FILTER_SCORE_5 -> todas.filter { it.score == 5 }
+            LocalMyReviewsProvider.FILTER_SCORE_4 -> todas.filter { it.score == 4 }
             else -> todas
         }
     }

@@ -135,9 +135,6 @@
     <string name="logo_mixt">Mixt</string>
     <string name="logo_app">app</string>
 
-    <!-- Barra de estado del diseno -->
-    <string name="status_bar_time">9:41</string>
-
     <!-- Accesibilidad -->
     <string name="album_cover">Carátula de %1$s</string>
     <string name="elegir_fecha_escucha">Elegir la fecha de escucha</string>

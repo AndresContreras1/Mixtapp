@@ -3,6 +3,7 @@ package com.example.mixtapp.ui.screens.following
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import com.example.mixtapp.data.local.LocalFollowingProvider
+import com.example.mixtapp.ui.screens.following.model.FollowingReviewUi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,6 +27,7 @@ class FollowingViewModel @Inject constructor() : ViewModel() {
         _uiState.update {
             it.copy(
                 following = following,
+                reviews = aplicarBusqueda(friendQuery = it.friendQuery),
                 selectedFilter = following.filters.first(),
                 likedReviewIds = following.reviews.filter { r -> r.isLiked }.map { r -> r.id },
                 sharedReviewIds = following.reviews.filter { r -> r.isShared }.map { r -> r.id },
@@ -34,7 +36,12 @@ class FollowingViewModel @Inject constructor() : ViewModel() {
     }
 
     fun updateFriendQuery(friendQuery: String) {
-        _uiState.update { it.copy(friendQuery = friendQuery) }
+        _uiState.update {
+            it.copy(
+                friendQuery = friendQuery,
+                reviews = aplicarBusqueda(friendQuery = friendQuery),
+            )
+        }
     }
 
     fun updateSelectedFilter(filtro: String) {
@@ -57,5 +64,11 @@ class FollowingViewModel @Inject constructor() : ViewModel() {
         val nuevos = if (reviewId in actuales) actuales - reviewId else actuales + reviewId
 
         _uiState.update { it.copy(sharedReviewIds = nuevos) }
+    }
+
+    private fun aplicarBusqueda(friendQuery: String): List<FollowingReviewUi> {
+        val todas = LocalFollowingProvider.following.reviews
+
+        return todas.filter { it.reviewerName.contains(friendQuery, ignoreCase = true) }
     }
 }

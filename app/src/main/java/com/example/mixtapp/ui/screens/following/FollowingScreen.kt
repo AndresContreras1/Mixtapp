@@ -16,6 +16,7 @@ import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalFollowingProvider
 import com.example.mixtapp.ui.screens.following.components.FollowingBackground
 import com.example.mixtapp.ui.screens.following.components.FollowingList
+import com.example.mixtapp.ui.screens.following.model.FollowingReviewUi
 import com.example.mixtapp.ui.screens.following.model.FollowingUi
 import com.example.mixtapp.ui.theme.DeepBackground
 import com.example.mixtapp.ui.theme.MixtappTheme
@@ -33,6 +34,7 @@ fun FollowingScreen(
     } else {
         FollowingScreenContent(
             following = state.following!!,
+            reviews = state.reviews,
             friendQuery = state.friendQuery,
             selectedFilter = state.selectedFilter,
             selectedStoryId = state.selectedStoryId,
@@ -52,6 +54,7 @@ fun FollowingScreen(
 @Composable
 fun FollowingScreenContent(
     following: FollowingUi,
+    reviews: List<FollowingReviewUi>,
     friendQuery: String,
     selectedFilter: String,
     selectedStoryId: String?,
@@ -75,6 +78,7 @@ fun FollowingScreenContent(
         Column(modifier = Modifier.fillMaxSize()) {
             FollowingList(
                 following = following,
+                reviews = reviews,
                 friendQuery = friendQuery,
                 selectedFilter = selectedFilter,
                 selectedStoryId = selectedStoryId,
@@ -103,6 +107,7 @@ fun FollowingScreenPreview() {
     MixtappTheme(darkTheme = true, dynamicColor = false) {
         FollowingScreenContent(
             following = following,
+            reviews = following.reviews,
             friendQuery = "",
             selectedFilter = following.filters.first(),
             selectedStoryId = null,

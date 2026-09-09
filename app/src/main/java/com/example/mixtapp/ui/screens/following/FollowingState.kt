@@ -1,10 +1,12 @@
 package com.example.mixtapp.ui.screens.following
 
+import com.example.mixtapp.ui.screens.following.model.FollowingReviewUi
 import com.example.mixtapp.ui.screens.following.model.FollowingUi
 
 // Es nulable porque puede que todavia no se hayan cargado los datos
 data class FollowingState(
     val following: FollowingUi? = null,
+    val reviews: List<FollowingReviewUi> = emptyList(),
     val friendQuery: String = "",
     val selectedFilter: String = "",
     val selectedStoryId: String? = null,

@@ -7,11 +7,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.mixtapp.ui.screens.following.model.FollowingReviewUi
 import com.example.mixtapp.ui.screens.following.model.FollowingUi
 
 @Composable
 fun FollowingList(
     following: FollowingUi,
+    reviews: List<FollowingReviewUi>,
     friendQuery: String,
     selectedFilter: String,
     selectedStoryId: String?,
@@ -54,7 +56,7 @@ fun FollowingList(
             )
         }
 
-        items(following.reviews, key = { it.id }) { review ->
+        items(reviews, key = { it.id }) { review ->
             FollowingReviewCard(
                 review = review,
                 isLiked = review.id in likedReviewIds,
