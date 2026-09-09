@@ -180,7 +180,10 @@ fun AppNavigation(
 
             SongReviewsScreen(
                 songId = songId,
-                songReviewsViewModel = songReviewsViewModel
+                songReviewsViewModel = songReviewsViewModel,
+                onWriteReviewClick = {
+                    navController.navigate(Screen.WriteReview.createRoute(albumId = songId))
+                }
             )
         }
 

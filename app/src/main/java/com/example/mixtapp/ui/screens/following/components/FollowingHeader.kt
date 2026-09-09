@@ -1,6 +1,5 @@
 package com.example.mixtapp.ui.screens.following.components
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -33,23 +32,7 @@ fun FollowingHeader(
             .fillMaxWidth()
             .padding(top = 18.dp)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(34.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                text = stringResource(R.string.status_bar_time),
-                color = Color.White,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold,
-            )
-            FollowingStatusIcons()
-        }
-
-        Spacer(modifier = Modifier.height(15.dp))
+        Spacer(modifier = Modifier.height(49.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),

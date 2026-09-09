@@ -20,11 +20,16 @@ class WriteReviewViewModel @Inject constructor() : ViewModel() {
     val uiState: StateFlow<WriteReviewState> = _uiState.asStateFlow()
 
     init {
-        getMoods()
+        getDatosIniciales()
     }
 
-    private fun getMoods() {
-        _uiState.update { it.copy(moods = LocalReviewAlbumProvider.moods) }
+    private fun getDatosIniciales() {
+        _uiState.update {
+            it.copy(
+                moods = LocalReviewAlbumProvider.moods,
+                listenedDate = LocalReviewAlbumProvider.fechaEscuchaInicial,
+            )
+        }
     }
 
     // Buscar el album es responsabilidad del ViewModel, no de la navegacion
