@@ -1,5 +1,6 @@
 package com.example.mixtapp.ui.screens.songreview.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,6 +24,7 @@ import com.example.mixtapp.ui.theme.PrimaryPink
 @Composable
 fun ReviewsSection(
     reviews: List<SongReviewItemUi>,
+    onWriteReviewClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -42,7 +44,8 @@ fun ReviewsSection(
                 text = stringResource(R.string.write_one),
                 color = PrimaryPink,
                 fontSize = 16.sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.clickable { onWriteReviewClick() }
             )
         }
 

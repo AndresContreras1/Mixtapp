@@ -26,6 +26,7 @@ fun SongReviewSections(
     onRatingChange: (Int) -> Unit,
     onSaveClick: () -> Unit,
     onLikeClick: () -> Unit,
+    onWriteReviewClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -82,6 +83,9 @@ fun SongReviewSections(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        ReviewsSection(reviews = songReview.reviews)
+        ReviewsSection(
+            reviews = songReview.reviews,
+            onWriteReviewClick = onWriteReviewClick
+        )
     }
 }

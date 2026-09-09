@@ -23,6 +23,7 @@ import com.example.mixtapp.ui.theme.MixtappTheme
 fun SongReviewsScreen(
     songId: String,
     songReviewsViewModel: SongReviewsViewModel,
+    onWriteReviewClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val state by songReviewsViewModel.uiState.collectAsState()
@@ -42,6 +43,7 @@ fun SongReviewsScreen(
             onRatingChange = { songReviewsViewModel.updateUserRating(rating = it) },
             onSaveClick = { songReviewsViewModel.guardarQuitarGuardado() },
             onLikeClick = { songReviewsViewModel.darQuitarLike() },
+            onWriteReviewClick = onWriteReviewClick,
             modifier = modifier
         )
     }
@@ -56,6 +58,7 @@ fun SongReviewsScreenContent(
     onRatingChange: (Int) -> Unit,
     onSaveClick: () -> Unit,
     onLikeClick: () -> Unit,
+    onWriteReviewClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -76,6 +79,7 @@ fun SongReviewsScreenContent(
                 onRatingChange = onRatingChange,
                 onSaveClick = onSaveClick,
                 onLikeClick = onLikeClick,
+                onWriteReviewClick = onWriteReviewClick,
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
@@ -98,7 +102,8 @@ fun SongReviewsScreenPreview() {
             isLiked = song.isLiked,
             onRatingChange = {},
             onSaveClick = {},
-            onLikeClick = {}
+            onLikeClick = {},
+            onWriteReviewClick = {}
         )
     }
 }
