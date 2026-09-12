@@ -6,6 +6,7 @@ import com.example.mixtapp.ui.screens.following.model.FollowingUi
 
 object LocalFollowingProvider {
     val following = FollowingUi(
+        id = "yourname",
         followingCount = 84,
         followersCount = 312,
         stories = listOf(

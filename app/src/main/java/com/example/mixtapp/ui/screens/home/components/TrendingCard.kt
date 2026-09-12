@@ -11,12 +11,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,6 +29,7 @@ import com.example.mixtapp.R
 import com.example.mixtapp.ui.components.AlbumAsyncImage
 import com.example.mixtapp.ui.components.StarRating
 import com.example.mixtapp.ui.screens.songreview.model.SongReviewUi
+import kotlin.math.roundToInt
 
 @Composable
 fun TrendingCard(
@@ -78,12 +77,12 @@ fun TrendingCard(
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     StarRating(
-                        rating = 5,
+                        rating = album.rating.roundToInt(),
                         starCount = 5,
                         starSize = 14.dp,
                         spacing = 0.dp,
                         filledTint = MaterialTheme.colorScheme.onBackground,
-                        emptyTint = MaterialTheme.colorScheme.onBackground,
+                        emptyTint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f),
                         emptyIcon = Icons.Default.Star,
                         onRatingChange = null
                     )

@@ -14,6 +14,7 @@ import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.mixtapp.R
+import com.example.mixtapp.data.local.LocalReviewAlbumProvider
 import com.example.mixtapp.navigation.Screen
 
 data class BottomNavItem(
@@ -46,7 +47,7 @@ val bottomNavItems = listOf(
         outlineIcon = Icons.Outlined.Add,
         route = Screen.WriteReview.route,
         destination = Screen.WriteReview.createRoute(
-            albumId = Screen.WriteReview.DEFAULT_ALBUM_ID
+            albumId = LocalReviewAlbumProvider.ALBUM_POR_DEFECTO
         ),
         label = R.string.nav_write_review
     ),

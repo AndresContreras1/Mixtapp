@@ -1,6 +1,7 @@
 package com.example.mixtapp.ui.screens.following.model
 
 data class FollowingUi(
+    val id: String,
     val followingCount: Int,
     val followersCount: Int,
     val stories: List<FollowingStoryUi>,

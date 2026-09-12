@@ -12,6 +12,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.screens.home.model.FriendActivityUi
+import com.example.mixtapp.ui.screens.home.model.HomeFilterUi
 import com.example.mixtapp.ui.screens.songreview.model.SongReviewUi
 
 @Composable
@@ -19,9 +20,10 @@ fun HomeSections(
     albums: List<SongReviewUi>,
     trending: SongReviewUi,
     friendActivity: FriendActivityUi,
-    selectedFilterIndex: Int,
+    filters: List<HomeFilterUi>,
+    selectedFilterId: String,
     profileImageUrl: String,
-    onFilterSelected: (Int) -> Unit,
+    onFilterSelected: (String) -> Unit,
     onAlbumClick: (String) -> Unit,
     onSearchClick: () -> Unit,
     onProfileClick: () -> Unit,
@@ -29,12 +31,6 @@ fun HomeSections(
     onNotificationsClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val filters = listOf(
-        stringResource(R.string.for_you),
-        stringResource(R.string.trending),
-        stringResource(R.string.friends)
-    )
-
     Column(
         modifier = modifier
             .verticalScroll(rememberScrollState())
@@ -51,8 +47,8 @@ fun HomeSections(
 
         FilterChips(
             filters = filters,
-            selected = filters[selectedFilterIndex],
-            onFilterSelected = { onFilterSelected(filters.indexOf(it)) }
+            selectedId = selectedFilterId,
+            onFilterSelected = onFilterSelected
         )
 
         Spacer(modifier = Modifier.height(28.dp))

@@ -10,6 +10,7 @@ object LocalDiscussionProvider {
     // para que la navegacion pueda buscarla por ese id
     val discussions = listOf(
         DiscussionUi(
+            id = "toxicity-liz",
             review = DiscussionReviewUi(
                 id = "toxicity-liz",
                 reviewerName = "Liz",
@@ -28,6 +29,7 @@ object LocalDiscussionProvider {
             comments = sharedComments,
         ),
         DiscussionUi(
+            id = "from-zero-jhon",
             review = DiscussionReviewUi(
                 id = "from-zero-jhon",
                 reviewerName = "Jhon",

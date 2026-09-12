@@ -1,13 +1,13 @@
 package com.example.mixtapp.ui.screens.notifications
 
-import com.example.mixtapp.data.local.LocalNotificationsProvider
+import com.example.mixtapp.ui.screens.notifications.model.NotificationTabUi
 import com.example.mixtapp.ui.screens.notifications.model.NotificationUi
+import com.example.mixtapp.ui.screens.notifications.model.TAB_TODAS
 
 data class NotificationsState(
-    // Ya vienen filtradas por el ViewModel segun selectedTab
+    // Ya vienen filtradas por el ViewModel segun la pestana elegida
     val notifications: List<NotificationUi> = emptyList(),
-    val tabs: List<String> = emptyList(),
+    val tabs: List<NotificationTabUi> = emptyList(),
     val unreadCount: Int = 0,
-    val selectedTab: String = LocalNotificationsProvider.TAB_ALL,
-    val unreadTab: String = LocalNotificationsProvider.TAB_UNREAD,
+    val selectedTabId: String = TAB_TODAS,
 )

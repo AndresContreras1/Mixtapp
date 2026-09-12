@@ -1,6 +1,7 @@
 package com.example.mixtapp.ui.screens.discussion.model
 
 data class DiscussionUi(
+    val id: String,
     val review: DiscussionReviewUi,
     val comments: List<DiscussionCommentUi>,
 )

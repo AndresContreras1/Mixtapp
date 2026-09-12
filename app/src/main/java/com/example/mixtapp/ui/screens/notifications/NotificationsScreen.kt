@@ -21,7 +21,10 @@ import com.example.mixtapp.ui.screens.notifications.components.NotificationRow
 import com.example.mixtapp.ui.screens.notifications.components.NotificationSectionLabel
 import com.example.mixtapp.ui.screens.notifications.components.NotificationsHeader
 import com.example.mixtapp.ui.screens.notifications.components.NotificationsTabs
+import com.example.mixtapp.ui.screens.notifications.model.NotificationTabUi
 import com.example.mixtapp.ui.screens.notifications.model.NotificationUi
+import com.example.mixtapp.ui.screens.notifications.model.TAB_TODAS
+import com.example.mixtapp.ui.screens.notifications.model.notificationTabs
 import com.example.mixtapp.ui.theme.MixtappTheme
 
 @Composable
@@ -35,10 +38,9 @@ fun NotificationsScreen(
     NotificationsScreenContent(
         notifications = state.notifications,
         tabs = state.tabs,
-        unreadTab = state.unreadTab,
         unreadCount = state.unreadCount,
-        selectedTab = state.selectedTab,
-        onTabSelected = { notificationsViewModel.updateSelectedTab(tab = it) },
+        selectedTabId = state.selectedTabId,
+        onTabSelected = { notificationsViewModel.updateSelectedTab(tabId = it) },
         onBackClick = onBackClick,
         modifier = modifier,
     )
@@ -47,10 +49,9 @@ fun NotificationsScreen(
 @Composable
 fun NotificationsScreenContent(
     notifications: List<NotificationUi>,
-    tabs: List<String>,
-    unreadTab: String,
+    tabs: List<NotificationTabUi>,
     unreadCount: Int,
-    selectedTab: String,
+    selectedTabId: String,
     onTabSelected: (String) -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -72,9 +73,8 @@ fun NotificationsScreenContent(
                 )
                 NotificationsTabs(
                     tabs = tabs,
-                    unreadTab = unreadTab,
                     unreadCount = unreadCount,
-                    selectedTab = selectedTab,
+                    selectedTabId = selectedTabId,
                     onTabSelected = onTabSelected,
                 )
             }
@@ -110,10 +110,9 @@ fun NotificationsScreenPreview() {
     MixtappTheme(darkTheme = true, dynamicColor = false) {
         NotificationsScreenContent(
             notifications = todas,
-            tabs = LocalNotificationsProvider.tabs,
-            unreadTab = LocalNotificationsProvider.TAB_UNREAD,
+            tabs = notificationTabs,
             unreadCount = todas.count { !it.isRead },
-            selectedTab = LocalNotificationsProvider.TAB_ALL,
+            selectedTabId = TAB_TODAS,
             onTabSelected = {},
             onBackClick = {},
         )

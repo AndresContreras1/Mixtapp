@@ -23,7 +23,7 @@ class DiscussionViewModel @Inject constructor(
     fun getDiscussionByReviewId(reviewId: String) {
         if (_uiState.value.discussion != null) return
 
-        val discussion = LocalDiscussionProvider.discussions.find { it.review.id == reviewId }
+        val discussion = LocalDiscussionProvider.discussions.find { it.id == reviewId }
 
         _uiState.update {
             it.copy(

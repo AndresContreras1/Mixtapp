@@ -28,7 +28,7 @@ class FollowingViewModel @Inject constructor() : ViewModel() {
         _uiState.update {
             it.copy(
                 following = following,
-                reviews = aplicarBusqueda(friendQuery = it.friendQuery),
+                reviews = aplicarBusqueda(friendQuery = it.friendQuery, todas = following.reviews),
                 filters = followingFilters,
                 selectedFilterId = followingFilters.first().id,
                 likedReviewIds = following.reviews.filter { r -> r.isLiked }.map { r -> r.id }.toSet(),
@@ -41,7 +41,10 @@ class FollowingViewModel @Inject constructor() : ViewModel() {
         _uiState.update {
             it.copy(
                 friendQuery = friendQuery,
-                reviews = aplicarBusqueda(friendQuery = friendQuery),
+                reviews = aplicarBusqueda(
+                    friendQuery = friendQuery,
+                    todas = it.following?.reviews ?: emptyList(),
+                ),
             )
         }
     }
@@ -68,9 +71,9 @@ class FollowingViewModel @Inject constructor() : ViewModel() {
         _uiState.update { it.copy(sharedReviewIds = nuevos) }
     }
 
-    private fun aplicarBusqueda(friendQuery: String): List<FollowingReviewUi> {
-        val todas = LocalFollowingProvider.following.reviews
-
-        return todas.filter { it.reviewerName.contains(friendQuery, ignoreCase = true) }
-    }
+    private fun aplicarBusqueda(
+        friendQuery: String,
+        todas: List<FollowingReviewUi>,
+    ): List<FollowingReviewUi> =
+        todas.filter { it.reviewerName.contains(friendQuery, ignoreCase = true) }
 }
