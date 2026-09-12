@@ -103,7 +103,6 @@
     <!-- My reviews -->
     <string name="join_date">Join %1$s</string>
     <string name="my_reviews">My reviews</string>
-    <string name="duracion_fecha">"%1$s   %2$s"</string>
     <string name="filtro_recientes">Recent</string>
     <string name="filtro_mejor_calificadas">Top Rated</string>
     <string name="filtro_a_z">A-Z</string>

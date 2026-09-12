@@ -36,7 +36,7 @@ fun MyReviewCard(
             .clickable { onReviewClick(review.songId) }
             .padding(16.dp)
     ) {
-        ReviewScoreBadge(
+        ReviewRatingBadge(
             rating = review.rating,
             modifier = Modifier.align(Alignment.TopEnd)
         )
