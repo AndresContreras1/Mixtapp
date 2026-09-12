@@ -8,7 +8,7 @@ object LocalProfileProvider {
     val profile = ProfileUi(
         id = "yourname",
         username = "Yourname",
-        joinDate = "march 2025",
+        joinDate = "marzo de 2025",
         reviewsCount = 128,
         albumsCount = 64,
         listsCount = 18,

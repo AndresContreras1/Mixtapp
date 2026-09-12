@@ -6,11 +6,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -26,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.components.StarRating
+import kotlin.math.roundToInt
 
 @Composable
 fun ReleaseStats(
@@ -50,7 +49,7 @@ fun ReleaseStats(
             StatItem(
                 value = stringResource(R.string.rating_promedio, rating),
                 label = null,
-                showStars = true,
+                estrellas = rating.roundToInt(),
                 modifier = Modifier.weight(1f)
             )
             VerticalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f), modifier = Modifier.height(30.dp))
@@ -66,7 +65,7 @@ fun ReleaseStats(
 }
 
 @Composable
-private fun StatItem(value: String, label: String?, showStars: Boolean = false, modifier: Modifier = Modifier) {
+private fun StatItem(value: String, label: String?, estrellas: Int? = null, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -78,14 +77,14 @@ private fun StatItem(value: String, label: String?, showStars: Boolean = false, 
             fontWeight = FontWeight.Bold,
             fontFamily = FontFamily.Serif
         )
-        if (showStars) {
+        if (estrellas != null) {
             StarRating(
-                rating = 5,
+                rating = estrellas,
                 starCount = 5,
                 starSize = 12.dp,
                 spacing = 0.dp,
                 filledTint = MaterialTheme.colorScheme.primary,
-                emptyTint = MaterialTheme.colorScheme.primary,
+                emptyTint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
                 emptyIcon = Icons.Filled.Star,
                 onRatingChange = null
             )

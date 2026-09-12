@@ -13,8 +13,8 @@ object LocalMyReviewsProvider {
             cover = AlbumCovers.RUSH,
             rating = 4,
             excerpt = "RUSH! is an infectious, high-octane pop-rock spectacle built for global arenas. Trading some of their raw Italian grit for polished dance-punk grooves and razor-sharp riffs, Måneskin delivers pure, unapologetic attitude and addictive energy from start to finish.",
-            tags = listOf("Energetic", "Chaotic"),
-            duration = "1'08", date = "Aug 16, 2026",
+            tags = listOf("Enérgico", "Caótico"),
+            date = "16 de agosto de 2026",
         ),
         MyReviewUi(
             id = "2",
@@ -24,8 +24,8 @@ object LocalMyReviewsProvider {
             cover = AlbumCovers.FROM_ZERO,
             rating = 4,
             excerpt = "From Zero strikes an impressive balance between heavy nostalgia and genuine reinvention. Instead of trying to duplicate their past, the band leverages their signature aggressive riffs and electronic textures to build a fierce, modern soundscape. Emily Armstrong delivers a standout vocal performance that commands every track with raw power, signaling a bold, confident new chapter for Linkin Park.",
-            tags = listOf("Sentimental", "Strong"),
-            duration = "1'08", date = "Aug 17, 2026",
+            tags = listOf("Sentimental", "Potente"),
+            date = "17 de agosto de 2026",
         ),
         MyReviewUi(
             id = "3",
@@ -35,8 +35,8 @@ object LocalMyReviewsProvider {
             cover = AlbumCovers.TEATRO_DIRA,
             rating = 5,
             excerpt = "Teatro d'ira: Vol. I is a raw, electric burst of modern hard rock that captures Måneskin at their absolute peak. Driven by razor-sharp riffs, explosive live energy, and Damiano David’s theatrical vocals, it turns pure attitude and emotional drama into a tight, unforgettable masterpiece.",
-            tags = listOf("Emotional", "Passionate"),
-            duration = "1'08", date = "Aug 13, 2026",
+            tags = listOf("Emotivo", "Apasionado"),
+            date = "13 de agosto de 2026",
         ),
         MyReviewUi(
             id = "4",
@@ -46,8 +46,8 @@ object LocalMyReviewsProvider {
             cover = AlbumCovers.FINISTERRA,
             rating = 4,
             excerpt = "Finisterra is Mago de Oz’s ambitious folk metal masterpiece. By blending power metal riffs with Celtic flutes and violins, it turns an epic medieval concept into an endlessly creative, legendary album.",
-            tags = listOf("Chaotic", "Active"),
-            duration = "1'08", date = "Aug 10, 2026",
+            tags = listOf("Caótico", "Activo"),
+            date = "10 de agosto de 2026",
         ),
     )
 }

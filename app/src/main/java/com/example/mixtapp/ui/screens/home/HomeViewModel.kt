@@ -3,6 +3,7 @@ package com.example.mixtapp.ui.screens.home
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import com.example.mixtapp.data.local.LocalFriendActivityProvider
+import com.example.mixtapp.data.repository.AuthRepository
 import com.example.mixtapp.data.local.LocalSongReviewProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -11,7 +12,9 @@ import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor() : ViewModel() {
+class HomeViewModel @Inject constructor(
+    private val authRepository: AuthRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeState())
     val uiState: StateFlow<HomeState> = _uiState.asStateFlow()
@@ -29,6 +32,12 @@ class HomeViewModel @Inject constructor() : ViewModel() {
                 friendActivity = LocalFriendActivityProvider.friendActivity,
             )
         }
+    }
+
+    fun refrescarFotoDePerfil() {
+        val foto = authRepository.currentUser?.photoUrl?.toString() ?: ""
+
+        _uiState.update { it.copy(profileImageUrl = foto) }
     }
 
     fun updateSelectedFilter(index: Int) {

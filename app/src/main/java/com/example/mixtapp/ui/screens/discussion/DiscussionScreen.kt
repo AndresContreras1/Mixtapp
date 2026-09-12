@@ -25,6 +25,7 @@ import com.example.mixtapp.ui.screens.discussion.components.CommentsDivider
 import com.example.mixtapp.ui.screens.discussion.components.DiscussionHeader
 import com.example.mixtapp.ui.screens.discussion.components.DiscussionReviewCard
 import com.example.mixtapp.ui.screens.discussion.components.ThreadCommentItem
+import com.example.mixtapp.ui.screens.discussion.model.DiscussionCommentUi
 import com.example.mixtapp.ui.screens.discussion.model.DiscussionUi
 import com.example.mixtapp.ui.theme.MixtappTheme
 
@@ -47,6 +48,8 @@ fun DiscussionScreen(
     } else {
         DiscussionScreenContent(
             discussion = state.discussion!!,
+            comentarios = state.comentarios,
+            nuevoComentario = state.nuevoComentario,
             isReviewLiked = state.isReviewLiked,
             isReviewShared = state.isReviewShared,
             likedCommentIds = state.likedCommentIds,
@@ -56,6 +59,8 @@ fun DiscussionScreen(
             onReviewShareClick = { discussionViewModel.compartirQuitarResena() },
             onCommentLikeClick = { discussionViewModel.darQuitarLikeComentario(commentId = it) },
             onCommentReplyClick = { discussionViewModel.responderComentario(commentId = it) },
+            onNuevoComentarioChange = { discussionViewModel.updateNuevoComentario(texto = it) },
+            onPublicarComentarioClick = { discussionViewModel.publicarComentario() },
             modifier = modifier,
         )
     }
@@ -64,6 +69,8 @@ fun DiscussionScreen(
 @Composable
 fun DiscussionScreenContent(
     discussion: DiscussionUi,
+    comentarios: List<DiscussionCommentUi>,
+    nuevoComentario: String,
     isReviewLiked: Boolean,
     isReviewShared: Boolean,
     likedCommentIds: Set<String>,
@@ -73,6 +80,8 @@ fun DiscussionScreenContent(
     onReviewShareClick: () -> Unit,
     onCommentLikeClick: (String) -> Unit,
     onCommentReplyClick: (String) -> Unit,
+    onNuevoComentarioChange: (String) -> Unit,
+    onPublicarComentarioClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -109,7 +118,7 @@ fun DiscussionScreenContent(
                     )
                 }
 
-                items(discussion.comments, key = { it.id }) { comment ->
+                items(comentarios, key = { it.id }) { comment ->
                     ThreadCommentItem(
                         comment = comment,
                         isLiked = comment.id in likedCommentIds,
@@ -119,6 +128,13 @@ fun DiscussionScreenContent(
                     )
                 }
             }
+
+            NewCommentField(
+                value = nuevoComentario,
+                onValueChange = onNuevoComentarioChange,
+                onPublicarClick = onPublicarComentarioClick,
+                modifier = Modifier.padding(start = 24.dp, end = 24.dp, bottom = 18.dp),
+            )
         }
     }
 }
@@ -129,6 +145,8 @@ fun DiscussionScreenPreview() {
     MixtappTheme(darkTheme = true, dynamicColor = false) {
         DiscussionScreenContent(
             discussion = LocalDiscussionProvider.discussions.first(),
+            comentarios = LocalDiscussionProvider.discussions.first().comments,
+            nuevoComentario = "",
             isReviewLiked = false,
             isReviewShared = false,
             likedCommentIds = emptySet(),
@@ -138,6 +156,8 @@ fun DiscussionScreenPreview() {
             onReviewShareClick = {},
             onCommentLikeClick = {},
             onCommentReplyClick = {},
+            onNuevoComentarioChange = {},
+            onPublicarComentarioClick = {},
         )
     }
 }

@@ -10,4 +10,5 @@ data class HomeState(
     val trending: SongReviewUi? = null,
     val friendActivity: FriendActivityUi? = null,
     val selectedFilterIndex: Int = 0,
+    val profileImageUrl: String = "",
 )

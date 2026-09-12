@@ -1,6 +1,5 @@
 package com.example.mixtapp.ui.screens.search.components
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -70,11 +69,6 @@ private fun SearchCategoryRow(
             .fillMaxWidth()
             .clickable(onClick = onClick),
         color = Color.Transparent,
-        border = if (selected) {
-            BorderStroke(width = 0.dp, color = Color.Transparent)
-        } else {
-            null
-        },
     ) {
         Row(
             modifier = Modifier

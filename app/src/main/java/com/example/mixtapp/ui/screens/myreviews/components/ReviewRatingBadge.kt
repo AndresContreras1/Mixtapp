@@ -13,9 +13,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-// Badge de score, arriba a la derecha
+// Badge de calificacion, arriba a la derecha
 @Composable
-fun ReviewScoreBadge(
+fun ReviewRatingBadge(
     rating: Int,
     modifier: Modifier = Modifier
 ) {

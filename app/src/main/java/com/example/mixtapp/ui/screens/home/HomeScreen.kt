@@ -3,6 +3,7 @@ package com.example.mixtapp.ui.screens.home
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -29,6 +30,10 @@ fun HomeScreen(
 ) {
     val state by homeViewModel.uiState.collectAsState()
 
+    LaunchedEffect(Unit) {
+        homeViewModel.refrescarFotoDePerfil()
+    }
+
     if (state.trending == null || state.friendActivity == null) {
         Text(text = stringResource(R.string.contenido_no_encontrado))
     } else {
@@ -37,6 +42,7 @@ fun HomeScreen(
             trending = state.trending!!,
             friendActivity = state.friendActivity!!,
             selectedFilterIndex = state.selectedFilterIndex,
+            profileImageUrl = state.profileImageUrl,
             onFilterSelected = { homeViewModel.updateSelectedFilter(index = it) },
             onAlbumClick = onAlbumClick,
             onSearchClick = onSearchClick,
@@ -54,6 +60,7 @@ fun HomeScreenContent(
     trending: SongReviewUi,
     friendActivity: FriendActivityUi,
     selectedFilterIndex: Int,
+    profileImageUrl: String,
     onFilterSelected: (Int) -> Unit,
     onAlbumClick: (String) -> Unit,
     onSearchClick: () -> Unit,
@@ -70,6 +77,7 @@ fun HomeScreenContent(
             trending = trending,
             friendActivity = friendActivity,
             selectedFilterIndex = selectedFilterIndex,
+            profileImageUrl = profileImageUrl,
             onFilterSelected = onFilterSelected,
             onAlbumClick = onAlbumClick,
             onSearchClick = onSearchClick,
@@ -90,6 +98,7 @@ fun HomeScreenPreview() {
             trending = LocalSongReviewProvider.trendingSong,
             friendActivity = LocalFriendActivityProvider.friendActivity,
             selectedFilterIndex = 0,
+            profileImageUrl = "",
             onFilterSelected = {},
             onAlbumClick = {},
             onSearchClick = {},

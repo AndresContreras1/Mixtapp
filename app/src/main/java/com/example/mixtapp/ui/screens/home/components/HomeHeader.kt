@@ -3,7 +3,6 @@ package com.example.mixtapp.ui.screens.home.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,9 +28,11 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.ui.components.ProfileAsyncImage
 
 @Composable
 fun HomeHeader(
+    profileImageUrl: String,
     onSearchClick: () -> Unit,
     onProfileClick: () -> Unit,
     onNotificationsClick: () -> Unit,
@@ -82,22 +83,15 @@ fun HomeHeader(
 
             Spacer(modifier = Modifier.width(14.dp))
 
-            Box(
+            ProfileAsyncImage(
+                profileImage = profileImageUrl,
+                contentDescription = stringResource(R.string.foto_perfil),
                 modifier = Modifier
                     .size(46.dp)
                     .clip(CircleShape)
                     .background(MaterialTheme.colorScheme.secondary)
-                    .clickable { onProfileClick() },
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = stringResource(R.string.yo),
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f),
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = FontFamily.Serif
-                )
-            }
+                    .clickable { onProfileClick() }
+            )
         }
     }
 }

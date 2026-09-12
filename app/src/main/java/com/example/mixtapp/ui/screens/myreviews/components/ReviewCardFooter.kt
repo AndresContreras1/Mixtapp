@@ -14,10 +14,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mixtapp.R
 import com.example.mixtapp.ui.screens.myreviews.model.MyReviewUi
 
 // Tags + likes/fecha
@@ -42,7 +40,7 @@ fun ReviewCardFooter(
             )
             Spacer(modifier = Modifier.width(4.dp))
             Text(
-                text = stringResource(R.string.duracion_fecha, review.duration, review.date),
+                text = review.date,
                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
                 fontSize = 11.sp
             )
