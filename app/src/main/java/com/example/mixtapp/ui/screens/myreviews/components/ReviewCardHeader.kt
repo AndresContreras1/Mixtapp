@@ -1,6 +1,5 @@
 package com.example.mixtapp.ui.screens.myreviews.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,14 +15,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.ui.components.AlbumAsyncImage
 import com.example.mixtapp.ui.components.StarRating
 import com.example.mixtapp.ui.screens.myreviews.model.MyReviewUi
 import com.example.mixtapp.ui.theme.PalePink
@@ -39,13 +37,13 @@ fun ReviewCardHeader(
         modifier = modifier,
         verticalAlignment = Alignment.Top
     ) {
-        Image(
-            painter = painterResource(id = review.coverRes),
+        AlbumAsyncImage(
+            cover = review.cover,
             contentDescription = stringResource(R.string.album_cover, review.title),
+            alpha = 1f,
             modifier = Modifier
                 .size(56.dp)
-                .clip(RoundedCornerShape(10.dp)),
-            contentScale = ContentScale.Crop
+                .clip(RoundedCornerShape(10.dp))
         )
 
         Spacer(modifier = Modifier.width(14.dp))

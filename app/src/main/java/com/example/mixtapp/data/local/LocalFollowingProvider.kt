@@ -1,6 +1,5 @@
 package com.example.mixtapp.data.local
 
-import com.example.mixtapp.R
 import com.example.mixtapp.ui.screens.following.model.FollowingReviewUi
 import com.example.mixtapp.ui.screens.following.model.FollowingStoryUi
 import com.example.mixtapp.ui.screens.following.model.FollowingUi
@@ -24,7 +23,7 @@ object LocalFollowingProvider {
                 reviewerName = "Liz",
                 reviewerInitials = "Lz",
                 reviewedAt = "18 min ago",
-                coverRes = R.drawable.toxicity_soad,
+                cover = AlbumCovers.TOXICITY,
                 albumTitle = "Toxicity",
                 artistName = "System of a down",
                 rating = 5,
@@ -39,7 +38,7 @@ object LocalFollowingProvider {
                 reviewerName = "Jhon",
                 reviewerInitials = "Jh",
                 reviewedAt = "1 hour ago",
-                coverRes = R.drawable.from_zero,
+                cover = AlbumCovers.FROM_ZERO,
                 albumTitle = "From Zero",
                 artistName = "Linkin Park",
                 rating = 5,

@@ -1,6 +1,5 @@
 package com.example.mixtapp.data.local
 
-import com.example.mixtapp.R
 import com.example.mixtapp.ui.screens.discussion.model.DiscussionCommentUi
 import com.example.mixtapp.ui.screens.discussion.model.DiscussionReviewUi
 import com.example.mixtapp.ui.screens.discussion.model.DiscussionUi
@@ -16,7 +15,7 @@ object LocalDiscussionProvider {
                 reviewerName = "Liz",
                 reviewerAvatarText = "Lz",
                 reviewedAt = "4h ago",
-                coverRes = R.drawable.toxicity_soad,
+                cover = AlbumCovers.TOXICITY,
                 albumTitle = "Toxicity",
                 artistName = "System of a down",
                 rating = 5,
@@ -34,7 +33,7 @@ object LocalDiscussionProvider {
                 reviewerName = "Jhon",
                 reviewerAvatarText = "Jh",
                 reviewedAt = "1 hour ago",
-                coverRes = R.drawable.from_zero,
+                cover = AlbumCovers.FROM_ZERO,
                 albumTitle = "From Zero",
                 artistName = "Linkin Park",
                 rating = 5,

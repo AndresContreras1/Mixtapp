@@ -57,7 +57,7 @@ fun FollowingReviewCard(
             )
 
             ReviewAlbumRow(
-                coverRes = review.coverRes,
+                cover = review.cover,
                 albumTitle = review.albumTitle,
                 artistName = review.artistName,
                 rating = review.rating,

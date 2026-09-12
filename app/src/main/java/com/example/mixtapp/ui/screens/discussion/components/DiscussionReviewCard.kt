@@ -58,7 +58,7 @@ fun DiscussionReviewCard(
             Spacer(modifier = Modifier.height(14.dp))
 
             ReviewAlbumRow(
-                coverRes = review.coverRes,
+                cover = review.cover,
                 albumTitle = review.albumTitle,
                 artistName = review.artistName,
                 rating = review.rating,
