@@ -85,8 +85,7 @@ fun RecentActivitySection(
                 )
             }
         }
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(56.dp))
+        HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f))
     }
-    Spacer(modifier = Modifier.height(24.dp))
-    HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f))
 }

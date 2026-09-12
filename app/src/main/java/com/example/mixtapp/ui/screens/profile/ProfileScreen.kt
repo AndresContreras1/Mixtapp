@@ -112,7 +112,7 @@ fun ProfileScreenContent(
 @Composable
 @Preview(showBackground = true, device = "spec:width=393dp,height=852dp")
 fun ProfileScreenPreview() {
-    MixtappTheme(dynamicColor = false) {
+    MixtappTheme(darkTheme = true, dynamicColor = false) {
         ProfileScreenContent(
             profile = LocalProfileProvider.profile,
             usuario = "usuario",

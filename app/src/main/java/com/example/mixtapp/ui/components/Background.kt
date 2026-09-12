@@ -26,31 +26,34 @@ fun AppBackground(
 }
 
 @Composable
-fun BoxScope.DecorativeCircles() {
-    Box(
-        modifier = Modifier
-            .size(240.dp)
-            .offset(x = (-114).dp, y = (-38).dp)
-            .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.58f))
-    )
+fun DecorativeCircles(modifier: Modifier = Modifier) {
+    Box(modifier = modifier.fillMaxSize()) {
+        Box(
+            modifier = Modifier
+                .size(240.dp)
+                .offset(x = (-114).dp, y = (-38).dp)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.58f))
+        )
 
-    Box(
-        modifier = Modifier
-            .size(228.dp)
-            .align(Alignment.Center)
-            .offset(y = 32.dp)
-            .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.scrim.copy(alpha = 0.11f))
-    )
-    Box(
-        modifier = Modifier
-            .size(275.dp)
-            .align(Alignment.BottomEnd)
-            .offset(x = 112.dp, y = (-24).dp)
-            .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.33f))
-    )
+        Box(
+            modifier = Modifier
+                .size(228.dp)
+                .align(Alignment.Center)
+                .offset(y = 32.dp)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.scrim.copy(alpha = 0.11f))
+        )
+
+        Box(
+            modifier = Modifier
+                .size(275.dp)
+                .align(Alignment.BottomEnd)
+                .offset(x = 112.dp, y = (-24).dp)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.33f))
+        )
+    }
 }
 
 @Composable
