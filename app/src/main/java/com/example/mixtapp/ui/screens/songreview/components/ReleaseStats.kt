@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
@@ -25,7 +26,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.components.StarRating
-import com.example.mixtapp.ui.theme.PrimaryPink
 
 @Composable
 fun ReleaseStats(
@@ -39,7 +39,7 @@ fun ReleaseStats(
         shape = RoundedCornerShape(16.dp),
         modifier = modifier
             .fillMaxWidth()
-            .border(1.dp, Color.White.copy(alpha = 0.2f), RoundedCornerShape(16.dp))
+            .border(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f), RoundedCornerShape(16.dp))
     ) {
         Row(
             modifier = Modifier
@@ -48,9 +48,9 @@ fun ReleaseStats(
             verticalAlignment = Alignment.CenterVertically
         ) {
             StatItem(value = rating, label = null, showStars = true, modifier = Modifier.weight(1f))
-            VerticalDivider(color = Color.White.copy(alpha = 0.2f), modifier = Modifier.height(30.dp))
+            VerticalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f), modifier = Modifier.height(30.dp))
             StatItem(value = ratingCount, label = stringResource(R.string.ratings_label), modifier = Modifier.weight(1f))
-            VerticalDivider(color = Color.White.copy(alpha = 0.2f), modifier = Modifier.height(30.dp))
+            VerticalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f), modifier = Modifier.height(30.dp))
             StatItem(value = recommendRate, label = stringResource(R.string.recommend_label), modifier = Modifier.weight(1f))
         }
     }
@@ -64,7 +64,7 @@ private fun StatItem(value: String, label: String?, showStars: Boolean = false, 
     ) {
         Text(
             text = value,
-            color = PrimaryPink,
+            color = MaterialTheme.colorScheme.primary,
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             fontFamily = FontFamily.Serif
@@ -75,8 +75,8 @@ private fun StatItem(value: String, label: String?, showStars: Boolean = false, 
                 starCount = 5,
                 starSize = 12.dp,
                 spacing = 0.dp,
-                filledTint = PrimaryPink,
-                emptyTint = PrimaryPink,
+                filledTint = MaterialTheme.colorScheme.primary,
+                emptyTint = MaterialTheme.colorScheme.primary,
                 emptyIcon = Icons.Filled.Star,
                 onRatingChange = null
             )
@@ -84,7 +84,7 @@ private fun StatItem(value: String, label: String?, showStars: Boolean = false, 
         if (label != null) {
             Text(
                 text = label,
-                color = Color.White.copy(alpha = 0.6f),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                 fontSize = 12.sp
             )
         }

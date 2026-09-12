@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -18,7 +19,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.screens.myreviews.model.MyReviewUi
-import com.example.mixtapp.ui.theme.PalePink
 
 // Tags + likes/fecha
 @Composable
@@ -37,13 +37,13 @@ fun ReviewCardFooter(
             Icon(
                 imageVector = Icons.Default.FavoriteBorder,
                 contentDescription = null,
-                tint = PalePink.copy(alpha = 0.7f),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
                 modifier = Modifier.size(14.dp)
             )
             Spacer(modifier = Modifier.width(4.dp))
             Text(
                 text = stringResource(R.string.duracion_fecha, review.duration, review.date),
-                color = PalePink.copy(alpha = 0.6f),
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
                 fontSize = 11.sp
             )
         }

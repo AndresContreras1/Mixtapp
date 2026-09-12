@@ -4,11 +4,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -16,7 +16,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.components.HeaderLogo
-import com.example.mixtapp.ui.theme.TextPink
 
 @Composable
 fun LoginHeader(
@@ -34,7 +33,7 @@ fun LoginHeader(
 
         Text(
             text = stringResource(R.string.ingresar),
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onSurface,
             fontSize = 31.sp,
             lineHeight = 36.sp,
             fontWeight = FontWeight.Black,
@@ -45,7 +44,7 @@ fun LoginHeader(
 
         Text(
             text = stringResource(R.string.descripcion_login),
-            color = TextPink,
+            color = MaterialTheme.colorScheme.onBackground,
             fontSize = 17.sp,
             lineHeight = 23.sp,
             fontWeight = FontWeight.Medium

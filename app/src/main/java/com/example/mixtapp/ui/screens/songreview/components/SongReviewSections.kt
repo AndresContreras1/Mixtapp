@@ -6,16 +6,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.ui.screens.songreview.model.SongReviewUi
-import com.example.mixtapp.ui.theme.TextPink
 
 @Composable
 fun SongReviewSections(
@@ -44,7 +43,7 @@ fun SongReviewSections(
 
         Text(
             text = songReview.title,
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onSurface,
             fontSize = 28.sp,
             fontFamily = FontFamily.Serif,
             fontWeight = FontWeight.Bold
@@ -52,7 +51,7 @@ fun SongReviewSections(
 
         Text(
             text = songReview.artist,
-            color = TextPink.copy(alpha = 0.7f),
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold
         )

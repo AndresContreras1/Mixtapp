@@ -3,6 +3,7 @@ package com.example.mixtapp.ui.screens.login
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -90,7 +91,7 @@ fun LoginScreenContent(
             if (errorMessageRes != null) {
                 Text(
                     text = stringResource(errorMessageRes),
-                    color = PalePink,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 14.sp
                 )
             }

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -19,9 +20,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.ui.screens.myreviews.model.MyReviewUi
-import com.example.mixtapp.ui.theme.CardBackground
-import com.example.mixtapp.ui.theme.FieldBorder
-import com.example.mixtapp.ui.theme.PalePink
 
 @Composable
 fun MyReviewCard(
@@ -33,8 +31,8 @@ fun MyReviewCard(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(14.dp))
-            .background(CardBackground)
-            .border(BorderStroke(1.dp, FieldBorder.copy(alpha = 0.5f)), RoundedCornerShape(14.dp))
+            .background(MaterialTheme.colorScheme.surfaceContainerLowest)
+            .border(BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)), RoundedCornerShape(14.dp))
             .clickable { onReviewClick(review.songId) }
             .padding(16.dp)
     ) {
@@ -50,7 +48,7 @@ fun MyReviewCard(
 
             Text(
                 text = review.excerpt,
-                color = PalePink.copy(alpha = 0.85f),
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.85f),
                 fontSize = 13.sp,
                 lineHeight = 18.sp,
                 maxLines = 4

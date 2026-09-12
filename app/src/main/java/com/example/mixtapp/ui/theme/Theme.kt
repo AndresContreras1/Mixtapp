@@ -16,30 +16,30 @@ private val DarkColorScheme = darkColorScheme(
     onPrimary = Color.White,
     primaryContainer = FieldBackground,
     onPrimaryContainer = PalePink,
-    inversePrimary = SoftPink,
+    inversePrimary = LinkPink,
 
     secondary = CircleWine,
     onSecondary = Color.White,
-    secondaryContainer = SurfaceCard,
-    onSecondaryContainer = TextPink,
+    secondaryContainer = CircleWine,
+    onSecondaryContainer = PalePink,
 
     tertiary = LogoPink,
     onTertiary = Color.White,
-    tertiaryContainer = CardBackground,
+    tertiaryContainer = SurfaceCard,
     onTertiaryContainer = PalePink,
 
     background = DeepBackground,
     onBackground = TextPink,
 
     surface = DeepBackground,
-    onSurface = TextPink,
+    onSurface = Color.White,
     surfaceVariant = FieldBackground,
     onSurfaceVariant = PalePink,
     surfaceTint = PrimaryPink,
     inverseSurface = PalePink,
     inverseOnSurface = DeepBackground,
 
-    surfaceDim = DeepWine,
+    surfaceDim = FollowingOverlay,
     surfaceBright = CircleWine,
     surfaceContainerLowest = CardBackground,
     surfaceContainerLow = DeepBackground,
@@ -53,8 +53,8 @@ private val DarkColorScheme = darkColorScheme(
     onErrorContainer = PalePink,
 
     outline = FieldBorder,
-    outlineVariant = CircleWine,
-    scrim = DeepWine
+    outlineVariant = DividerWine,
+    scrim = Color.Black
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -62,30 +62,30 @@ private val LightColorScheme = lightColorScheme(
     onPrimary = Color.White,
     primaryContainer = FieldBackground,
     onPrimaryContainer = PalePink,
-    inversePrimary = SoftPink,
+    inversePrimary = LinkPink,
 
     secondary = CircleWine,
     onSecondary = Color.White,
-    secondaryContainer = SurfaceCard,
-    onSecondaryContainer = TextPink,
+    secondaryContainer = CircleWine,
+    onSecondaryContainer = PalePink,
 
     tertiary = LogoPink,
     onTertiary = Color.White,
-    tertiaryContainer = CardBackground,
+    tertiaryContainer = SurfaceCard,
     onTertiaryContainer = PalePink,
 
     background = DeepBackground,
     onBackground = TextPink,
 
     surface = DeepBackground,
-    onSurface = TextPink,
+    onSurface = Color.White,
     surfaceVariant = FieldBackground,
     onSurfaceVariant = PalePink,
     surfaceTint = PrimaryPink,
     inverseSurface = PalePink,
     inverseOnSurface = DeepBackground,
 
-    surfaceDim = DeepWine,
+    surfaceDim = FollowingOverlay,
     surfaceBright = CircleWine,
     surfaceContainerLowest = CardBackground,
     surfaceContainerLow = DeepBackground,
@@ -99,8 +99,8 @@ private val LightColorScheme = lightColorScheme(
     onErrorContainer = PalePink,
 
     outline = FieldBorder,
-    outlineVariant = CircleWine,
-    scrim = DeepWine
+    outlineVariant = DividerWine,
+    scrim = Color.Black
 )
 
 @Composable

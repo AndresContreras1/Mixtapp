@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,8 +23,6 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
-import com.example.mixtapp.ui.theme.PalePink
-import com.example.mixtapp.ui.theme.TextPink
 
 @Composable
 fun ReviewAuthorRow(
@@ -60,13 +59,13 @@ fun ReviewAuthorRow(
 
         Text(
             text = reviewerName,
-            color = PalePink,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontSize = nameFontSize,
             fontWeight = FontWeight.Bold,
         )
         Text(
             text = stringResource(R.string.reviewed),
-            color = TextPink.copy(alpha = 0.56f),
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.56f),
             fontSize = nameFontSize,
             fontWeight = FontWeight.Bold,
         )
@@ -75,7 +74,7 @@ fun ReviewAuthorRow(
 
         Text(
             text = reviewedAt,
-            color = TextPink.copy(alpha = 0.58f),
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.58f),
             fontSize = dateFontSize,
             fontWeight = FontWeight.Bold,
         )

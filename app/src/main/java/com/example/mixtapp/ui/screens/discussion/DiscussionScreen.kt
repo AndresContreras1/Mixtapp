@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -25,7 +26,6 @@ import com.example.mixtapp.ui.screens.discussion.components.DiscussionHeader
 import com.example.mixtapp.ui.screens.discussion.components.DiscussionReviewCard
 import com.example.mixtapp.ui.screens.discussion.components.ThreadCommentItem
 import com.example.mixtapp.ui.screens.discussion.model.DiscussionUi
-import com.example.mixtapp.ui.theme.DeepBackground
 import com.example.mixtapp.ui.theme.MixtappTheme
 
 // Recibe solo el id de la resena; el ViewModel se encarga de buscar la discusion
@@ -78,7 +78,7 @@ fun DiscussionScreenContent(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(DeepBackground)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             DiscussionHeader(

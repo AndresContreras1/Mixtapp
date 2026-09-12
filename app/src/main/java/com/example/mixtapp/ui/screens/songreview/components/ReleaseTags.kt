@@ -6,12 +6,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -26,7 +26,7 @@ fun ReleaseTags(
     ) {
         tags.forEach { tag ->
             Surface(
-                color = Color.White.copy(alpha = 0.15f),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.15f),
                 shape = RoundedCornerShape(20.dp),
                 modifier = Modifier.height(36.dp)
             ) {
@@ -36,7 +36,7 @@ fun ReleaseTags(
                 ) {
                     Text(
                         text = tag,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontSize = 14.sp
                     )
                 }

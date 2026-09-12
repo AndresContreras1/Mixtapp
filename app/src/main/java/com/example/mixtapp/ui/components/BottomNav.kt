@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,10 +27,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.mixtapp.navigation.Screen
-import com.example.mixtapp.ui.theme.CircleWine
 import com.example.mixtapp.ui.theme.MixtappTheme
-import com.example.mixtapp.ui.theme.PalePink
-import com.example.mixtapp.ui.theme.PrimaryPink
 
 @Composable
 fun BottomNav(
@@ -40,7 +38,7 @@ fun BottomNav(
     val currentRoute = navBackStackEntry.value?.destination?.route
 
     Surface(
-        color = Color.Black.copy(alpha = 0.9f),
+        color = MaterialTheme.colorScheme.scrim.copy(alpha = 0.9f),
         modifier = modifier.fillMaxWidth()
     ) {
         Row(
@@ -60,9 +58,9 @@ fun BottomNav(
                         icon = icon,
                         contentDescription = stringResource(item.label),
                         circleSize = 44.dp,
-                        circleColor = PrimaryPink,
+                        circleColor = MaterialTheme.colorScheme.primary,
                         iconSize = 30.dp,
-                        iconTint = Color.White,
+                        iconTint = MaterialTheme.colorScheme.onSurface,
                         onClick = { navController.navigate(item.destination) }
                     )
 
@@ -70,16 +68,16 @@ fun BottomNav(
                         icon = icon,
                         contentDescription = stringResource(item.label),
                         circleSize = 36.dp,
-                        circleColor = CircleWine.copy(alpha = 0.5f),
+                        circleColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f),
                         iconSize = 28.dp,
-                        iconTint = PrimaryPink,
+                        iconTint = MaterialTheme.colorScheme.primary,
                         onClick = { navController.navigate(item.destination) }
                     )
 
                     else -> Icon(
                         imageVector = icon,
                         contentDescription = stringResource(item.label),
-                        tint = PalePink.copy(alpha = 0.6f),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
                         modifier = Modifier
                             .size(28.dp)
                             .clickable { navController.navigate(item.destination) }

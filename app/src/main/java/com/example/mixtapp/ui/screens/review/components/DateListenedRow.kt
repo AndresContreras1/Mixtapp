@@ -19,6 +19,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -30,9 +31,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
-import com.example.mixtapp.ui.theme.FieldBorder
-import com.example.mixtapp.ui.theme.PalePink
-import com.example.mixtapp.ui.theme.PrimaryPink
 
 @Composable
 fun DateListenedRow(
@@ -49,12 +47,12 @@ fun DateListenedRow(
         Column {
             Text(
                 text = stringResource(R.string.date_listened),
-                color = PalePink,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 15.sp
             )
             Text(
                 text = stringResource(R.string.when_did_you_listen),
-                color = PalePink.copy(alpha = 0.58f),
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.58f),
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold
             )
@@ -65,7 +63,7 @@ fun DateListenedRow(
                 .width(146.dp)
                 .height(31.dp)
                 .clip(RoundedCornerShape(9.dp))
-                .border(BorderStroke(1.dp, FieldBorder), RoundedCornerShape(9.dp))
+                .border(BorderStroke(1.dp, MaterialTheme.colorScheme.outline), RoundedCornerShape(9.dp))
                 .padding(horizontal = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -77,7 +75,7 @@ fun DateListenedRow(
                     .fillMaxHeight(),
                 singleLine = true,
                 textStyle = TextStyle(
-                    color = PalePink.copy(alpha = 0.72f),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.72f),
                     fontSize = 14.sp
                 ),
                 decorationBox = { innerTextField ->
@@ -95,7 +93,7 @@ fun DateListenedRow(
             Icon(
                 imageVector = Icons.Default.DateRange,
                 contentDescription = stringResource(R.string.elegir_fecha_escucha),
-                tint = PrimaryPink,
+                tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.clickable { onDatePickerClick() }
             )
         }

@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -19,7 +20,6 @@ import com.example.mixtapp.ui.screens.review.components.WriteReviewBackground
 import com.example.mixtapp.ui.screens.review.components.WriteReviewList
 import com.example.mixtapp.ui.screens.review.model.ReviewAlbumUi
 import com.example.mixtapp.ui.screens.review.model.ReviewDraftUi
-import com.example.mixtapp.ui.theme.DeepBackground
 import com.example.mixtapp.ui.theme.MixtappTheme
 
 // Recibe solo el id; el ViewModel se encarga de buscar el album
@@ -88,7 +88,7 @@ fun WriteReviewScreenContent(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(DeepBackground)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         WriteReviewBackground()
 

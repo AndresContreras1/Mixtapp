@@ -6,12 +6,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -19,10 +19,7 @@ import com.example.mixtapp.ui.components.ReviewActionsRow
 import com.example.mixtapp.ui.components.ReviewAlbumRow
 import com.example.mixtapp.ui.components.ReviewAuthorRow
 import com.example.mixtapp.ui.screens.following.model.FollowingReviewUi
-import com.example.mixtapp.ui.theme.CircleBerry
-import com.example.mixtapp.ui.theme.CircleWine
-import com.example.mixtapp.ui.theme.FieldBorder
-import com.example.mixtapp.ui.theme.PalePink
+import com.example.mixtapp.ui.theme.StoryGold
 
 @Composable
 fun FollowingReviewCard(
@@ -38,8 +35,8 @@ fun FollowingReviewCard(
         modifier = modifier
             .fillMaxWidth()
             .padding(bottom = 18.dp)
-            .border(1.dp, FieldBorder.copy(alpha = 0.8f), RoundedCornerShape(12.dp)),
-        color = Color.Black.copy(alpha = 0.58f),
+            .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.8f), RoundedCornerShape(12.dp)),
+        color = MaterialTheme.colorScheme.scrim.copy(alpha = 0.58f),
         shape = RoundedCornerShape(12.dp),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -49,9 +46,9 @@ fun FollowingReviewCard(
                 reviewedAt = review.reviewedAt,
                 avatarSize = 44.dp,
                 avatarBrush = Brush.linearGradient(
-                    colors = listOf(CircleBerry, Color(0xFFF5C25E), CircleWine)
+                    colors = listOf(MaterialTheme.colorScheme.primary, StoryGold, MaterialTheme.colorScheme.secondary)
                 ),
-                avatarTextColor = PalePink,
+                avatarTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
                 nameFontSize = 15.sp,
                 dateFontSize = 12.sp,
             )
@@ -73,11 +70,11 @@ fun FollowingReviewCard(
                     .fillMaxWidth()
                     .padding(top = 18.dp)
                     .background(
-                        color = Color.White.copy(alpha = 0.14f),
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.14f),
                         shape = RoundedCornerShape(10.dp),
                     )
                     .padding(horizontal = 14.dp, vertical = 12.dp),
-                color = Color.White.copy(alpha = 0.68f),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f),
                 fontSize = 14.sp,
                 lineHeight = 19.sp,
                 fontWeight = FontWeight.Bold,

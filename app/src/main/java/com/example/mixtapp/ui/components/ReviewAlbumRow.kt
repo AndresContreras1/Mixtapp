@@ -9,12 +9,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -22,8 +22,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
-import com.example.mixtapp.ui.theme.PrimaryPink
-import com.example.mixtapp.ui.theme.TextPink
 
 @Composable
 fun ReviewAlbumRow(
@@ -54,7 +52,7 @@ fun ReviewAlbumRow(
         Column {
             Text(
                 text = albumTitle,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 22.sp,
                 lineHeight = 25.sp,
                 fontFamily = FontFamily.Serif,
@@ -62,7 +60,7 @@ fun ReviewAlbumRow(
             )
             Text(
                 text = artistName,
-                color = TextPink.copy(alpha = 0.74f),
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.74f),
                 fontSize = 14.sp,
                 lineHeight = 18.sp,
                 fontFamily = FontFamily.Serif,
@@ -73,8 +71,8 @@ fun ReviewAlbumRow(
                 starCount = 5,
                 starSize = starSize,
                 spacing = 0.dp,
-                filledTint = PrimaryPink,
-                emptyTint = TextPink.copy(alpha = 0.32f),
+                filledTint = MaterialTheme.colorScheme.primary,
+                emptyTint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.32f),
                 emptyIcon = Icons.Filled.Star,
                 onRatingChange = null,
                 modifier = Modifier.padding(top = 4.dp),

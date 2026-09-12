@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -18,7 +19,6 @@ import com.example.mixtapp.ui.screens.following.components.FollowingBackground
 import com.example.mixtapp.ui.screens.following.components.FollowingList
 import com.example.mixtapp.ui.screens.following.model.FollowingReviewUi
 import com.example.mixtapp.ui.screens.following.model.FollowingUi
-import com.example.mixtapp.ui.theme.DeepBackground
 import com.example.mixtapp.ui.theme.MixtappTheme
 
 @Composable
@@ -71,7 +71,7 @@ fun FollowingScreenContent(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(DeepBackground)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         FollowingBackground()
 

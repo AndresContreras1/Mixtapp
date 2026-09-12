@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -20,7 +21,6 @@ import com.example.mixtapp.ui.screens.myreviews.components.MyReviewCard
 import com.example.mixtapp.ui.screens.myreviews.components.MyReviewsFilter
 import com.example.mixtapp.ui.screens.myreviews.components.MyReviewsHeader
 import com.example.mixtapp.ui.screens.myreviews.model.MyReviewUi
-import com.example.mixtapp.ui.theme.DeepBackground
 import com.example.mixtapp.ui.theme.MixtappTheme
 
 @Composable
@@ -57,7 +57,7 @@ fun MyReviewsScreenContent(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(DeepBackground)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)) {

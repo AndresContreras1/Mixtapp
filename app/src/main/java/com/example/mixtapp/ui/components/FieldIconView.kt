@@ -1,6 +1,7 @@
 package com.example.mixtapp.ui.components
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
@@ -10,15 +11,15 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
-import com.example.mixtapp.ui.theme.PalePink
 
 @Composable
 fun FieldIconView(
     icon: FieldIcon,
     modifier: Modifier = Modifier
 ) {
+    val color = MaterialTheme.colorScheme.onSurfaceVariant
+
     Canvas(modifier = modifier) {
-        val color = PalePink
         val strokeWidth = 2.6f
         when (icon) {
             FieldIcon.User -> {

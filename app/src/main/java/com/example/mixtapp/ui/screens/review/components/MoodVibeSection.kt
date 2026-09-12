@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -21,9 +22,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
-import com.example.mixtapp.ui.theme.FieldBorder
-import com.example.mixtapp.ui.theme.PalePink
-import com.example.mixtapp.ui.theme.PrimaryPink
 
 @Composable
 fun MoodVibeSection(
@@ -38,7 +36,7 @@ fun MoodVibeSection(
     ) {
         Text(
             text = stringResource(R.string.mood_vibe),
-            color = PalePink,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontSize = 18.sp
         )
 
@@ -70,15 +68,15 @@ private fun MoodChip(
 ) {
     Text(
         text = mood,
-        color = PalePink.copy(alpha = if (selected) 0.96f else 0.62f),
+        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = if (selected) 0.96f else 0.62f),
         fontSize = 13.sp,
         fontWeight = FontWeight.Bold,
         modifier = modifier
             .heightIn(min = 30.dp)
             .clip(RoundedCornerShape(18.dp))
-            .background(if (selected) PrimaryPink.copy(alpha = 0.34f) else Color.Transparent)
+            .background(if (selected) MaterialTheme.colorScheme.primary.copy(alpha = 0.34f) else Color.Transparent)
             .border(
-                BorderStroke(1.dp, if (selected) PrimaryPink else FieldBorder),
+                BorderStroke(1.dp, if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline),
                 RoundedCornerShape(18.dp)
             )
             .clickable { onClick() }

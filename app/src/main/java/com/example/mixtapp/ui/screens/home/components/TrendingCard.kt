@@ -17,12 +17,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -31,11 +31,6 @@ import com.example.mixtapp.R
 import com.example.mixtapp.ui.components.AlbumAsyncImage
 import com.example.mixtapp.ui.components.StarRating
 import com.example.mixtapp.ui.screens.songreview.model.SongReviewUi
-import com.example.mixtapp.ui.theme.FieldBackground
-import com.example.mixtapp.ui.theme.FieldBorder
-import com.example.mixtapp.ui.theme.PalePink
-import com.example.mixtapp.ui.theme.PrimaryPink
-import com.example.mixtapp.ui.theme.TextPink
 
 @Composable
 fun TrendingCard(
@@ -48,8 +43,8 @@ fun TrendingCard(
             .fillMaxWidth()
             .height(190.dp)
             .clip(RoundedCornerShape(12.dp))
-            .background(FieldBackground.copy(alpha = 0.5f))
-            .border(1.dp, FieldBorder.copy(alpha = 0.5f), RoundedCornerShape(12.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+            .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), RoundedCornerShape(12.dp))
             .clickable { onClick(album.id) }
     ) {
         AlbumAsyncImage(
@@ -64,9 +59,9 @@ fun TrendingCard(
                 text = stringResource(R.string.now_trending),
                 modifier = Modifier
                     .clip(RoundedCornerShape(18.dp))
-                    .background(PrimaryPink)
+                    .background(MaterialTheme.colorScheme.primary)
                     .padding(horizontal = 12.dp, vertical = 8.dp),
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Bold
             )
@@ -76,7 +71,7 @@ fun TrendingCard(
             ) {
                 Text(
                     text = stringResource(R.string.titulo_guion_subtitulo, album.artist, album.title),
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -87,8 +82,8 @@ fun TrendingCard(
                         starCount = 5,
                         starSize = 14.dp,
                         spacing = 0.dp,
-                        filledTint = TextPink,
-                        emptyTint = TextPink,
+                        filledTint = MaterialTheme.colorScheme.onBackground,
+                        emptyTint = MaterialTheme.colorScheme.onBackground,
                         emptyIcon = Icons.Default.Star,
                         onRatingChange = null
                     )
@@ -97,7 +92,7 @@ fun TrendingCard(
 
                     Text(
                         text = stringResource(R.string.plays_this_week),
-                        color = PalePink,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 12.sp
                     )
                 }

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -17,8 +18,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.theme.MixtappTheme
-import com.example.mixtapp.ui.theme.PrimaryPink
-import com.example.mixtapp.ui.theme.TextPink
 
 /**
  * Fila de estrellas de una calificacion. Antes estaba copiada en nueve componentes
@@ -83,8 +82,8 @@ fun StarRatingPreview() {
             starCount = 5,
             starSize = 24.dp,
             spacing = 6.dp,
-            filledTint = PrimaryPink,
-            emptyTint = TextPink.copy(alpha = 0.32f),
+            filledTint = MaterialTheme.colorScheme.primary,
+            emptyTint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.32f),
             emptyIcon = Icons.Filled.Star,
             onRatingChange = null
         )

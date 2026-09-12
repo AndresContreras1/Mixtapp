@@ -16,6 +16,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -28,10 +29,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
-import com.example.mixtapp.ui.theme.FieldBackground
-import com.example.mixtapp.ui.theme.FieldBorder
-import com.example.mixtapp.ui.theme.PalePink
-import com.example.mixtapp.ui.theme.TextPink
 
 @Composable
 fun SearchTextField(
@@ -43,10 +40,10 @@ fun SearchTextField(
         modifier = modifier
             .height(60.dp)
             .clip(RoundedCornerShape(17.dp))
-            .background(FieldBackground.copy(alpha = 0.91f))
+            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.91f))
             .border(
                 width = 1.dp,
-                color = FieldBorder.copy(alpha = 0.95f),
+                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.95f),
                 shape = RoundedCornerShape(17.dp),
             )
             .padding(horizontal = 22.dp),
@@ -55,7 +52,7 @@ fun SearchTextField(
         Icon(
             imageVector = Icons.Default.Search,
             contentDescription = null,
-            tint = PalePink,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(26.dp),
         )
 
@@ -69,12 +66,12 @@ fun SearchTextField(
                 .fillMaxHeight(),
             singleLine = true,
             textStyle = TextStyle(
-                color = PalePink,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 18.sp,
                 lineHeight = 22.sp,
                 fontWeight = FontWeight.Normal,
             ),
-            cursorBrush = SolidColor(PalePink),
+            cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurfaceVariant),
             decorationBox = { innerTextField ->
                 Box(
                     modifier = Modifier.fillMaxSize(),
@@ -83,7 +80,7 @@ fun SearchTextField(
                     if (value.isEmpty()) {
                         Text(
                             text = stringResource(R.string.search_placeholder),
-                            color = TextPink.copy(alpha = 0.78f),
+                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.78f),
                             fontSize = 18.sp,
                             lineHeight = 22.sp,
                         )
