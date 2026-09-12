@@ -8,11 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.mixtapp.ui.theme.CircleBerry
-import com.example.mixtapp.ui.theme.CircleWine
 import com.example.mixtapp.ui.theme.MixtappTheme
 
 @Composable
@@ -35,7 +32,7 @@ fun BoxScope.DecorativeCircles() {
             .size(240.dp)
             .offset(x = (-114).dp, y = (-38).dp)
             .clip(CircleShape)
-            .background(CircleWine.copy(alpha = 0.58f))
+            .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.58f))
     )
 
     Box(
@@ -44,7 +41,7 @@ fun BoxScope.DecorativeCircles() {
             .align(Alignment.Center)
             .offset(y = 32.dp)
             .clip(CircleShape)
-            .background(Color.Black.copy(alpha = 0.11f))
+            .background(MaterialTheme.colorScheme.scrim.copy(alpha = 0.11f))
     )
     Box(
         modifier = Modifier
@@ -52,7 +49,7 @@ fun BoxScope.DecorativeCircles() {
             .align(Alignment.BottomEnd)
             .offset(x = 112.dp, y = (-24).dp)
             .clip(CircleShape)
-            .background(CircleBerry.copy(alpha = 0.33f))
+            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.33f))
     )
 }
 

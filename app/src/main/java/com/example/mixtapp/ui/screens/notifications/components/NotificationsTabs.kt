@@ -2,6 +2,7 @@ package com.example.mixtapp.ui.screens.notifications.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -9,8 +10,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.components.AppChip
-import com.example.mixtapp.ui.theme.FieldBorder
-import com.example.mixtapp.ui.theme.PalePink
 
 @Composable
 fun NotificationsTabs(
@@ -37,8 +36,8 @@ fun NotificationsTabs(
                 isSelected = tab == selectedTab,
                 onClick = { onTabSelected(tab) },
                 unselectedContainerColor = Color.Transparent,
-                unselectedBorderColor = FieldBorder,
-                unselectedTextColor = PalePink.copy(alpha = 0.8f),
+                unselectedBorderColor = MaterialTheme.colorScheme.outline,
+                unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
                 verticalPadding = 10.dp,
             )
         }

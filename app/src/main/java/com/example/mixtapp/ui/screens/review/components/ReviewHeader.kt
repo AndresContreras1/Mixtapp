@@ -8,19 +8,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
-import com.example.mixtapp.ui.theme.PrimaryPink
-import com.example.mixtapp.ui.theme.TextPink
 
 @Composable
 fun ReviewHeader(
@@ -38,7 +36,7 @@ fun ReviewHeader(
         ) {
             Text(
                 text = stringResource(R.string.cancel),
-                color = TextPink.copy(alpha = 0.64f),
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.64f),
                 fontSize = 14.sp,
                 modifier = Modifier
                     .align(Alignment.CenterStart)
@@ -47,12 +45,12 @@ fun ReviewHeader(
 
             Text(
                 text = stringResource(R.string.write_review),
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Black,
                 fontFamily = FontFamily.Serif
             )
         }
-        HorizontalDivider(color = PrimaryPink.copy(alpha = 0.72f), thickness = 1.dp)
+        HorizontalDivider(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.72f), thickness = 1.dp)
     }
 }

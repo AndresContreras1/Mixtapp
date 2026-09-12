@@ -10,13 +10,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import com.example.mixtapp.ui.theme.CardBackground
-import com.example.mixtapp.ui.theme.FieldBorder
-import com.example.mixtapp.ui.theme.PrimaryPink
 
 @Composable
 fun ReviewActionsCard(
@@ -34,8 +32,8 @@ fun ReviewActionsCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(10.dp))
-                .background(CardBackground)
-                .border(BorderStroke(1.dp, FieldBorder), RoundedCornerShape(10.dp))
+                .background(MaterialTheme.colorScheme.surfaceContainerLowest)
+                .border(BorderStroke(1.dp, MaterialTheme.colorScheme.outline), RoundedCornerShape(10.dp))
                 .padding(horizontal = 18.dp, vertical = 14.dp)
         ) {
             DateListenedRow(
@@ -45,7 +43,7 @@ fun ReviewActionsCard(
             )
 
             Spacer(modifier = Modifier.height(14.dp))
-            HorizontalDivider(color = PrimaryPink.copy(alpha = 0.42f))
+            HorizontalDivider(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.42f))
             Spacer(modifier = Modifier.height(12.dp))
 
             FavoriteRow(

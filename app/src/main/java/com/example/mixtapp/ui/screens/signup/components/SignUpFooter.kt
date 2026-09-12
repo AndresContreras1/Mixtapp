@@ -5,10 +5,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.components.OrDivider
-import com.example.mixtapp.ui.theme.LinkPink
 
 
 @Composable
@@ -38,13 +37,13 @@ fun SignUpFooter(
 
         Text(
             text = buildAnnotatedString {
-                withStyle(SpanStyle(color = Color.White)) {
+                withStyle(SpanStyle(color = MaterialTheme.colorScheme.onSurface)) {
                     append(stringResource(R.string.already_have_account))
                 }
                 append(" ")
                 withStyle(
                     SpanStyle(
-                        color = LinkPink,
+                        color = MaterialTheme.colorScheme.inversePrimary,
                         fontWeight = FontWeight.Black
                     )
                 ) {

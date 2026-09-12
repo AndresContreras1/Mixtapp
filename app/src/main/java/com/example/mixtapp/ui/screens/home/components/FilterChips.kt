@@ -3,12 +3,11 @@ package com.example.mixtapp.ui.screens.home.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.ui.components.AppChip
-import com.example.mixtapp.ui.theme.FieldBackground
 
 @Composable
 fun FilterChips(
@@ -26,9 +25,9 @@ fun FilterChips(
                 text = filter,
                 isSelected = filter == selected,
                 onClick = { onFilterSelected(filter) },
-                unselectedContainerColor = FieldBackground,
+                unselectedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
                 unselectedBorderColor = null,
-                unselectedTextColor = Color.White,
+                unselectedTextColor = MaterialTheme.colorScheme.onSurface,
                 verticalPadding = 12.dp
             )
         }

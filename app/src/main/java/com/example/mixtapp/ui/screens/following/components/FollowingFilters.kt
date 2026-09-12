@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -17,10 +18,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mixtapp.ui.theme.FieldBorder
-import com.example.mixtapp.ui.theme.PalePink
-import com.example.mixtapp.ui.theme.PrimaryPink
-import com.example.mixtapp.ui.theme.TextPink
 
 @Composable
 fun FollowingFilters(
@@ -42,19 +39,19 @@ fun FollowingFilters(
                 onClick = { onFilterSelected(filter) },
                 shape = RoundedCornerShape(24.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = if (selected) PrimaryPink else Color.Transparent,
-                    contentColor = if (selected) Color.White else TextPink.copy(alpha = 0.68f),
+                    containerColor = if (selected) MaterialTheme.colorScheme.primary else Color.Transparent,
+                    contentColor = if (selected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.68f),
                 ),
                 border = if (selected) {
                     null
                 } else {
-                    BorderStroke(1.dp, FieldBorder)
+                    BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
                 },
                 contentPadding = PaddingValues(horizontal = 18.dp, vertical = 8.dp),
             ) {
                 Text(
                     text = filter,
-                    color = if (selected) Color.White else PalePink.copy(alpha = 0.62f),
+                    color = if (selected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.62f),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
                 )

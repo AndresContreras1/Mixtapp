@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,9 +27,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mixtapp.ui.theme.CircleWine
-import com.example.mixtapp.ui.theme.DeepBackground
-import com.example.mixtapp.ui.theme.PalePink
 
 @Composable
 fun ProfileHeader(
@@ -43,7 +41,7 @@ fun ProfileHeader(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .background(DeepBackground)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Spacer(modifier = Modifier.height(48.dp))
         Row(
@@ -56,19 +54,19 @@ fun ProfileHeader(
             Icon(
                 imageVector = Icons.Default.Settings,
                 contentDescription = null,
-                tint = PalePink,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(28.dp)
             )
             Text(
                 text = usuario,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Black
             )
             Icon(
                 imageVector = Icons.Default.MoreVert,
                 contentDescription = null,
-                tint = PalePink,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(28.dp)
             )
         }
@@ -78,7 +76,7 @@ fun ProfileHeader(
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 12.dp)
                 .clip(RoundedCornerShape(8.dp))
-                .background(Color.White.copy(alpha = 0.05f)),
+                .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             tabs.forEach { tab ->
@@ -88,20 +86,20 @@ fun ProfileHeader(
                         .weight(1f)
                         .padding(2.dp)
                         .clip(RoundedCornerShape(6.dp))
-                        .background(if (isSelected) CircleWine else Color.Transparent)
+                        .background(if (isSelected) MaterialTheme.colorScheme.secondary else Color.Transparent)
                         .clickable { onTabSelected(tab) }
                         .padding(vertical = 8.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = tab,
-                        color = if (isSelected) Color.White else PalePink.copy(alpha = 0.6f),
+                        color = if (isSelected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
                         fontSize = 14.sp,
                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
                     )
                 }
             }
         }
-        HorizontalDivider(color = Color.White.copy(alpha = 0.1f), thickness = 0.5.dp)
+        HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f), thickness = 0.5.dp)
     }
 }

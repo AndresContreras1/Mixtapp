@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,9 +24,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.components.StarRating
-import com.example.mixtapp.ui.theme.CircleWine
-import com.example.mixtapp.ui.theme.PrimaryPink
-import com.example.mixtapp.ui.theme.TextPink
 
 @Composable
 fun RatingsSection(
@@ -40,21 +38,21 @@ fun RatingsSection(
         ) {
             Text(
                 text = stringResource(R.string.calificaciones).uppercase(),
-                color = TextPink,
+                color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold
             )
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = stringResource(R.string.more_activity),
-                    color = PrimaryPink,
+                    color = MaterialTheme.colorScheme.primary,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold
                 )
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                     contentDescription = null,
-                    tint = PrimaryPink,
+                    tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(16.dp)
                 )
             }
@@ -73,7 +71,7 @@ fun RatingsSection(
                     modifier = Modifier
                         .weight(1f)
                         .height(60.dp * h)
-                        .background(if (h > 0.5f) PrimaryPink else CircleWine.copy(alpha = 0.6f))
+                        .background(if (h > 0.5f) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary.copy(alpha = 0.6f))
                 )
             }
         }
@@ -82,14 +80,14 @@ fun RatingsSection(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Icon(Icons.Default.Star, null, tint = PrimaryPink.copy(alpha = 0.5f), modifier = Modifier.size(12.dp))
+            Icon(Icons.Default.Star, null, tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f), modifier = Modifier.size(12.dp))
             StarRating(
                 rating = 5,
                 starCount = 5,
                 starSize = 12.dp,
                 spacing = 2.dp,
-                filledTint = PrimaryPink.copy(alpha = 0.5f),
-                emptyTint = PrimaryPink.copy(alpha = 0.5f),
+                filledTint = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
+                emptyTint = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
                 emptyIcon = Icons.Default.Star,
                 onRatingChange = null
             )

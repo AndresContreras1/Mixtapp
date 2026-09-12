@@ -7,14 +7,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.mixtapp.ui.theme.CircleBerry
-import com.example.mixtapp.ui.theme.CircleWine
 
 @Composable
 fun WriteReviewBackground(modifier: Modifier = Modifier) {
@@ -31,7 +29,7 @@ private fun BoxScope.ReviewCircleDecorations() {
             .align(Alignment.TopEnd)
             .offset(x = 72.dp, y = (-40).dp)
             .clip(CircleShape)
-            .background(CircleWine.copy(alpha = 0.48f))
+            .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.48f))
     )
 
     Box(
@@ -40,7 +38,7 @@ private fun BoxScope.ReviewCircleDecorations() {
             .align(Alignment.BottomStart)
             .offset(x = (-130).dp, y = (-52).dp)
             .clip(CircleShape)
-            .background(CircleBerry.copy(alpha = 0.28f))
+            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.28f))
     )
 
     Box(
@@ -49,6 +47,6 @@ private fun BoxScope.ReviewCircleDecorations() {
             .align(Alignment.CenterEnd)
             .offset(x = 104.dp, y = (-180).dp)
             .clip(CircleShape)
-            .background(Color.Black.copy(alpha = 0.14f))
+            .background(MaterialTheme.colorScheme.scrim.copy(alpha = 0.14f))
     )
 }

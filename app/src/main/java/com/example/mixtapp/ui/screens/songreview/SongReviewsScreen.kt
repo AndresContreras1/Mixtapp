@@ -2,6 +2,7 @@ package com.example.mixtapp.ui.screens.songreview
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -15,7 +16,6 @@ import com.example.mixtapp.data.local.LocalSongReviewProvider
 import com.example.mixtapp.ui.components.AppBackground
 import com.example.mixtapp.ui.screens.songreview.components.SongReviewSections
 import com.example.mixtapp.ui.screens.songreview.model.SongReviewUi
-import com.example.mixtapp.ui.theme.DeepBackground
 import com.example.mixtapp.ui.theme.MixtappTheme
 
 // Recibe solo el id; el ViewModel se encarga de buscar la cancion
@@ -64,7 +64,7 @@ fun SongReviewsScreenContent(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(DeepBackground)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         AppBackground()
 

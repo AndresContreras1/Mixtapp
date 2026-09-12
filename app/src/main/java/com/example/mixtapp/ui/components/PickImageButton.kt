@@ -8,16 +8,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
-import com.example.mixtapp.ui.theme.PrimaryPink
 
 @Composable
 fun PickImageButton(
@@ -37,17 +36,17 @@ fun PickImageButton(
         enabled = !cargando,
         shape = RoundedCornerShape(20.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = PrimaryPink,
-            contentColor = Color.White,
-            disabledContainerColor = PrimaryPink,
-            disabledContentColor = Color.White
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onSurface,
+            disabledContainerColor = MaterialTheme.colorScheme.primary,
+            disabledContentColor = MaterialTheme.colorScheme.onSurface
         ),
         elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
     ) {
         if (cargando) {
             CircularProgressIndicator(
                 modifier = Modifier.height(18.dp),
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSurface,
                 strokeWidth = 2.dp
             )
         } else {

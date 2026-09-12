@@ -6,12 +6,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -21,7 +21,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
-import com.example.mixtapp.ui.theme.LogoPink
+import com.example.mixtapp.ui.theme.LogoCircle
 
 @Composable
 fun HeaderLogo(modifier: Modifier = Modifier) {
@@ -35,10 +35,10 @@ fun HeaderLogo(modifier: Modifier = Modifier) {
 
         Text(
             text = buildAnnotatedString {
-                withStyle(SpanStyle(color = Color.White)) {
+                withStyle(SpanStyle(color = MaterialTheme.colorScheme.onSurface)) {
                     append(nombreClaro)
                 }
-                withStyle(SpanStyle(color = LogoPink)) {
+                withStyle(SpanStyle(color = MaterialTheme.colorScheme.tertiary)) {
                     append(nombreRosa)
                 }
             },
@@ -52,7 +52,7 @@ fun HeaderLogo(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .size(66.dp)
                 .clip(CircleShape)
-                .background(Color(0xFF742A44)),
+                .background(LogoCircle),
             contentAlignment = Alignment.Center
         ) {
             // Placeholder for user avatar or similar

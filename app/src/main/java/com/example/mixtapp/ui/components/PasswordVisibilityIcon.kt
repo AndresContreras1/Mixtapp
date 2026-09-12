@@ -2,13 +2,13 @@ package com.example.mixtapp.ui.components
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
-import com.example.mixtapp.ui.theme.PalePink
 
 @Composable
 fun PasswordVisibilityIcon(
@@ -26,7 +26,7 @@ fun PasswordVisibilityIcon(
         contentDescription = stringResource(
             if (passwordVisible) R.string.ocultar_contrasena else R.string.mostrar_contrasena
         ),
-        tint = PalePink,
+        tint = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = modifier.size(18.dp)
     )
 }

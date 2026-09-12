@@ -10,11 +10,11 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -23,8 +23,6 @@ import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.components.AppTextField
 import com.example.mixtapp.ui.components.FieldIcon
-import com.example.mixtapp.ui.theme.PalePink
-import com.example.mixtapp.ui.theme.PrimaryPink
 
 @Composable
 fun LoginForm(
@@ -74,7 +72,7 @@ fun LoginForm(
 
             Text(
                 text = stringResource(R.string.password_corta),
-                color = PalePink,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 14.sp
             )
         }
@@ -89,17 +87,17 @@ fun LoginForm(
             enabled = !cargando,
             shape = RoundedCornerShape(41.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = PrimaryPink,
-                contentColor = Color.White,
-                disabledContainerColor = PrimaryPink,
-                disabledContentColor = Color.White
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onSurface,
+                disabledContainerColor = MaterialTheme.colorScheme.primary,
+                disabledContentColor = MaterialTheme.colorScheme.onSurface
             ),
             elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
         ) {
             if (cargando) {
                 CircularProgressIndicator(
                     modifier = Modifier.size(28.dp),
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onSurface,
                     strokeWidth = 3.dp
                 )
             } else {

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -18,8 +19,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
-import com.example.mixtapp.ui.theme.PalePink
-import com.example.mixtapp.ui.theme.PrimaryPink
 
 @Composable
 fun FavoriteRow(
@@ -35,12 +34,12 @@ fun FavoriteRow(
         Column {
             Text(
                 text = stringResource(R.string.favorite),
-                color = PalePink,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 15.sp
             )
             Text(
                 text = stringResource(R.string.mark_as_favorite),
-                color = PalePink.copy(alpha = 0.58f),
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.58f),
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold
             )
@@ -49,7 +48,7 @@ fun FavoriteRow(
         Icon(
             imageVector = Icons.Default.Favorite,
             contentDescription = stringResource(R.string.favorite),
-            tint = if (isFavorite) PrimaryPink else PrimaryPink.copy(alpha = 0.78f),
+            tint = if (isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primary.copy(alpha = 0.78f),
             modifier = Modifier
                 .size(36.dp)
                 .clickable { onFavoriteChange(!isFavorite) }

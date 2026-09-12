@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -18,8 +19,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
-import com.example.mixtapp.ui.theme.PrimaryPink
-import com.example.mixtapp.ui.theme.TextPink
 
 @Composable
 fun CommentActionsRow(
@@ -37,14 +36,14 @@ fun CommentActionsRow(
         Icon(
             imageVector = if (isLiked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
             contentDescription = stringResource(R.string.like_comment),
-            tint = if (isLiked) PrimaryPink else TextPink.copy(alpha = 0.62f),
+            tint = if (isLiked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.62f),
             modifier = Modifier
                 .size(12.dp)
                 .clickable { onLikeClick() },
         )
         Text(
             text = (likes + if (isLiked) 1 else 0).toString(),
-            color = TextPink.copy(alpha = 0.62f),
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.62f),
             fontSize = 10.sp,
         )
 
@@ -56,7 +55,7 @@ fun CommentActionsRow(
             } else {
                 stringResource(R.string.reply)
             },
-            color = if (isReplying) PrimaryPink else TextPink.copy(alpha = 0.62f),
+            color = if (isReplying) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.62f),
             fontSize = 10.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.clickable { onReplyClick() },

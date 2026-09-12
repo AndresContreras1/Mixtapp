@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,10 +24,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.screens.search.model.SearchCategoryUi
-import com.example.mixtapp.ui.theme.FieldBorder
-import com.example.mixtapp.ui.theme.PalePink
-import com.example.mixtapp.ui.theme.PrimaryPink
-import com.example.mixtapp.ui.theme.TextPink
 
 @Composable
 fun BrowseBySection(
@@ -39,13 +36,13 @@ fun BrowseBySection(
         Text(
             text = stringResource(R.string.browse_by),
             modifier = Modifier.padding(top = 50.dp, bottom = 14.dp),
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onSurface,
             fontSize = 31.sp,
             lineHeight = 36.sp,
             fontWeight = FontWeight.Black,
         )
 
-        HorizontalDivider(color = FieldBorder.copy(alpha = 0.6f), thickness = 1.dp)
+        HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.6f), thickness = 1.dp)
 
         categories.forEach { category ->
             SearchCategoryRow(
@@ -53,7 +50,7 @@ fun BrowseBySection(
                 selected = category.id == selectedCategoryId,
                 onClick = { onCategoryClick(category.id) },
             )
-            HorizontalDivider(color = FieldBorder.copy(alpha = 0.6f), thickness = 1.dp)
+            HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.6f), thickness = 1.dp)
         }
     }
 }
@@ -65,8 +62,8 @@ private fun SearchCategoryRow(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val contentColor = if (selected) Color.White else PalePink
-    val subtitleColor = if (selected) PalePink else TextPink.copy(alpha = 0.72f)
+    val contentColor = if (selected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
+    val subtitleColor = if (selected) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.72f)
 
     Surface(
         modifier = modifier
@@ -107,7 +104,7 @@ private fun SearchCategoryRow(
             Icon(
                 imageVector = Icons.Default.KeyboardArrowRight,
                 contentDescription = null,
-                tint = PrimaryPink,
+                tint = MaterialTheme.colorScheme.primary,
             )
         }
     }

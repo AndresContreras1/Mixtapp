@@ -16,12 +16,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -29,10 +29,6 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mixtapp.ui.theme.FieldBackground
-import com.example.mixtapp.ui.theme.FieldBorder
-import com.example.mixtapp.ui.theme.PalePink
-import com.example.mixtapp.ui.theme.TextPink
 
 @Composable
 fun AppTextField(
@@ -58,7 +54,7 @@ fun AppTextField(
     Column(modifier = modifier.fillMaxWidth()) {
         Text(
             text = label,
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onSurface,
             fontSize = 15.sp,
             lineHeight = 18.sp,
             fontWeight = FontWeight.Black
@@ -71,10 +67,10 @@ fun AppTextField(
                 .fillMaxWidth()
                 .height(64.dp)
                 .clip(RoundedCornerShape(12.dp))
-                .background(FieldBackground.copy(alpha = 0.91f))
+                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.91f))
                 .border(
                     width = 1.2.dp,
-                    color = FieldBorder,
+                    color = MaterialTheme.colorScheme.outline,
                     shape = RoundedCornerShape(12.dp)
                 )
                 .padding(horizontal = 24.dp),
@@ -95,11 +91,11 @@ fun AppTextField(
                     .fillMaxHeight(),
                 singleLine = true,
                 textStyle = TextStyle(
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Normal
                 ),
-                cursorBrush = SolidColor(PalePink),
+                cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurfaceVariant),
                 keyboardOptions = keyboardOptions,
                 visualTransformation = currentTransformation,
                 decorationBox = { innerTextField ->
@@ -114,7 +110,7 @@ fun AppTextField(
                             if (value.isEmpty()) {
                                 Text(
                                     text = placeholder,
-                                    color = TextPink.copy(alpha = 0.88f),
+                                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.88f),
                                     fontSize = 18.sp,
                                 )
                             }

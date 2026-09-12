@@ -17,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,8 +31,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.components.StarRating
-import com.example.mixtapp.ui.theme.PrimaryPink
-import com.example.mixtapp.ui.theme.SurfaceCard
 
 @Composable
 fun ReviewItem(
@@ -47,7 +46,7 @@ fun ReviewItem(
         shape = RoundedCornerShape(16.dp),
         modifier = modifier
             .fillMaxWidth()
-            .border(1.dp, Color.White.copy(alpha = 0.2f), RoundedCornerShape(16.dp))
+            .border(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f), RoundedCornerShape(16.dp))
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
@@ -59,34 +58,34 @@ fun ReviewItem(
                     modifier = Modifier
                         .size(40.dp)
                         .clip(CircleShape)
-                        .background(SurfaceCard),
+                        .background(MaterialTheme.colorScheme.surfaceContainer),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(author.take(2).lowercase(), color = PrimaryPink, fontWeight = FontWeight.Bold)
+                    Text(author.take(2).lowercase(), color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
                 }
                 Spacer(modifier = Modifier.width(12.dp))
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(author, color = Color.White, fontWeight = FontWeight.Bold)
+                    Text(author, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold)
                     StarRating(
                         rating = rating,
                         // Solo se dibujan las estrellas obtenidas, sin ranuras vacias
                         starCount = rating,
                         starSize = 12.dp,
                         spacing = 0.dp,
-                        filledTint = PrimaryPink,
-                        emptyTint = PrimaryPink,
+                        filledTint = MaterialTheme.colorScheme.primary,
+                        emptyTint = MaterialTheme.colorScheme.primary,
                         emptyIcon = Icons.Filled.Star,
                         onRatingChange = null
                     )
                 }
-                Text(daysAgo, color = Color.White.copy(alpha = 0.4f), fontSize = 10.sp)
+                Text(daysAgo, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f), fontSize = 10.sp)
             }
 
             Spacer(modifier = Modifier.height(12.dp))
 
             Text(
                 text = content,
-                color = Color.White.copy(alpha = 0.9f),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.9f),
                 fontSize = 12.sp,
                 lineHeight = 18.sp
             )
@@ -94,13 +93,13 @@ fun ReviewItem(
             Spacer(modifier = Modifier.height(12.dp))
 
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Outlined.FavoriteBorder, null, tint = Color.White.copy(alpha = 0.6f), modifier = Modifier.size(14.dp))
+                Icon(Icons.Outlined.FavoriteBorder, null, tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f), modifier = Modifier.size(14.dp))
                 Spacer(modifier = Modifier.width(4.dp))
-                Text(likes.toString(), color = Color.White.copy(alpha = 0.6f), fontSize = 12.sp)
+                Text(likes.toString(), color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f), fontSize = 12.sp)
                 Spacer(modifier = Modifier.width(16.dp))
                 Text(
                     text = stringResource(R.string.reply),
-                    color = Color.White.copy(alpha = 0.6f),
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                     fontSize = 12.sp
                 )
             }

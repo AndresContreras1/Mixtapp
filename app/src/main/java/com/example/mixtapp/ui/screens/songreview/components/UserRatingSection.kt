@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.components.StarRating
-import com.example.mixtapp.ui.theme.PrimaryPink
 
 @Composable
 fun UserRatingSection(
@@ -37,14 +37,14 @@ fun UserRatingSection(
         shape = RoundedCornerShape(16.dp),
         modifier = modifier
             .fillMaxWidth()
-            .border(1.dp, Color.White.copy(alpha = 0.2f), RoundedCornerShape(16.dp))
+            .border(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f), RoundedCornerShape(16.dp))
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
                 text = stringResource(R.string.your_rating),
-                color = Color.White.copy(alpha = 0.6f),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                 fontSize = 14.sp
             )
             Spacer(modifier = Modifier.height(8.dp))
@@ -53,8 +53,8 @@ fun UserRatingSection(
                 starCount = 5,
                 starSize = 28.dp,
                 spacing = 8.dp,
-                filledTint = PrimaryPink,
-                emptyTint = Color.White.copy(alpha = 0.3f),
+                filledTint = MaterialTheme.colorScheme.primary,
+                emptyTint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
                 emptyIcon = Icons.Filled.Star,
                 onRatingChange = onRatingChange
             )

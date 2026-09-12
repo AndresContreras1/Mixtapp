@@ -11,21 +11,18 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
-import com.example.mixtapp.ui.theme.CardBackground
-import com.example.mixtapp.ui.theme.FieldBorder
-import com.example.mixtapp.ui.theme.PalePink
 
 @Composable
 fun ReviewFormSection(
@@ -37,7 +34,7 @@ fun ReviewFormSection(
     Column(modifier = modifier.fillMaxWidth()) {
         Text(
             text = stringResource(R.string.review_section_title),
-            color = PalePink,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontSize = 18.sp,
             fontWeight = FontWeight.Normal
         )
@@ -49,8 +46,8 @@ fun ReviewFormSection(
                 .fillMaxWidth()
                 .height(126.dp)
                 .clip(RoundedCornerShape(10.dp))
-                .background(CardBackground)
-                .border(BorderStroke(1.dp, FieldBorder), RoundedCornerShape(10.dp))
+                .background(MaterialTheme.colorScheme.surfaceContainerLowest)
+                .border(BorderStroke(1.dp, MaterialTheme.colorScheme.outline), RoundedCornerShape(10.dp))
                 .padding(12.dp)
         ) {
             BasicTextField(
@@ -60,7 +57,7 @@ fun ReviewFormSection(
                     .fillMaxWidth()
                     .height(88.dp),
                 textStyle = TextStyle(
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 13.sp,
                     lineHeight = 17.sp
                 ),
@@ -68,7 +65,7 @@ fun ReviewFormSection(
                     if (reviewText.isBlank()) {
                         Text(
                             text = stringResource(R.string.review_placeholder),
-                            color = PalePink.copy(alpha = 0.68f),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.68f),
                             fontSize = 12.sp,
                             lineHeight = 16.sp
                         )
@@ -79,7 +76,7 @@ fun ReviewFormSection(
 
             Text(
                 text = stringResource(R.string.contador_caracteres, reviewText.length, maxLength),
-                color = PalePink.copy(alpha = 0.8f),
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
                 fontSize = 11.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.align(Alignment.BottomEnd)

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -19,7 +20,6 @@ import com.example.mixtapp.data.local.LocalSearchCategoriesProvider
 import com.example.mixtapp.ui.screens.search.components.BrowseBySection
 import com.example.mixtapp.ui.screens.search.components.SearchHeader
 import com.example.mixtapp.ui.screens.search.model.SearchCategoryUi
-import com.example.mixtapp.ui.theme.DeepBackground
 import com.example.mixtapp.ui.theme.MixtappTheme
 
 @Composable
@@ -51,7 +51,7 @@ fun SearchScreenContent(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(DeepBackground)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             Column(

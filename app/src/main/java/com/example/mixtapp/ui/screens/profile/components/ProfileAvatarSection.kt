@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -19,9 +20,6 @@ import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.components.PickImageButton
 import com.example.mixtapp.ui.components.ProfileAsyncImage
-import com.example.mixtapp.ui.theme.CircleWine
-import com.example.mixtapp.ui.theme.PalePink
-import com.example.mixtapp.ui.theme.PrimaryPink
 
 @Composable
 fun ProfileAvatarSection(
@@ -45,8 +43,8 @@ fun ProfileAvatarSection(
             modifier = Modifier
                 .size(100.dp)
                 .clip(CircleShape)
-                .border(1.5.dp, PrimaryPink, CircleShape)
-                .background(CircleWine.copy(alpha = 0.2f))
+                .border(1.5.dp, MaterialTheme.colorScheme.primary, CircleShape)
+                .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f))
         )
         Spacer(modifier = Modifier.height(12.dp))
         PickImageButton(
@@ -57,14 +55,14 @@ fun ProfileAvatarSection(
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = stringResource(errorImagenRes),
-                color = PrimaryPink,
+                color = MaterialTheme.colorScheme.primary,
                 fontSize = 12.sp
             )
         }
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = stringResource(R.string.user_stats, reviewsCount, albumsCount, listsCount),
-            color = PalePink.copy(alpha = 0.8f),
+            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
             fontSize = 14.sp
         )
         Spacer(modifier = Modifier.height(32.dp))

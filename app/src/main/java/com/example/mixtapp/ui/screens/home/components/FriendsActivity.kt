@@ -13,21 +13,17 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.screens.home.model.FriendActivityUi
-import com.example.mixtapp.ui.theme.FieldBackground
-import com.example.mixtapp.ui.theme.FieldBorder
-import com.example.mixtapp.ui.theme.PalePink
-import com.example.mixtapp.ui.theme.TextPink
 
 @Composable
 fun FriendsActivity(
@@ -38,8 +34,8 @@ fun FriendsActivity(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(8.dp))
-            .background(FieldBackground.copy(alpha = 0.45f))
-            .border(1.dp, FieldBorder.copy(alpha = 0.25f), RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f))
+            .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.25f), RoundedCornerShape(8.dp))
             .padding(16.dp)
     ) {
         Row {
@@ -47,7 +43,7 @@ fun FriendsActivity(
                 Icon(
                     imageVector = Icons.Default.Star,
                     contentDescription = null,
-                    tint = TextPink,
+                    tint = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier.size(18.dp)
                 )
             }
@@ -57,7 +53,7 @@ fun FriendsActivity(
 
         Text(
             text = stringResource(R.string.titulo_guion_subtitulo, activity.albumTitle, activity.artistName),
-            color = PalePink,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontSize = 14.sp,
             fontWeight = FontWeight.Bold
         )
@@ -66,7 +62,7 @@ fun FriendsActivity(
 
         Text(
             text = stringResource(R.string.cita_entre_comillas, activity.quote),
-            color = Color.White.copy(alpha = 0.9f),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.9f),
             fontSize = 12.sp
         )
     }

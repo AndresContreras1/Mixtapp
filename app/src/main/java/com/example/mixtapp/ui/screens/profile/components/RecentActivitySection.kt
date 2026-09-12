@@ -15,22 +15,18 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.screens.profile.model.RecentActivityUi
-import com.example.mixtapp.ui.theme.FieldBackground
-import com.example.mixtapp.ui.theme.PalePink
-import com.example.mixtapp.ui.theme.PrimaryPink
-import com.example.mixtapp.ui.theme.TextPink
 
 @Composable
 fun RecentActivitySection(
@@ -40,7 +36,7 @@ fun RecentActivitySection(
     Column(modifier = modifier.fillMaxWidth()) {
         Text(
             text = stringResource(R.string.actividad_reciente).uppercase(),
-            color = TextPink,
+            color = MaterialTheme.colorScheme.onBackground,
             fontSize = 14.sp,
             fontWeight = FontWeight.Bold
         )
@@ -50,13 +46,13 @@ fun RecentActivitySection(
                 modifier = Modifier
                     .size(100.dp)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(FieldBackground)
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
             )
             Spacer(modifier = Modifier.width(16.dp))
             Column {
                 Text(
                     text = activity.albumTitle,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Black
                 )
@@ -66,7 +62,7 @@ fun RecentActivitySection(
                         stringResource(R.string.reviewed_today),
                         activity.rating,
                     ),
-                    color = PalePink.copy(alpha = 0.6f),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
                     fontSize = 13.sp
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -75,7 +71,7 @@ fun RecentActivitySection(
                         Icon(
                             imageVector = Icons.Default.Star,
                             contentDescription = null,
-                            tint = PrimaryPink,
+                            tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(16.dp)
                         )
                     }
@@ -83,7 +79,7 @@ fun RecentActivitySection(
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = activity.comment,
-                    color = PalePink.copy(alpha = 0.9f),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.9f),
                     fontSize = 13.sp,
                     lineHeight = 18.sp
                 )
@@ -92,5 +88,5 @@ fun RecentActivitySection(
         Spacer(modifier = Modifier.height(32.dp))
     }
     Spacer(modifier = Modifier.height(24.dp))
-    HorizontalDivider(color = Color.White.copy(alpha = 0.05f))
+    HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f))
 }

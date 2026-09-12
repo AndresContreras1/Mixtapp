@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -15,8 +16,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.ui.screens.discussion.model.DiscussionCommentUi
-import com.example.mixtapp.ui.theme.PalePink
-import com.example.mixtapp.ui.theme.TextPink
 
 @Composable
 fun ThreadCommentItem(
@@ -47,7 +46,7 @@ fun ThreadCommentItem(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = comment.author,
-                    color = PalePink.copy(alpha = 0.58f),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.58f),
                     fontSize = 20.sp,
                     lineHeight = 24.sp,
                     fontFamily = FontFamily.Serif,
@@ -58,7 +57,7 @@ fun ThreadCommentItem(
 
                 Text(
                     text = comment.timeAgo,
-                    color = TextPink.copy(alpha = 0.55f),
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f),
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Bold,
                 )
@@ -67,7 +66,7 @@ fun ThreadCommentItem(
             Text(
                 text = comment.content,
                 modifier = Modifier.padding(top = 6.dp),
-                color = TextPink.copy(alpha = 0.72f),
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.72f),
                 fontSize = 10.sp,
                 lineHeight = 16.sp,
                 fontWeight = FontWeight.Medium,

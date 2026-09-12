@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,10 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.ui.screens.following.model.FollowingStoryUi
-import com.example.mixtapp.ui.theme.CircleBerry
-import com.example.mixtapp.ui.theme.CircleWine
-import com.example.mixtapp.ui.theme.PalePink
-import com.example.mixtapp.ui.theme.PrimaryPink
+import com.example.mixtapp.ui.theme.StoryGold
 
 @Composable
 fun FollowingStoriesRow(
@@ -61,10 +59,10 @@ private fun FollowingStoryBubble(
     modifier: Modifier = Modifier,
 ) {
     val bubbleBackground = if (story.isAddAction) {
-        Modifier.background(Color.White.copy(alpha = 0.2f))
+        Modifier.background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f))
     } else {
         Modifier.background(
-            Brush.linearGradient(colors = listOf(CircleBerry, Color(0xFFF5C25E), CircleWine))
+            Brush.linearGradient(colors = listOf(MaterialTheme.colorScheme.primary, StoryGold, MaterialTheme.colorScheme.secondary))
         )
     }
 
@@ -79,14 +77,14 @@ private fun FollowingStoryBubble(
                 .then(bubbleBackground)
                 .border(
                     width = if (selected) 2.dp else 0.dp,
-                    color = if (selected) PalePink else Color.Transparent,
+                    color = if (selected) MaterialTheme.colorScheme.onSurfaceVariant else Color.Transparent,
                     shape = CircleShape,
                 ),
             contentAlignment = Alignment.Center,
         ) {
             Text(
                 text = story.initials,
-                color = if (story.isAddAction) PalePink.copy(alpha = 0.58f) else PalePink,
+                color = if (story.isAddAction) MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.58f) else MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = if (story.isAddAction) 36.sp else 17.sp,
                 fontWeight = FontWeight.Black,
             )
@@ -95,7 +93,7 @@ private fun FollowingStoryBubble(
         Text(
             text = story.label,
             modifier = Modifier.padding(top = 7.dp),
-            color = if (selected) PrimaryPink else PalePink.copy(alpha = 0.76f),
+            color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.76f),
             fontSize = 13.sp,
             lineHeight = 16.sp,
             fontWeight = FontWeight.SemiBold,

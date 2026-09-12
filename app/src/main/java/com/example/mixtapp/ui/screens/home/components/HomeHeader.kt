@@ -14,12 +14,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -29,9 +29,6 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
-import com.example.mixtapp.ui.theme.CircleWine
-import com.example.mixtapp.ui.theme.LogoPink
-import com.example.mixtapp.ui.theme.TextPink
 
 @Composable
 fun HomeHeader(
@@ -50,10 +47,10 @@ fun HomeHeader(
 
         Text(
             text = buildAnnotatedString {
-                withStyle(SpanStyle(color = Color.White)) {
+                withStyle(SpanStyle(color = MaterialTheme.colorScheme.onSurface)) {
                     append(nombreClaro)
                 }
-                withStyle(SpanStyle(color = LogoPink)) {
+                withStyle(SpanStyle(color = MaterialTheme.colorScheme.tertiary)) {
                     append(nombreRosa)
                 }
             },
@@ -66,7 +63,7 @@ fun HomeHeader(
             Icon(
                 imageVector = Icons.Default.Search,
                 contentDescription = stringResource(R.string.search_icon),
-                tint = TextPink,
+                tint = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier
                     .size(32.dp)
                     .clickable { onSearchClick() }
@@ -77,7 +74,7 @@ fun HomeHeader(
             Icon(
                 imageVector = Icons.Default.Notifications,
                 contentDescription = stringResource(R.string.notifications_icon),
-                tint = TextPink,
+                tint = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier
                     .size(30.dp)
                     .clickable { onNotificationsClick() }
@@ -89,13 +86,13 @@ fun HomeHeader(
                 modifier = Modifier
                     .size(46.dp)
                     .clip(CircleShape)
-                    .background(CircleWine)
+                    .background(MaterialTheme.colorScheme.secondary)
                     .clickable { onProfileClick() },
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = stringResource(R.string.yo),
-                    color = Color.White.copy(alpha = 0.75f),
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily.Serif

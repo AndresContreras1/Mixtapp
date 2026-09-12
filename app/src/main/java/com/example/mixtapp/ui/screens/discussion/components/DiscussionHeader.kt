@@ -10,19 +10,17 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
-import com.example.mixtapp.ui.theme.PalePink
-import com.example.mixtapp.ui.theme.TextPink
 
 @Composable
 fun DiscussionHeader(
@@ -42,7 +40,7 @@ fun DiscussionHeader(
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                 contentDescription = stringResource(R.string.back),
-                tint = TextPink.copy(alpha = 0.72f),
+                tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.72f),
                 modifier = Modifier
                     .size(30.dp)
                     .clickable { onBackClick() },
@@ -50,7 +48,7 @@ fun DiscussionHeader(
 
             Text(
                 text = stringResource(R.string.discussion),
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 25.sp,
                 fontFamily = FontFamily.Serif,
                 fontWeight = FontWeight.Black,
@@ -60,7 +58,7 @@ fun DiscussionHeader(
 
             Text(
                 text = stringResource(R.string.comments_count, commentsCount),
-                color = PalePink,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 13.sp,
                 fontFamily = FontFamily.Serif,
                 fontWeight = FontWeight.Bold,
