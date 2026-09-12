@@ -22,7 +22,7 @@ object LocalSongReviewProvider {
                 SongReviewItemUi(
                     id = "review-1",
                     author = "Priya",
-                    daysAgo = "2d ago",
+                    daysAgo = "hace 2 días",
                     rating = 5,
                     content = "Teatro d'ira: Vol. I captures Maneskin at their absolute peak. Razor-sharp riffs, explosive live energy and Damiano's theatrical vocals turn pure attitude into a tight, unforgettable record.",
                     likes = 31,
@@ -45,7 +45,7 @@ object LocalSongReviewProvider {
                 SongReviewItemUi(
                     id = "review-2",
                     author = "Leo",
-                    daysAgo = "5d ago",
+                    daysAgo = "hace 5 días",
                     rating = 4,
                     content = "An infectious, high-octane pop-rock spectacle built for global arenas. It trades some of the raw Italian grit for polished dance-punk grooves, but the attitude never drops.",
                     likes = 18,
@@ -68,7 +68,7 @@ object LocalSongReviewProvider {
                 SongReviewItemUi(
                     id = "review-3",
                     author = "Alex",
-                    daysAgo = "1w ago",
+                    daysAgo = "hace 1 semana",
                     rating = 5,
                     content = "Mago de Oz's ambitious folk metal masterpiece. Power metal riffs blended with Celtic flutes and violins turn an epic medieval concept into a legendary album.",
                     likes = 27,
@@ -91,7 +91,7 @@ object LocalSongReviewProvider {
                 SongReviewItemUi(
                     id = "review-4",
                     author = "Soph",
-                    daysAgo = "4d ago",
+                    daysAgo = "hace 4 días",
                     rating = 4,
                     content = "From Zero strikes a balance between heavy nostalgia and genuine reinvention. Emily Armstrong commands every track with raw power, signaling a confident new chapter.",
                     likes = 42,
@@ -114,7 +114,7 @@ object LocalSongReviewProvider {
                 SongReviewItemUi(
                     id = "review-5",
                     author = "Priya",
-                    daysAgo = "3d ago",
+                    daysAgo = "hace 3 días",
                     rating = 5,
                     content = "\"The Sharpest Lives\" is an absolute rush on The Black Parade, blending dark, frantic energy with an insanely catchy hook. Gerard Way's theatrical vocals and the sharp guitar work turn chaotic self-destruction into one of My Chemical Romance's most addictive anthems.",
                     likes = 24,

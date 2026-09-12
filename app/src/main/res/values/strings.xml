@@ -1,16 +1,16 @@
 <resources>
     <string name="app_name">Mixtapp</string>
     <string name="ingresar">Ingresar</string>
-    <string name="descripcion_login">Ingresa a tu cuenta para seguir calificando albums o para seguir a tus amigos.</string>
-    <string name="no_tienes_cuenta_registrate">¿No tienes cuenta? Registrate</string>
-    <string name="email">Email</string>
-    <string name="enter_your_email">Ingresa tu email</string>
+    <string name="descripcion_login">Ingresa a tu cuenta para seguir calificando álbumes o para seguir a tus amigos.</string>
+    <string name="no_tienes_cuenta_registrate">¿No tienes cuenta? Regístrate</string>
+    <string name="email">Correo</string>
+    <string name="enter_your_email">Ingresa tu correo</string>
     <string name="contrasena">Contraseña</string>
     <string name="o">O</string>
-    <string name="profile_tab_profile">Profile</string>
-    <string name="profile_tab_diary">Diary</string>
-    <string name="profile_tab_lists">Lists</string>
-    <string name="profile_tab_library">Library</string>
+    <string name="profile_tab_profile">Perfil</string>
+    <string name="profile_tab_diary">Diario</string>
+    <string name="profile_tab_lists">Listas</string>
+    <string name="profile_tab_library">Biblioteca</string>
     <string name="yo">YO</string>
     <string name="favoritos">Favoritos</string>
     <string name="actividad_reciente">Actividad reciente</string>
@@ -18,140 +18,140 @@
 
     <!-- SignUp / Login Extra -->
     <string name="create_account">Crear cuenta</string>
-    <string name="signup_description">Empieza a seguir tus albums, calificaciones y tus canciones favoritas.</string>
-    <string name="username">nombre de usuario</string>
+    <string name="signup_description">Empieza a seguir tus álbumes, calificaciones y tus canciones favoritas.</string>
+    <string name="username">Nombre de usuario</string>
     <string name="choose_username">Ingresa tu usuario</string>
     <string name="create_password">Crear contraseña</string>
     <string name="confirm_password">Confirmar</string>
     <string name="repeat_password">Repite tu contraseña</string>
-    <string name="agree_terms">Acepto los terminos y condiciones de Mixtapp</string>
+    <string name="agree_terms">Acepto los términos y condiciones de Mixtapp</string>
     <string name="privacy">privacidad</string>
     <string name="sign_up_btn">Registrarse</string>
-    <string name="already_have_account">Ya tienes una cuenta?</string>
-    <string name="log_in">Iniciar sesion</string>
+    <string name="already_have_account">¿Ya tienes una cuenta?</string>
+    <string name="log_in">Iniciar sesión</string>
 
     <!-- Home Extra -->
-    <string name="search_icon">Search</string>
-    <string name="for_you">For you</string>
-    <string name="trending">Trending</string>
-    <string name="friends">Friends</string>
-    <string name="now_trending">Now trending</string>
-    <string name="popular_albums">Popular Albums</string>
-    <string name="see_all">See all</string>
-    <string name="friends_activity">Friends Activity</string>
+    <string name="search_icon">Buscar</string>
+    <string name="for_you">Para ti</string>
+    <string name="trending">Tendencias</string>
+    <string name="friends">Amigos</string>
+    <string name="now_trending">En tendencia</string>
+    <string name="popular_albums">Álbumes populares</string>
+    <string name="see_all">Ver todo</string>
+    <string name="friends_activity">Actividad de amigos</string>
 
     <!-- Profile Extra -->
-    <string name="user_stats">%1$d reviews • %2$d albums • %3$d lists</string>
-    <string name="more_activity">More activity</string>
-    <string name="star_rating_format">%d stars</string>
-    <string name="reviewed_today">reviewed today</string>
+    <string name="user_stats">%1$d reseñas • %2$d álbumes • %3$d listas</string>
+    <string name="more_activity">Más actividad</string>
+    <string name="star_rating_format">%d estrellas</string>
+    <string name="reviewed_today">reseñado hoy</string>
 
     <!-- Validacion -->
     <string name="error_campos_obligatorios">Todos los campos son obligatorios</string>
     <string name="error_email_invalido">El correo debe contener una arroba</string>
-    <string name="error_terminos">Debes aceptar los terminos y condiciones</string>
+    <string name="error_terminos">Debes aceptar los términos y condiciones</string>
     <string name="error_contrasena_corta">La contraseña debe tener al menos 6 caracteres</string>
     <string name="error_contrasenas_no_coinciden">Las contraseñas no coinciden</string>
-    <string name="cancion_no_encontrada">No se encontro la cancion</string>
-    <string name="discusion_no_encontrada">No se encontro la discusion</string>
-    <string name="album_no_encontrado">No se encontro el album</string>
-    <string name="resenas_no_encontradas">No se encontraron las resenas</string>
-    <string name="contenido_no_encontrado">No se encontro el contenido</string>
-    <string name="perfil_no_encontrado">No se encontro el perfil</string>
-    <string name="reply">Reply</string>
+    <string name="cancion_no_encontrada">No se encontró la canción</string>
+    <string name="discusion_no_encontrada">No se encontró la discusión</string>
+    <string name="album_no_encontrado">No se encontró el álbum</string>
+    <string name="resenas_no_encontradas">No se encontraron las reseñas</string>
+    <string name="contenido_no_encontrado">No se encontró el contenido</string>
+    <string name="perfil_no_encontrado">No se encontró el perfil</string>
+    <string name="reply">Responder</string>
     <string name="error_credenciales">Correo o contraseña incorrectos</string>
     <string name="error_registro">No se pudo crear la cuenta. Intenta con otro correo</string>
     <string name="error_usuario_no_existe">No existe una cuenta con ese correo</string>
-    <string name="error_correo_ya_registrado">Ese correo ya esta registrado</string>
-    <string name="error_contrasena_debil">La contraseña debe tener una mayuscula y un numero</string>
-    <string name="error_sin_conexion">No hay conexion. Revisa tu internet</string>
-    <string name="error_demasiados_intentos">Demasiados intentos. Espera un momento e intentalo de nuevo</string>
-    <string name="error_subir_imagen">No se pudo subir la imagen. Intentalo de nuevo</string>
-    <string name="error_sin_sesion">No hay una sesion iniciada</string>
+    <string name="error_correo_ya_registrado">Ese correo ya está registrado</string>
+    <string name="error_contrasena_debil">La contraseña debe tener una mayúscula y un número</string>
+    <string name="error_sin_conexion">No hay conexión. Revisa tu internet</string>
+    <string name="error_demasiados_intentos">Demasiados intentos. Espera un momento e inténtalo de nuevo</string>
+    <string name="error_subir_imagen">No se pudo subir la imagen. Inténtalo de nuevo</string>
+    <string name="error_sin_sesion">No hay una sesión iniciada</string>
     <string name="cambiar_foto">Cambiar foto</string>
     <string name="foto_perfil">Foto de perfil</string>
 
     <!-- Discussion -->
-    <string name="comments">Comments</string>
-    <string name="discussion">Discussion</string>
-    <string name="comments_count">%1$d comments</string>
-    <string name="replying">Replying</string>
-    <string name="reviewed">" Reviewed"</string>
+    <string name="comments">Comentarios</string>
+    <string name="discussion">Discusión</string>
+    <string name="comments_count">%1$d comentarios</string>
+    <string name="replying">Respondiendo</string>
+    <string name="reviewed">" reseñó"</string>
 
     <!-- Descripciones de los iconos, para lectores de pantalla -->
-    <string name="like_comment">Like comment</string>
-    <string name="back">Back</string>
-    <string name="like_review">Like review</string>
-    <string name="share_review">Share review</string>
-    <string name="open_discussion">Open discussion</string>
-    <string name="notifications_icon">Notifications</string>
+    <string name="like_comment">Me gusta el comentario</string>
+    <string name="back">Volver</string>
+    <string name="like_review">Me gusta la reseña</string>
+    <string name="share_review">Compartir la reseña</string>
+    <string name="open_discussion">Abrir la discusión</string>
+    <string name="notifications_icon">Notificaciones</string>
 
     <!-- Following -->
-    <string name="following_title">Following</string>
-    <string name="following_followers_count">%1$d following • %2$d followers</string>
-    <string name="find_friends">Find friends</string>
-    <string name="following_filtro_todo">All</string>
-    <string name="following_filtro_resenas">Reviews</string>
-    <string name="following_filtro_calificaciones">Ratings</string>
-    <string name="following_filtro_listas">Lists</string>
+    <string name="following_title">Siguiendo</string>
+    <string name="following_followers_count">%1$d siguiendo • %2$d seguidores</string>
+    <string name="find_friends">Buscar amigos</string>
+    <string name="following_filtro_todo">Todo</string>
+    <string name="following_filtro_resenas">Reseñas</string>
+    <string name="following_filtro_calificaciones">Calificaciones</string>
+    <string name="following_filtro_listas">Listas</string>
 
     <!-- Home -->
     <string name="titulo_guion_subtitulo">%1$s - %2$s</string>
     <string name="cita_entre_comillas">\"%1$s\"</string>
-    <string name="plays_this_week">128k plays this week</string>
+    <string name="plays_this_week">128k reproducciones esta semana</string>
 
     <!-- My reviews -->
-    <string name="join_date">Join %1$s</string>
-    <string name="my_reviews">My reviews</string>
-    <string name="filtro_recientes">Recent</string>
-    <string name="filtro_mejor_calificadas">Top Rated</string>
+    <string name="join_date">Se unió en %1$s</string>
+    <string name="my_reviews">Mis reseñas</string>
+    <string name="filtro_recientes">Recientes</string>
+    <string name="filtro_mejor_calificadas">Mejor calificadas</string>
     <string name="filtro_a_z">A-Z</string>
     <string name="filtro_calificacion_5">5</string>
     <string name="filtro_calificacion_4">4</string>
 
     <!-- Notifications -->
-    <string name="notifications_title">Notifications</string>
-    <string name="notifications_tab_all">All</string>
-    <string name="notifications_tab_unread">Unread (%1$d)</string>
+    <string name="notifications_title">Notificaciones</string>
+    <string name="notifications_tab_all">Todas</string>
+    <string name="notifications_tab_unread">Sin leer (%1$d)</string>
     <string name="notification_thumbnail">Carátula del álbum</string>
 
     <!-- Profile -->
-    <string name="reviewed_today_rating">%1$s · %2$d stars</string>
-    <string name="cerrar_sesion">Cerrar sesion</string>
+    <string name="reviewed_today_rating">%1$s · %2$d estrellas</string>
+    <string name="cerrar_sesion">Cerrar sesión</string>
 
     <!-- Write review -->
     <string name="album_meta">%1$s · %2$s · %3$s</string>
-    <string name="date_listened">Date Listened</string>
-    <string name="when_did_you_listen">When did you listen?</string>
-    <string name="favorite">Favorite</string>
-    <string name="mark_as_favorite">Mark as favorite?</string>
-    <string name="mood_vibe">"M o o d  &amp;  v i b e"</string>
-    <string name="review_section_title">R e v i e w</string>
-    <string name="review_placeholder">What did this album make you feel? Any standout tracks?\nWould you recommend it?</string>
+    <string name="date_listened">Fecha de escucha</string>
+    <string name="when_did_you_listen">¿Cuándo lo escuchaste?</string>
+    <string name="favorite">Favorito</string>
+    <string name="mark_as_favorite">¿Marcar como favorito?</string>
+    <string name="mood_vibe">"Á n i m o  &amp;  v i b r a"</string>
+    <string name="review_section_title">R e s e ñ a</string>
+    <string name="review_placeholder">¿Qué te hizo sentir este álbum? ¿Alguna canción que destaque?\n¿Lo recomendarías?</string>
     <string name="contador_caracteres">%1$d/%2$d</string>
-    <string name="cancel">Cancel</string>
-    <string name="write_review">Write Review</string>
-    <string name="your_rating">Your rating</string>
-    <string name="tap_to_rate">Tap to rate</string>
-    <string name="post">POST</string>
-    <string name="posted">POSTED</string>
+    <string name="cancel">Cancelar</string>
+    <string name="write_review">Escribir reseña</string>
+    <string name="your_rating">Tu calificación</string>
+    <string name="tap_to_rate">Toca para calificar</string>
+    <string name="post">PUBLICAR</string>
+    <string name="posted">PUBLICADA</string>
 
     <!-- Search -->
-    <string name="browse_by">Browse by</string>
-    <string name="search_title">Search</string>
-    <string name="search_placeholder">Find albums, artists, friends...</string>
+    <string name="browse_by">Explorar por</string>
+    <string name="search_title">Buscar</string>
+    <string name="search_placeholder">Busca álbumes, artistas, amigos...</string>
 
     <!-- Song review -->
-    <string name="reviews">Reviews</string>
-    <string name="write_one">Write One</string>
-    <string name="ratings_label">ratings</string>
-    <string name="recommend_label">recommend</string>
+    <string name="reviews">Reseñas</string>
+    <string name="write_one">Escribe una</string>
+    <string name="ratings_label">calificaciones</string>
+    <string name="recommend_label">recomiendan</string>
     <string name="rating_promedio">%1$.1f</string>
     <string name="recomendacion_porcentaje">%1$d%%</string>
-    <string name="save">Save</string>
-    <string name="saved">Saved</string>
-    <string name="like">Like</string>
-    <string name="liked">Liked</string>
+    <string name="save">Guardar</string>
+    <string name="saved">Guardado</string>
+    <string name="like">Me gusta</string>
+    <string name="liked">Te gusta</string>
 
     <!-- Logo -->
     <string name="logo_mixt">Mixt</string>

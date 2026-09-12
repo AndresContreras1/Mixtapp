@@ -6,18 +6,18 @@ object LocalSearchCategoriesProvider {
     val categories = listOf(
         SearchCategoryUi(
             id = "release-date",
-            title = "Release date",
-            subtitle = "New releases and years",
+            title = "Fecha de lanzamiento",
+            subtitle = "Novedades y años",
         ),
         SearchCategoryUi(
             id = "most-popular",
-            title = "Most popular",
-            subtitle = "Albums everyone is playing",
+            title = "Más populares",
+            subtitle = "Los álbumes que todos escuchan",
         ),
         SearchCategoryUi(
             id = "highest-rated",
-            title = "Highest rated",
-            subtitle = "Top-rated albums by Mixtapp users",
+            title = "Mejor calificados",
+            subtitle = "Los mejor calificados por los usuarios de Mixtapp",
         ),
     )
 }

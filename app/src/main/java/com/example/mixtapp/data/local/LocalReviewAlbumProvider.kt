@@ -10,14 +10,14 @@ object LocalReviewAlbumProvider {
 
     // Moods disponibles al escribir una resena
     val moods = listOf(
-        "Melancholic",
-        "Nostalgic",
-        "Intense",
-        "Chill",
-        "Romantic",
-        "Energetic",
-        "Ethereal",
-        "Playful",
+        "Melancólico",
+        "Nostálgico",
+        "Intenso",
+        "Relajado",
+        "Romántico",
+        "Enérgico",
+        "Etéreo",
+        "Divertido",
     )
 
     // El id es el mismo de LocalSongReviewProvider, para poder abrir la
