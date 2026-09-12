@@ -20,6 +20,7 @@ fun HomeSections(
     trending: SongReviewUi,
     friendActivity: FriendActivityUi,
     selectedFilterIndex: Int,
+    profileImageUrl: String,
     onFilterSelected: (Int) -> Unit,
     onAlbumClick: (String) -> Unit,
     onSearchClick: () -> Unit,
@@ -40,6 +41,7 @@ fun HomeSections(
             .padding(horizontal = 24.dp, vertical = 28.dp)
     ) {
         HomeHeader(
+            profileImageUrl = profileImageUrl,
             onSearchClick = onSearchClick,
             onProfileClick = onProfileClick,
             onNotificationsClick = onNotificationsClick

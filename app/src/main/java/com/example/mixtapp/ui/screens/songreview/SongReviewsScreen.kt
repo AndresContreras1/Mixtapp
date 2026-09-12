@@ -22,6 +22,7 @@ fun SongReviewsScreen(
     songId: String,
     songReviewsViewModel: SongReviewsViewModel,
     onWriteReviewClick: () -> Unit,
+    onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val state by songReviewsViewModel.uiState.collectAsState()
@@ -42,6 +43,7 @@ fun SongReviewsScreen(
             onSaveClick = { songReviewsViewModel.guardarQuitarGuardado() },
             onLikeClick = { songReviewsViewModel.darQuitarLike() },
             onWriteReviewClick = onWriteReviewClick,
+            onBackClick = onBackClick,
             modifier = modifier
         )
     }
@@ -57,6 +59,7 @@ fun SongReviewsScreenContent(
     onSaveClick: () -> Unit,
     onLikeClick: () -> Unit,
     onWriteReviewClick: () -> Unit,
+    onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -71,6 +74,7 @@ fun SongReviewsScreenContent(
             onSaveClick = onSaveClick,
             onLikeClick = onLikeClick,
             onWriteReviewClick = onWriteReviewClick,
+            onBackClick = onBackClick,
             modifier = Modifier.fillMaxSize()
         )
     }
@@ -90,7 +94,8 @@ fun SongReviewsScreenPreview() {
             onRatingChange = {},
             onSaveClick = {},
             onLikeClick = {},
-            onWriteReviewClick = {}
+            onWriteReviewClick = {},
+            onBackClick = {}
         )
     }
 }

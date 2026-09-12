@@ -183,7 +183,8 @@ fun AppNavigation(
                 songReviewsViewModel = songReviewsViewModel,
                 onWriteReviewClick = {
                     navController.navigate(Screen.WriteReview.createRoute(albumId = songId))
-                }
+                },
+                onBackClick = { navController.popBackStack() }
             )
         }
 
