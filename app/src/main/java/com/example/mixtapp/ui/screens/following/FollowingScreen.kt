@@ -2,9 +2,7 @@ package com.example.mixtapp.ui.screens.following
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -79,28 +77,23 @@ fun FollowingScreenContent(
     ) {
         FollowingBackground()
 
-        Column(modifier = Modifier.fillMaxSize()) {
-            FollowingList(
-                following = following,
-                reviews = reviews,
-                friendQuery = friendQuery,
-                filters = filters,
-                selectedFilterId = selectedFilterId,
-                selectedStoryId = selectedStoryId,
-                likedReviewIds = likedReviewIds,
-                sharedReviewIds = sharedReviewIds,
-                onFriendQueryChange = onFriendQueryChange,
-                onFilterSelected = onFilterSelected,
-                onStoryClick = onStoryClick,
-                onLikeClick = onLikeClick,
-                onShareClick = onShareClick,
-                onCommentsClick = onCommentsClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-            )
-
-        }
+        FollowingList(
+            following = following,
+            reviews = reviews,
+            friendQuery = friendQuery,
+            filters = filters,
+            selectedFilterId = selectedFilterId,
+            selectedStoryId = selectedStoryId,
+            likedReviewIds = likedReviewIds,
+            sharedReviewIds = sharedReviewIds,
+            onFriendQueryChange = onFriendQueryChange,
+            onFilterSelected = onFilterSelected,
+            onStoryClick = onStoryClick,
+            onLikeClick = onLikeClick,
+            onShareClick = onShareClick,
+            onCommentsClick = onCommentsClick,
+            modifier = Modifier.fillMaxSize(),
+        )
     }
 }
 

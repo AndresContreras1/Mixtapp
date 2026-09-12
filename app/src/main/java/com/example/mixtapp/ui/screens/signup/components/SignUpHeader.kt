@@ -16,7 +16,6 @@ import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.components.HeaderLogo
 
-
 @Composable
 fun SignUpHeader(
     modifier: Modifier = Modifier

@@ -114,9 +114,7 @@ fun SignUpScreenContent(
             )
 
             SignUpFooter(onLoginClick = onLoginClick)
-
         }
-
     }
 }
 

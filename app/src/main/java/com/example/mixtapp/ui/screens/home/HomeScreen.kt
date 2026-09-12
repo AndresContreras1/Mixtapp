@@ -1,8 +1,6 @@
 package com.example.mixtapp.ui.screens.home
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -64,33 +62,22 @@ fun HomeScreenContent(
     onNotificationsClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-    ) {
+    Box(modifier = modifier.fillMaxSize()) {
         AppBackground()
 
-        Column(
+        HomeSections(
+            albums = albums,
+            trending = trending,
+            friendActivity = friendActivity,
+            selectedFilterIndex = selectedFilterIndex,
+            onFilterSelected = onFilterSelected,
+            onAlbumClick = onAlbumClick,
+            onSearchClick = onSearchClick,
+            onProfileClick = onProfileClick,
+            onFollowingClick = onFollowingClick,
+            onNotificationsClick = onNotificationsClick,
             modifier = Modifier.fillMaxSize()
-        ) {
-            HomeSections(
-                albums = albums,
-                trending = trending,
-                friendActivity = friendActivity,
-                selectedFilterIndex = selectedFilterIndex,
-                onFilterSelected = onFilterSelected,
-                onAlbumClick = onAlbumClick,
-                onSearchClick = onSearchClick,
-                onProfileClick = onProfileClick,
-                onFollowingClick = onFollowingClick,
-                onNotificationsClick = onNotificationsClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-            )
-
-        }
+        )
     }
 }
 

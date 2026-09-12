@@ -67,5 +67,4 @@ fun ProfileAvatarSection(
         )
         Spacer(modifier = Modifier.height(32.dp))
     }
-
 }

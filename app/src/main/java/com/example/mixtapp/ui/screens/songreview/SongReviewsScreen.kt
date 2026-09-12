@@ -1,8 +1,6 @@
 package com.example.mixtapp.ui.screens.songreview
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -61,31 +59,20 @@ fun SongReviewsScreenContent(
     onWriteReviewClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-    ) {
+    Box(modifier = modifier.fillMaxSize()) {
         AppBackground()
 
-        Column(
+        SongReviewSections(
+            songReview = songReview,
+            userRating = userRating,
+            isSaved = isSaved,
+            isLiked = isLiked,
+            onRatingChange = onRatingChange,
+            onSaveClick = onSaveClick,
+            onLikeClick = onLikeClick,
+            onWriteReviewClick = onWriteReviewClick,
             modifier = Modifier.fillMaxSize()
-        ) {
-            SongReviewSections(
-                songReview = songReview,
-                userRating = userRating,
-                isSaved = isSaved,
-                isLiked = isLiked,
-                onRatingChange = onRatingChange,
-                onSaveClick = onSaveClick,
-                onLikeClick = onLikeClick,
-                onWriteReviewClick = onWriteReviewClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-            )
-
-        }
+        )
     }
 }
 

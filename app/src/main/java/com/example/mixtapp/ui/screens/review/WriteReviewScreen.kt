@@ -112,7 +112,6 @@ fun WriteReviewScreenContent(
                 onPostClick = onPostClick,
                 modifier = Modifier.weight(1f)
             )
-
         }
     }
 }

@@ -104,9 +104,7 @@ fun ProfileScreenContent(
                 RatingsSection(ratingBars = profile.ratingBars)
 
                 LogoutButton(onLogoutClick = onLogoutClick)
-
             }
-
         }
     }
 }

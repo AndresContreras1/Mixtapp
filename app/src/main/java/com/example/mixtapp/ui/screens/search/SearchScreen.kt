@@ -53,27 +53,24 @@ fun SearchScreenContent(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .verticalScroll(rememberScrollState())
-            ) {
-                SearchHeader(
-                    query = query,
-                    onQueryChange = onQueryChange,
-                )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+        ) {
+            SearchHeader(
+                query = query,
+                onQueryChange = onQueryChange,
+            )
 
-                BrowseBySection(
-                    categories = categories,
-                    selectedCategoryId = selectedCategoryId,
-                    onCategoryClick = onCategoryClick,
-                    modifier = Modifier.padding(horizontal = 24.dp),
-                )
+            BrowseBySection(
+                categories = categories,
+                selectedCategoryId = selectedCategoryId,
+                onCategoryClick = onCategoryClick,
+                modifier = Modifier.padding(horizontal = 24.dp),
+            )
 
-                Spacer(modifier = Modifier.height(28.dp))
-            }
-
+            Spacer(modifier = Modifier.height(28.dp))
         }
     }
 }

@@ -65,7 +65,9 @@ fun StarRating(
                         if (onRatingChange == null) {
                             Modifier
                         } else {
-                            Modifier.clickable { onRatingChange(starValue) }
+                            Modifier.clickable {
+                                onRatingChange(if (starValue == rating) 0 else starValue)
+                            }
                         }
                     )
             )

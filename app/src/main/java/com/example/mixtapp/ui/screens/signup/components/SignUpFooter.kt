@@ -19,7 +19,6 @@ import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.components.OrDivider
 
-
 @Composable
 fun SignUpFooter(
     onLoginClick: () -> Unit,

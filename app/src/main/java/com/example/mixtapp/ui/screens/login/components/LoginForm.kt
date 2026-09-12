@@ -39,7 +39,6 @@ fun LoginForm(
     modifier: Modifier = Modifier
 ){
 
-
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -111,5 +110,4 @@ fun LoginForm(
 
         Spacer(modifier = Modifier.height(19.dp))
     }
-
 }

@@ -98,7 +98,6 @@ fun LoginScreenContent(
 
             LoginFooter(onSignUpClick = onSignUpClick)
         }
-
     }
 }
 

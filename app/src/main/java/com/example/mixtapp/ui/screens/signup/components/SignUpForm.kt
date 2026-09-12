@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.theme.MixtappTheme
 
-
 @Composable
 fun SignUpForm(
     usuario: String,
@@ -62,7 +61,6 @@ fun SignUpForm(
         )
 
         Spacer(modifier = Modifier.height(14.dp))
-
 
         TermsRow(
             checked = terminos,
