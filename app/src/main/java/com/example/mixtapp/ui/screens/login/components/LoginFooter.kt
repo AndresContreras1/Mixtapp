@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.components.OrDivider
+import com.example.mixtapp.ui.theme.LinkPink
 
 @Composable
 fun LoginFooter(
@@ -47,7 +48,7 @@ fun LoginFooter(
                     }
                     withStyle(
                         SpanStyle(
-                            color = Color(0xFFFF8CAA),
+                            color = LinkPink,
                             fontWeight = FontWeight.Black
                         )
                     ) {

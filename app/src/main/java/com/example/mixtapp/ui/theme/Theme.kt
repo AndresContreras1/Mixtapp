@@ -8,26 +8,99 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80,
+    primary = PrimaryPink,
+    onPrimary = Color.White,
+    primaryContainer = FieldBackground,
+    onPrimaryContainer = PalePink,
+    inversePrimary = SoftPink,
+
+    secondary = CircleWine,
+    onSecondary = Color.White,
+    secondaryContainer = SurfaceCard,
+    onSecondaryContainer = TextPink,
+
+    tertiary = LogoPink,
+    onTertiary = Color.White,
+    tertiaryContainer = CardBackground,
+    onTertiaryContainer = PalePink,
+
     background = DeepBackground,
     onBackground = TextPink,
+
     surface = DeepBackground,
-    onSurface = TextPink
+    onSurface = TextPink,
+    surfaceVariant = FieldBackground,
+    onSurfaceVariant = PalePink,
+    surfaceTint = PrimaryPink,
+    inverseSurface = PalePink,
+    inverseOnSurface = DeepBackground,
+
+    surfaceDim = DeepWine,
+    surfaceBright = CircleWine,
+    surfaceContainerLowest = CardBackground,
+    surfaceContainerLow = DeepBackground,
+    surfaceContainer = SurfaceCard,
+    surfaceContainerHigh = FieldBackground,
+    surfaceContainerHighest = CircleWine,
+
+    error = PrimaryPink,
+    onError = Color.White,
+    errorContainer = FieldBackground,
+    onErrorContainer = PalePink,
+
+    outline = FieldBorder,
+    outlineVariant = CircleWine,
+    scrim = DeepWine
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40,
-    background = PalePink,
-    onBackground = DeepBackground,
-    surface = PalePink,
-    onSurface = DeepBackground
+    primary = PrimaryPink,
+    onPrimary = Color.White,
+    primaryContainer = FieldBackground,
+    onPrimaryContainer = PalePink,
+    inversePrimary = SoftPink,
+
+    secondary = CircleWine,
+    onSecondary = Color.White,
+    secondaryContainer = SurfaceCard,
+    onSecondaryContainer = TextPink,
+
+    tertiary = LogoPink,
+    onTertiary = Color.White,
+    tertiaryContainer = CardBackground,
+    onTertiaryContainer = PalePink,
+
+    background = DeepBackground,
+    onBackground = TextPink,
+
+    surface = DeepBackground,
+    onSurface = TextPink,
+    surfaceVariant = FieldBackground,
+    onSurfaceVariant = PalePink,
+    surfaceTint = PrimaryPink,
+    inverseSurface = PalePink,
+    inverseOnSurface = DeepBackground,
+
+    surfaceDim = DeepWine,
+    surfaceBright = CircleWine,
+    surfaceContainerLowest = CardBackground,
+    surfaceContainerLow = DeepBackground,
+    surfaceContainer = SurfaceCard,
+    surfaceContainerHigh = FieldBackground,
+    surfaceContainerHighest = CircleWine,
+
+    error = PrimaryPink,
+    onError = Color.White,
+    errorContainer = FieldBackground,
+    onErrorContainer = PalePink,
+
+    outline = FieldBorder,
+    outlineVariant = CircleWine,
+    scrim = DeepWine
 )
 
 @Composable

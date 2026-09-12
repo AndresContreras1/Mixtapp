@@ -13,8 +13,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.mixtapp.ui.theme.CardBackground
 import com.example.mixtapp.ui.theme.FieldBorder
 import com.example.mixtapp.ui.theme.PrimaryPink
 
@@ -34,7 +34,7 @@ fun ReviewActionsCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(10.dp))
-                .background(Color(0xFF171314))
+                .background(CardBackground)
                 .border(BorderStroke(1.dp, FieldBorder), RoundedCornerShape(10.dp))
                 .padding(horizontal = 18.dp, vertical = 14.dp)
         ) {
