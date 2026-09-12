@@ -1,9 +1,14 @@
 package com.example.mixtapp.ui.screens.signup
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
 import com.example.mixtapp.data.repository.AuthRepository
+import com.example.mixtapp.data.repository.CorreoYaRegistradoException
+import com.example.mixtapp.data.repository.CredencialesInvalidasException
+import com.example.mixtapp.data.repository.DemasiadosIntentosException
+import com.example.mixtapp.data.repository.SinConexionException
 import com.example.mixtapp.ui.screens.login.MinPasswordLength
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -85,6 +90,10 @@ class SignUpViewModel @Inject constructor(
             estado.contrasena.length < MinPasswordLength ->
                 R.string.password_corta
 
+            estado.contrasena.none { it.isUpperCase() } ||
+                    estado.contrasena.none { it.isDigit() } ->
+                R.string.error_contrasena_debil
+
             estado.contrasena != estado.confirmarContrasena ->
                 R.string.passwords_no_coinciden
 
@@ -108,9 +117,9 @@ class SignUpViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(cargando = true, errorMessageRes = null) }
 
-            val exito = authRepository.signUp(email = email, password = contrasena)
+            val result = authRepository.signUp(email = email, password = contrasena)
 
-            if (exito) {
+            if (result.isSuccess) {
                 _uiState.update {
                     it.copy(cargando = false, errorMessageRes = null, navigate = true)
                 }
@@ -118,11 +127,20 @@ class SignUpViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         cargando = false,
-                        errorMessageRes = R.string.error_registro,
+                        errorMessageRes = mensajeDeError(result.exceptionOrNull()),
                         navigate = false,
                     )
                 }
             }
         }
+    }
+
+    @StringRes
+    private fun mensajeDeError(error: Throwable?): Int = when (error) {
+        is CorreoYaRegistradoException -> R.string.error_correo_ya_registrado
+        is CredencialesInvalidasException -> R.string.error_email_invalido
+        is SinConexionException -> R.string.error_sin_conexion
+        is DemasiadosIntentosException -> R.string.error_demasiados_intentos
+        else -> R.string.error_registro
     }
 }
