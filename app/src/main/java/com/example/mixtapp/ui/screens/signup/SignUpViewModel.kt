@@ -9,7 +9,7 @@ import com.example.mixtapp.data.repository.CorreoYaRegistradoException
 import com.example.mixtapp.data.repository.CredencialesInvalidasException
 import com.example.mixtapp.data.repository.DemasiadosIntentosException
 import com.example.mixtapp.data.repository.SinConexionException
-import com.example.mixtapp.ui.screens.login.MinPasswordLength
+import com.example.mixtapp.ui.components.MIN_PASSWORD_LENGTH
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -87,15 +87,15 @@ class SignUpViewModel @Inject constructor(
             !estado.email.contains("@") ->
                 R.string.error_email_invalido
 
-            estado.contrasena.length < MinPasswordLength ->
-                R.string.password_corta
+            estado.contrasena.length < MIN_PASSWORD_LENGTH ->
+                R.string.error_contrasena_corta
 
             estado.contrasena.none { it.isUpperCase() } ||
                     estado.contrasena.none { it.isDigit() } ->
                 R.string.error_contrasena_debil
 
             estado.contrasena != estado.confirmarContrasena ->
-                R.string.passwords_no_coinciden
+                R.string.error_contrasenas_no_coinciden
 
             !estado.terminos ->
                 R.string.error_terminos

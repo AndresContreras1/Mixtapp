@@ -3,7 +3,6 @@ package com.example.mixtapp.ui.screens.following.model
 data class FollowingUi(
     val followingCount: Int,
     val followersCount: Int,
-    val filters: List<String>,
     val stories: List<FollowingStoryUi>,
     val reviews: List<FollowingReviewUi>,
 )

@@ -39,13 +39,13 @@ fun AppTextField(
     icon: FieldIcon,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     visualTransformation: VisualTransformation = VisualTransformation.None,
-    isPassword: Boolean = false,
-    passwordVisible: Boolean = false,
-    onPasswordVisibleChange: () -> Unit = {},
+    esContrasena: Boolean = false,
+    contrasenaVisible: Boolean = false,
+    onContrasenaVisibleChange: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val currentTransformation =
-        if (isPassword && !passwordVisible) {
+        if (esContrasena && !contrasenaVisible) {
             PasswordVisualTransformation()
         } else {
             visualTransformation
@@ -117,12 +117,12 @@ fun AppTextField(
                             innerTextField()
                         }
 
-                        if (isPassword) {
+                        if (esContrasena) {
                             IconButton(
-                                onClick = onPasswordVisibleChange,
+                                onClick = onContrasenaVisibleChange,
                                 modifier = Modifier.size(24.dp)
                             ) {
-                                PasswordVisibilityIcon(passwordVisible = passwordVisible)
+                                PasswordVisibilityIcon(contrasenaVisible = contrasenaVisible)
                             }
                         }
                     }

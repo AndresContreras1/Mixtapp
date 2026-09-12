@@ -7,6 +7,10 @@
     <string name="enter_your_email">Ingresa tu email</string>
     <string name="contrasena">Contraseña</string>
     <string name="o">O</string>
+    <string name="profile_tab_profile">Profile</string>
+    <string name="profile_tab_diary">Diary</string>
+    <string name="profile_tab_lists">Lists</string>
+    <string name="profile_tab_library">Library</string>
     <string name="yo">YO</string>
     <string name="favoritos">Favoritos</string>
     <string name="actividad_reciente">Actividad reciente</string>
@@ -17,7 +21,6 @@
     <string name="signup_description">Empieza a seguir tus albums, calificaciones y tus canciones favoritas.</string>
     <string name="username">nombre de usuario</string>
     <string name="choose_username">Ingresa tu usuario</string>
-    <string name="password">contraseña</string>
     <string name="create_password">Crear contraseña</string>
     <string name="confirm_password">Confirmar</string>
     <string name="repeat_password">Repite tu contraseña</string>
@@ -47,8 +50,8 @@
     <string name="error_campos_obligatorios">Todos los campos son obligatorios</string>
     <string name="error_email_invalido">El correo debe contener una arroba</string>
     <string name="error_terminos">Debes aceptar los terminos y condiciones</string>
-    <string name="password_corta">La contraseña debe tener al menos 6 caracteres</string>
-    <string name="passwords_no_coinciden">Las contraseñas no coinciden</string>
+    <string name="error_contrasena_corta">La contraseña debe tener al menos 6 caracteres</string>
+    <string name="error_contrasenas_no_coinciden">Las contraseñas no coinciden</string>
     <string name="cancion_no_encontrada">No se encontro la cancion</string>
     <string name="discusion_no_encontrada">No se encontro la discusion</string>
     <string name="album_no_encontrado">No se encontro el album</string>
@@ -87,6 +90,10 @@
     <string name="following_title">Following</string>
     <string name="following_followers_count">%1$d following • %2$d followers</string>
     <string name="find_friends">Find friends</string>
+    <string name="following_filtro_todo">All</string>
+    <string name="following_filtro_resenas">Reviews</string>
+    <string name="following_filtro_calificaciones">Ratings</string>
+    <string name="following_filtro_listas">Lists</string>
 
     <!-- Home -->
     <string name="titulo_guion_subtitulo">%1$s - %2$s</string>
@@ -97,6 +104,11 @@
     <string name="join_date">Join %1$s</string>
     <string name="my_reviews">My reviews</string>
     <string name="duracion_fecha">"%1$s   %2$s"</string>
+    <string name="filtro_recientes">Recent</string>
+    <string name="filtro_mejor_calificadas">Top Rated</string>
+    <string name="filtro_a_z">A-Z</string>
+    <string name="filtro_calificacion_5">5</string>
+    <string name="filtro_calificacion_4">4</string>
 
     <!-- Notifications -->
     <string name="notifications_title">Notifications</string>
@@ -135,6 +147,8 @@
     <string name="write_one">Write One</string>
     <string name="ratings_label">ratings</string>
     <string name="recommend_label">recommend</string>
+    <string name="rating_promedio">%1$.1f</string>
+    <string name="recomendacion_porcentaje">%1$d%%</string>
     <string name="save">Save</string>
     <string name="saved">Saved</string>
     <string name="like">Like</string>

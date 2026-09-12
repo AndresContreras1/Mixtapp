@@ -37,7 +37,7 @@ fun MyReviewCard(
             .padding(16.dp)
     ) {
         ReviewScoreBadge(
-            score = review.score,
+            rating = review.rating,
             modifier = Modifier.align(Alignment.TopEnd)
         )
 

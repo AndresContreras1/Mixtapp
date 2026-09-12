@@ -24,17 +24,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mixtapp.ui.screens.profile.model.ProfileTabUi
 
 @Composable
 fun ProfileHeader(
     // El usuario sale del correo de Firebase, ya recortado por el ViewModel
     usuario: String,
     // Las pestanas llegan del ViewModel, no se declaran aqui
-    tabs: List<String>,
-    selectedTab: String,
+    tabs: List<ProfileTabUi>,
+    selectedTabId: String,
     onTabSelected: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -80,19 +82,19 @@ fun ProfileHeader(
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             tabs.forEach { tab ->
-                val isSelected = tab == selectedTab
+                val isSelected = tab.id == selectedTabId
                 Box(
                     modifier = Modifier
                         .weight(1f)
                         .padding(2.dp)
                         .clip(RoundedCornerShape(6.dp))
                         .background(if (isSelected) MaterialTheme.colorScheme.secondary else Color.Transparent)
-                        .clickable { onTabSelected(tab) }
+                        .clickable { onTabSelected(tab.id) }
                         .padding(vertical = 8.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = tab,
+                        text = stringResource(tab.label),
                         color = if (isSelected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
                         fontSize = 14.sp,
                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal

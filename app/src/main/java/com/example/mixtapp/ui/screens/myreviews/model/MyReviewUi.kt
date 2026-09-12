@@ -7,7 +7,6 @@ data class MyReviewUi(
     val artist: String,
     val cover: String,
     val rating: Int,          // 0..5
-    val score: Int,           // el número en la esquina (4, 5, 4)
     val excerpt: String,
     val tags: List<String>,
     val duration: String,     // "1'08", "1'50"

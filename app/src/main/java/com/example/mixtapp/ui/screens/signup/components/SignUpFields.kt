@@ -52,15 +52,15 @@ fun SignUpFields(
         Spacer(modifier = Modifier.height(14.dp))
 
         AppTextField(
-            label = stringResource(R.string.password),
+            label = stringResource(R.string.contrasena),
             placeholder = stringResource(R.string.create_password),
             value = contrasena,
             onValueChange = onContrasenaChange,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             icon = FieldIcon.Lock,
-            isPassword = true,
-            passwordVisible = contrasenaVisible,
-            onPasswordVisibleChange = onContrasenaVisibleChange
+            esContrasena = true,
+            contrasenaVisible = contrasenaVisible,
+            onContrasenaVisibleChange = onContrasenaVisibleChange
         )
 
         Spacer(modifier = Modifier.height(14.dp))
@@ -72,9 +72,9 @@ fun SignUpFields(
             onValueChange = onConfirmarContrasenaChange,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             icon = FieldIcon.Lock,
-            isPassword = true,
-            passwordVisible = confirmarVisible,
-            onPasswordVisibleChange = onConfirmarVisibleChange
+            esContrasena = true,
+            contrasenaVisible = confirmarVisible,
+            onContrasenaVisibleChange = onConfirmarVisibleChange
         )
     }
 }

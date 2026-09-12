@@ -12,19 +12,19 @@ import com.example.mixtapp.R
 
 @Composable
 fun PasswordVisibilityIcon(
-    passwordVisible: Boolean,
+    contrasenaVisible: Boolean,
     modifier: Modifier = Modifier
 ) {
     Icon(
         painter = painterResource(
-            id = if (passwordVisible) {
+            id = if (contrasenaVisible) {
                 R.drawable.visible
             } else {
                 R.drawable.invisible
             }
         ),
         contentDescription = stringResource(
-            if (passwordVisible) R.string.ocultar_contrasena else R.string.mostrar_contrasena
+            if (contrasenaVisible) R.string.ocultar_contrasena else R.string.mostrar_contrasena
         ),
         tint = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = modifier.size(18.dp)

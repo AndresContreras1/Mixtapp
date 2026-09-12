@@ -19,7 +19,9 @@ import com.example.mixtapp.ui.screens.profile.components.ProfileAvatarSection
 import com.example.mixtapp.ui.screens.profile.components.ProfileHeader
 import com.example.mixtapp.ui.screens.profile.components.RatingsSection
 import com.example.mixtapp.ui.screens.profile.components.RecentActivitySection
+import com.example.mixtapp.ui.screens.profile.model.ProfileTabUi
 import com.example.mixtapp.ui.screens.profile.model.ProfileUi
+import com.example.mixtapp.ui.screens.profile.model.profileTabs
 import com.example.mixtapp.ui.theme.*
 
 @Composable
@@ -40,8 +42,8 @@ fun ProfileScreen(
             errorImagenRes = state.errorImagenRes,
             onImagePicked = { profileViewModel.subirFotoDePerfil(uri = it) },
             tabs = state.tabs,
-            selectedTab = state.selectedTab,
-            onTabSelected = { profileViewModel.updateSelectedTab(tab = it) },
+            selectedTabId = state.selectedTabId,
+            onTabSelected = { profileViewModel.updateSelectedTab(tabId = it) },
             onLogoutClick = { profileViewModel.cerrarSesion() },
             modifier = modifier
         )
@@ -56,8 +58,8 @@ fun ProfileScreenContent(
     subiendoImagen: Boolean,
     errorImagenRes: Int?,
     onImagePicked: (Uri) -> Unit,
-    tabs: List<String>,
-    selectedTab: String,
+    tabs: List<ProfileTabUi>,
+    selectedTabId: String,
     onTabSelected: (String) -> Unit,
     onLogoutClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -72,7 +74,7 @@ fun ProfileScreenContent(
             ProfileHeader(
                 usuario = usuario,
                 tabs = tabs,
-                selectedTab = selectedTab,
+                selectedTabId = selectedTabId,
                 onTabSelected = onTabSelected
             )
 
@@ -120,8 +122,8 @@ fun ProfileScreenPreview() {
             subiendoImagen = false,
             errorImagenRes = null,
             onImagePicked = {},
-            tabs = LocalProfileProvider.tabs,
-            selectedTab = LocalProfileProvider.tabs.first(),
+            tabs = profileTabs,
+            selectedTabId = profileTabs.first().id,
             onTabSelected = {},
             onLogoutClick = {}
         )

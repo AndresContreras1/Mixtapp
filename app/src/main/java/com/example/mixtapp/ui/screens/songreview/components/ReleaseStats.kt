@@ -29,9 +29,9 @@ import com.example.mixtapp.ui.components.StarRating
 
 @Composable
 fun ReleaseStats(
-    rating: String,
+    rating: Double,
     ratingCount: String,
-    recommendRate: String,
+    recommendRate: Int,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -47,11 +47,20 @@ fun ReleaseStats(
                 .padding(vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            StatItem(value = rating, label = null, showStars = true, modifier = Modifier.weight(1f))
+            StatItem(
+                value = stringResource(R.string.rating_promedio, rating),
+                label = null,
+                showStars = true,
+                modifier = Modifier.weight(1f)
+            )
             VerticalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f), modifier = Modifier.height(30.dp))
             StatItem(value = ratingCount, label = stringResource(R.string.ratings_label), modifier = Modifier.weight(1f))
             VerticalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f), modifier = Modifier.height(30.dp))
-            StatItem(value = recommendRate, label = stringResource(R.string.recommend_label), modifier = Modifier.weight(1f))
+            StatItem(
+                value = stringResource(R.string.recomendacion_porcentaje, recommendRate),
+                label = stringResource(R.string.recommend_label),
+                modifier = Modifier.weight(1f)
+            )
         }
     }
 }
