@@ -21,13 +21,11 @@ class NotificationsViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun getNotifications() {
-        val todas = LocalNotificationsProvider.notifications
-
         _uiState.update {
             it.copy(
                 tabs = LocalNotificationsProvider.tabs,
                 notifications = aplicarFiltro(tab = it.selectedTab),
-                unreadCount = todas.count { n -> !n.isRead },
+                unreadCount = contarNoLeidas(),
             )
         }
     }
@@ -37,9 +35,13 @@ class NotificationsViewModel @Inject constructor() : ViewModel() {
             it.copy(
                 selectedTab = tab,
                 notifications = aplicarFiltro(tab = tab),
+                unreadCount = contarNoLeidas(),
             )
         }
     }
+
+    private fun contarNoLeidas(): Int =
+        LocalNotificationsProvider.notifications.count { !it.isRead }
 
     // Filtrar es logica de negocio, no de la pantalla
     private fun aplicarFiltro(tab: String): List<NotificationUi> {

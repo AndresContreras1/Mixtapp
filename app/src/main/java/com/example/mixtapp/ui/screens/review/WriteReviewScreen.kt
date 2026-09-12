@@ -46,7 +46,6 @@ fun WriteReviewScreen(
             selectedMoods = state.selectedMoods,
             listenedDate = state.listenedDate,
             isFavorite = state.isFavorite,
-            hasPosted = state.hasPosted,
             moods = state.moods,
             onCancel = onCancel,
             onRatingChange = { writeReviewViewModel.updateRating(rating = it) },
@@ -55,10 +54,7 @@ fun WriteReviewScreen(
             onDateChange = { writeReviewViewModel.updateListenedDate(listenedDate = it) },
             onDatePickerClick = { writeReviewViewModel.usarFechaSugerida() },
             onFavoriteChange = { writeReviewViewModel.updateIsFavorite(isFavorite = it) },
-            onPostClick = {
-                writeReviewViewModel.publicarResena()
-                onPostReview()
-            },
+            onPostClick = onPostReview,
             modifier = modifier,
         )
     }
@@ -72,7 +68,6 @@ fun WriteReviewScreenContent(
     selectedMoods: List<String>,
     listenedDate: String,
     isFavorite: Boolean,
-    hasPosted: Boolean,
     moods: List<String>,
     onCancel: () -> Unit,
     onRatingChange: (Int) -> Unit,
@@ -101,7 +96,6 @@ fun WriteReviewScreenContent(
                 selectedMoods = selectedMoods,
                 listenedDate = listenedDate,
                 isFavorite = isFavorite,
-                hasPosted = hasPosted,
                 moods = moods,
                 onRatingChange = onRatingChange,
                 onReviewChange = onReviewChange,
@@ -127,7 +121,6 @@ fun WriteReviewScreenPreview() {
             selectedMoods = emptyList(),
             listenedDate = LocalReviewAlbumProvider.fechaEscuchaInicial,
             isFavorite = false,
-            hasPosted = false,
             moods = LocalReviewAlbumProvider.moods,
             onCancel = {},
             onRatingChange = {},

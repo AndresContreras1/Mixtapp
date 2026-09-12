@@ -18,7 +18,6 @@ fun WriteReviewList(
     selectedMoods: List<String>,
     listenedDate: String,
     isFavorite: Boolean,
-    hasPosted: Boolean,
     moods: List<String>,
     onRatingChange: (Int) -> Unit,
     onReviewChange: (String) -> Unit,
@@ -72,7 +71,6 @@ fun WriteReviewList(
             ReviewActionsCard(
                 listenedDate = listenedDate,
                 isFavorite = isFavorite,
-                hasPosted = hasPosted,
                 onDateChange = onDateChange,
                 onDatePickerClick = onDatePickerClick,
                 onFavoriteChange = onFavoriteChange,
