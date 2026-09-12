@@ -21,7 +21,9 @@ class DiscussionViewModel @Inject constructor(
 
     // Buscar la discusion es responsabilidad del ViewModel, no de la navegacion
     fun getDiscussionByReviewId(reviewId: String) {
-        val discussion = LocalDiscussionProvider.discussions.find { it.review.id == reviewId }
+        if (_uiState.value.discussion != null) return
+
+        val discussion = LocalDiscussionProvider.discussions.find { it.id == reviewId }
 
         _uiState.update {
             it.copy(

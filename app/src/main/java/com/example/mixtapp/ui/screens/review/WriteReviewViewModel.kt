@@ -33,6 +33,8 @@ class WriteReviewViewModel @Inject constructor() : ViewModel() {
 
     // Buscar el album es responsabilidad del ViewModel, no de la navegacion
     fun getAlbumById(albumId: String) {
+        if (_uiState.value.album != null) return
+
         val album = LocalReviewAlbumProvider.albums.find { it.id == albumId }
 
         _uiState.update { it.copy(album = album) }
@@ -63,9 +65,5 @@ class WriteReviewViewModel @Inject constructor() : ViewModel() {
 
     fun updateIsFavorite(isFavorite: Boolean) {
         _uiState.update { it.copy(isFavorite = isFavorite) }
-    }
-
-    fun publicarResena() {
-        _uiState.update { it.copy(hasPosted = true) }
     }
 }

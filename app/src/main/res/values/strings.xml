@@ -59,6 +59,7 @@
     <string name="perfil_no_encontrado">No se encontró el perfil</string>
     <string name="reply">Responder</string>
     <string name="error_credenciales">Correo o contraseña incorrectos</string>
+    <string name="error_inicio_sesion">No se pudo iniciar sesión. Inténtalo de nuevo</string>
     <string name="error_registro">No se pudo crear la cuenta. Intenta con otro correo</string>
     <string name="error_usuario_no_existe">No existe una cuenta con ese correo</string>
     <string name="error_correo_ya_registrado">Ese correo ya está registrado</string>
@@ -135,7 +136,6 @@
     <string name="your_rating">Tu calificación</string>
     <string name="tap_to_rate">Toca para calificar</string>
     <string name="post">PUBLICAR</string>
-    <string name="posted">PUBLICADA</string>
 
     <!-- Search -->
     <string name="browse_by">Explorar por</string>

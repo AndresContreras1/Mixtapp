@@ -14,20 +14,16 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.ui.components.LogoText
 import com.example.mixtapp.ui.components.ProfileAsyncImage
 
 @Composable
@@ -43,21 +39,9 @@ fun HomeHeader(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        val nombreClaro = stringResource(R.string.logo_mixt)
-        val nombreRosa = stringResource(R.string.logo_app)
-
-        Text(
-            text = buildAnnotatedString {
-                withStyle(SpanStyle(color = MaterialTheme.colorScheme.onSurface)) {
-                    append(nombreClaro)
-                }
-                withStyle(SpanStyle(color = MaterialTheme.colorScheme.tertiary)) {
-                    append(nombreRosa)
-                }
-            },
+        LogoText(
             fontSize = 36.sp,
-            fontWeight = FontWeight.Bold,
-            fontFamily = FontFamily.Serif
+            fontWeight = FontWeight.Bold
         )
 
         Row(verticalAlignment = Alignment.CenterVertically) {

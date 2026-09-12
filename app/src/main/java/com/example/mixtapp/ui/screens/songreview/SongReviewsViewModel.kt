@@ -17,6 +17,8 @@ class SongReviewsViewModel @Inject constructor() : ViewModel() {
 
     // Buscar la cancion es responsabilidad del ViewModel, no de la navegacion
     fun getSongById(songId: String) {
+        if (_uiState.value.song != null) return
+
         val song = LocalSongReviewProvider.songs.find { cancion -> cancion.id == songId }
 
         _uiState.update {

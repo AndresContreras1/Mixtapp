@@ -36,6 +36,12 @@ import com.example.mixtapp.ui.screens.songreview.SongReviewsViewModel
 import com.example.mixtapp.ui.screens.splash.SplashScreen
 import com.example.mixtapp.ui.screens.splash.SplashViewModel
 
+private fun NavHostController.navegarLimpiandoLaPila(ruta: String) {
+    navigate(ruta) {
+        popUpTo(0) { inclusive = true }
+    }
+}
+
 @Composable
 fun AppNavigation(
     navController: NavHostController,
@@ -52,14 +58,10 @@ fun AppNavigation(
             SplashScreen(
                 splashViewModel = splashViewModel,
                 navigateToHome = {
-                    navController.navigate(Screen.Home.route) {
-                        popUpTo(0) { inclusive = true }
-                    }
+                    navController.navegarLimpiandoLaPila(Screen.Home.route)
                 },
                 navigateToLogin = {
-                    navController.navigate(Screen.Login.route) {
-                        popUpTo(0) { inclusive = true }
-                    }
+                    navController.navegarLimpiandoLaPila(Screen.Login.route)
                 }
             )
         }
@@ -71,9 +73,7 @@ fun AppNavigation(
             // El ViewModel valida el formulario y autoriza; la navegacion solo ejecuta
             LaunchedEffect(state.navigate) {
                 if (state.navigate) {
-                    navController.navigate(Screen.Home.route) {
-                        popUpTo(0) { inclusive = true }
-                    }
+                    navController.navegarLimpiandoLaPila(Screen.Home.route)
                 }
             }
 
@@ -92,9 +92,7 @@ fun AppNavigation(
             // El ViewModel valida el formulario y autoriza; la navegacion solo ejecuta
             LaunchedEffect(state.navigate) {
                 if (state.navigate) {
-                    navController.navigate(Screen.Home.route) {
-                        popUpTo(0) { inclusive = true }
-                    }
+                    navController.navegarLimpiandoLaPila(Screen.Home.route)
                 }
             }
 
@@ -166,9 +164,7 @@ fun AppNavigation(
             // El ViewModel cierra la sesion y autoriza; la navegacion solo ejecuta
             LaunchedEffect(state.sesionCerrada) {
                 if (state.sesionCerrada) {
-                    navController.navigate(Screen.Login.route) {
-                        popUpTo(0) { inclusive = true }
-                    }
+                    navController.navegarLimpiandoLaPila(Screen.Login.route)
                 }
             }
 

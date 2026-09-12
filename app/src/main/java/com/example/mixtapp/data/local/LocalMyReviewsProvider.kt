@@ -6,17 +6,6 @@ object LocalMyReviewsProvider {
 
     val reviews = listOf(
         MyReviewUi(
-            id = "1",
-            songId = "2",
-            title = "Rush",
-            artist = "Maneskin",
-            cover = AlbumCovers.RUSH,
-            rating = 4,
-            excerpt = "RUSH! is an infectious, high-octane pop-rock spectacle built for global arenas. Trading some of their raw Italian grit for polished dance-punk grooves and razor-sharp riffs, Måneskin delivers pure, unapologetic attitude and addictive energy from start to finish.",
-            tags = listOf("Enérgico", "Caótico"),
-            date = "16 de agosto de 2026",
-        ),
-        MyReviewUi(
             id = "2",
             songId = "4",
             title = "From Zero",
@@ -26,6 +15,17 @@ object LocalMyReviewsProvider {
             excerpt = "From Zero strikes an impressive balance between heavy nostalgia and genuine reinvention. Instead of trying to duplicate their past, the band leverages their signature aggressive riffs and electronic textures to build a fierce, modern soundscape. Emily Armstrong delivers a standout vocal performance that commands every track with raw power, signaling a bold, confident new chapter for Linkin Park.",
             tags = listOf("Sentimental", "Potente"),
             date = "17 de agosto de 2026",
+        ),
+        MyReviewUi(
+            id = "1",
+            songId = "2",
+            title = "Rush",
+            artist = "Maneskin",
+            cover = AlbumCovers.RUSH,
+            rating = 4,
+            excerpt = "RUSH! is an infectious, high-octane pop-rock spectacle built for global arenas. Trading some of their raw Italian grit for polished dance-punk grooves and razor-sharp riffs, Måneskin delivers pure, unapologetic attitude and addictive energy from start to finish.",
+            tags = listOf("Enérgico", "Caótico"),
+            date = "16 de agosto de 2026",
         ),
         MyReviewUi(
             id = "3",

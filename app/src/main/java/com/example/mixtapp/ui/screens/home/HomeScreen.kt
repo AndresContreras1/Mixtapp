@@ -15,6 +15,8 @@ import com.example.mixtapp.data.local.LocalSongReviewProvider
 import com.example.mixtapp.ui.components.AppBackground
 import com.example.mixtapp.ui.screens.home.components.HomeSections
 import com.example.mixtapp.ui.screens.home.model.FriendActivityUi
+import com.example.mixtapp.ui.screens.home.model.HomeFilterUi
+import com.example.mixtapp.ui.screens.home.model.homeFilters
 import com.example.mixtapp.ui.screens.songreview.model.SongReviewUi
 import com.example.mixtapp.ui.theme.*
 
@@ -41,9 +43,10 @@ fun HomeScreen(
             albums = state.albums,
             trending = state.trending!!,
             friendActivity = state.friendActivity!!,
-            selectedFilterIndex = state.selectedFilterIndex,
+            filters = state.filters,
+            selectedFilterId = state.selectedFilterId,
             profileImageUrl = state.profileImageUrl,
-            onFilterSelected = { homeViewModel.updateSelectedFilter(index = it) },
+            onFilterSelected = { homeViewModel.updateSelectedFilter(filtroId = it) },
             onAlbumClick = onAlbumClick,
             onSearchClick = onSearchClick,
             onProfileClick = onProfileClick,
@@ -59,9 +62,10 @@ fun HomeScreenContent(
     albums: List<SongReviewUi>,
     trending: SongReviewUi,
     friendActivity: FriendActivityUi,
-    selectedFilterIndex: Int,
+    filters: List<HomeFilterUi>,
+    selectedFilterId: String,
     profileImageUrl: String,
-    onFilterSelected: (Int) -> Unit,
+    onFilterSelected: (String) -> Unit,
     onAlbumClick: (String) -> Unit,
     onSearchClick: () -> Unit,
     onProfileClick: () -> Unit,
@@ -76,7 +80,8 @@ fun HomeScreenContent(
             albums = albums,
             trending = trending,
             friendActivity = friendActivity,
-            selectedFilterIndex = selectedFilterIndex,
+            filters = filters,
+            selectedFilterId = selectedFilterId,
             profileImageUrl = profileImageUrl,
             onFilterSelected = onFilterSelected,
             onAlbumClick = onAlbumClick,
@@ -97,7 +102,8 @@ fun HomeScreenPreview() {
             albums = LocalSongReviewProvider.popularSongs,
             trending = LocalSongReviewProvider.trendingSong,
             friendActivity = LocalFriendActivityProvider.friendActivity,
-            selectedFilterIndex = 0,
+            filters = homeFilters,
+            selectedFilterId = homeFilters.first().id,
             profileImageUrl = "",
             onFilterSelected = {},
             onAlbumClick = {},

@@ -22,7 +22,6 @@ import com.example.mixtapp.R
 
 @Composable
 fun PostButton(
-    hasPosted: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -31,17 +30,13 @@ fun PostButton(
             .fillMaxWidth()
             .height(40.dp)
             .clip(RoundedCornerShape(4.dp))
-            .background(if (hasPosted) MaterialTheme.colorScheme.primary.copy(alpha = 0.62f) else MaterialTheme.colorScheme.primary.copy(alpha = 0.34f))
+            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.34f))
             .border(BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.7f)), RoundedCornerShape(4.dp))
             .clickable { onClick() },
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = if (hasPosted) {
-                stringResource(R.string.posted)
-            } else {
-                stringResource(R.string.post)
-            },
+            text = stringResource(R.string.post),
             color = MaterialTheme.colorScheme.primary,
             fontSize = 14.sp,
             fontWeight = FontWeight.Black

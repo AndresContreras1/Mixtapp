@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import com.example.mixtapp.data.local.LocalNotificationsProvider
 import com.example.mixtapp.ui.screens.notifications.model.NotificationUi
+import com.example.mixtapp.ui.screens.notifications.model.TAB_SIN_LEER
+import com.example.mixtapp.ui.screens.notifications.model.notificationTabs
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,30 +23,32 @@ class NotificationsViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun getNotifications() {
-        val todas = LocalNotificationsProvider.notifications
-
         _uiState.update {
             it.copy(
-                tabs = LocalNotificationsProvider.tabs,
-                notifications = aplicarFiltro(tab = it.selectedTab),
-                unreadCount = todas.count { n -> !n.isRead },
+                tabs = notificationTabs,
+                notifications = aplicarFiltro(tabId = it.selectedTabId),
+                unreadCount = contarNoLeidas(),
             )
         }
     }
 
-    fun updateSelectedTab(tab: String) {
+    fun updateSelectedTab(tabId: String) {
         _uiState.update {
             it.copy(
-                selectedTab = tab,
-                notifications = aplicarFiltro(tab = tab),
+                selectedTabId = tabId,
+                notifications = aplicarFiltro(tabId = tabId),
+                unreadCount = contarNoLeidas(),
             )
         }
     }
+
+    private fun contarNoLeidas(): Int =
+        LocalNotificationsProvider.notifications.count { !it.isRead }
 
     // Filtrar es logica de negocio, no de la pantalla
-    private fun aplicarFiltro(tab: String): List<NotificationUi> {
+    private fun aplicarFiltro(tabId: String): List<NotificationUi> {
         val todas = LocalNotificationsProvider.notifications
-        return if (tab == LocalNotificationsProvider.TAB_UNREAD) {
+        return if (tabId == TAB_SIN_LEER) {
             todas.filter { !it.isRead }
         } else {
             todas

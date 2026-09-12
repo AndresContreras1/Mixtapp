@@ -8,15 +8,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.example.mixtapp.R
 import com.example.mixtapp.ui.components.AppChip
+import com.example.mixtapp.ui.screens.notifications.model.NotificationTabUi
+import com.example.mixtapp.ui.screens.notifications.model.TAB_SIN_LEER
 
 @Composable
 fun NotificationsTabs(
-    tabs: List<String>,
-    unreadTab: String,
+    tabs: List<NotificationTabUi>,
     unreadCount: Int,
-    selectedTab: String,
+    selectedTabId: String,
     onTabSelected: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -25,16 +25,16 @@ fun NotificationsTabs(
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         tabs.forEach { tab ->
-            val label = if (tab == unreadTab) {
-                stringResource(R.string.notifications_tab_unread, unreadCount)
+            val label = if (tab.id == TAB_SIN_LEER) {
+                stringResource(tab.label, unreadCount)
             } else {
-                stringResource(R.string.notifications_tab_all)
+                stringResource(tab.label)
             }
 
             AppChip(
                 text = label,
-                isSelected = tab == selectedTab,
-                onClick = { onTabSelected(tab) },
+                isSelected = tab.id == selectedTabId,
+                onClick = { onTabSelected(tab.id) },
                 unselectedContainerColor = Color.Transparent,
                 unselectedBorderColor = MaterialTheme.colorScheme.outline,
                 unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),

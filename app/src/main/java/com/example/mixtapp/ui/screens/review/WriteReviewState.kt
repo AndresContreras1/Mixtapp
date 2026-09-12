@@ -11,5 +11,4 @@ data class WriteReviewState(
     val moods: List<String> = emptyList(),
     val listenedDate: String = "",
     val isFavorite: Boolean = false,
-    val hasPosted: Boolean = false,
 )

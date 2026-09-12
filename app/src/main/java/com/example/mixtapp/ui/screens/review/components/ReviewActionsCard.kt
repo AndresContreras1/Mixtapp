@@ -20,7 +20,6 @@ import androidx.compose.ui.unit.dp
 fun ReviewActionsCard(
     listenedDate: String,
     isFavorite: Boolean,
-    hasPosted: Boolean,
     onDateChange: (String) -> Unit,
     onDatePickerClick: () -> Unit,
     onFavoriteChange: (Boolean) -> Unit,
@@ -55,7 +54,6 @@ fun ReviewActionsCard(
         Spacer(modifier = Modifier.height(26.dp))
 
         PostButton(
-            hasPosted = hasPosted,
             onClick = onPostClick
         )
     }

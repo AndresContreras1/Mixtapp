@@ -23,8 +23,5 @@ sealed class Screen(val route: String) {
 
     data object WriteReview : Screen(route = "writeReview/{albumId}") {
         fun createRoute(albumId: String) = "writeReview/$albumId"
-
-        // Mientras no exista un selector de album, el boton + abre siempre este
-        const val DEFAULT_ALBUM_ID = "4"
     }
 }

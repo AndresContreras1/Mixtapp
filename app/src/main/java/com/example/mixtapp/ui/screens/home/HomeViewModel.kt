@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import com.example.mixtapp.data.local.LocalFriendActivityProvider
 import com.example.mixtapp.data.repository.AuthRepository
+import com.example.mixtapp.ui.screens.home.model.homeFilters
 import com.example.mixtapp.data.local.LocalSongReviewProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -30,6 +31,8 @@ class HomeViewModel @Inject constructor(
                 albums = LocalSongReviewProvider.popularSongs,
                 trending = LocalSongReviewProvider.trendingSong,
                 friendActivity = LocalFriendActivityProvider.friendActivity,
+                filters = homeFilters,
+                selectedFilterId = homeFilters.first().id,
             )
         }
     }
@@ -40,7 +43,7 @@ class HomeViewModel @Inject constructor(
         _uiState.update { it.copy(profileImageUrl = foto) }
     }
 
-    fun updateSelectedFilter(index: Int) {
-        _uiState.update { it.copy(selectedFilterIndex = index) }
+    fun updateSelectedFilter(filtroId: String) {
+        _uiState.update { it.copy(selectedFilterId = filtroId) }
     }
 }
