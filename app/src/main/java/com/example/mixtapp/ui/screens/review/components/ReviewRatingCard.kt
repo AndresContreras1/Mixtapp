@@ -20,13 +20,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.components.StarRating
+import com.example.mixtapp.ui.theme.CardBackground
 import com.example.mixtapp.ui.theme.FieldBorder
 import com.example.mixtapp.ui.theme.PrimaryPink
 import com.example.mixtapp.ui.theme.TextPink
@@ -42,7 +42,7 @@ fun ReviewRatingCard(
             .fillMaxWidth()
             .height(110.dp)
             .clip(RoundedCornerShape(10.dp))
-            .background(Color(0xFF171314))
+            .background(CardBackground)
             .border(BorderStroke(1.dp, FieldBorder), RoundedCornerShape(10.dp)),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center

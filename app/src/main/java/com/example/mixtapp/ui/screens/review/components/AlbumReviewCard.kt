@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.components.AlbumAsyncImage
 import com.example.mixtapp.ui.screens.review.model.ReviewAlbumUi
+import com.example.mixtapp.ui.theme.CardBackground
 import com.example.mixtapp.ui.theme.FieldBorder
 import com.example.mixtapp.ui.theme.PalePink
 
@@ -39,7 +40,7 @@ fun AlbumReviewCard(
             .fillMaxWidth()
             .height(82.dp)
             .clip(RoundedCornerShape(10.dp))
-            .background(Color(0xFF171314))
+            .background(CardBackground)
             .border(BorderStroke(1.dp, FieldBorder), RoundedCornerShape(10.dp))
             .padding(horizontal = 20.dp),
         verticalAlignment = Alignment.CenterVertically

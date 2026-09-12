@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.ui.theme.CardBackground
 import com.example.mixtapp.ui.theme.FieldBorder
 import com.example.mixtapp.ui.theme.PalePink
 
@@ -48,7 +49,7 @@ fun ReviewFormSection(
                 .fillMaxWidth()
                 .height(126.dp)
                 .clip(RoundedCornerShape(10.dp))
-                .background(Color(0xFF171314))
+                .background(CardBackground)
                 .border(BorderStroke(1.dp, FieldBorder), RoundedCornerShape(10.dp))
                 .padding(12.dp)
         ) {

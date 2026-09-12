@@ -16,10 +16,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.ui.screens.myreviews.model.MyReviewUi
+import com.example.mixtapp.ui.theme.CardBackground
 import com.example.mixtapp.ui.theme.FieldBorder
 import com.example.mixtapp.ui.theme.PalePink
 
@@ -33,7 +33,7 @@ fun MyReviewCard(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(14.dp))
-            .background(Color(0xFF171314))
+            .background(CardBackground)
             .border(BorderStroke(1.dp, FieldBorder.copy(alpha = 0.5f)), RoundedCornerShape(14.dp))
             .clickable { onReviewClick(review.songId) }
             .padding(16.dp)
