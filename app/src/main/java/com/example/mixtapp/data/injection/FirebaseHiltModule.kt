@@ -1,6 +1,7 @@
 package com.example.mixtapp.data.injection
 
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.storage.FirebaseStorage
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,4 +17,8 @@ class FirebaseHiltModule {
     @Provides
     @Singleton
     fun auth(): FirebaseAuth = FirebaseAuth.getInstance()
+
+    @Provides
+    @Singleton
+    fun storage(): FirebaseStorage = FirebaseStorage.getInstance()
 }

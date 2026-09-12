@@ -63,6 +63,10 @@
     <string name="error_contrasena_debil">La contraseña debe tener una mayuscula y un numero</string>
     <string name="error_sin_conexion">No hay conexion. Revisa tu internet</string>
     <string name="error_demasiados_intentos">Demasiados intentos. Espera un momento e intentalo de nuevo</string>
+    <string name="error_subir_imagen">No se pudo subir la imagen. Intentalo de nuevo</string>
+    <string name="error_sin_sesion">No hay una sesion iniciada</string>
+    <string name="cambiar_foto">Cambiar foto</string>
+    <string name="foto_perfil">Foto de perfil</string>
 
     <!-- Discussion -->
     <string name="comments">Comments</string>

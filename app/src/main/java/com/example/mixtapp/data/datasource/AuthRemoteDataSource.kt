@@ -1,7 +1,9 @@
 package com.example.mixtapp.data.datasource
 
+import android.net.Uri
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.UserProfileChangeRequest
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -19,6 +21,15 @@ class AuthRemoteDataSource @Inject constructor(
 
     suspend fun signUp(email: String, password: String): Unit {
         auth.createUserWithEmailAndPassword(email, password).await()
+    }
+
+    suspend fun updateProfileImage(photoUrl: String): Unit {
+        val uri = Uri.parse(photoUrl)
+        currentUser?.updateProfile(
+            UserProfileChangeRequest.Builder()
+                .setPhotoUri(uri)
+                .build()
+        )?.await()
     }
 
     // No lleva suspend: solo borra los datos de sesion del celular, no va a la red
