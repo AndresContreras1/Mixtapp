@@ -1,6 +1,5 @@
 package com.example.mixtapp.data.local
 
-import com.example.mixtapp.R
 import com.example.mixtapp.ui.screens.songreview.model.SongReviewItemUi
 import com.example.mixtapp.ui.screens.songreview.model.SongReviewUi
 
@@ -9,7 +8,7 @@ object LocalSongReviewProvider {
     val songs = listOf(
         SongReviewUi(
             id = "1",
-            coverRes = R.drawable.teatro_dira_vol_i_portada,
+            cover = AlbumCovers.TEATRO_DIRA,
             tags = listOf("2021", "rock", "Hard Rock"),
             title = "Teatro D'ira Vol I",
             artist = "Maneskin",
@@ -32,7 +31,7 @@ object LocalSongReviewProvider {
         ),
         SongReviewUi(
             id = "2",
-            coverRes = R.drawable.rush_portada,
+            cover = AlbumCovers.RUSH,
             tags = listOf("2023", "pop rock", "Dance Punk"),
             title = "Rush!",
             artist = "Maneskin",
@@ -55,7 +54,7 @@ object LocalSongReviewProvider {
         ),
         SongReviewUi(
             id = "3",
-            coverRes = R.drawable.finisterra_portada,
+            cover = AlbumCovers.FINISTERRA,
             tags = listOf("2000", "folk metal", "Power Metal"),
             title = "Finisterra",
             artist = "Mago de Oz",
@@ -78,7 +77,7 @@ object LocalSongReviewProvider {
         ),
         SongReviewUi(
             id = "4",
-            coverRes = R.drawable.from_zero,
+            cover = AlbumCovers.FROM_ZERO,
             tags = listOf("2024", "nu metal", "Rock Alternativo"),
             title = "From Zero",
             artist = "Linkin Park",
@@ -101,7 +100,7 @@ object LocalSongReviewProvider {
         ),
         SongReviewUi(
             id = "5",
-            coverRes = R.drawable.rush_portada,
+            cover = AlbumCovers.RUSH,
             tags = listOf("2006", "emo", "Rock Alternativo"),
             title = "The Sharpest Lives",
             artist = "My Chemical Romance",

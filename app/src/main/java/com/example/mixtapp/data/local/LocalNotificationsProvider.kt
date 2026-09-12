@@ -1,6 +1,5 @@
 package com.example.mixtapp.data.local
 
-import com.example.mixtapp.R
 import com.example.mixtapp.ui.screens.notifications.model.NotificationUi
 
 object LocalNotificationsProvider {
@@ -18,7 +17,7 @@ object LocalNotificationsProvider {
             message = "liked your review of Maneskin",
             highlightedWord = "Maneskin",
             timeAgo = "4 min ago",
-            thumbnailRes = R.drawable.teatro_dira_vol_i_portada,
+            thumbnail = AlbumCovers.TEATRO_DIRA,
             isRead = false,
             section = "Today",
         ),
@@ -29,7 +28,7 @@ object LocalNotificationsProvider {
             message = "started following you",
             highlightedWord = null,
             timeAgo = "4 min ago",
-            thumbnailRes = null,
+            thumbnail = null,
             isRead = false,
             section = "Today",
         ),
@@ -40,7 +39,7 @@ object LocalNotificationsProvider {
             message = "commented on your review of Maneskin",
             highlightedWord = "Maneskin",
             timeAgo = "32 min ago",
-            thumbnailRes = R.drawable.teatro_dira_vol_i_portada,
+            thumbnail = AlbumCovers.TEATRO_DIRA,
             isRead = false,
             section = "Today",
         ),
@@ -51,7 +50,7 @@ object LocalNotificationsProvider {
             message = "replied to your comment - \"Yes! That context made it hit even harder on relisten.\" Maneskin",
             highlightedWord = "Maneskin",
             timeAgo = "32 min ago",
-            thumbnailRes = R.drawable.teatro_dira_vol_i_portada,
+            thumbnail = AlbumCovers.TEATRO_DIRA,
             isRead = false,
             section = "Today",
         ),
@@ -62,7 +61,7 @@ object LocalNotificationsProvider {
             message = "Your review of Maneskin reached 50 likes!",
             highlightedWord = "Maneskin",
             timeAgo = "2h ago",
-            thumbnailRes = R.drawable.teatro_dira_vol_i_portada,
+            thumbnail = AlbumCovers.TEATRO_DIRA,
             isRead = true,
             section = "Today",
         ),
@@ -73,7 +72,7 @@ object LocalNotificationsProvider {
             message = "liked your review of Maneskin",
             highlightedWord = "Maneskin",
             timeAgo = "1d ago",
-            thumbnailRes = R.drawable.teatro_dira_vol_i_portada,
+            thumbnail = AlbumCovers.TEATRO_DIRA,
             isRead = true,
             section = "Earlier",
         ),
@@ -84,7 +83,7 @@ object LocalNotificationsProvider {
             message = "started following you",
             highlightedWord = null,
             timeAgo = "2d ago",
-            thumbnailRes = null,
+            thumbnail = null,
             isRead = true,
             section = "Earlier",
         ),

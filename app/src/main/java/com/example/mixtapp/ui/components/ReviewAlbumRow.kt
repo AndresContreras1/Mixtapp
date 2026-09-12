@@ -1,6 +1,5 @@
 package com.example.mixtapp.ui.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,8 +15,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -30,7 +27,7 @@ import com.example.mixtapp.ui.theme.TextPink
 
 @Composable
 fun ReviewAlbumRow(
-    coverRes: Int,
+    cover: String,
     albumTitle: String,
     artistName: String,
     rating: Int,
@@ -43,13 +40,13 @@ fun ReviewAlbumRow(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Image(
-            painter = painterResource(id = coverRes),
+        AlbumAsyncImage(
+            cover = cover,
             contentDescription = stringResource(R.string.album_cover, albumTitle),
+            alpha = 1f,
             modifier = Modifier
                 .size(coverSize)
                 .clip(RoundedCornerShape(coverCorner)),
-            contentScale = ContentScale.Crop,
         )
 
         Spacer(modifier = Modifier.width(14.dp))

@@ -1,6 +1,5 @@
 package com.example.mixtapp.data.local
 
-import com.example.mixtapp.R
 import com.example.mixtapp.ui.screens.review.model.ReviewAlbumUi
 
 object LocalReviewAlbumProvider {
@@ -30,7 +29,7 @@ object LocalReviewAlbumProvider {
             artist = "Maneskin",
             year = "2021",
             genre = "Hard Rock",
-            coverRes = R.drawable.teatro_dira_vol_i_portada,
+            cover = AlbumCovers.TEATRO_DIRA,
         ),
         ReviewAlbumUi(
             id = "2",
@@ -38,7 +37,7 @@ object LocalReviewAlbumProvider {
             artist = "Maneskin",
             year = "2023",
             genre = "Dance Punk",
-            coverRes = R.drawable.rush_portada,
+            cover = AlbumCovers.RUSH,
         ),
         ReviewAlbumUi(
             id = "3",
@@ -46,7 +45,7 @@ object LocalReviewAlbumProvider {
             artist = "Mago de Oz",
             year = "2000",
             genre = "Power Metal",
-            coverRes = R.drawable.finisterra_portada,
+            cover = AlbumCovers.FINISTERRA,
         ),
         ReviewAlbumUi(
             id = "4",
@@ -54,7 +53,7 @@ object LocalReviewAlbumProvider {
             artist = "Linkin Park",
             year = "2024",
             genre = "Rock",
-            coverRes = R.drawable.from_zero,
+            cover = AlbumCovers.FROM_ZERO,
         ),
         ReviewAlbumUi(
             id = "5",
@@ -62,7 +61,7 @@ object LocalReviewAlbumProvider {
             artist = "My Chemical Romance",
             year = "2006",
             genre = "Rock Alternativo",
-            coverRes = R.drawable.rush_portada,
+            cover = AlbumCovers.RUSH,
         ),
     )
 }

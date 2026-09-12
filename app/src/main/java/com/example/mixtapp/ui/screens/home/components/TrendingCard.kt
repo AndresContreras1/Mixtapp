@@ -1,6 +1,5 @@
 package com.example.mixtapp.ui.screens.home.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -24,13 +23,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.ui.components.AlbumAsyncImage
 import com.example.mixtapp.ui.components.StarRating
 import com.example.mixtapp.ui.screens.songreview.model.SongReviewUi
 import com.example.mixtapp.ui.theme.FieldBackground
@@ -54,12 +52,11 @@ fun TrendingCard(
             .border(1.dp, FieldBorder.copy(alpha = 0.5f), RoundedCornerShape(12.dp))
             .clickable { onClick(album.id) }
     ) {
-        Image(
-            painter = painterResource(id = album.coverRes),
+        AlbumAsyncImage(
+            cover = album.cover,
             contentDescription = stringResource(R.string.album_cover, album.title),
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop,
-            alpha = 0.4f
+            alpha = 0.4f,
+            modifier = Modifier.fillMaxSize()
         )
 
         Box(modifier = Modifier.fillMaxSize().padding(14.dp)) {

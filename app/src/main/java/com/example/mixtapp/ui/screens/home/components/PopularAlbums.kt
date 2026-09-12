@@ -22,7 +22,7 @@ fun PopularAlbums(
             AlbumItem(
                 title = album.title,
                 artist = album.artist,
-                imageRes = album.coverRes,
+                cover = album.cover,
                 modifier = Modifier.weight(1f),
                 onClick = { onAlbumClick(album.id) }
             )

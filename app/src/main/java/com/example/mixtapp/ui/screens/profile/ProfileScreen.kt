@@ -1,5 +1,6 @@
 package com.example.mixtapp.ui.screens.profile
 
+import android.net.Uri
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
@@ -33,6 +34,10 @@ fun ProfileScreen(
         ProfileScreenContent(
             profile = state.profile!!,
             usuario = state.usuario,
+            profileImageUrl = state.profileImageUrl,
+            subiendoImagen = state.subiendoImagen,
+            errorImagenRes = state.errorImagenRes,
+            onImagePicked = { profileViewModel.subirFotoDePerfil(uri = it) },
             tabs = state.tabs,
             selectedTab = state.selectedTab,
             onTabSelected = { profileViewModel.updateSelectedTab(tab = it) },
@@ -46,6 +51,10 @@ fun ProfileScreen(
 fun ProfileScreenContent(
     profile: ProfileUi,
     usuario: String,
+    profileImageUrl: String,
+    subiendoImagen: Boolean,
+    errorImagenRes: Int?,
+    onImagePicked: (Uri) -> Unit,
     tabs: List<String>,
     selectedTab: String,
     onTabSelected: (String) -> Unit,
@@ -76,6 +85,10 @@ fun ProfileScreenContent(
             ) {
 
                 ProfileAvatarSection(
+                    profileImageUrl = profileImageUrl,
+                    subiendoImagen = subiendoImagen,
+                    errorImagenRes = errorImagenRes,
+                    onImagePicked = onImagePicked,
                     reviewsCount = profile.reviewsCount,
                     albumsCount = profile.albumsCount,
                     listsCount = profile.listsCount
@@ -102,6 +115,10 @@ fun ProfileScreenPreview() {
         ProfileScreenContent(
             profile = LocalProfileProvider.profile,
             usuario = "usuario",
+            profileImageUrl = "",
+            subiendoImagen = false,
+            errorImagenRes = null,
+            onImagePicked = {},
             tabs = LocalProfileProvider.tabs,
             selectedTab = LocalProfileProvider.tabs.first(),
             onTabSelected = {},

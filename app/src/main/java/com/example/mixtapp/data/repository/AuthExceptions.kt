@@ -9,3 +9,5 @@ class CorreoYaRegistradoException : Exception()
 class SinConexionException : Exception()
 
 class DemasiadosIntentosException : Exception()
+
+class SinSesionException : Exception()

@@ -1,13 +1,11 @@
 package com.example.mixtapp.ui.screens.myreviews.model
 
-import androidx.annotation.DrawableRes
-
 data class MyReviewUi(
     val id: String,
     val songId: String,      // el album que abre esta resena
     val title: String,
     val artist: String,
-    @DrawableRes val coverRes: Int,
+    val cover: String,
     val rating: Int,          // 0..5
     val score: Int,           // el número en la esquina (4, 5, 4)
     val excerpt: String,
