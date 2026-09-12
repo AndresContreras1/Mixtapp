@@ -207,7 +207,7 @@ Profesor: Juan Sebastián Angarita Torres.
 
 | Integrante | GitHub |
 |---|---|
-| William Andrés Contreras | [@AndresContreras1](https://github.com/AndresContreras1) |
+| Andrés Contreras |  |
 | Andrés | |
 | Andrés Loreto Quiros | |
 | Laura Aponte | |
