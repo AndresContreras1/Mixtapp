@@ -124,7 +124,12 @@ fun AppNavigation(
         composable(route = Screen.Search.route) {
             val searchViewModel: SearchViewModel = hiltViewModel()
 
-            SearchScreen(searchViewModel = searchViewModel)
+            SearchScreen(
+                searchViewModel = searchViewModel,
+                onAlbumClick = { songId ->
+                    navController.navigate(Screen.SongDetail.createRoute(songId = songId))
+                }
+            )
         }
 
         composable(

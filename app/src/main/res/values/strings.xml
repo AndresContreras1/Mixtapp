@@ -75,6 +75,8 @@
     <string name="discussion">Discusión</string>
     <string name="comments_count">%1$d comentarios</string>
     <string name="replying">Respondiendo</string>
+    <string name="comentario_placeholder">Escribe un comentario...</string>
+    <string name="publicar_comentario">Publicar</string>
     <string name="reviewed">" reseñó"</string>
 
     <!-- Descripciones de los iconos, para lectores de pantalla -->
@@ -139,6 +141,7 @@
     <string name="browse_by">Explorar por</string>
     <string name="search_title">Buscar</string>
     <string name="search_placeholder">Busca álbumes, artistas, amigos...</string>
+    <string name="sin_resultados">No se encontraron álbumes</string>
 
     <!-- Song review -->
     <string name="reviews">Reseñas</string>
