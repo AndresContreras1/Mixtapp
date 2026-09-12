@@ -1,5 +1,6 @@
 package com.example.mixtapp.ui.screens.myreviews
 
+import com.example.mixtapp.ui.screens.myreviews.model.MyReviewFilterUi
 import com.example.mixtapp.ui.screens.myreviews.model.MyReviewUi
 
 data class MyReviewsState(
@@ -8,6 +9,6 @@ data class MyReviewsState(
     // Ya vienen ordenadas o filtradas por el ViewModel
     val reviews: List<MyReviewUi> = emptyList(),
     // Los filtros los provee el ViewModel; el componente solo los pinta
-    val filters: List<String> = emptyList(),
-    val selectedFilter: String = "",
+    val filters: List<MyReviewFilterUi> = emptyList(),
+    val selectedFilterId: String = "",
 )

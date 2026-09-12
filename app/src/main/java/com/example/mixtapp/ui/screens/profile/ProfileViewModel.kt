@@ -10,6 +10,7 @@ import com.example.mixtapp.R
 import com.example.mixtapp.data.repository.AuthRepository
 import com.example.mixtapp.data.repository.SinSesionException
 import com.example.mixtapp.data.repository.StorageRepository
+import com.example.mixtapp.ui.screens.profile.model.profileTabs
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -35,13 +36,12 @@ class ProfileViewModel @Inject constructor(
         // Recortar el correo es logica, asi que se hace aqui y no en el componente
         val usuario = authRepository.currentUser?.email?.substringBefore("@") ?: ""
         val foto = authRepository.currentUser?.photoUrl?.toString() ?: ""
-        val pestanas = LocalProfileProvider.tabs
 
         _uiState.update {
             it.copy(
                 profile = LocalProfileProvider.profile,
-                tabs = pestanas,
-                selectedTab = pestanas.first(),
+                tabs = profileTabs,
+                selectedTabId = profileTabs.first().id,
                 usuario = usuario,
                 profileImageUrl = foto,
             )
@@ -79,8 +79,8 @@ class ProfileViewModel @Inject constructor(
         else -> R.string.error_subir_imagen
     }
 
-    fun updateSelectedTab(tab: String) {
-        _uiState.update { it.copy(selectedTab = tab) }
+    fun updateSelectedTab(tabId: String) {
+        _uiState.update { it.copy(selectedTabId = tabId) }
     }
 
     // signOut no lleva suspend: solo borra la sesion del celular, no va a la red

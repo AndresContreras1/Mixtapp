@@ -24,7 +24,7 @@ fun SignUpErrorMessages(
         // Aviso mientras se escribe: las dos contrasenas no coinciden
         if (mostrarErrorContrasenas) {
             Text(
-                text = stringResource(R.string.passwords_no_coinciden),
+                text = stringResource(R.string.error_contrasenas_no_coinciden),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 14.sp
             )

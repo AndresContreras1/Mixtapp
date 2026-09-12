@@ -80,7 +80,9 @@ fun NotificationsScreenContent(
             }
 
             LazyColumn(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
                 contentPadding = PaddingValues(horizontal = 20.dp, vertical = 16.dp),
             ) {
                 grouped.forEach { (section, items) ->

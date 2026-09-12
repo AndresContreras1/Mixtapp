@@ -30,15 +30,14 @@ fun LoginForm(
     onEmailChange: (String) -> Unit,
     contrasena: String,
     onContrasenaChange: (String) -> Unit,
-    passwordVisible: Boolean,
-    onPasswordVisibleChange: () -> Unit,
+    contrasenaVisible: Boolean,
+    onContrasenaVisibleChange: () -> Unit,
     // La regla de la longitud minima la aplica el ViewModel; aqui solo se pinta el aviso
     mostrarErrorContrasena: Boolean,
     cargando: Boolean,
     onLoginClick: () -> Unit,
     modifier: Modifier = Modifier
 ){
-
 
     Column(
         modifier = modifier,
@@ -57,21 +56,21 @@ fun LoginForm(
 
         AppTextField(
             label = stringResource(R.string.contrasena),
-            placeholder = stringResource(R.string.password),
+            placeholder = stringResource(R.string.contrasena),
             value = contrasena,
             onValueChange = onContrasenaChange,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             icon = FieldIcon.Lock,
-            isPassword = true,
-            passwordVisible = passwordVisible,
-            onPasswordVisibleChange = onPasswordVisibleChange
+            esContrasena = true,
+            contrasenaVisible = contrasenaVisible,
+            onContrasenaVisibleChange = onContrasenaVisibleChange
         )
 
         if (mostrarErrorContrasena) {
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = stringResource(R.string.password_corta),
+                text = stringResource(R.string.error_contrasena_corta),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 14.sp
             )
@@ -111,5 +110,4 @@ fun LoginForm(
 
         Spacer(modifier = Modifier.height(19.dp))
     }
-
 }

@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.sp
 // Badge de score, arriba a la derecha
 @Composable
 fun ReviewScoreBadge(
-    score: Int,
+    rating: Int,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -26,7 +26,7 @@ fun ReviewScoreBadge(
     ) {
         Box(contentAlignment = Alignment.Center) {
             Text(
-                text = score.toString(),
+                text = rating.toString(),
                 color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold

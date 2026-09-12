@@ -20,7 +20,9 @@ import com.example.mixtapp.data.local.LocalMyReviewsProvider
 import com.example.mixtapp.ui.screens.myreviews.components.MyReviewCard
 import com.example.mixtapp.ui.screens.myreviews.components.MyReviewsFilter
 import com.example.mixtapp.ui.screens.myreviews.components.MyReviewsHeader
+import com.example.mixtapp.ui.screens.myreviews.model.MyReviewFilterUi
 import com.example.mixtapp.ui.screens.myreviews.model.MyReviewUi
+import com.example.mixtapp.ui.screens.myreviews.model.myReviewFilters
 import com.example.mixtapp.ui.theme.MixtappTheme
 
 @Composable
@@ -36,8 +38,8 @@ fun MyReviewsScreen(
         joinDate = state.joinDate,
         reviews = state.reviews,
         filters = state.filters,
-        selectedFilter = state.selectedFilter,
-        onFilterSelected = { myReviewsViewModel.updateSelectedFilter(filtro = it) },
+        selectedFilterId = state.selectedFilterId,
+        onFilterSelected = { myReviewsViewModel.updateSelectedFilter(filtroId = it) },
         onReviewClick = onReviewClick,
         modifier = modifier
     )
@@ -48,8 +50,8 @@ fun MyReviewsScreenContent(
     username: String,
     joinDate: String,
     reviews: List<MyReviewUi>,
-    filters: List<String>,
-    selectedFilter: String,
+    filters: List<MyReviewFilterUi>,
+    selectedFilterId: String,
     onFilterSelected: (String) -> Unit,
     onReviewClick: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -68,7 +70,7 @@ fun MyReviewsScreenContent(
                 )
                 MyReviewsFilter(
                     filters = filters,
-                    selected = selectedFilter,
+                    selectedId = selectedFilterId,
                     onFilterSelected = onFilterSelected,
                 )
             }
@@ -85,7 +87,6 @@ fun MyReviewsScreenContent(
                     )
                 }
             }
-
         }
     }
 }
@@ -98,8 +99,8 @@ fun MyReviewsScreenPreview() {
             username = "Yourname",
             joinDate = "march 2025",
             reviews = LocalMyReviewsProvider.reviews,
-            filters = LocalMyReviewsProvider.filters,
-            selectedFilter = LocalMyReviewsProvider.filters.first(),
+            filters = myReviewFilters,
+            selectedFilterId = myReviewFilters.first().id,
             onFilterSelected = {},
             onReviewClick = {}
         )

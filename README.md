@@ -1,139 +1,171 @@
 <p align="center">
-<img width="500" height="500" alt="image" src="https://github.com/user-attachments/assets/83f40bd9-b685-42af-a5e3-2a8f3c320ff8" />
+<img width="500" height="500" alt="Logo de Mixtapp" src="https://github.com/user-attachments/assets/83f40bd9-b685-42af-a5e3-2a8f3c320ff8" />
 </p>
 
 # Mixtapp
 
-Mixtapp es una aplicación móvil para Android enfocada en la exploración y seguimiento de música. La aplicación busca ofrecer un espacio donde los usuarios puedan descubrir álbumes, calificarlos, escribir reseñas, guardar favoritos y visualizar la actividad de otros usuarios.
+App Android para calificar y reseñar álbumes de música. El usuario abre un álbum, le pone de
+0 a 5 estrellas, escribe su reseña y ve lo que publican las personas a las que sigue. Es el
+proyecto semestral de Computación Móvil en la Pontificia Universidad Javeriana.
+
+Está escrita en Kotlin con Jetpack Compose, una sola Activity y arquitectura en capas sobre
+Firebase.
 
 ---
 
-## Características
+## Estado
 
-Entre las funcionalidades y pantallas actualmente desarrolladas se encuentran:
+La autenticación funciona contra Firebase y se probó en el emulador con ocho escenarios:
+credenciales incorrectas, correo inexistente, correo ya registrado, contraseña débil, sesión
+persistente, cierre de sesión, bloqueo por intentos y sin conexión.
 
-* **Inicio de sesión**
+Las once pantallas están construidas y navegables. El resto de los datos todavía sale de
+proveedores locales en `data/local/`, a la espera de la base de datos.
 
-  * Campo de correo electrónico.
-  * Campo de contraseña.
-  * Botón de ingreso.
-  * Acceso al registro de nuevos usuarios.
+| Módulo | Estado |
+|---|---|
+| Registro e inicio de sesión con Firebase Auth | Funcionando |
+| Sesión persistente y splash que decide a dónde entrar | Funcionando |
+| Mensajes de error en español según el tipo de fallo | Funcionando |
+| Portadas cargadas por URL con Coil | Funcionando |
+| Navegación entre las 12 rutas | Funcionando |
+| Calificar, guardar, dar like y filtrar | Funcionando, en memoria |
+| Subir la foto de perfil a Firebase Storage | Escrito, sin probar (ver más abajo) |
+| Persistencia de reseñas y álbumes | Pendiente |
+| Buscador con resultados | Pendiente |
+| Modo claro | Pendiente |
 
-* **Registro de usuarios**
-
-  * Creación de nombre de usuario.
-  * Registro mediante correo electrónico.
-  * Creación y confirmación de contraseña.
-  * Aceptación de términos y condiciones.
-  * Diseño visual personalizado.
-
-* **Página principal**
-
-  * Sección de álbumes populares.
-  * Álbum actualmente en tendencia.
-  * Actividad de amigos.
-  * Filtros de contenido:
-
-    * For you
-    * Trending
-    * Friends
-  * Barra de navegación inferior.
-
-* **Perfil**
-
-  * Información básica del usuario.
-  * Cantidad de reseñas, álbumes y listas.
-  * Sección de álbumes favoritos.
-  * Actividad reciente.
-  * Calificaciones.
+**Sobre Firebase Storage:** la cadena completa está escrita y compila, pero Google retiró
+Storage del plan gratuito Spark para proyectos creados después del cambio. El proyecto
+`mixtapp-720eb` se creó el 7 de septiembre de 2026, así que activarlo exige plan Blaze. El
+selector de galería, el paso del `Uri` hacia arriba y el camino de error sí se probaron.
 
 ---
 
-## Tecnologías utilizadas
+## Arquitectura
 
-El proyecto está desarrollado utilizando:
+Dos capas: UI y datos. La capa de dominio queda fuera.
 
-* **Kotlin**
-* **Android**
-* **Jetpack Compose**
-* **Material 3**
-* **Gradle Kotlin DSL**
+```
+Pantalla  ──►  ViewModel  ──►  Repository  ──►  DataSource  ──►  Firebase
+   │              │                │
+ pinta       estado y lógica   try/catch y Result
+```
+
+**El data source** declara las peticiones y devuelve lo que pidió quien llama. Nada más.
+
+**El repositorio** hace el `try/catch`, traduce cada excepción de Firebase a una propia en
+español y devuelve un `Result<T>` con el mismo tipo que devolvió el data source.
+
+**El ViewModel** mira `result.isSuccess` y toma uno de los dos caminos. No conoce ninguna
+excepción de Firebase.
+
+**La pantalla** pinta y avisa. La navegación no entra al ViewModel: las lambdas `onXClick`
+las resuelve `AppNavigation.kt`.
+
+### Decisiones que vale la pena explicar
+
+**Un solo `Scaffold`**, en `Mixtapp.kt`, con la barra inferior en su ranura. `NavigationLogic`
+decide en qué rutas se ve.
+
+**El `navController` no baja a las pantallas.** Reciben lambdas. La única excepción es
+`BottomNav`, que existe solo para navegar.
+
+**A las pantallas de detalle les llega el id, no el objeto.** El ViewModel busca la entidad y
+la pantalla decide qué pintar si no existe.
+
+**`MutableStateFlow` y un `UiState` por pantalla.** Nada de `LiveData`.
+
+**El color sale del `MaterialTheme`.** Los 36 roles del esquema llevan la paleta del Figma, y
+no hay un solo hex suelto fuera de `Color.kt`.
+
+**Hilt construye la cadena.** El módulo solo declara `FirebaseAuth` y `FirebaseStorage`; el
+resto se resuelve por `@Inject constructor`.
 
 ---
 
-## Estructura del proyecto
+## Pantallas
+
+| Pantalla | Qué hace |
+|---|---|
+| Splash | Comprueba si hay sesión y entra a Home o a Login |
+| Login | Correo y contraseña, con validación y mensajes de error |
+| Registro | Usuario, correo, contraseña, confirmación y términos |
+| Home | Álbum en tendencia, populares y actividad de amigos |
+| Detalle de álbum | Portada, etiquetas, estadísticas, calificar y reseñas |
+| Escribir reseña | Estrellas, texto, estados de ánimo, fecha y favorito |
+| Mis reseñas | Las reseñas propias, con cinco filtros |
+| Siguiendo | Reseñas de a quien sigues, con buscador de amigos |
+| Discusión | Una reseña y su hilo de comentarios |
+| Notificaciones | Todas y no leídas, agrupadas por día |
+| Perfil | Foto, estadísticas, actividad, calificaciones y cerrar sesión |
+| Buscar | Buscador y categorías de exploración |
+
+---
+
+## Estructura
 
 ```text
-Mixtapp/
-├── app/
-│   ├── src/
-│   │   ├── androidTest/
-│   │   ├── main/
-│   │   │   ├── java/com/example/mixtapp/
-│   │   │   │   ├── MainActivity.kt
-│   │   │   │   ├── HomeScreen.kt
-│   │   │   │   ├── LoginScreen.kt
-│   │   │   │   ├── ProfileScreen.kt
-│   │   │   │   ├── SignUp.kt
-│   │   │   │   └── ui/
-│   │   │   │       └── theme/
-│   │   │   │           ├── Color.kt
-│   │   │   │           ├── Theme.kt
-│   │   │   │           └── Type.kt
-│   │   │   └── res/
-│   │   │       ├── drawable/
-│   │   │       ├── mipmap/
-│   │   │       ├── values/
-│   │   │       └── xml/
-│   │   └── test/
-│   │
-│   ├── build.gradle.kts
-│   └── proguard-rules.pro
-│
-├── gradle/
-│   ├── libs.versions.toml
-│   └── wrapper/
-│
-├── build.gradle.kts
-├── gradle.properties
-├── gradlew
-├── gradlew.bat
-└── settings.gradle.kts
+app/src/main/java/com/example/mixtapp/
+├── data/
+│   ├── datasource/      AuthRemoteDataSource · StorageRemoteDataSource
+│   ├── injection/       FirebaseHiltModule
+│   ├── local/           proveedores de datos de prueba
+│   └── repository/      AuthRepository · StorageRepository · AuthExceptions
+├── navigation/
+│   ├── AppNavigation.kt NavHost con las 12 rutas
+│   ├── NavigationLogic.kt
+│   └── Screen.kt        sealed class con las rutas
+├── ui/
+│   ├── components/      compartidos por dos o más pantallas
+│   ├── screens/<pantalla>/
+│   │   ├── <X>Screen.kt
+│   │   ├── <X>State.kt
+│   │   ├── <X>ViewModel.kt
+│   │   ├── components/
+│   │   └── model/
+│   └── theme/           Color.kt · Theme.kt
+├── BaseApplication.kt   @HiltAndroidApp
+├── MainActivity.kt      @AndroidEntryPoint
+└── Mixtapp.kt           Scaffold + barra + AppNavigation
 ```
 
 ---
 
-## Instalación y ejecución
+## Tecnologías
 
-### Requisitos
+| Qué | Para qué |
+|---|---|
+| Kotlin 2.2.10 | Lenguaje |
+| Jetpack Compose | UI declarativa |
+| Material Design 3 | Paleta, componentes y tipografía |
+| Navigation Compose | Una Activity, un `NavHost`, rutas en `sealed class` |
+| ViewModel y StateFlow | MVVM con un `UiState` por pantalla |
+| Corrutinas | `suspend` y `viewModelScope.launch` |
+| Dagger Hilt 2.60.1 con KSP | Inyección de dependencias |
+| Firebase Auth | Registro, inicio de sesión y sesión persistente |
+| Firebase Storage | Foto de perfil |
+| Coil 2.4.0 | Portadas y avatares por URL |
+| Gradle Kotlin DSL | Las 22 dependencias van por `libs.versions.toml` |
 
-Para ejecutar el proyecto necesitas:
+---
 
-* Android Studio.
-* JDK 11 o compatible.
-* Android SDK.
-* Un dispositivo Android físico o un emulador.
+## Cómo ejecutarlo
 
-### 1. Clonar el repositorio
+Necesitas Android Studio, JDK 11 y un emulador o un dispositivo con Android 7.0 o superior
+(`minSdk 24`).
 
 ```bash
-git clone https://github.com/USUARIO/Mixtapp.git
+git clone https://github.com/AndresContreras1/Mixtapp.git
 cd Mixtapp
 ```
 
-Reemplaza `USUARIO/Mixtapp` por la URL de tu repositorio de GitHub.
+Pon tu `google-services.json` en `app/`. Sin ese archivo el build falla con
+`File google-services.json is missing`. Para verlo en Android Studio hay que cambiar la vista
+de **Android** a **Project**.
 
-### 2. Abrir el proyecto
-
-Abre la carpeta del proyecto desde **Android Studio** y espera a que Gradle sincronice las dependencias.
-
-### 3. Ejecutar la aplicación
-
-Selecciona un dispositivo físico o un emulador y presiona:
-
-**Run ▶**
-
-También puedes ejecutar la compilación desde la terminal:
+Abre la carpeta en Android Studio, espera a que Gradle sincronice y dale a **Run**. Desde la
+terminal:
 
 ```bash
 ./gradlew assembleDebug
@@ -145,49 +177,45 @@ En Windows:
 gradlew.bat assembleDebug
 ```
 
----
+### Dos ajustes en la consola de Firebase
 
-## Diseño
+Sin ellos, dos de los mensajes de error nunca salen:
 
-Mixtapp utiliza una identidad visual basada principalmente en tonos oscuros, rosados, vino y púrpura.
-
-La interfaz está construida completamente con Jetpack Compose, utilizando componentes reutilizables y un tema personalizado.
-
-Algunos de los elementos visuales principales son:
-
-* Fondo oscuro.
-* Tarjetas para contenido musical.
-* Colores de acento rosa y vino.
-* Bordes redondeados.
-* Navegación inferior.
-* Componentes adaptados para Material 3.
+1. **Authentication → Settings → Protección contra enumeración de correos: desactivada.**
+   Mientras esté activa, Firebase no distingue "no existe la cuenta" de "contraseña
+   incorrecta".
+2. **Authentication → Settings → Política de contraseñas → Exigir aplicación**, con mayúscula
+   y número. En modo *Notificar* el registro se acepta igual. Deja sin marcar "Forzar la
+   actualización durante el acceso" para no bloquear a los usuarios de prueba.
 
 ---
 
-## Fncionalidades
+## Documentación
 
-Como parte del desarrollo futuro de MixtApp se contempla implementar:
-
-* [ ] Autenticación real de usuarios.
-* [ ] Registro y almacenamiento de usuarios.
-* [ ] Conexión con una base de datos.
-* [ ] Persistencia de álbumes, reseñas y calificaciones.
-* [ ] Sistema de búsqueda de álbumes y artistas.
-* [ ] Información real de álbumes.
-* [ ] Sistema de calificación de álbumes.
-* [ ] Creación de listas personalizadas.
-* [ ] Gestión de álbumes favoritos.
-* [ ] Reseñas de usuarios.
-* [ ] Sistema de amigos y actividad social.
-* [ ] Navegación completa entre las diferentes pantallas.
-* [ ] Integración con una API de música.
+| Archivo | Qué es |
+|---|---|
+| `Docs/Diagrama de clases.jpeg` | Diagrama de clases |
+| `Docs/Diagrama de relacion.jpeg` | Diagrama entidad-relación |
+| `Docs/logo.png` | Logo de la aplicación |
 
 ---
 
-## 📌 Estado del proyecto
+## Equipo
 
-**🟡 En desarrollo**
+Proyecto de **Computación Móvil**, Pontificia Universidad Javeriana, sede Bogotá.
+Profesor: Juan Sebastián Angarita Torres.
 
-La versión actual corresponde principalmente a un prototipo funcional de interfaz. Las pantallas principales y componentes visuales están siendo desarrollados antes de integrar la lógica de negocio, persistencia de datos y servicios externos.
+| Integrante | GitHub |
+|---|---|
+| William Andrés Contreras | [@AndresContreras1](https://github.com/AndresContreras1) |
+| Andrés | |
+| Andrés Loreto Quiros | |
+| Laura Aponte | |
 
 ---
+
+## Flujo de trabajo
+
+Ramas cortas desde `master` actualizado, una por bloque de trabajo, y un pull request por
+rama. Los mensajes de commit van en español, sin tildes, con prefijo `feat:`, `fix:`,
+`refactor:`, `style:`, `chore:` o `docs:`.

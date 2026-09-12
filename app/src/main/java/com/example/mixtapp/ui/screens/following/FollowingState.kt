@@ -1,5 +1,6 @@
 package com.example.mixtapp.ui.screens.following
 
+import com.example.mixtapp.ui.screens.following.model.FollowingFilterUi
 import com.example.mixtapp.ui.screens.following.model.FollowingReviewUi
 import com.example.mixtapp.ui.screens.following.model.FollowingUi
 
@@ -8,8 +9,9 @@ data class FollowingState(
     val following: FollowingUi? = null,
     val reviews: List<FollowingReviewUi> = emptyList(),
     val friendQuery: String = "",
-    val selectedFilter: String = "",
+    val filters: List<FollowingFilterUi> = emptyList(),
+    val selectedFilterId: String = "",
     val selectedStoryId: String? = null,
-    val likedReviewIds: List<String> = emptyList(),
-    val sharedReviewIds: List<String> = emptyList(),
+    val likedReviewIds: Set<String> = emptySet(),
+    val sharedReviewIds: Set<String> = emptySet(),
 )

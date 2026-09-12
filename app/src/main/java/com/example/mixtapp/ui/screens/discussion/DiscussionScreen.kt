@@ -119,7 +119,6 @@ fun DiscussionScreenContent(
                     )
                 }
             }
-
         }
     }
 }

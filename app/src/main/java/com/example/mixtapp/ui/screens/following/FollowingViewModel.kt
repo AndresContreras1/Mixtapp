@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import com.example.mixtapp.data.local.LocalFollowingProvider
 import com.example.mixtapp.ui.screens.following.model.FollowingReviewUi
+import com.example.mixtapp.ui.screens.following.model.followingFilters
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -28,9 +29,10 @@ class FollowingViewModel @Inject constructor() : ViewModel() {
             it.copy(
                 following = following,
                 reviews = aplicarBusqueda(friendQuery = it.friendQuery),
-                selectedFilter = following.filters.first(),
-                likedReviewIds = following.reviews.filter { r -> r.isLiked }.map { r -> r.id },
-                sharedReviewIds = following.reviews.filter { r -> r.isShared }.map { r -> r.id },
+                filters = followingFilters,
+                selectedFilterId = followingFilters.first().id,
+                likedReviewIds = following.reviews.filter { r -> r.isLiked }.map { r -> r.id }.toSet(),
+                sharedReviewIds = following.reviews.filter { r -> r.isShared }.map { r -> r.id }.toSet(),
             )
         }
     }
@@ -44,8 +46,8 @@ class FollowingViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    fun updateSelectedFilter(filtro: String) {
-        _uiState.update { it.copy(selectedFilter = filtro) }
+    fun updateSelectedFilter(filtroId: String) {
+        _uiState.update { it.copy(selectedFilterId = filtroId) }
     }
 
     fun updateSelectedStory(storyId: String) {

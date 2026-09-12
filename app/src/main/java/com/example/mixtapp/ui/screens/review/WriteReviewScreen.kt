@@ -19,7 +19,6 @@ import com.example.mixtapp.ui.screens.review.components.ReviewHeader
 import com.example.mixtapp.ui.screens.review.components.WriteReviewBackground
 import com.example.mixtapp.ui.screens.review.components.WriteReviewList
 import com.example.mixtapp.ui.screens.review.model.ReviewAlbumUi
-import com.example.mixtapp.ui.screens.review.model.ReviewDraftUi
 import com.example.mixtapp.ui.theme.MixtappTheme
 
 // Recibe solo el id; el ViewModel se encarga de buscar el album
@@ -28,7 +27,7 @@ fun WriteReviewScreen(
     albumId: String,
     writeReviewViewModel: WriteReviewViewModel,
     onCancel: () -> Unit,
-    onPostReview: (ReviewDraftUi) -> Unit,
+    onPostReview: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val state by writeReviewViewModel.uiState.collectAsState()
@@ -58,7 +57,7 @@ fun WriteReviewScreen(
             onFavoriteChange = { writeReviewViewModel.updateIsFavorite(isFavorite = it) },
             onPostClick = {
                 writeReviewViewModel.publicarResena()
-                onPostReview(writeReviewViewModel.crearBorrador())
+                onPostReview()
             },
             modifier = modifier,
         )
@@ -113,7 +112,6 @@ fun WriteReviewScreenContent(
                 onPostClick = onPostClick,
                 modifier = Modifier.weight(1f)
             )
-
         }
     }
 }
@@ -121,7 +119,7 @@ fun WriteReviewScreenContent(
 @Preview(showBackground = true, device = "spec:width=393dp,height=852dp")
 @Composable
 fun WriteReviewScreenPreview() {
-    MixtappTheme(dynamicColor = false) {
+    MixtappTheme(darkTheme = true, dynamicColor = false) {
         WriteReviewScreenContent(
             album = LocalReviewAlbumProvider.albums.first(),
             rating = 0,

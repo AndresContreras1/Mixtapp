@@ -5,6 +5,3 @@ enum class FieldIcon {
     Email,
     Lock
 }
-
-
-

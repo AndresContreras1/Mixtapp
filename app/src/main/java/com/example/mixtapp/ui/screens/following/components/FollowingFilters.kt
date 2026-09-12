@@ -15,14 +15,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mixtapp.ui.screens.following.model.FollowingFilterUi
 
 @Composable
 fun FollowingFilters(
-    filters: List<String>,
-    selectedFilter: String,
+    filters: List<FollowingFilterUi>,
+    selectedFilterId: String,
     onFilterSelected: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -32,11 +34,11 @@ fun FollowingFilters(
             .padding(top = 21.dp, bottom = 20.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        items(filters, key = { it }) { filter ->
-            val selected = filter == selectedFilter
+        items(filters, key = { it.id }) { filter ->
+            val selected = filter.id == selectedFilterId
 
             Button(
-                onClick = { onFilterSelected(filter) },
+                onClick = { onFilterSelected(filter.id) },
                 shape = RoundedCornerShape(24.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (selected) MaterialTheme.colorScheme.primary else Color.Transparent,
@@ -50,7 +52,7 @@ fun FollowingFilters(
                 contentPadding = PaddingValues(horizontal = 18.dp, vertical = 8.dp),
             ) {
                 Text(
-                    text = filter,
+                    text = stringResource(filter.label),
                     color = if (selected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.62f),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,

@@ -8,7 +8,6 @@ object LocalFollowingProvider {
     val following = FollowingUi(
         followingCount = 84,
         followersCount = 312,
-        filters = listOf("All", "Reviews", "Ratings", "Lists"),
         stories = listOf(
             FollowingStoryUi(id = "log", label = "Your log", initials = "+", isAddAction = true),
             FollowingStoryUi(id = "jen", label = "Jen", initials = "J", isAddAction = false),

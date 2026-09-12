@@ -8,6 +8,7 @@ import com.example.mixtapp.data.repository.AuthRepository
 import com.example.mixtapp.data.repository.DemasiadosIntentosException
 import com.example.mixtapp.data.repository.SinConexionException
 import com.example.mixtapp.data.repository.UsuarioNoExisteException
+import com.example.mixtapp.ui.components.MIN_PASSWORD_LENGTH
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,9 +16,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
-// Longitud minima de la contrasena. La comparten los dos formularios de la app
-const val MinPasswordLength = 6
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
@@ -38,15 +36,15 @@ class LoginViewModel @Inject constructor(
                 contrasena = contrasena,
                 // El aviso solo aparece cuando ya se escribio algo y se queda corto
                 mostrarErrorContrasena = contrasena.isNotEmpty() &&
-                        contrasena.length < MinPasswordLength,
+                        contrasena.length < MIN_PASSWORD_LENGTH,
                 errorMessageRes = null,
             )
         }
     }
 
     fun mostrarEsconderContrasena() {
-        val valorActual = _uiState.value.passwordVisible
-        _uiState.update { it.copy(passwordVisible = !valorActual) }
+        val valorActual = _uiState.value.contrasenaVisible
+        _uiState.update { it.copy(contrasenaVisible = !valorActual) }
     }
 
     // Decidir si se puede entrar es responsabilidad del ViewModel, no de la navegacion
@@ -62,8 +60,8 @@ class LoginViewModel @Inject constructor(
             !estado.email.contains("@") ->
                 R.string.error_email_invalido
 
-            estado.contrasena.length < MinPasswordLength ->
-                R.string.password_corta
+            estado.contrasena.length < MIN_PASSWORD_LENGTH ->
+                R.string.error_contrasena_corta
 
             else -> null
         }

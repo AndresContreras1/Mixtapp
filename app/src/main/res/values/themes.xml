@@ -2,6 +2,6 @@
 <resources>
 
     <style name="Theme.Mixtapp" parent="android:Theme.Material.NoActionBar">
-        <item name="android:windowBackground">#FF1B020D</item>
+        <item name="android:windowBackground">@color/deep_background</item>
     </style>
 </resources>

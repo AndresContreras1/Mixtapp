@@ -3,7 +3,6 @@ package com.example.mixtapp.ui.screens.review
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import com.example.mixtapp.data.local.LocalReviewAlbumProvider
-import com.example.mixtapp.ui.screens.review.model.ReviewDraftUi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -11,7 +10,7 @@ import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 // Limite de caracteres de la resena
-const val MaxReviewLength = 500
+const val MAX_REVIEW_LENGTH = 500
 
 @HiltViewModel
 class WriteReviewViewModel @Inject constructor() : ViewModel() {
@@ -44,7 +43,7 @@ class WriteReviewViewModel @Inject constructor() : ViewModel() {
     }
 
     fun updateReviewText(reviewText: String) {
-        _uiState.update { it.copy(reviewText = reviewText.take(MaxReviewLength)) }
+        _uiState.update { it.copy(reviewText = reviewText.take(MAX_REVIEW_LENGTH)) }
     }
 
     fun seleccionarQuitarMood(mood: String) {
@@ -68,18 +67,5 @@ class WriteReviewViewModel @Inject constructor() : ViewModel() {
 
     fun publicarResena() {
         _uiState.update { it.copy(hasPosted = true) }
-    }
-
-    // Arma el borrador con lo que hay ahora mismo en el estado
-    fun crearBorrador(): ReviewDraftUi {
-        val estado = _uiState.value
-
-        return ReviewDraftUi(
-            rating = estado.rating,
-            review = estado.reviewText,
-            moods = estado.selectedMoods,
-            listenedDate = estado.listenedDate,
-            isFavorite = estado.isFavorite,
-        )
     }
 }

@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.mixtapp.ui.screens.following.model.FollowingFilterUi
 import com.example.mixtapp.ui.screens.following.model.FollowingReviewUi
 import com.example.mixtapp.ui.screens.following.model.FollowingUi
 
@@ -15,10 +16,11 @@ fun FollowingList(
     following: FollowingUi,
     reviews: List<FollowingReviewUi>,
     friendQuery: String,
-    selectedFilter: String,
+    filters: List<FollowingFilterUi>,
+    selectedFilterId: String,
     selectedStoryId: String?,
-    likedReviewIds: List<String>,
-    sharedReviewIds: List<String>,
+    likedReviewIds: Set<String>,
+    sharedReviewIds: Set<String>,
     onFriendQueryChange: (String) -> Unit,
     onFilterSelected: (String) -> Unit,
     onStoryClick: (String) -> Unit,
@@ -50,8 +52,8 @@ fun FollowingList(
 
         item {
             FollowingFilters(
-                filters = following.filters,
-                selectedFilter = selectedFilter,
+                filters = filters,
+                selectedFilterId = selectedFilterId,
                 onFilterSelected = onFilterSelected,
             )
         }

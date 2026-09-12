@@ -4,7 +4,12 @@ import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import com.example.mixtapp.data.local.LocalMyReviewsProvider
 import com.example.mixtapp.data.local.LocalProfileProvider
+import com.example.mixtapp.ui.screens.myreviews.model.FILTRO_A_Z
+import com.example.mixtapp.ui.screens.myreviews.model.FILTRO_CALIFICACION_4
+import com.example.mixtapp.ui.screens.myreviews.model.FILTRO_CALIFICACION_5
+import com.example.mixtapp.ui.screens.myreviews.model.FILTRO_MEJOR_CALIFICADAS
 import com.example.mixtapp.ui.screens.myreviews.model.MyReviewUi
+import com.example.mixtapp.ui.screens.myreviews.model.myReviewFilters
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,38 +29,37 @@ class MyReviewsViewModel @Inject constructor() : ViewModel() {
 
     private fun getReviews() {
         val perfil = LocalProfileProvider.profile
-        val filtros = LocalMyReviewsProvider.filters
-        val filtroInicial = filtros.first()
+        val filtroInicial = myReviewFilters.first().id
 
         _uiState.update {
             it.copy(
                 username = perfil.username,
                 joinDate = perfil.joinDate,
-                filters = filtros,
-                selectedFilter = filtroInicial,
-                reviews = aplicarFiltro(filtro = filtroInicial),
+                filters = myReviewFilters,
+                selectedFilterId = filtroInicial,
+                reviews = aplicarFiltro(filtroId = filtroInicial),
             )
         }
     }
 
-    fun updateSelectedFilter(filtro: String) {
+    fun updateSelectedFilter(filtroId: String) {
         _uiState.update {
             it.copy(
-                selectedFilter = filtro,
-                reviews = aplicarFiltro(filtro = filtro),
+                selectedFilterId = filtroId,
+                reviews = aplicarFiltro(filtroId = filtroId),
             )
         }
     }
 
     // Ordenar y filtrar es logica de negocio, no de la pantalla
-    private fun aplicarFiltro(filtro: String): List<MyReviewUi> {
+    private fun aplicarFiltro(filtroId: String): List<MyReviewUi> {
         val todas = LocalMyReviewsProvider.reviews
 
-        return when (filtro) {
-            LocalMyReviewsProvider.FILTER_TOP_RATED -> todas.sortedByDescending { it.score }
-            LocalMyReviewsProvider.FILTER_A_Z -> todas.sortedBy { it.title }
-            LocalMyReviewsProvider.FILTER_SCORE_5 -> todas.filter { it.score == 5 }
-            LocalMyReviewsProvider.FILTER_SCORE_4 -> todas.filter { it.score == 4 }
+        return when (filtroId) {
+            FILTRO_MEJOR_CALIFICADAS -> todas.sortedByDescending { it.rating }
+            FILTRO_A_Z -> todas.sortedBy { it.title }
+            FILTRO_CALIFICACION_5 -> todas.filter { it.rating == 5 }
+            FILTRO_CALIFICACION_4 -> todas.filter { it.rating == 4 }
             else -> todas
         }
     }
