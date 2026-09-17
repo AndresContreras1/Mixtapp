@@ -20,12 +20,12 @@ private val DarkColorScheme = darkColorScheme(
 
     secondary = CircleWine,
     onSecondary = Color.White,
-    secondaryContainer = CircleWine,
+    secondaryContainer = LogoCircle,
     onSecondaryContainer = PalePink,
 
     tertiary = LogoPink,
     onTertiary = Color.White,
-    tertiaryContainer = SurfaceCard,
+    tertiaryContainer = StoryGold,
     onTertiaryContainer = PalePink,
 
     background = DeepBackground,
@@ -66,12 +66,12 @@ private val LightColorScheme = lightColorScheme(
 
     secondary = CircleWine,
     onSecondary = Color.White,
-    secondaryContainer = CircleWine,
+    secondaryContainer = LogoCircle,
     onSecondaryContainer = PalePink,
 
     tertiary = LogoPink,
     onTertiary = Color.White,
-    tertiaryContainer = SurfaceCard,
+    tertiaryContainer = StoryGold,
     onTertiaryContainer = PalePink,
 
     background = DeepBackground,

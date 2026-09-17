@@ -19,7 +19,6 @@ import com.example.mixtapp.data.model.FollowingReviewUi
 import com.example.mixtapp.ui.components.ReviewActionsRow
 import com.example.mixtapp.ui.components.ReviewAlbumRow
 import com.example.mixtapp.ui.components.ReviewAuthorRow
-import com.example.mixtapp.ui.theme.StoryGold
 
 @Composable
 fun FollowingReviewCard(
@@ -46,7 +45,11 @@ fun FollowingReviewCard(
                 reviewedAt = review.reviewedAt,
                 avatarSize = 44.dp,
                 avatarBrush = Brush.linearGradient(
-                    colors = listOf(MaterialTheme.colorScheme.primary, StoryGold, MaterialTheme.colorScheme.secondary)
+                    colors = listOf(
+                        MaterialTheme.colorScheme.primary,
+                        MaterialTheme.colorScheme.tertiaryContainer,
+                        MaterialTheme.colorScheme.secondary,
+                    )
                 ),
                 avatarTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
                 nameFontSize = 15.sp,
