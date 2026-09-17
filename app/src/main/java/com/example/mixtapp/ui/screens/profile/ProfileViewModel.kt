@@ -6,6 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
 import com.example.mixtapp.data.repository.AuthRepository
+import com.example.mixtapp.data.repository.CuotaExcedidaException
+import com.example.mixtapp.data.repository.PermisoDenegadoException
+import com.example.mixtapp.data.repository.SinConexionException
 import com.example.mixtapp.data.repository.SinSesionException
 import com.example.mixtapp.data.repository.SocialRepository
 import com.example.mixtapp.data.repository.StorageRepository
@@ -83,6 +86,9 @@ class ProfileViewModel @Inject constructor(
     @StringRes
     private fun mensajeDeError(error: Throwable?): Int = when (error) {
         is SinSesionException -> R.string.error_sin_sesion
+        is SinConexionException -> R.string.error_sin_conexion
+        is CuotaExcedidaException -> R.string.error_cuota_excedida
+        is PermisoDenegadoException -> R.string.error_permiso_denegado
         else -> R.string.error_subir_imagen
     }
 

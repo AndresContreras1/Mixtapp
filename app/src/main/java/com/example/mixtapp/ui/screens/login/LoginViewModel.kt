@@ -8,6 +8,7 @@ import com.example.mixtapp.data.model.MIN_PASSWORD_LENGTH
 import com.example.mixtapp.data.repository.AuthRepository
 import com.example.mixtapp.data.repository.CredencialesInvalidasException
 import com.example.mixtapp.data.repository.DemasiadosIntentosException
+import com.example.mixtapp.data.repository.ErrorDeInicioSesionException
 import com.example.mixtapp.data.repository.SinConexionException
 import com.example.mixtapp.data.repository.UsuarioNoExisteException
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -105,6 +106,7 @@ class LoginViewModel @Inject constructor(
         is UsuarioNoExisteException -> R.string.error_usuario_no_existe
         is SinConexionException -> R.string.error_sin_conexion
         is DemasiadosIntentosException -> R.string.error_demasiados_intentos
+        is ErrorDeInicioSesionException -> R.string.error_inicio_sesion
         else -> R.string.error_inicio_sesion
     }
 }
