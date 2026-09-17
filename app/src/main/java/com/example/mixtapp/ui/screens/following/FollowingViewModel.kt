@@ -5,6 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.data.model.FollowingReviewUi
 import com.example.mixtapp.data.model.FollowingUi
 import com.example.mixtapp.data.repository.SocialRepository
+import com.example.mixtapp.ui.screens.following.model.FILTRO_CALIFICACIONES
+import com.example.mixtapp.ui.screens.following.model.FILTRO_LISTAS
+import com.example.mixtapp.ui.screens.following.model.FILTRO_RESENAS
 import com.example.mixtapp.ui.screens.following.model.followingFilters
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,13 +36,18 @@ class FollowingViewModel @Inject constructor(
 
             if (result.isSuccess) {
                 val following = result.getOrNull() ?: return@launch
+                val filtroInicial = followingFilters.first().id
 
                 _uiState.update {
                     it.copy(
                         following = following,
-                        reviews = aplicarBusqueda(friendQuery = it.friendQuery, todas = following.reviews),
+                        reviews = aplicarFiltros(
+                            friendQuery = it.friendQuery,
+                            filtroId = filtroInicial,
+                            todas = following.reviews,
+                        ),
                         filters = followingFilters,
-                        selectedFilterId = followingFilters.first().id,
+                        selectedFilterId = filtroInicial,
                         likedReviewIds = following.reviews.filter { r -> r.isLiked }.map { r -> r.id }.toSet(),
                         sharedReviewIds = following.reviews.filter { r -> r.isShared }.map { r -> r.id }.toSet(),
                     )
@@ -52,8 +60,9 @@ class FollowingViewModel @Inject constructor(
         _uiState.update {
             it.copy(
                 friendQuery = friendQuery,
-                reviews = aplicarBusqueda(
+                reviews = aplicarFiltros(
                     friendQuery = friendQuery,
+                    filtroId = it.selectedFilterId,
                     todas = it.following?.reviews ?: emptyList(),
                 ),
             )
@@ -61,7 +70,16 @@ class FollowingViewModel @Inject constructor(
     }
 
     fun updateSelectedFilter(filtroId: String) {
-        _uiState.update { it.copy(selectedFilterId = filtroId) }
+        _uiState.update {
+            it.copy(
+                selectedFilterId = filtroId,
+                reviews = aplicarFiltros(
+                    friendQuery = it.friendQuery,
+                    filtroId = filtroId,
+                    todas = it.following?.reviews ?: emptyList(),
+                ),
+            )
+        }
     }
 
     fun updateSelectedStory(storyId: String) {
@@ -94,16 +112,30 @@ class FollowingViewModel @Inject constructor(
         _uiState.update {
             it.copy(
                 following = following,
-                reviews = aplicarBusqueda(friendQuery = it.friendQuery, todas = following.reviews),
+                reviews = aplicarFiltros(
+                    friendQuery = it.friendQuery,
+                    filtroId = it.selectedFilterId,
+                    todas = following.reviews,
+                ),
                 likedReviewIds = following.reviews.filter { r -> r.isLiked }.map { r -> r.id }.toSet(),
                 sharedReviewIds = following.reviews.filter { r -> r.isShared }.map { r -> r.id }.toSet(),
             )
         }
     }
 
-    private fun aplicarBusqueda(
+    // Buscar y filtrar es logica de negocio, no de la pantalla
+    private fun aplicarFiltros(
         friendQuery: String,
+        filtroId: String,
         todas: List<FollowingReviewUi>,
-    ): List<FollowingReviewUi> =
-        todas.filter { it.reviewerName.contains(friendQuery, ignoreCase = true) }
+    ): List<FollowingReviewUi> {
+        val porAmigo = todas.filter { it.reviewerName.contains(friendQuery, ignoreCase = true) }
+
+        return when (filtroId) {
+            FILTRO_RESENAS -> porAmigo.filter { it.reviewText.isNotBlank() }
+            FILTRO_CALIFICACIONES -> porAmigo.filter { it.reviewText.isBlank() }
+            FILTRO_LISTAS -> emptyList()
+            else -> porAmigo
+        }
+    }
 }

@@ -78,7 +78,7 @@ fun SearchScreenContent(
                 )
             }
 
-            if (query.isBlank()) {
+            if (query.isBlank() && selectedCategoryId == null) {
                 item {
                     BrowseBySection(
                         categories = categories,

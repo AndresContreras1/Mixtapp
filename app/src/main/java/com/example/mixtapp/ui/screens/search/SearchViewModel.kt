@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.data.model.SongReviewUi
 import com.example.mixtapp.data.repository.AlbumRepository
+import com.example.mixtapp.ui.screens.search.model.CATEGORIA_MAS_POPULARES
+import com.example.mixtapp.ui.screens.search.model.CATEGORIA_MEJOR_CALIFICADOS
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -36,20 +38,39 @@ class SearchViewModel @Inject constructor(
     }
 
     fun updateQuery(query: String) {
-        _uiState.update { it.copy(query = query) }
-
         viewModelScope.launch {
-            val result = albumRepository.getSongReviews()
+            val todos = albumRepository.getSongReviews().getOrNull() ?: emptyList()
 
-            if (result.isSuccess) {
-                _uiState.update {
-                    it.copy(resultados = buscarAlbumes(query = query, todos = result.getOrNull() ?: emptyList()))
-                }
+            _uiState.update {
+                it.copy(
+                    query = query,
+                    selectedCategoryId = if (query.isBlank()) it.selectedCategoryId else null,
+                    resultados = buscarPorNombre(query = query, todos = todos),
+                )
             }
         }
     }
 
-    private fun buscarAlbumes(query: String, todos: List<SongReviewUi>): List<SongReviewUi> {
+    fun updateSelectedCategory(categoryId: String) {
+        val yaEstaba = _uiState.value.selectedCategoryId == categoryId
+
+        viewModelScope.launch {
+            val todos = albumRepository.getSongReviews().getOrNull() ?: emptyList()
+
+            _uiState.update {
+                it.copy(
+                    selectedCategoryId = if (yaEstaba) null else categoryId,
+                    resultados = if (yaEstaba) {
+                        emptyList()
+                    } else {
+                        ordenarPorCategoria(categoryId = categoryId, todos = todos)
+                    },
+                )
+            }
+        }
+    }
+
+    private fun buscarPorNombre(query: String, todos: List<SongReviewUi>): List<SongReviewUi> {
         if (query.isBlank()) return emptyList()
 
         return todos.filter { songReview ->
@@ -58,7 +79,20 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    fun updateSelectedCategory(categoryId: String) {
-        _uiState.update { it.copy(selectedCategoryId = categoryId) }
+    // Ordenar por categoria es logica de negocio, no de la pantalla
+    private fun ordenarPorCategoria(
+        categoryId: String,
+        todos: List<SongReviewUi>,
+    ): List<SongReviewUi> = when (categoryId) {
+        CATEGORIA_MAS_POPULARES -> todos.sortedByDescending { numeroDeCalificaciones(it.ratingCount) }
+        CATEGORIA_MEJOR_CALIFICADOS -> todos.sortedByDescending { it.rating }
+        else -> todos.sortedByDescending { it.album.year }
+    }
+
+    // "41.2k" no se puede ordenar como texto: 9.8k quedaria antes que 41.2k
+    private fun numeroDeCalificaciones(ratingCount: String): Double {
+        val sinSufijo = ratingCount.removeSuffix("k").toDoubleOrNull() ?: return 0.0
+
+        return if (ratingCount.endsWith("k")) sinSufijo * 1000 else sinSufijo
     }
 }
