@@ -28,6 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mixtapp.R
 import com.example.mixtapp.ui.screens.profile.model.ProfileTabUi
 
 @Composable
@@ -55,7 +56,7 @@ fun ProfileHeader(
         ) {
             Icon(
                 imageVector = Icons.Default.Settings,
-                contentDescription = null,
+                contentDescription = stringResource(R.string.ajustes),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(28.dp)
             )
@@ -67,7 +68,7 @@ fun ProfileHeader(
             )
             Icon(
                 imageVector = Icons.Default.MoreVert,
-                contentDescription = null,
+                contentDescription = stringResource(R.string.mas_opciones),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(28.dp)
             )

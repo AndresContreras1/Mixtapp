@@ -70,6 +70,9 @@
     <string name="error_sin_sesion">No hay una sesión iniciada</string>
     <string name="error_cuota_excedida">Se agotó el espacio de almacenamiento. Inténtalo más tarde</string>
     <string name="error_permiso_denegado">No tienes permiso para subir esta imagen</string>
+    <string name="ajustes">Ajustes</string>
+    <string name="mas_opciones">Más opciones</string>
+    <string name="una_estrella">Una estrella</string>
     <string name="cambiar_foto">Cambiar foto</string>
     <string name="foto_perfil">Foto de perfil</string>
 
