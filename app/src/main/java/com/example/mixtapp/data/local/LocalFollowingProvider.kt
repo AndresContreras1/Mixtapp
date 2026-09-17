@@ -1,8 +1,8 @@
 package com.example.mixtapp.data.local
 
-import com.example.mixtapp.ui.screens.following.model.FollowingReviewUi
-import com.example.mixtapp.ui.screens.following.model.FollowingStoryUi
-import com.example.mixtapp.ui.screens.following.model.FollowingUi
+import com.example.mixtapp.data.model.FollowingReviewUi
+import com.example.mixtapp.data.model.FollowingStoryUi
+import com.example.mixtapp.data.model.FollowingUi
 
 object LocalFollowingProvider {
     val following = FollowingUi(

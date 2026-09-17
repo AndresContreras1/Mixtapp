@@ -1,4 +1,4 @@
-package com.example.mixtapp.ui.screens.profile.model
+package com.example.mixtapp.data.model
 
 data class ProfileUi(
     val id: String,

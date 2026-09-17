@@ -11,9 +11,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalSongReviewProvider
+import com.example.mixtapp.data.model.SongReviewUi
 import com.example.mixtapp.ui.components.AppBackground
 import com.example.mixtapp.ui.screens.songreview.components.SongReviewSections
-import com.example.mixtapp.ui.screens.songreview.model.SongReviewUi
 import com.example.mixtapp.ui.theme.MixtappTheme
 
 // Recibe solo el id; el ViewModel se encarga de buscar la cancion

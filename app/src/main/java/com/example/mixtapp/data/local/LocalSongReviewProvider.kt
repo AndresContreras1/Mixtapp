@@ -1,7 +1,7 @@
 package com.example.mixtapp.data.local
 
-import com.example.mixtapp.ui.screens.songreview.model.SongReviewItemUi
-import com.example.mixtapp.ui.screens.songreview.model.SongReviewUi
+import com.example.mixtapp.data.model.SongReviewItemUi
+import com.example.mixtapp.data.model.SongReviewUi
 
 object LocalSongReviewProvider {
 

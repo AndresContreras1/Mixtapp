@@ -1,4 +1,4 @@
-package com.example.mixtapp.ui.screens.review.model
+package com.example.mixtapp.data.model
 
 data class ReviewAlbumUi(
     val id: String,

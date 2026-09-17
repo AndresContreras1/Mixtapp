@@ -1,7 +1,7 @@
 package com.example.mixtapp.ui.screens.discussion
 
-import com.example.mixtapp.ui.screens.discussion.model.DiscussionCommentUi
-import com.example.mixtapp.ui.screens.discussion.model.DiscussionUi
+import com.example.mixtapp.data.model.DiscussionCommentUi
+import com.example.mixtapp.data.model.DiscussionUi
 
 // La discusion es nulable porque puede que el id de la resena no exista
 data class DiscussionState(

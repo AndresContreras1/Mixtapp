@@ -1,8 +1,8 @@
 package com.example.mixtapp.data.local
 
-import com.example.mixtapp.ui.screens.discussion.model.DiscussionCommentUi
-import com.example.mixtapp.ui.screens.discussion.model.DiscussionReviewUi
-import com.example.mixtapp.ui.screens.discussion.model.DiscussionUi
+import com.example.mixtapp.data.model.DiscussionCommentUi
+import com.example.mixtapp.data.model.DiscussionReviewUi
+import com.example.mixtapp.data.model.DiscussionUi
 
 object LocalDiscussionProvider {
 

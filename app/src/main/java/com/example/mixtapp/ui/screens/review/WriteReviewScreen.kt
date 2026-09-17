@@ -16,10 +16,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalReviewAlbumProvider
+import com.example.mixtapp.data.model.ReviewAlbumUi
 import com.example.mixtapp.ui.screens.review.components.ReviewHeader
 import com.example.mixtapp.ui.screens.review.components.WriteReviewBackground
 import com.example.mixtapp.ui.screens.review.components.WriteReviewList
-import com.example.mixtapp.ui.screens.review.model.ReviewAlbumUi
 import com.example.mixtapp.ui.theme.MixtappTheme
 
 // Recibe solo el id; el ViewModel se encarga de buscar el album

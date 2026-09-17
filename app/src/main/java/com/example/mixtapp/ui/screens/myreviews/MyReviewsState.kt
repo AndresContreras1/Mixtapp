@@ -1,7 +1,7 @@
 package com.example.mixtapp.ui.screens.myreviews
 
+import com.example.mixtapp.data.model.MyReviewUi
 import com.example.mixtapp.ui.screens.myreviews.model.MyReviewFilterUi
-import com.example.mixtapp.ui.screens.myreviews.model.MyReviewUi
 
 data class MyReviewsState(
     val username: String = "",

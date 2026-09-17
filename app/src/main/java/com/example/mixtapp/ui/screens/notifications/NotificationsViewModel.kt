@@ -3,7 +3,7 @@ package com.example.mixtapp.ui.screens.notifications
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import com.example.mixtapp.data.local.LocalNotificationsProvider
-import com.example.mixtapp.ui.screens.notifications.model.NotificationUi
+import com.example.mixtapp.data.model.NotificationUi
 import com.example.mixtapp.ui.screens.notifications.model.TAB_SIN_LEER
 import com.example.mixtapp.ui.screens.notifications.model.notificationTabs
 import kotlinx.coroutines.flow.MutableStateFlow

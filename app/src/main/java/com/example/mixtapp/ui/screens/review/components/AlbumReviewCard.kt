@@ -24,8 +24,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.data.model.ReviewAlbumUi
 import com.example.mixtapp.ui.components.AlbumAsyncImage
-import com.example.mixtapp.ui.screens.review.model.ReviewAlbumUi
 
 @Composable
 fun AlbumReviewCard(

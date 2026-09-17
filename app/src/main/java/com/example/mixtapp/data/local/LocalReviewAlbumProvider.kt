@@ -1,6 +1,6 @@
 package com.example.mixtapp.data.local
 
-import com.example.mixtapp.ui.screens.review.model.ReviewAlbumUi
+import com.example.mixtapp.data.model.ReviewAlbumUi
 
 object LocalReviewAlbumProvider {
 

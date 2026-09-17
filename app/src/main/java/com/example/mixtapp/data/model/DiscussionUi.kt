@@ -1,4 +1,4 @@
-package com.example.mixtapp.ui.screens.discussion.model
+package com.example.mixtapp.data.model
 
 data class DiscussionUi(
     val id: String,

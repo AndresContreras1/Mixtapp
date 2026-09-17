@@ -19,7 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mixtapp.ui.screens.myreviews.model.MyReviewUi
+import com.example.mixtapp.data.model.MyReviewUi
 
 @Composable
 fun MyReviewCard(

@@ -4,12 +4,12 @@ import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import com.example.mixtapp.data.local.LocalMyReviewsProvider
 import com.example.mixtapp.data.local.LocalProfileProvider
+import com.example.mixtapp.data.model.MyReviewUi
 import com.example.mixtapp.data.repository.AuthRepository
 import com.example.mixtapp.ui.screens.myreviews.model.FILTRO_A_Z
 import com.example.mixtapp.ui.screens.myreviews.model.FILTRO_CALIFICACION_4
 import com.example.mixtapp.ui.screens.myreviews.model.FILTRO_CALIFICACION_5
 import com.example.mixtapp.ui.screens.myreviews.model.FILTRO_MEJOR_CALIFICADAS
-import com.example.mixtapp.ui.screens.myreviews.model.MyReviewUi
 import com.example.mixtapp.ui.screens.myreviews.model.myReviewFilters
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

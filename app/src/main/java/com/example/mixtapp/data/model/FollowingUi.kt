@@ -1,4 +1,4 @@
-package com.example.mixtapp.ui.screens.following.model
+package com.example.mixtapp.data.model
 
 data class FollowingUi(
     val id: String,

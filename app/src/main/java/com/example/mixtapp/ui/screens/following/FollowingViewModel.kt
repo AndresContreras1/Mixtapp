@@ -3,7 +3,7 @@ package com.example.mixtapp.ui.screens.following
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import com.example.mixtapp.data.local.LocalFollowingProvider
-import com.example.mixtapp.ui.screens.following.model.FollowingReviewUi
+import com.example.mixtapp.data.model.FollowingReviewUi
 import com.example.mixtapp.ui.screens.following.model.followingFilters
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

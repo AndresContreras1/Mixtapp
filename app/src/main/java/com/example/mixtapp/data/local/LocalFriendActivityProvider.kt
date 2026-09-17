@@ -1,6 +1,6 @@
 package com.example.mixtapp.data.local
 
-import com.example.mixtapp.ui.screens.home.model.FriendActivityUi
+import com.example.mixtapp.data.model.FriendActivityUi
 
 object LocalFriendActivityProvider {
 

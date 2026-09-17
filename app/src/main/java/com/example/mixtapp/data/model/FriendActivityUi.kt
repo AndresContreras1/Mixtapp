@@ -1,4 +1,4 @@
-package com.example.mixtapp.ui.screens.home.model
+package com.example.mixtapp.data.model
 
 data class FriendActivityUi(
     val id: String,

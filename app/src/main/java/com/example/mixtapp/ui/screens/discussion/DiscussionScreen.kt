@@ -22,13 +22,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalDiscussionProvider
+import com.example.mixtapp.data.model.DiscussionCommentUi
+import com.example.mixtapp.data.model.DiscussionUi
 import com.example.mixtapp.ui.screens.discussion.components.CommentsDivider
 import com.example.mixtapp.ui.screens.discussion.components.DiscussionHeader
 import com.example.mixtapp.ui.screens.discussion.components.DiscussionReviewCard
 import com.example.mixtapp.ui.screens.discussion.components.NewCommentField
 import com.example.mixtapp.ui.screens.discussion.components.ThreadCommentItem
-import com.example.mixtapp.ui.screens.discussion.model.DiscussionCommentUi
-import com.example.mixtapp.ui.screens.discussion.model.DiscussionUi
 import com.example.mixtapp.ui.theme.MixtappTheme
 
 // Recibe solo el id de la resena; el ViewModel se encarga de buscar la discusion

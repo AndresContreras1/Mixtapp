@@ -13,6 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalProfileProvider
+import com.example.mixtapp.data.model.ProfileUi
 import com.example.mixtapp.ui.screens.profile.components.FavoriteSection
 import com.example.mixtapp.ui.screens.profile.components.LogoutButton
 import com.example.mixtapp.ui.screens.profile.components.ProfileAvatarSection
@@ -20,7 +21,6 @@ import com.example.mixtapp.ui.screens.profile.components.ProfileHeader
 import com.example.mixtapp.ui.screens.profile.components.RatingsSection
 import com.example.mixtapp.ui.screens.profile.components.RecentActivitySection
 import com.example.mixtapp.ui.screens.profile.model.ProfileTabUi
-import com.example.mixtapp.ui.screens.profile.model.ProfileUi
 import com.example.mixtapp.ui.screens.profile.model.profileTabs
 import com.example.mixtapp.ui.theme.*
 

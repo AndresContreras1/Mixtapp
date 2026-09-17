@@ -23,11 +23,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalSearchCategoriesProvider
+import com.example.mixtapp.data.model.SearchCategoryUi
+import com.example.mixtapp.data.model.SongReviewUi
 import com.example.mixtapp.ui.components.ReviewAlbumRow
 import com.example.mixtapp.ui.screens.search.components.BrowseBySection
 import com.example.mixtapp.ui.screens.search.components.SearchHeader
-import com.example.mixtapp.ui.screens.search.model.SearchCategoryUi
-import com.example.mixtapp.ui.screens.songreview.model.SongReviewUi
 import com.example.mixtapp.ui.theme.MixtappTheme
 import kotlin.math.roundToInt
 

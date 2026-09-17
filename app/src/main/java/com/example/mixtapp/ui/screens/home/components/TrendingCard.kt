@@ -26,9 +26,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.data.model.SongReviewUi
 import com.example.mixtapp.ui.components.AlbumAsyncImage
 import com.example.mixtapp.ui.components.StarRating
-import com.example.mixtapp.ui.screens.songreview.model.SongReviewUi
 import kotlin.math.roundToInt
 
 @Composable

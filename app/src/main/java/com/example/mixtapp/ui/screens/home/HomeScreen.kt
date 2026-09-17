@@ -12,12 +12,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalFriendActivityProvider
 import com.example.mixtapp.data.local.LocalSongReviewProvider
+import com.example.mixtapp.data.model.FriendActivityUi
+import com.example.mixtapp.data.model.SongReviewUi
 import com.example.mixtapp.ui.components.AppBackground
 import com.example.mixtapp.ui.screens.home.components.HomeSections
-import com.example.mixtapp.ui.screens.home.model.FriendActivityUi
 import com.example.mixtapp.ui.screens.home.model.HomeFilterUi
 import com.example.mixtapp.ui.screens.home.model.homeFilters
-import com.example.mixtapp.ui.screens.songreview.model.SongReviewUi
 import com.example.mixtapp.ui.theme.*
 
 @Composable

@@ -1,6 +1,6 @@
 package com.example.mixtapp.ui.screens.review
 
-import com.example.mixtapp.ui.screens.review.model.ReviewAlbumUi
+import com.example.mixtapp.data.model.ReviewAlbumUi
 
 // El album es nulable porque puede que el id no exista
 data class WriteReviewState(

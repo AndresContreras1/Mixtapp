@@ -1,7 +1,7 @@
 package com.example.mixtapp.data.local
 
-import com.example.mixtapp.ui.screens.profile.model.ProfileUi
-import com.example.mixtapp.ui.screens.profile.model.RecentActivityUi
+import com.example.mixtapp.data.model.ProfileUi
+import com.example.mixtapp.data.model.RecentActivityUi
 
 object LocalProfileProvider {
 

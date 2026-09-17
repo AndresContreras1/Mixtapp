@@ -15,10 +15,10 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mixtapp.data.model.FollowingReviewUi
 import com.example.mixtapp.ui.components.ReviewActionsRow
 import com.example.mixtapp.ui.components.ReviewAlbumRow
 import com.example.mixtapp.ui.components.ReviewAuthorRow
-import com.example.mixtapp.ui.screens.following.model.FollowingReviewUi
 import com.example.mixtapp.ui.theme.StoryGold
 
 @Composable

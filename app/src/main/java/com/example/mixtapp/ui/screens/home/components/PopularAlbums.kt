@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.mixtapp.ui.screens.songreview.model.SongReviewUi
+import com.example.mixtapp.data.model.SongReviewUi
 
 @Composable
 fun PopularAlbums(

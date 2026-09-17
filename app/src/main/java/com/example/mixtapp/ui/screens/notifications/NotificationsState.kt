@@ -1,7 +1,7 @@
 package com.example.mixtapp.ui.screens.notifications
 
+import com.example.mixtapp.data.model.NotificationUi
 import com.example.mixtapp.ui.screens.notifications.model.NotificationTabUi
-import com.example.mixtapp.ui.screens.notifications.model.NotificationUi
 import com.example.mixtapp.ui.screens.notifications.model.TAB_TODAS
 
 data class NotificationsState(

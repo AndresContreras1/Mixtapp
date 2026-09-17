@@ -19,10 +19,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.data.model.DiscussionReviewUi
 import com.example.mixtapp.ui.components.ReviewActionsRow
 import com.example.mixtapp.ui.components.ReviewAlbumRow
 import com.example.mixtapp.ui.components.ReviewAuthorRow
-import com.example.mixtapp.ui.screens.discussion.model.DiscussionReviewUi
 
 @Composable
 fun DiscussionReviewCard(

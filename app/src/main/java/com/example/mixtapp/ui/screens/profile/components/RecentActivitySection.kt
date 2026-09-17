@@ -26,7 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
-import com.example.mixtapp.ui.screens.profile.model.RecentActivityUi
+import com.example.mixtapp.data.model.RecentActivityUi
 
 @Composable
 fun RecentActivitySection(

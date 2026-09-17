@@ -1,4 +1,4 @@
-package com.example.mixtapp.ui.screens.search.model
+package com.example.mixtapp.data.model
 
 data class SearchCategoryUi(
     val id: String,

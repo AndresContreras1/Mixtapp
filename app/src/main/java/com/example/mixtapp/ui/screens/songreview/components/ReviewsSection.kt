@@ -18,7 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
-import com.example.mixtapp.ui.screens.songreview.model.SongReviewItemUi
+import com.example.mixtapp.data.model.SongReviewItemUi
 
 @Composable
 fun ReviewsSection(

@@ -3,8 +3,8 @@ package com.example.mixtapp.ui.screens.discussion
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import com.example.mixtapp.data.local.LocalDiscussionProvider
+import com.example.mixtapp.data.model.DiscussionCommentUi
 import com.example.mixtapp.data.repository.AuthRepository
-import com.example.mixtapp.ui.screens.discussion.model.DiscussionCommentUi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

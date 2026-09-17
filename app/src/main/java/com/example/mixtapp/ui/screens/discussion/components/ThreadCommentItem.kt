@@ -15,7 +15,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mixtapp.ui.screens.discussion.model.DiscussionCommentUi
+import com.example.mixtapp.data.model.DiscussionCommentUi
 
 @Composable
 fun ThreadCommentItem(
