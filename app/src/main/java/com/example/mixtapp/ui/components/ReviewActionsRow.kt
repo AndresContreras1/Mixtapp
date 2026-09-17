@@ -17,9 +17,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.ui.theme.MixtappTheme
 
 @Composable
 fun ReviewActionsRow(
@@ -94,5 +96,22 @@ fun ReviewActionsRow(
                 modifier = Modifier.size(18.dp),
             )
         }
+    }
+}
+
+
+@Composable
+@Preview
+fun ReviewActionsRowPreview() {
+    MixtappTheme(darkTheme = true, dynamicColor = false) {
+        ReviewActionsRow(
+            likes = 24,
+            isLiked = false,
+            onLikeClick = {},
+            commentsLabel = "4",
+            onCommentsClick = {},
+            isShared = false,
+            onShareClick = {}
+        )
     }
 }

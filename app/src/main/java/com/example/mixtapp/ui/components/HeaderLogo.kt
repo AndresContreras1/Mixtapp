@@ -12,8 +12,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mixtapp.ui.theme.MixtappTheme
 
 @Composable
 fun HeaderLogo(modifier: Modifier = Modifier) {
@@ -37,5 +39,14 @@ fun HeaderLogo(modifier: Modifier = Modifier) {
         ) {
             // Placeholder for user avatar or similar
         }
+    }
+}
+
+
+@Composable
+@Preview
+fun HeaderLogoPreview() {
+    MixtappTheme(darkTheme = true, dynamicColor = false) {
+        HeaderLogo()
     }
 }

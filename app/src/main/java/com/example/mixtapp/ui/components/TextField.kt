@@ -10,7 +10,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.mixtapp.ui.theme.MixtappTheme
 
 @Composable
 fun AppTextField(
@@ -58,4 +60,19 @@ fun AppTextField(
         keyboardOptions = keyboardOptions,
         visualTransformation = currentTransformation
     )
+}
+
+
+@Composable
+@Preview
+fun AppTextFieldPreview() {
+    MixtappTheme(darkTheme = true, dynamicColor = false) {
+        AppTextField(
+            label = "Correo",
+            placeholder = "Escribe tu correo",
+            value = "",
+            onValueChange = {},
+            icon = FieldIcon.Email
+        )
+    }
 }

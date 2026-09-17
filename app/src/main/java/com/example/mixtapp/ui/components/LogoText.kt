@@ -10,8 +10,11 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.ui.theme.MixtappTheme
 
 @Composable
 fun LogoText(
@@ -38,4 +41,16 @@ fun LogoText(
         fontWeight = fontWeight,
         fontFamily = FontFamily.Serif
     )
+}
+
+
+@Composable
+@Preview
+fun LogoTextPreview() {
+    MixtappTheme(darkTheme = true, dynamicColor = false) {
+        LogoText(
+            fontSize = 36.sp,
+            fontWeight = FontWeight.Bold
+        )
+    }
 }

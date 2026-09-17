@@ -4,7 +4,9 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -15,9 +17,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mixtapp.ui.theme.MixtappTheme
 
 @Composable
 fun AppChip(
@@ -54,5 +58,33 @@ fun AppChip(
             fontSize = 13.sp,
             fontWeight = FontWeight.Bold,
         )
+    }
+}
+
+
+@Composable
+@Preview
+fun AppChipPreview() {
+    MixtappTheme(darkTheme = true, dynamicColor = false) {
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            AppChip(
+                text = "Para ti",
+                isSelected = true,
+                onClick = {},
+                unselectedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                unselectedBorderColor = null,
+                unselectedTextColor = MaterialTheme.colorScheme.onSurface,
+                verticalPadding = 12.dp
+            )
+            AppChip(
+                text = "Tendencias",
+                isSelected = false,
+                onClick = {},
+                unselectedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                unselectedBorderColor = null,
+                unselectedTextColor = MaterialTheme.colorScheme.onSurface,
+                verticalPadding = 12.dp
+            )
+        }
     }
 }
