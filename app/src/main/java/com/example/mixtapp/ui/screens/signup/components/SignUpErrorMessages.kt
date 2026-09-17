@@ -1,5 +1,8 @@
 package com.example.mixtapp.ui.screens.signup.components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -22,7 +25,11 @@ fun SignUpErrorMessages(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Aviso mientras se escribe: las dos contrasenas no coinciden
-        if (mostrarErrorContrasenas) {
+        AnimatedVisibility(
+            visible = mostrarErrorContrasenas,
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
             Text(
                 text = stringResource(R.string.error_contrasenas_no_coinciden),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -31,9 +38,13 @@ fun SignUpErrorMessages(
         }
 
         // Error del intento de crear la cuenta, calculado por el ViewModel
-        if (errorMessageRes != null) {
+        AnimatedVisibility(
+            visible = errorMessageRes != null,
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
             Text(
-                text = stringResource(errorMessageRes),
+                text = stringResource(errorMessageRes ?: R.string.error_registro),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 14.sp
             )
