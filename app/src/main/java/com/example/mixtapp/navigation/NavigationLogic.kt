@@ -5,7 +5,6 @@ object NavigationLogic {
     private val bottomBarScreens = listOf(
         Screen.Home.route,
         Screen.Search.route,
-        Screen.WriteReview.route,
         Screen.MyReviews.route,
         Screen.Profile.route
     )

@@ -11,7 +11,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.mixtapp.navigation.AppNavigation
 import com.example.mixtapp.navigation.NavigationLogic
+import com.example.mixtapp.navigation.Screen
 import com.example.mixtapp.ui.components.BottomNav
+import com.example.mixtapp.ui.components.WriteReviewFab
 
 @Composable
 fun Mixtapp(modifier: Modifier = Modifier) {
@@ -22,13 +24,23 @@ fun Mixtapp(modifier: Modifier = Modifier) {
     val mixtappViewModel: MixtappViewModel = hiltViewModel()
     val state by mixtappViewModel.uiState.collectAsState()
 
+    val mostrarBarra = NavigationLogic.shouldShowBottomBar(currentRoute)
+
     Scaffold(
         modifier = modifier,
         bottomBar = {
-            if (NavigationLogic.shouldShowBottomBar(currentRoute)) {
-                BottomNav(
-                    navController = navController,
-                    albumParaResenar = state.albumParaResenar
+            if (mostrarBarra) {
+                BottomNav(navController = navController)
+            }
+        },
+        floatingActionButton = {
+            if (mostrarBarra) {
+                WriteReviewFab(
+                    onClick = {
+                        navController.navigate(
+                            Screen.WriteReview.createRoute(albumId = state.albumParaResenar)
+                        )
+                    }
                 )
             }
         }
