@@ -20,6 +20,7 @@ data class FollowingReviewUi(
     val reviewerName: String,
     val reviewerInitials: String,
     val reviewedAt: String,
+    val minutosDesdeLaResena: Int,
     val album: Album,
     val rating: Int,
     val reviewText: String,
