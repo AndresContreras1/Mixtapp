@@ -2,6 +2,7 @@ package com.example.mixtapp.ui.screens.review
 
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import com.example.mixtapp.data.local.LocalAlbumProvider
 import com.example.mixtapp.data.local.LocalReviewAlbumProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -35,7 +36,7 @@ class WriteReviewViewModel @Inject constructor() : ViewModel() {
     fun getAlbumById(albumId: String) {
         if (_uiState.value.album != null) return
 
-        val album = LocalReviewAlbumProvider.albums.find { it.id == albumId }
+        val album = LocalAlbumProvider.albums.find { it.id == albumId }
 
         _uiState.update { it.copy(album = album) }
     }

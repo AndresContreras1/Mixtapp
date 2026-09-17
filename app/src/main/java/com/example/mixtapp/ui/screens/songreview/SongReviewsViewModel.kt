@@ -19,7 +19,7 @@ class SongReviewsViewModel @Inject constructor() : ViewModel() {
     fun getSongById(songId: String) {
         if (_uiState.value.song != null) return
 
-        val song = LocalSongReviewProvider.songs.find { cancion -> cancion.id == songId }
+        val song = LocalSongReviewProvider.songs.find { it.album.id == songId }
 
         _uiState.update {
             it.copy(

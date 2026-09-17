@@ -33,7 +33,7 @@ fun MyReviewCard(
             .clip(RoundedCornerShape(14.dp))
             .background(MaterialTheme.colorScheme.surfaceContainerLowest)
             .border(BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)), RoundedCornerShape(14.dp))
-            .clickable { onReviewClick(review.songId) }
+            .clickable { onReviewClick(review.album.id) }
             .padding(16.dp)
     ) {
         ReviewRatingBadge(

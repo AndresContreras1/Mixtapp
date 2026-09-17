@@ -61,7 +61,7 @@ class MyReviewsViewModel @Inject constructor(
 
         return when (filtroId) {
             FILTRO_MEJOR_CALIFICADAS -> todas.sortedByDescending { it.rating }
-            FILTRO_A_Z -> todas.sortedBy { it.title }
+            FILTRO_A_Z -> todas.sortedBy { it.album.title }
             FILTRO_CALIFICACION_5 -> todas.filter { it.rating == 5 }
             FILTRO_CALIFICACION_4 -> todas.filter { it.rating == 4 }
             else -> todas

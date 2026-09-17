@@ -52,7 +52,7 @@ fun FriendsActivity(
         Spacer(modifier = Modifier.height(12.dp))
 
         Text(
-            text = stringResource(R.string.titulo_guion_subtitulo, activity.albumTitle, activity.artistName),
+            text = stringResource(R.string.titulo_guion_subtitulo, activity.album.title, activity.album.artist),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontSize = 14.sp,
             fontWeight = FontWeight.Bold

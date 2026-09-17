@@ -54,7 +54,7 @@ fun HomeSections(
         Spacer(modifier = Modifier.height(28.dp))
 
         TrendingCard(
-            album = trending,
+            songReview = trending,
             onClick = onAlbumClick
         )
 

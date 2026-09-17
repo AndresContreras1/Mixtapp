@@ -15,8 +15,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.mixtapp.R
+import com.example.mixtapp.data.local.LocalAlbumProvider
 import com.example.mixtapp.data.local.LocalReviewAlbumProvider
-import com.example.mixtapp.data.model.ReviewAlbumUi
+import com.example.mixtapp.data.model.Album
 import com.example.mixtapp.ui.screens.review.components.ReviewHeader
 import com.example.mixtapp.ui.screens.review.components.WriteReviewBackground
 import com.example.mixtapp.ui.screens.review.components.WriteReviewList
@@ -63,7 +64,7 @@ fun WriteReviewScreen(
 
 @Composable
 fun WriteReviewScreenContent(
-    album: ReviewAlbumUi,
+    album: Album,
     rating: Int,
     reviewText: String,
     selectedMoods: List<String>,
@@ -120,7 +121,7 @@ fun WriteReviewScreenContent(
 fun WriteReviewScreenPreview() {
     MixtappTheme(darkTheme = true, dynamicColor = false) {
         WriteReviewScreenContent(
-            album = LocalReviewAlbumProvider.albums.first(),
+            album = LocalAlbumProvider.albums.first(),
             rating = 0,
             reviewText = "",
             selectedMoods = emptyList(),

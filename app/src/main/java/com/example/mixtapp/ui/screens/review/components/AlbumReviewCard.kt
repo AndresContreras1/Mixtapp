@@ -24,12 +24,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
-import com.example.mixtapp.data.model.ReviewAlbumUi
+import com.example.mixtapp.data.model.Album
 import com.example.mixtapp.ui.components.AlbumAsyncImage
 
 @Composable
 fun AlbumReviewCard(
-    album: ReviewAlbumUi,
+    album: Album,
     modifier: Modifier = Modifier,
 ) {
     Row(

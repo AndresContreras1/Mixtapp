@@ -16,7 +16,7 @@ data class ProfileUi(
 
 data class RecentActivityUi(
     val id: String,
-    val albumTitle: String,
+    val album: Album,
     val rating: Int,
     val comment: String,
 )

@@ -7,10 +7,7 @@ object LocalMyReviewsProvider {
     val reviews = listOf(
         MyReviewUi(
             id = "2",
-            songId = "4",
-            title = "From Zero",
-            artist = "Linkin Park",
-            cover = AlbumCovers.FROM_ZERO,
+            album = LocalAlbumProvider.fromZero,
             rating = 4,
             excerpt = "From Zero strikes an impressive balance between heavy nostalgia and genuine reinvention. Instead of trying to duplicate their past, the band leverages their signature aggressive riffs and electronic textures to build a fierce, modern soundscape. Emily Armstrong delivers a standout vocal performance that commands every track with raw power, signaling a bold, confident new chapter for Linkin Park.",
             tags = listOf("Sentimental", "Potente"),
@@ -18,10 +15,7 @@ object LocalMyReviewsProvider {
         ),
         MyReviewUi(
             id = "1",
-            songId = "2",
-            title = "Rush",
-            artist = "Maneskin",
-            cover = AlbumCovers.RUSH,
+            album = LocalAlbumProvider.rush,
             rating = 4,
             excerpt = "RUSH! is an infectious, high-octane pop-rock spectacle built for global arenas. Trading some of their raw Italian grit for polished dance-punk grooves and razor-sharp riffs, Måneskin delivers pure, unapologetic attitude and addictive energy from start to finish.",
             tags = listOf("Enérgico", "Caótico"),
@@ -29,10 +23,7 @@ object LocalMyReviewsProvider {
         ),
         MyReviewUi(
             id = "3",
-            songId = "1",
-            title = "Teatro d'ira: Vol. I",
-            artist = "Maneskin",
-            cover = AlbumCovers.TEATRO_DIRA,
+            album = LocalAlbumProvider.teatroDira,
             rating = 5,
             excerpt = "Teatro d'ira: Vol. I is a raw, electric burst of modern hard rock that captures Måneskin at their absolute peak. Driven by razor-sharp riffs, explosive live energy, and Damiano David’s theatrical vocals, it turns pure attitude and emotional drama into a tight, unforgettable masterpiece.",
             tags = listOf("Emotivo", "Apasionado"),
@@ -40,10 +31,7 @@ object LocalMyReviewsProvider {
         ),
         MyReviewUi(
             id = "4",
-            songId = "3",
-            title = "Finisterra",
-            artist = "Mago de Oz",
-            cover = AlbumCovers.FINISTERRA,
+            album = LocalAlbumProvider.finisterra,
             rating = 4,
             excerpt = "Finisterra is Mago de Oz’s ambitious folk metal masterpiece. By blending power metal riffs with Celtic flutes and violins, it turns an epic medieval concept into an endlessly creative, legendary album.",
             tags = listOf("Caótico", "Activo"),

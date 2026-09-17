@@ -36,8 +36,8 @@ fun ReviewCardHeader(
         verticalAlignment = Alignment.Top
     ) {
         AlbumAsyncImage(
-            cover = review.cover,
-            contentDescription = stringResource(R.string.album_cover, review.title),
+            cover = review.album.cover,
+            contentDescription = stringResource(R.string.album_cover, review.album.title),
             alpha = 1f,
             modifier = Modifier
                 .size(56.dp)
@@ -48,7 +48,7 @@ fun ReviewCardHeader(
 
         Column {
             Text(
-                text = review.title,
+                text = review.album.title,
                 color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 17.sp,
                 fontWeight = FontWeight.Black,
@@ -57,7 +57,7 @@ fun ReviewCardHeader(
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = review.artist,
+                text = review.album.artist,
                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.72f),
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Bold,

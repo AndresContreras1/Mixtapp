@@ -38,9 +38,9 @@ class SearchViewModel @Inject constructor() : ViewModel() {
     private fun buscarAlbumes(query: String): List<SongReviewUi> {
         if (query.isBlank()) return emptyList()
 
-        return LocalSongReviewProvider.songs.filter { album ->
-            album.title.contains(query, ignoreCase = true) ||
-                    album.artist.contains(query, ignoreCase = true)
+        return LocalSongReviewProvider.songs.filter { songReview ->
+            songReview.album.title.contains(query, ignoreCase = true) ||
+                    songReview.album.artist.contains(query, ignoreCase = true)
         }
     }
 

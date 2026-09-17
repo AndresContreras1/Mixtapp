@@ -52,16 +52,16 @@ fun SongReviewSections(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        ReleaseImage(cover = songReview.cover, albumTitle = songReview.title)
+        ReleaseImage(cover = songReview.album.cover, albumTitle = songReview.album.title)
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        ReleaseTags(tags = songReview.tags)
+        ReleaseTags(tags = songReview.album.tags)
 
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
-            text = songReview.title,
+            text = songReview.album.title,
             color = MaterialTheme.colorScheme.onSurface,
             fontSize = 28.sp,
             fontFamily = FontFamily.Serif,
@@ -69,7 +69,7 @@ fun SongReviewSections(
         )
 
         Text(
-            text = songReview.artist,
+            text = songReview.album.artist,
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold

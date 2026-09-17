@@ -33,7 +33,7 @@ import kotlin.math.roundToInt
 
 @Composable
 fun TrendingCard(
-    album: SongReviewUi,
+    songReview: SongReviewUi,
     onClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -44,11 +44,11 @@ fun TrendingCard(
             .clip(RoundedCornerShape(12.dp))
             .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
             .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), RoundedCornerShape(12.dp))
-            .clickable { onClick(album.id) }
+            .clickable { onClick(songReview.album.id) }
     ) {
         AlbumAsyncImage(
-            cover = album.cover,
-            contentDescription = stringResource(R.string.album_cover, album.title),
+            cover = songReview.album.cover,
+            contentDescription = stringResource(R.string.album_cover, songReview.album.title),
             alpha = 0.4f,
             modifier = Modifier.fillMaxSize()
         )
@@ -69,7 +69,7 @@ fun TrendingCard(
                 modifier = Modifier.align(Alignment.BottomStart)
             ) {
                 Text(
-                    text = stringResource(R.string.titulo_guion_subtitulo, album.artist, album.title),
+                    text = stringResource(R.string.titulo_guion_subtitulo, songReview.album.artist, songReview.album.title),
                     color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold
@@ -77,7 +77,7 @@ fun TrendingCard(
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     StarRating(
-                        rating = album.rating.roundToInt(),
+                        rating = songReview.rating.roundToInt(),
                         starCount = 5,
                         starSize = 14.dp,
                         spacing = 0.dp,

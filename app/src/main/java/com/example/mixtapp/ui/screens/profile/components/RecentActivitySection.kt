@@ -51,7 +51,7 @@ fun RecentActivitySection(
             Spacer(modifier = Modifier.width(16.dp))
             Column {
                 Text(
-                    text = activity.albumTitle,
+                    text = activity.album.title,
                     color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Black

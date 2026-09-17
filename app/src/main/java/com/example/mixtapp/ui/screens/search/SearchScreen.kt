@@ -97,18 +97,18 @@ fun SearchScreenContent(
                     )
                 }
             } else {
-                items(resultados, key = { it.id }) { album ->
+                items(resultados, key = { it.album.id }) { songReview ->
                     ReviewAlbumRow(
-                        cover = album.cover,
-                        albumTitle = album.title,
-                        artistName = album.artist,
-                        rating = album.rating.roundToInt(),
+                        cover = songReview.album.cover,
+                        albumTitle = songReview.album.title,
+                        artistName = songReview.album.artist,
+                        rating = songReview.rating.roundToInt(),
                         coverSize = 64.dp,
                         coverCorner = 10.dp,
                         starSize = 14.dp,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { onAlbumClick(album.id) }
+                            .clickable { onAlbumClick(songReview.album.id) }
                             .padding(horizontal = 24.dp, vertical = 12.dp),
                     )
                 }

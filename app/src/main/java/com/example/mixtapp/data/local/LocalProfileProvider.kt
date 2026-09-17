@@ -15,7 +15,7 @@ object LocalProfileProvider {
         favoritesCount = 4,
         recentActivity = RecentActivityUi(
             id = "the-black-parade",
-            albumTitle = "The Black Parade",
+            album = LocalAlbumProvider.theBlackParade,
             rating = 5,
             comment = "A loud, dramatic favorite that still feels alive on every listen.",
         ),

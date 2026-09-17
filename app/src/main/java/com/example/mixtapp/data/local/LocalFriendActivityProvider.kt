@@ -6,8 +6,7 @@ object LocalFriendActivityProvider {
 
     val friendActivity = FriendActivityUi(
         id = "random-access-memories",
-        albumTitle = "Random Access Memories",
-        artistName = "Daft Punk",
+        album = LocalAlbumProvider.randomAccessMemories,
         rating = 5,
         quote = "A masterpiece from start to finish.",
     )
