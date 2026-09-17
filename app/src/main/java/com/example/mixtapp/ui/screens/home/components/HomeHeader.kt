@@ -1,7 +1,6 @@
 package com.example.mixtapp.ui.screens.home.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -45,37 +45,47 @@ fun HomeHeader(
         )
 
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-                imageVector = Icons.Default.Search,
-                contentDescription = stringResource(R.string.search_icon),
-                tint = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier
-                    .size(32.dp)
-                    .clickable { onSearchClick() }
-            )
+            IconButton(
+                onClick = onSearchClick,
+                modifier = Modifier.size(32.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = stringResource(R.string.search_icon),
+                    tint = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.size(32.dp)
+                )
+            }
 
             Spacer(modifier = Modifier.width(14.dp))
 
-            Icon(
-                imageVector = Icons.Default.Notifications,
-                contentDescription = stringResource(R.string.notifications_icon),
-                tint = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier
-                    .size(30.dp)
-                    .clickable { onNotificationsClick() }
-            )
+            IconButton(
+                onClick = onNotificationsClick,
+                modifier = Modifier.size(30.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Notifications,
+                    contentDescription = stringResource(R.string.notifications_icon),
+                    tint = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.size(30.dp)
+                )
+            }
 
             Spacer(modifier = Modifier.width(14.dp))
 
-            ProfileAsyncImage(
-                profileImage = profileImageUrl,
-                contentDescription = stringResource(R.string.foto_perfil),
-                modifier = Modifier
-                    .size(46.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.secondary)
-                    .clickable { onProfileClick() }
-            )
+            IconButton(
+                onClick = onProfileClick,
+                modifier = Modifier.size(46.dp)
+            ) {
+                ProfileAsyncImage(
+                    profileImage = profileImageUrl,
+                    contentDescription = stringResource(R.string.foto_perfil),
+                    modifier = Modifier
+                        .size(46.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.secondary)
+                )
+            }
         }
     }
 }
