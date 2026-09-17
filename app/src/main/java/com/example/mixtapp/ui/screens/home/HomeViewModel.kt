@@ -67,7 +67,6 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    // Elegir que albumes se muestran es logica de negocio, no de la pantalla
     private suspend fun aplicarFiltro(filtroId: String): List<SongReviewUi> = when (filtroId) {
         FILTRO_TENDENCIAS -> {
             val result = albumRepository.getSongReviews()

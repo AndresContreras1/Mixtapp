@@ -2,7 +2,6 @@ package com.example.mixtapp.navigation
 
 object NavigationLogic {
 
-    // Pantallas que SI muestran la barra inferior: las que son destino de la barra
     private val bottomBarScreens = listOf(
         Screen.Home.route,
         Screen.Search.route,

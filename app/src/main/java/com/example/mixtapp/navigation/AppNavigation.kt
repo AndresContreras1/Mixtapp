@@ -139,7 +139,6 @@ fun AppNavigation(
             val writeReviewViewModel: WriteReviewViewModel = hiltViewModel()
             val state by writeReviewViewModel.uiState.collectAsState()
 
-            // El ViewModel publica la resena y autoriza; la navegacion solo ejecuta
             LaunchedEffect(state.publicada) {
                 if (state.publicada) {
                     navController.navigate(Screen.MyReviews.route)

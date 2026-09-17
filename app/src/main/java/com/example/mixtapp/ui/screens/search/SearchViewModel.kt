@@ -2,10 +2,11 @@ package com.example.mixtapp.ui.screens.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.mixtapp.data.model.CATEGORIA_FECHA_LANZAMIENTO
+import com.example.mixtapp.data.model.CATEGORIA_MAS_POPULARES
+import com.example.mixtapp.data.model.CATEGORIA_MEJOR_CALIFICADOS
 import com.example.mixtapp.data.model.SongReviewUi
 import com.example.mixtapp.data.repository.AlbumRepository
-import com.example.mixtapp.ui.screens.search.model.CATEGORIA_MAS_POPULARES
-import com.example.mixtapp.ui.screens.search.model.CATEGORIA_MEJOR_CALIFICADOS
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -79,20 +80,13 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    // Ordenar por categoria es logica de negocio, no de la pantalla
     private fun ordenarPorCategoria(
         categoryId: String,
         todos: List<SongReviewUi>,
     ): List<SongReviewUi> = when (categoryId) {
-        CATEGORIA_MAS_POPULARES -> todos.sortedByDescending { numeroDeCalificaciones(it.ratingCount) }
+        CATEGORIA_FECHA_LANZAMIENTO -> todos.sortedByDescending { it.album.year }
         CATEGORIA_MEJOR_CALIFICADOS -> todos.sortedByDescending { it.rating }
-        else -> todos.sortedByDescending { it.album.year }
-    }
-
-    // "41.2k" no se puede ordenar como texto: 9.8k quedaria antes que 41.2k
-    private fun numeroDeCalificaciones(ratingCount: String): Double {
-        val sinSufijo = ratingCount.removeSuffix("k").toDoubleOrNull() ?: return 0.0
-
-        return if (ratingCount.endsWith("k")) sinSufijo * 1000 else sinSufijo
+        CATEGORIA_MAS_POPULARES -> todos
+        else -> todos
     }
 }

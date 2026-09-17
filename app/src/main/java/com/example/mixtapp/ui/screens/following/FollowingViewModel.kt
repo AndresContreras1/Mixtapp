@@ -123,7 +123,6 @@ class FollowingViewModel @Inject constructor(
         }
     }
 
-    // Buscar, filtrar y priorizar lo mas reciente es logica de negocio, no de la pantalla
     private fun aplicarFiltros(
         friendQuery: String,
         filtroId: String,
@@ -131,13 +130,11 @@ class FollowingViewModel @Inject constructor(
     ): List<FollowingReviewUi> {
         val porAmigo = todas.filter { it.reviewerName.contains(friendQuery, ignoreCase = true) }
 
-        val porFiltro = when (filtroId) {
+        return when (filtroId) {
             FILTRO_RESENAS -> porAmigo.filter { it.reviewText.isNotBlank() }
             FILTRO_CALIFICACIONES -> porAmigo.filter { it.reviewText.isBlank() }
             FILTRO_LISTAS -> emptyList()
             else -> porAmigo
         }
-
-        return porFiltro.sortedBy { it.minutosDesdeLaResena }
     }
 }

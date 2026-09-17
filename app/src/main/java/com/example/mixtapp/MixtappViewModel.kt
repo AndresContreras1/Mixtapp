@@ -19,7 +19,6 @@ class MixtappViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(MixtappState())
     val uiState: StateFlow<MixtappState> = _uiState.asStateFlow()
 
-    // No recibe parametros, asi que los datos se cargan al crear el ViewModel
     init {
         getAlbumParaResenar()
     }
