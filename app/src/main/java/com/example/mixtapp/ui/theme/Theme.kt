@@ -8,23 +8,22 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
     primary = PrimaryPink,
-    onPrimary = Color.White,
+    onPrimary = TextWhite,
     primaryContainer = FieldBackground,
     onPrimaryContainer = PalePink,
     inversePrimary = LinkPink,
 
     secondary = CircleWine,
-    onSecondary = Color.White,
+    onSecondary = TextWhite,
     secondaryContainer = LogoCircle,
     onSecondaryContainer = PalePink,
 
     tertiary = LogoPink,
-    onTertiary = Color.White,
+    onTertiary = TextWhite,
     tertiaryContainer = StoryGold,
     onTertiaryContainer = PalePink,
 
@@ -32,7 +31,7 @@ private val DarkColorScheme = darkColorScheme(
     onBackground = TextPink,
 
     surface = DeepBackground,
-    onSurface = Color.White,
+    onSurface = TextWhite,
     surfaceVariant = FieldBackground,
     onSurfaceVariant = PalePink,
     surfaceTint = PrimaryPink,
@@ -48,29 +47,29 @@ private val DarkColorScheme = darkColorScheme(
     surfaceContainerHighest = CircleWine,
 
     error = PrimaryPink,
-    onError = Color.White,
+    onError = TextWhite,
     errorContainer = FieldBackground,
     onErrorContainer = PalePink,
 
     outline = FieldBorder,
     outlineVariant = DividerWine,
-    scrim = Color.Black
+    scrim = ScrimBlack
 )
 
 private val LightColorScheme = lightColorScheme(
     primary = PrimaryPink,
-    onPrimary = Color.White,
+    onPrimary = TextWhite,
     primaryContainer = FieldBackground,
     onPrimaryContainer = PalePink,
     inversePrimary = LinkPink,
 
     secondary = CircleWine,
-    onSecondary = Color.White,
+    onSecondary = TextWhite,
     secondaryContainer = LogoCircle,
     onSecondaryContainer = PalePink,
 
     tertiary = LogoPink,
-    onTertiary = Color.White,
+    onTertiary = TextWhite,
     tertiaryContainer = StoryGold,
     onTertiaryContainer = PalePink,
 
@@ -78,7 +77,7 @@ private val LightColorScheme = lightColorScheme(
     onBackground = TextPink,
 
     surface = DeepBackground,
-    onSurface = Color.White,
+    onSurface = TextWhite,
     surfaceVariant = FieldBackground,
     onSurfaceVariant = PalePink,
     surfaceTint = PrimaryPink,
@@ -94,13 +93,13 @@ private val LightColorScheme = lightColorScheme(
     surfaceContainerHighest = CircleWine,
 
     error = PrimaryPink,
-    onError = Color.White,
+    onError = TextWhite,
     errorContainer = FieldBackground,
     onErrorContainer = PalePink,
 
     outline = FieldBorder,
     outlineVariant = DividerWine,
-    scrim = Color.Black
+    scrim = ScrimBlack
 )
 
 @Composable
