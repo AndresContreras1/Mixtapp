@@ -50,6 +50,14 @@ class AlbumRepository @Inject constructor(
         }
     }
 
+    suspend fun getAlbumPorDefecto(): Result<Album> {
+        return try {
+            Result.success(albumLocalDataSource.getAlbumPorDefecto())
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     suspend fun getSearchCategories(): Result<List<SearchCategoryUi>> {
         return try {
             Result.success(albumLocalDataSource.getSearchCategories())

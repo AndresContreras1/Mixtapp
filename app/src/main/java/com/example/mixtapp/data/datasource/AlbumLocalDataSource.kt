@@ -22,6 +22,8 @@ class AlbumLocalDataSource @Inject constructor() {
     suspend fun getAlbumById(albumId: String): Album? =
         LocalAlbumProvider.albums.find { it.id == albumId }
 
+    suspend fun getAlbumPorDefecto(): Album = LocalAlbumProvider.albumPorDefecto
+
     suspend fun getSearchCategories(): List<SearchCategoryUi> = LocalSearchCategoriesProvider.categories
 
     suspend fun calificarSongReview(songId: String, rating: Int): SongReviewUi? =

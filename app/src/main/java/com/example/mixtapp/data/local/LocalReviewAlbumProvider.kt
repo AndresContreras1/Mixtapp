@@ -2,9 +2,6 @@ package com.example.mixtapp.data.local
 
 object LocalReviewAlbumProvider {
 
-    // Mientras no exista un selector de album, el boton + abre siempre este
-    const val ALBUM_POR_DEFECTO = "4"
-
     val fechaEscuchaInicial = "13/08/2026"
 
     val fechaEscuchaSugerida = "20/08/2026"

@@ -32,6 +32,7 @@ import com.example.mixtapp.ui.theme.MixtappTheme
 @Composable
 fun BottomNav(
     navController: NavHostController,
+    albumParaResenar: String,
     modifier: Modifier = Modifier
 ) {
     val navBackStackEntry = navController.currentBackStackEntryAsState()
@@ -52,6 +53,11 @@ fun BottomNav(
             bottomNavItems.forEach { item ->
                 val isSelected = currentRoute == item.route
                 val icon = if (isSelected) item.filledIcon else item.outlineIcon
+                val destino = if (item.route == Screen.WriteReview.route) {
+                    Screen.WriteReview.createRoute(albumId = albumParaResenar)
+                } else {
+                    item.route
+                }
 
                 when (item.route) {
                     Screen.WriteReview.route -> CircledNavIcon(
@@ -61,7 +67,7 @@ fun BottomNav(
                         circleColor = MaterialTheme.colorScheme.primary,
                         iconSize = 30.dp,
                         iconTint = MaterialTheme.colorScheme.onSurface,
-                        onClick = { navController.navigate(item.destination) }
+                        onClick = { navController.navigate(destino) }
                     )
 
                     Screen.Profile.route -> CircledNavIcon(
@@ -71,7 +77,7 @@ fun BottomNav(
                         circleColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f),
                         iconSize = 28.dp,
                         iconTint = MaterialTheme.colorScheme.primary,
-                        onClick = { navController.navigate(item.destination) }
+                        onClick = { navController.navigate(destino) }
                     )
 
                     else -> Icon(
@@ -80,7 +86,7 @@ fun BottomNav(
                         tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
                         modifier = Modifier
                             .size(28.dp)
-                            .clickable { navController.navigate(item.destination) }
+                            .clickable { navController.navigate(destino) }
                     )
                 }
             }
@@ -120,6 +126,6 @@ private fun CircledNavIcon(
 @Preview
 fun BottomNavPreview() {
     MixtappTheme(darkTheme = true, dynamicColor = false) {
-        BottomNav(navController = rememberNavController())
+        BottomNav(navController = rememberNavController(), albumParaResenar = "4")
     }
 }
