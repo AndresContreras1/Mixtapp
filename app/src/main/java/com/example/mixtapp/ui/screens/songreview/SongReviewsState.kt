@@ -8,4 +8,5 @@ data class SongReviewsState(
     val userRating: Int = 0,
     val isSaved: Boolean = false,
     val isLiked: Boolean = false,
+    val likedReviewIds: Set<String> = emptySet(),
 )

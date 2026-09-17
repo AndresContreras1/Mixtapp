@@ -89,4 +89,14 @@ class AlbumRepository @Inject constructor(
             Result.failure(e)
         }
     }
+
+    suspend fun darQuitarLikeResenaDeAlbum(songId: String, reviewId: String): Result<SongReviewUi?> {
+        return try {
+            Result.success(
+                albumLocalDataSource.darQuitarLikeResenaDeAlbum(songId = songId, reviewId = reviewId)
+            )
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

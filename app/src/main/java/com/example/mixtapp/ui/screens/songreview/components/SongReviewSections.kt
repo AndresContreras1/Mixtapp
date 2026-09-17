@@ -34,6 +34,9 @@ fun SongReviewSections(
     onLikeClick: () -> Unit,
     onWriteReviewClick: () -> Unit,
     onBackClick: () -> Unit,
+    likedReviewIds: Set<String>,
+    onReviewLikeClick: (String) -> Unit,
+    onReviewReplyClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -117,7 +120,10 @@ fun SongReviewSections(
                 daysAgo = review.daysAgo,
                 rating = review.rating,
                 content = review.content,
-                likes = review.likes
+                likes = review.likes,
+                isLiked = review.id in likedReviewIds,
+                onLikeClick = { onReviewLikeClick(review.id) },
+                onReplyClick = { onReviewReplyClick(review.id) }
             )
         }
     }

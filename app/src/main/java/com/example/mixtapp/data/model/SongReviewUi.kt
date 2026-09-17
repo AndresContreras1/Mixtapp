@@ -18,4 +18,5 @@ data class SongReviewItemUi(
     val rating: Int,
     val content: String,
     val likes: Int,
+    val isLiked: Boolean,
 )

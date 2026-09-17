@@ -35,6 +35,15 @@ class AlbumLocalDataSource @Inject constructor() {
     suspend fun darQuitarLikeSongReview(songId: String): SongReviewUi? =
         actualizarSongReview(songId = songId) { it.copy(isLiked = !it.isLiked) }
 
+    suspend fun darQuitarLikeResenaDeAlbum(songId: String, reviewId: String): SongReviewUi? =
+        actualizarSongReview(songId = songId) { songReview ->
+            songReview.copy(
+                reviews = songReview.reviews.map { resena ->
+                    if (resena.id == reviewId) resena.copy(isLiked = !resena.isLiked) else resena
+                }
+            )
+        }
+
     private fun actualizarSongReview(
         songId: String,
         cambio: (SongReviewUi) -> SongReviewUi,

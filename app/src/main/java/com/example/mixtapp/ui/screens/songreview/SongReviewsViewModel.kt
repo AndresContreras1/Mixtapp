@@ -36,6 +36,11 @@ class SongReviewsViewModel @Inject constructor(
                         userRating = song?.userRating ?: 0,
                         isSaved = song?.isSaved ?: false,
                         isLiked = song?.isLiked ?: false,
+                        likedReviewIds = song?.reviews
+                            ?.filter { resena -> resena.isLiked }
+                            ?.map { resena -> resena.id }
+                            ?.toSet()
+                            ?: emptySet(),
                     )
                 }
             }
@@ -78,6 +83,21 @@ class SongReviewsViewModel @Inject constructor(
         }
     }
 
+    fun darQuitarLikeResena(reviewId: String) {
+        val songId = _uiState.value.song?.album?.id ?: return
+
+        viewModelScope.launch {
+            val result = albumRepository.darQuitarLikeResenaDeAlbum(
+                songId = songId,
+                reviewId = reviewId,
+            )
+
+            if (result.isSuccess) {
+                actualizarSong(song = result.getOrNull())
+            }
+        }
+    }
+
     private fun actualizarSong(song: SongReviewUi?) {
         if (song == null) return
 
@@ -87,6 +107,10 @@ class SongReviewsViewModel @Inject constructor(
                 userRating = song.userRating,
                 isSaved = song.isSaved,
                 isLiked = song.isLiked,
+                likedReviewIds = song.reviews
+                    .filter { resena -> resena.isLiked }
+                    .map { resena -> resena.id }
+                    .toSet(),
             )
         }
     }
