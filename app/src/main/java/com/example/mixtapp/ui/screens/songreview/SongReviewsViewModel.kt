@@ -1,16 +1,20 @@
 package com.example.mixtapp.ui.screens.songreview
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.mixtapp.data.repository.AlbumRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import com.example.mixtapp.data.local.LocalSongReviewProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SongReviewsViewModel @Inject constructor() : ViewModel() {
+class SongReviewsViewModel @Inject constructor(
+    private val albumRepository: AlbumRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SongReviewsState())
     val uiState: StateFlow<SongReviewsState> = _uiState.asStateFlow()
@@ -19,15 +23,21 @@ class SongReviewsViewModel @Inject constructor() : ViewModel() {
     fun getSongById(songId: String) {
         if (_uiState.value.song != null) return
 
-        val song = LocalSongReviewProvider.songs.find { it.album.id == songId }
+        viewModelScope.launch {
+            val result = albumRepository.getSongReviewById(songId = songId)
 
-        _uiState.update {
-            it.copy(
-                song = song,
-                userRating = song?.userRating ?: 0,
-                isSaved = song?.isSaved ?: false,
-                isLiked = song?.isLiked ?: false,
-            )
+            if (result.isSuccess) {
+                val song = result.getOrNull()
+
+                _uiState.update {
+                    it.copy(
+                        song = song,
+                        userRating = song?.userRating ?: 0,
+                        isSaved = song?.isSaved ?: false,
+                        isLiked = song?.isLiked ?: false,
+                    )
+                }
+            }
         }
     }
 

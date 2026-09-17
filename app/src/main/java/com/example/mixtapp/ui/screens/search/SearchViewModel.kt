@@ -1,18 +1,21 @@
 package com.example.mixtapp.ui.screens.search
 
 import androidx.lifecycle.ViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
-import com.example.mixtapp.data.local.LocalSearchCategoriesProvider
-import com.example.mixtapp.data.local.LocalSongReviewProvider
+import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.data.model.SongReviewUi
+import com.example.mixtapp.data.repository.AlbumRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SearchViewModel @Inject constructor() : ViewModel() {
+class SearchViewModel @Inject constructor(
+    private val albumRepository: AlbumRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SearchState())
     val uiState: StateFlow<SearchState> = _uiState.asStateFlow()
@@ -23,22 +26,33 @@ class SearchViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun getCategories() {
-        _uiState.update { it.copy(categories = LocalSearchCategoriesProvider.categories) }
-    }
+        viewModelScope.launch {
+            val result = albumRepository.getSearchCategories()
 
-    fun updateQuery(query: String) {
-        _uiState.update {
-            it.copy(
-                query = query,
-                resultados = buscarAlbumes(query = query),
-            )
+            if (result.isSuccess) {
+                _uiState.update { it.copy(categories = result.getOrNull() ?: emptyList()) }
+            }
         }
     }
 
-    private fun buscarAlbumes(query: String): List<SongReviewUi> {
+    fun updateQuery(query: String) {
+        _uiState.update { it.copy(query = query) }
+
+        viewModelScope.launch {
+            val result = albumRepository.getSongReviews()
+
+            if (result.isSuccess) {
+                _uiState.update {
+                    it.copy(resultados = buscarAlbumes(query = query, todos = result.getOrNull() ?: emptyList()))
+                }
+            }
+        }
+    }
+
+    private fun buscarAlbumes(query: String, todos: List<SongReviewUi>): List<SongReviewUi> {
         if (query.isBlank()) return emptyList()
 
-        return LocalSongReviewProvider.songs.filter { songReview ->
+        return todos.filter { songReview ->
             songReview.album.title.contains(query, ignoreCase = true) ||
                     songReview.album.artist.contains(query, ignoreCase = true)
         }

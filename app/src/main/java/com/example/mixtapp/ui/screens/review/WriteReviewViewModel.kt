@@ -1,20 +1,25 @@
 package com.example.mixtapp.ui.screens.review
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.mixtapp.data.repository.AlbumRepository
+import com.example.mixtapp.data.repository.ReviewRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import com.example.mixtapp.data.local.LocalAlbumProvider
-import com.example.mixtapp.data.local.LocalReviewAlbumProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 // Limite de caracteres de la resena
 const val MAX_REVIEW_LENGTH = 500
 
 @HiltViewModel
-class WriteReviewViewModel @Inject constructor() : ViewModel() {
+class WriteReviewViewModel @Inject constructor(
+    private val albumRepository: AlbumRepository,
+    private val reviewRepository: ReviewRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(WriteReviewState())
     val uiState: StateFlow<WriteReviewState> = _uiState.asStateFlow()
@@ -24,11 +29,18 @@ class WriteReviewViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun getDatosIniciales() {
-        _uiState.update {
-            it.copy(
-                moods = LocalReviewAlbumProvider.moods,
-                listenedDate = LocalReviewAlbumProvider.fechaEscuchaInicial,
-            )
+        viewModelScope.launch {
+            val moods = reviewRepository.getMoods()
+            val fecha = reviewRepository.getFechaEscuchaInicial()
+
+            if (moods.isSuccess && fecha.isSuccess) {
+                _uiState.update {
+                    it.copy(
+                        moods = moods.getOrNull() ?: emptyList(),
+                        listenedDate = fecha.getOrNull() ?: "",
+                    )
+                }
+            }
         }
     }
 
@@ -36,9 +48,13 @@ class WriteReviewViewModel @Inject constructor() : ViewModel() {
     fun getAlbumById(albumId: String) {
         if (_uiState.value.album != null) return
 
-        val album = LocalAlbumProvider.albums.find { it.id == albumId }
+        viewModelScope.launch {
+            val result = albumRepository.getAlbumById(albumId = albumId)
 
-        _uiState.update { it.copy(album = album) }
+            if (result.isSuccess) {
+                _uiState.update { it.copy(album = result.getOrNull()) }
+            }
+        }
     }
 
     fun updateRating(rating: Int) {
@@ -61,7 +77,13 @@ class WriteReviewViewModel @Inject constructor() : ViewModel() {
     }
 
     fun usarFechaSugerida() {
-        _uiState.update { it.copy(listenedDate = LocalReviewAlbumProvider.fechaEscuchaSugerida) }
+        viewModelScope.launch {
+            val result = reviewRepository.getFechaEscuchaSugerida()
+
+            if (result.isSuccess) {
+                _uiState.update { it.copy(listenedDate = result.getOrNull() ?: it.listenedDate) }
+            }
+        }
     }
 
     fun updateIsFavorite(isFavorite: Boolean) {

@@ -1,19 +1,22 @@
 package com.example.mixtapp.ui.screens.discussion
 
 import androidx.lifecycle.ViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
-import com.example.mixtapp.data.local.LocalDiscussionProvider
+import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.data.model.DiscussionCommentUi
 import com.example.mixtapp.data.repository.AuthRepository
+import com.example.mixtapp.data.repository.ReviewRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class DiscussionViewModel @Inject constructor(
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val reviewRepository: ReviewRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(DiscussionState())
@@ -23,20 +26,26 @@ class DiscussionViewModel @Inject constructor(
     fun getDiscussionByReviewId(reviewId: String) {
         if (_uiState.value.discussion != null) return
 
-        val discussion = LocalDiscussionProvider.discussions.find { it.id == reviewId }
+        viewModelScope.launch {
+            val result = reviewRepository.getDiscussionByReviewId(reviewId = reviewId)
 
-        _uiState.update {
-            it.copy(
-                discussion = discussion,
-                comentarios = discussion?.comments ?: emptyList(),
-                isReviewLiked = discussion?.review?.isLiked ?: false,
-                isReviewShared = discussion?.review?.isShared ?: false,
-                likedCommentIds = discussion?.comments
-                    ?.filter { comentario -> comentario.isLiked }
-                    ?.map { comentario -> comentario.id }
-                    ?.toSet()
-                    ?: emptySet(),
-            )
+            if (result.isSuccess) {
+                val discussion = result.getOrNull()
+
+                _uiState.update {
+                    it.copy(
+                        discussion = discussion,
+                        comentarios = discussion?.comments ?: emptyList(),
+                        isReviewLiked = discussion?.review?.isLiked ?: false,
+                        isReviewShared = discussion?.review?.isShared ?: false,
+                        likedCommentIds = discussion?.comments
+                            ?.filter { comentario -> comentario.isLiked }
+                            ?.map { comentario -> comentario.id }
+                            ?.toSet()
+                            ?: emptySet(),
+                    )
+                }
+            }
         }
     }
 

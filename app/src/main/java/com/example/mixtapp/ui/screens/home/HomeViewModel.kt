@@ -1,20 +1,24 @@
 package com.example.mixtapp.ui.screens.home
 
 import androidx.lifecycle.ViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
-import com.example.mixtapp.data.local.LocalFriendActivityProvider
-import com.example.mixtapp.data.local.LocalSongReviewProvider
+import androidx.lifecycle.viewModelScope
+import com.example.mixtapp.data.repository.AlbumRepository
 import com.example.mixtapp.data.repository.AuthRepository
+import com.example.mixtapp.data.repository.SocialRepository
 import com.example.mixtapp.ui.screens.home.model.homeFilters
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val albumRepository: AlbumRepository,
+    private val socialRepository: SocialRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeState())
@@ -26,14 +30,22 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun getAlbums() {
-        _uiState.update {
-            it.copy(
-                albums = LocalSongReviewProvider.popularSongs,
-                trending = LocalSongReviewProvider.trendingSong,
-                friendActivity = LocalFriendActivityProvider.friendActivity,
-                filters = homeFilters,
-                selectedFilterId = homeFilters.first().id,
-            )
+        viewModelScope.launch {
+            val populares = albumRepository.getPopularSongReviews()
+            val tendencia = albumRepository.getTrendingSongReview()
+            val actividad = socialRepository.getFriendActivity()
+
+            if (populares.isSuccess && tendencia.isSuccess && actividad.isSuccess) {
+                _uiState.update {
+                    it.copy(
+                        albums = populares.getOrNull() ?: emptyList(),
+                        trending = tendencia.getOrNull(),
+                        friendActivity = actividad.getOrNull(),
+                        filters = homeFilters,
+                        selectedFilterId = homeFilters.first().id,
+                    )
+                }
+            }
         }
     }
 

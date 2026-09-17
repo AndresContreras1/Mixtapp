@@ -1,18 +1,22 @@
 package com.example.mixtapp.ui.screens.following
 
 import androidx.lifecycle.ViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
-import com.example.mixtapp.data.local.LocalFollowingProvider
+import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.data.model.FollowingReviewUi
+import com.example.mixtapp.data.repository.SocialRepository
 import com.example.mixtapp.ui.screens.following.model.followingFilters
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class FollowingViewModel @Inject constructor() : ViewModel() {
+class FollowingViewModel @Inject constructor(
+    private val socialRepository: SocialRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(FollowingState())
     val uiState: StateFlow<FollowingState> = _uiState.asStateFlow()
@@ -23,17 +27,23 @@ class FollowingViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun getFollowing() {
-        val following = LocalFollowingProvider.following
+        viewModelScope.launch {
+            val result = socialRepository.getFollowing()
 
-        _uiState.update {
-            it.copy(
-                following = following,
-                reviews = aplicarBusqueda(friendQuery = it.friendQuery, todas = following.reviews),
-                filters = followingFilters,
-                selectedFilterId = followingFilters.first().id,
-                likedReviewIds = following.reviews.filter { r -> r.isLiked }.map { r -> r.id }.toSet(),
-                sharedReviewIds = following.reviews.filter { r -> r.isShared }.map { r -> r.id }.toSet(),
-            )
+            if (result.isSuccess) {
+                val following = result.getOrNull() ?: return@launch
+
+                _uiState.update {
+                    it.copy(
+                        following = following,
+                        reviews = aplicarBusqueda(friendQuery = it.friendQuery, todas = following.reviews),
+                        filters = followingFilters,
+                        selectedFilterId = followingFilters.first().id,
+                        likedReviewIds = following.reviews.filter { r -> r.isLiked }.map { r -> r.id }.toSet(),
+                        sharedReviewIds = following.reviews.filter { r -> r.isShared }.map { r -> r.id }.toSet(),
+                    )
+                }
+            }
         }
     }
 
