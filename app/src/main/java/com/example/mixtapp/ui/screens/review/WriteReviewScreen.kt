@@ -29,7 +29,6 @@ fun WriteReviewScreen(
     albumId: String,
     writeReviewViewModel: WriteReviewViewModel,
     onCancel: () -> Unit,
-    onPostReview: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val state by writeReviewViewModel.uiState.collectAsState()
@@ -56,7 +55,7 @@ fun WriteReviewScreen(
             onDateChange = { writeReviewViewModel.updateListenedDate(listenedDate = it) },
             onDatePickerClick = { writeReviewViewModel.usarFechaSugerida() },
             onFavoriteChange = { writeReviewViewModel.updateIsFavorite(isFavorite = it) },
-            onPostClick = onPostReview,
+            onPostClick = { writeReviewViewModel.publicarResena() },
             modifier = modifier,
         )
     }

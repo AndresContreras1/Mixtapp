@@ -89,4 +89,26 @@ class WriteReviewViewModel @Inject constructor(
     fun updateIsFavorite(isFavorite: Boolean) {
         _uiState.update { it.copy(isFavorite = isFavorite) }
     }
+
+    fun publicarResena() {
+        val estado = _uiState.value
+        val album = estado.album ?: return
+        val texto = estado.reviewText.trim()
+
+        if (texto.isEmpty()) return
+
+        viewModelScope.launch {
+            val result = reviewRepository.publicarResena(
+                album = album,
+                rating = estado.rating,
+                texto = texto,
+                moods = estado.selectedMoods,
+                fecha = estado.listenedDate,
+            )
+
+            if (result.isSuccess) {
+                _uiState.update { it.copy(publicada = true) }
+            }
+        }
+    }
 }

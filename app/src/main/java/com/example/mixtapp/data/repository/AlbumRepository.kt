@@ -57,4 +57,28 @@ class AlbumRepository @Inject constructor(
             Result.failure(e)
         }
     }
+
+    suspend fun calificarSongReview(songId: String, rating: Int): Result<SongReviewUi?> {
+        return try {
+            Result.success(albumLocalDataSource.calificarSongReview(songId = songId, rating = rating))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun guardarQuitarSongReview(songId: String): Result<SongReviewUi?> {
+        return try {
+            Result.success(albumLocalDataSource.guardarQuitarSongReview(songId = songId))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun darQuitarLikeSongReview(songId: String): Result<SongReviewUi?> {
+        return try {
+            Result.success(albumLocalDataSource.darQuitarLikeSongReview(songId = songId))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

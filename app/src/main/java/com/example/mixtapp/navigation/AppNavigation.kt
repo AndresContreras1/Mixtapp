@@ -137,12 +137,19 @@ fun AppNavigation(
             // Solo se obtiene el id; buscar el album es tarea del ViewModel
             val albumId = it.arguments?.getString("albumId") ?: ""
             val writeReviewViewModel: WriteReviewViewModel = hiltViewModel()
+            val state by writeReviewViewModel.uiState.collectAsState()
+
+            // El ViewModel publica la resena y autoriza; la navegacion solo ejecuta
+            LaunchedEffect(state.publicada) {
+                if (state.publicada) {
+                    navController.navigate(Screen.MyReviews.route)
+                }
+            }
 
             WriteReviewScreen(
                 albumId = albumId,
                 writeReviewViewModel = writeReviewViewModel,
-                onCancel = { navController.popBackStack() },
-                onPostReview = { navController.navigate(Screen.MyReviews.route) }
+                onCancel = { navController.popBackStack() }
             )
         }
 

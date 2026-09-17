@@ -42,4 +42,20 @@ class SocialRepository @Inject constructor(
             Result.failure(e)
         }
     }
+
+    suspend fun darQuitarLikeFollowingReview(reviewId: String): Result<FollowingUi> {
+        return try {
+            Result.success(socialLocalDataSource.darQuitarLikeFollowingReview(reviewId = reviewId))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun compartirQuitarFollowingReview(reviewId: String): Result<FollowingUi> {
+        return try {
+            Result.success(socialLocalDataSource.compartirQuitarFollowingReview(reviewId = reviewId))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

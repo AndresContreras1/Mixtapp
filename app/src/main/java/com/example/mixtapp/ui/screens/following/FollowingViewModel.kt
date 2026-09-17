@@ -3,6 +3,7 @@ package com.example.mixtapp.ui.screens.following
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.data.model.FollowingReviewUi
+import com.example.mixtapp.data.model.FollowingUi
 import com.example.mixtapp.data.repository.SocialRepository
 import com.example.mixtapp.ui.screens.following.model.followingFilters
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -68,17 +69,36 @@ class FollowingViewModel @Inject constructor(
     }
 
     fun darQuitarLike(reviewId: String) {
-        val actuales = _uiState.value.likedReviewIds
-        val nuevos = if (reviewId in actuales) actuales - reviewId else actuales + reviewId
+        viewModelScope.launch {
+            val result = socialRepository.darQuitarLikeFollowingReview(reviewId = reviewId)
 
-        _uiState.update { it.copy(likedReviewIds = nuevos) }
+            if (result.isSuccess) {
+                actualizarFollowing(following = result.getOrNull())
+            }
+        }
     }
 
     fun compartirQuitar(reviewId: String) {
-        val actuales = _uiState.value.sharedReviewIds
-        val nuevos = if (reviewId in actuales) actuales - reviewId else actuales + reviewId
+        viewModelScope.launch {
+            val result = socialRepository.compartirQuitarFollowingReview(reviewId = reviewId)
 
-        _uiState.update { it.copy(sharedReviewIds = nuevos) }
+            if (result.isSuccess) {
+                actualizarFollowing(following = result.getOrNull())
+            }
+        }
+    }
+
+    private fun actualizarFollowing(following: FollowingUi?) {
+        if (following == null) return
+
+        _uiState.update {
+            it.copy(
+                following = following,
+                reviews = aplicarBusqueda(friendQuery = it.friendQuery, todas = following.reviews),
+                likedReviewIds = following.reviews.filter { r -> r.isLiked }.map { r -> r.id }.toSet(),
+                sharedReviewIds = following.reviews.filter { r -> r.isShared }.map { r -> r.id }.toSet(),
+            )
+        }
     }
 
     private fun aplicarBusqueda(

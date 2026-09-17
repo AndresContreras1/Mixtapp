@@ -4,7 +4,7 @@ import com.example.mixtapp.data.model.MyReviewUi
 
 object LocalMyReviewsProvider {
 
-    val reviews = listOf(
+    val reviews = mutableListOf(
         MyReviewUi(
             id = "2",
             album = LocalAlbumProvider.fromZero,

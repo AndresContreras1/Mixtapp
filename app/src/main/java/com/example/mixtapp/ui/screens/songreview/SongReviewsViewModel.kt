@@ -2,6 +2,7 @@ package com.example.mixtapp.ui.screens.songreview
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.mixtapp.data.model.SongReviewUi
 import com.example.mixtapp.data.repository.AlbumRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -42,16 +43,51 @@ class SongReviewsViewModel @Inject constructor(
     }
 
     fun updateUserRating(rating: Int) {
-        _uiState.update { it.copy(userRating = rating) }
+        val songId = _uiState.value.song?.album?.id ?: return
+
+        viewModelScope.launch {
+            val result = albumRepository.calificarSongReview(songId = songId, rating = rating)
+
+            if (result.isSuccess) {
+                actualizarSong(song = result.getOrNull())
+            }
+        }
     }
 
     fun guardarQuitarGuardado() {
-        val valorActual = _uiState.value.isSaved
-        _uiState.update { it.copy(isSaved = !valorActual) }
+        val songId = _uiState.value.song?.album?.id ?: return
+
+        viewModelScope.launch {
+            val result = albumRepository.guardarQuitarSongReview(songId = songId)
+
+            if (result.isSuccess) {
+                actualizarSong(song = result.getOrNull())
+            }
+        }
     }
 
     fun darQuitarLike() {
-        val valorActual = _uiState.value.isLiked
-        _uiState.update { it.copy(isLiked = !valorActual) }
+        val songId = _uiState.value.song?.album?.id ?: return
+
+        viewModelScope.launch {
+            val result = albumRepository.darQuitarLikeSongReview(songId = songId)
+
+            if (result.isSuccess) {
+                actualizarSong(song = result.getOrNull())
+            }
+        }
+    }
+
+    private fun actualizarSong(song: SongReviewUi?) {
+        if (song == null) return
+
+        _uiState.update {
+            it.copy(
+                song = song,
+                userRating = song.userRating,
+                isSaved = song.isSaved,
+                isLiked = song.isLiked,
+            )
+        }
     }
 }

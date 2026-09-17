@@ -8,7 +8,7 @@ object LocalDiscussionProvider {
 
     // Cada discusion se identifica con el mismo id de la resena que la abre,
     // para que la navegacion pueda buscarla por ese id
-    val discussions = listOf(
+    val discussions = mutableListOf(
         DiscussionUi(
             id = "toxicity-liz",
             review = DiscussionReviewUi(

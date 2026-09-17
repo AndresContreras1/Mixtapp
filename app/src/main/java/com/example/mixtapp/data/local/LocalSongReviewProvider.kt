@@ -5,7 +5,7 @@ import com.example.mixtapp.data.model.SongReviewUi
 
 object LocalSongReviewProvider {
 
-    val songs = listOf(
+    val songs = mutableListOf(
         SongReviewUi(
             album = LocalAlbumProvider.teatroDira,
             rating = 4.8,
@@ -104,8 +104,10 @@ object LocalSongReviewProvider {
     )
 
     // Los tres albumes que se muestran en la pantalla principal
-    val popularSongs = songs.take(3)
+    val popularSongs: List<SongReviewUi>
+        get() = songs.take(3)
 
     // El album destacado de la pantalla principal
-    val trendingSong = songs[2]
+    val trendingSong: SongReviewUi
+        get() = songs[2]
 }

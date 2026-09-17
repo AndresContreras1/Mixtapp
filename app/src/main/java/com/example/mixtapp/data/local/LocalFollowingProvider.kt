@@ -5,7 +5,7 @@ import com.example.mixtapp.data.model.FollowingStoryUi
 import com.example.mixtapp.data.model.FollowingUi
 
 object LocalFollowingProvider {
-    val following = FollowingUi(
+    var following = FollowingUi(
         id = "yourname",
         followingCount = 84,
         followersCount = 312,

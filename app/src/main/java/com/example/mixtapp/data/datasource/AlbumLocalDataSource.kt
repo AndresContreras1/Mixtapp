@@ -23,4 +23,25 @@ class AlbumLocalDataSource @Inject constructor() {
         LocalAlbumProvider.albums.find { it.id == albumId }
 
     suspend fun getSearchCategories(): List<SearchCategoryUi> = LocalSearchCategoriesProvider.categories
+
+    suspend fun calificarSongReview(songId: String, rating: Int): SongReviewUi? =
+        actualizarSongReview(songId = songId) { it.copy(userRating = rating) }
+
+    suspend fun guardarQuitarSongReview(songId: String): SongReviewUi? =
+        actualizarSongReview(songId = songId) { it.copy(isSaved = !it.isSaved) }
+
+    suspend fun darQuitarLikeSongReview(songId: String): SongReviewUi? =
+        actualizarSongReview(songId = songId) { it.copy(isLiked = !it.isLiked) }
+
+    private fun actualizarSongReview(
+        songId: String,
+        cambio: (SongReviewUi) -> SongReviewUi,
+    ): SongReviewUi? {
+        val indice = LocalSongReviewProvider.songs.indexOfFirst { it.album.id == songId }
+        if (indice == -1) return null
+
+        val actualizado = cambio(LocalSongReviewProvider.songs[indice])
+        LocalSongReviewProvider.songs[indice] = actualizado
+        return actualizado
+    }
 }
