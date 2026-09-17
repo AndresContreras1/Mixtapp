@@ -18,15 +18,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
-import com.example.mixtapp.data.model.SongReviewItemUi
 
 @Composable
-fun ReviewsSection(
-    reviews: List<SongReviewItemUi>,
+fun ReviewsHeader(
     onWriteReviewClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier) {
+    Column(modifier = modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -49,15 +47,5 @@ fun ReviewsSection(
         }
 
         Spacer(modifier = Modifier.height(16.dp))
-
-        reviews.forEach { review ->
-            ReviewItem(
-                author = review.author,
-                daysAgo = review.daysAgo,
-                rating = review.rating,
-                content = review.content,
-                likes = review.likes
-            )
-        }
     }
 }

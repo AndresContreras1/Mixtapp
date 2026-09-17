@@ -26,7 +26,8 @@ import com.example.mixtapp.data.local.LocalSearchCategoriesProvider
 import com.example.mixtapp.data.model.SearchCategoryUi
 import com.example.mixtapp.data.model.SongReviewUi
 import com.example.mixtapp.ui.components.ReviewAlbumRow
-import com.example.mixtapp.ui.screens.search.components.BrowseBySection
+import com.example.mixtapp.ui.screens.search.components.BrowseByHeader
+import com.example.mixtapp.ui.screens.search.components.SearchCategoryRow
 import com.example.mixtapp.ui.screens.search.components.SearchHeader
 import com.example.mixtapp.ui.theme.MixtappTheme
 import kotlin.math.roundToInt
@@ -80,10 +81,14 @@ fun SearchScreenContent(
 
             if (query.isBlank() && selectedCategoryId == null) {
                 item {
-                    BrowseBySection(
-                        categories = categories,
-                        selectedCategoryId = selectedCategoryId,
-                        onCategoryClick = onCategoryClick,
+                    BrowseByHeader(modifier = Modifier.padding(horizontal = 24.dp))
+                }
+
+                items(categories, key = { it.id }) { category ->
+                    SearchCategoryRow(
+                        category = category,
+                        selected = category.id == selectedCategoryId,
+                        onClick = { onCategoryClick(category.id) },
                         modifier = Modifier.padding(horizontal = 24.dp),
                     )
                 }
