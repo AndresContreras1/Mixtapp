@@ -175,7 +175,11 @@ fun AppNavigation(
                 }
             }
 
-            ProfileScreen(profileViewModel = profileViewModel)
+            ProfileScreen(
+                profileViewModel = profileViewModel,
+                onSettingsClick = {},
+                onMoreClick = {}
+            )
         }
 
         composable(

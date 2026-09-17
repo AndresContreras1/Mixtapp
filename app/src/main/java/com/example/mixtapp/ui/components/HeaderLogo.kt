@@ -34,11 +34,8 @@ fun HeaderLogo(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .size(66.dp)
                 .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.secondaryContainer),
-            contentAlignment = Alignment.Center
-        ) {
-            // Placeholder for user avatar or similar
-        }
+                .background(MaterialTheme.colorScheme.secondaryContainer)
+        )
     }
 }
 

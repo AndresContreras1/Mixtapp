@@ -27,6 +27,8 @@ import com.example.mixtapp.ui.theme.*
 @Composable
 fun ProfileScreen(
     profileViewModel: ProfileViewModel,
+    onSettingsClick: () -> Unit,
+    onMoreClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val state by profileViewModel.uiState.collectAsState()
@@ -44,6 +46,8 @@ fun ProfileScreen(
             tabs = state.tabs,
             selectedTabId = state.selectedTabId,
             onTabSelected = { profileViewModel.updateSelectedTab(tabId = it) },
+            onSettingsClick = onSettingsClick,
+            onMoreClick = onMoreClick,
             onLogoutClick = { profileViewModel.cerrarSesion() },
             modifier = modifier
         )
@@ -61,6 +65,8 @@ fun ProfileScreenContent(
     tabs: List<ProfileTabUi>,
     selectedTabId: String,
     onTabSelected: (String) -> Unit,
+    onSettingsClick: () -> Unit,
+    onMoreClick: () -> Unit,
     onLogoutClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -75,7 +81,9 @@ fun ProfileScreenContent(
                 usuario = usuario,
                 tabs = tabs,
                 selectedTabId = selectedTabId,
-                onTabSelected = onTabSelected
+                onTabSelected = onTabSelected,
+                onSettingsClick = onSettingsClick,
+                onMoreClick = onMoreClick
             )
 
             Column(
@@ -123,6 +131,8 @@ fun ProfileScreenPreview() {
             tabs = profileTabs,
             selectedTabId = profileTabs.first().id,
             onTabSelected = {},
+            onSettingsClick = {},
+            onMoreClick = {},
             onLogoutClick = {}
         )
     }
