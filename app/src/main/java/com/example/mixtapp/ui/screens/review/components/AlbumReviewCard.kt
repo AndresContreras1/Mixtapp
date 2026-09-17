@@ -20,13 +20,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.data.model.Album
 import com.example.mixtapp.ui.components.AlbumAsyncImage
+import com.example.mixtapp.ui.theme.displayFontFamily
 
 @Composable
 fun AlbumReviewCard(
@@ -67,7 +67,7 @@ fun AlbumReviewCard(
                     color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Black,
-                    fontFamily = FontFamily.Serif,
+                    fontFamily = displayFontFamily,
                     maxLines = 1
                 )
                 Spacer(modifier = Modifier.height(8.dp))

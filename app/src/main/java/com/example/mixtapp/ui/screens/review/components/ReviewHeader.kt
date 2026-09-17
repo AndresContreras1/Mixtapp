@@ -14,11 +14,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.ui.theme.displayFontFamily
 
 @Composable
 fun ReviewHeader(
@@ -48,7 +48,7 @@ fun ReviewHeader(
                 color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Black,
-                fontFamily = FontFamily.Serif
+                fontFamily = displayFontFamily
             )
         }
         HorizontalDivider(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.72f), thickness = 1.dp)

@@ -18,12 +18,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.components.StarRating
+import com.example.mixtapp.ui.theme.displayFontFamily
 import kotlin.math.roundToInt
 
 @Composable
@@ -75,7 +75,7 @@ private fun StatItem(value: String, label: String?, estrellas: Int? = null, modi
             color = MaterialTheme.colorScheme.primary,
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
-            fontFamily = FontFamily.Serif
+            fontFamily = displayFontFamily
         )
         if (estrellas != null) {
             StarRating(

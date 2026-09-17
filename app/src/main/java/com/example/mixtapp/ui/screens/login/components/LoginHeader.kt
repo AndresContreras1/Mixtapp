@@ -10,12 +10,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.components.HeaderLogo
+import com.example.mixtapp.ui.theme.displayFontFamily
 
 @Composable
 fun LoginHeader(
@@ -37,7 +37,7 @@ fun LoginHeader(
             fontSize = 31.sp,
             lineHeight = 36.sp,
             fontWeight = FontWeight.Black,
-            fontFamily = FontFamily.Serif
+            fontFamily = displayFontFamily
         )
 
         Spacer(modifier = Modifier.height(10.dp))

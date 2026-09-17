@@ -7,7 +7,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -15,6 +14,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.theme.MixtappTheme
+import com.example.mixtapp.ui.theme.displayFontFamily
 
 @Composable
 fun LogoText(
@@ -39,7 +39,7 @@ fun LogoText(
         fontSize = fontSize,
         lineHeight = lineHeight,
         fontWeight = fontWeight,
-        fontFamily = FontFamily.Serif
+        fontFamily = displayFontFamily
     )
 }
 

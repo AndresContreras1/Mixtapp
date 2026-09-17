@@ -11,11 +11,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.data.model.DiscussionCommentUi
+import com.example.mixtapp.ui.theme.displayFontFamily
 
 @Composable
 fun ThreadCommentItem(
@@ -49,7 +49,7 @@ fun ThreadCommentItem(
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.58f),
                     fontSize = 20.sp,
                     lineHeight = 24.sp,
-                    fontFamily = FontFamily.Serif,
+                    fontFamily = displayFontFamily,
                     fontWeight = FontWeight.Black,
                 )
 

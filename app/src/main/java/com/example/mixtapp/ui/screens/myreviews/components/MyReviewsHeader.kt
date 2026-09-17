@@ -1,6 +1,5 @@
 package com.example.mixtapp.ui.screens.myreviews.components
 
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -17,11 +17,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.ui.theme.displayFontFamily
 
 @Composable
 fun MyReviewsHeader(
@@ -43,7 +43,7 @@ fun MyReviewsHeader(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Bold,
-                    fontFamily = FontFamily.Serif
+                    fontFamily = displayFontFamily
                 )
             }
 
@@ -55,7 +55,7 @@ fun MyReviewsHeader(
                     color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Black,
-                    fontFamily = FontFamily.Serif
+                    fontFamily = displayFontFamily
                 )
                 Text(
                     text = stringResource(R.string.join_date, joinDate),
@@ -72,7 +72,7 @@ fun MyReviewsHeader(
             color = MaterialTheme.colorScheme.onSurface,
             fontSize = 26.sp,
             fontWeight = FontWeight.Black,
-            fontFamily = FontFamily.Serif
+            fontFamily = displayFontFamily
         )
 
         Spacer(modifier = Modifier.height(16.dp))

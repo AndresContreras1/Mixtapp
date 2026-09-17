@@ -16,11 +16,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.ui.theme.displayFontFamily
 
 @Composable
 fun DiscussionHeader(
@@ -53,7 +53,7 @@ fun DiscussionHeader(
                 text = stringResource(R.string.discussion),
                 color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 25.sp,
-                fontFamily = FontFamily.Serif,
+                fontFamily = displayFontFamily,
                 fontWeight = FontWeight.Black,
             )
 
@@ -63,7 +63,7 @@ fun DiscussionHeader(
                 text = stringResource(R.string.comments_count, commentsCount),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 13.sp,
-                fontFamily = FontFamily.Serif,
+                fontFamily = displayFontFamily,
                 fontWeight = FontWeight.Bold,
             )
         }

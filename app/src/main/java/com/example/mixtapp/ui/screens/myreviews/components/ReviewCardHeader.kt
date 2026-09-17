@@ -16,7 +16,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -24,6 +23,7 @@ import com.example.mixtapp.R
 import com.example.mixtapp.data.model.MyReviewUi
 import com.example.mixtapp.ui.components.AlbumAsyncImage
 import com.example.mixtapp.ui.components.StarRating
+import com.example.mixtapp.ui.theme.displayFontFamily
 
 // Portada + titulo/artista/estrellas
 @Composable
@@ -52,7 +52,7 @@ fun ReviewCardHeader(
                 color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 17.sp,
                 fontWeight = FontWeight.Black,
-                fontFamily = FontFamily.Serif,
+                fontFamily = displayFontFamily,
                 maxLines = 1
             )
             Spacer(modifier = Modifier.height(4.dp))

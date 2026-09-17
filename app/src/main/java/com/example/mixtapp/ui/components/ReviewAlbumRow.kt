@@ -16,7 +16,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -25,6 +24,7 @@ import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.data.local.AlbumCovers
 import com.example.mixtapp.ui.theme.MixtappTheme
+import com.example.mixtapp.ui.theme.displayFontFamily
 
 @Composable
 fun ReviewAlbumRow(
@@ -58,7 +58,7 @@ fun ReviewAlbumRow(
                 color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 22.sp,
                 lineHeight = 25.sp,
-                fontFamily = FontFamily.Serif,
+                fontFamily = displayFontFamily,
                 fontWeight = FontWeight.Black,
             )
             Text(
@@ -66,7 +66,7 @@ fun ReviewAlbumRow(
                 color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.74f),
                 fontSize = 14.sp,
                 lineHeight = 18.sp,
-                fontFamily = FontFamily.Serif,
+                fontFamily = displayFontFamily,
                 fontWeight = FontWeight.Bold,
             )
             StarRating(
