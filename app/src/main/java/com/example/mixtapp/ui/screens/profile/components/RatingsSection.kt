@@ -82,7 +82,7 @@ fun RatingsSection(
         ) {
             Icon(
                 imageVector = Icons.Default.Star,
-                contentDescription = null,
+                contentDescription = stringResource(R.string.una_estrella),
                 tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
                 modifier = Modifier.size(12.dp)
             )

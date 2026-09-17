@@ -23,11 +23,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalSearchCategoriesProvider
+import com.example.mixtapp.data.model.SearchCategoryUi
+import com.example.mixtapp.data.model.SongReviewUi
 import com.example.mixtapp.ui.components.ReviewAlbumRow
-import com.example.mixtapp.ui.screens.search.components.BrowseBySection
+import com.example.mixtapp.ui.screens.search.components.BrowseByHeader
+import com.example.mixtapp.ui.screens.search.components.SearchCategoryRow
 import com.example.mixtapp.ui.screens.search.components.SearchHeader
-import com.example.mixtapp.ui.screens.search.model.SearchCategoryUi
-import com.example.mixtapp.ui.screens.songreview.model.SongReviewUi
 import com.example.mixtapp.ui.theme.MixtappTheme
 import kotlin.math.roundToInt
 
@@ -78,12 +79,16 @@ fun SearchScreenContent(
                 )
             }
 
-            if (query.isBlank()) {
+            if (query.isBlank() && selectedCategoryId == null) {
                 item {
-                    BrowseBySection(
-                        categories = categories,
-                        selectedCategoryId = selectedCategoryId,
-                        onCategoryClick = onCategoryClick,
+                    BrowseByHeader(modifier = Modifier.padding(horizontal = 24.dp))
+                }
+
+                items(categories, key = { it.id }) { category ->
+                    SearchCategoryRow(
+                        category = category,
+                        selected = category.id == selectedCategoryId,
+                        onClick = { onCategoryClick(category.id) },
                         modifier = Modifier.padding(horizontal = 24.dp),
                     )
                 }
@@ -97,18 +102,18 @@ fun SearchScreenContent(
                     )
                 }
             } else {
-                items(resultados, key = { it.id }) { album ->
+                items(resultados, key = { it.album.id }) { songReview ->
                     ReviewAlbumRow(
-                        cover = album.cover,
-                        albumTitle = album.title,
-                        artistName = album.artist,
-                        rating = album.rating.roundToInt(),
+                        cover = songReview.album.cover,
+                        albumTitle = songReview.album.title,
+                        artistName = songReview.album.artist,
+                        rating = songReview.rating.roundToInt(),
                         coverSize = 64.dp,
                         coverCorner = 10.dp,
                         starSize = 14.dp,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { onAlbumClick(album.id) }
+                            .clickable { onAlbumClick(songReview.album.id) }
                             .padding(horizontal = 24.dp, vertical = 12.dp),
                     )
                 }

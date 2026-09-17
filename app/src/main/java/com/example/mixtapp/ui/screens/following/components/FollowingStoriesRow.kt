@@ -24,8 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mixtapp.ui.screens.following.model.FollowingStoryUi
-import com.example.mixtapp.ui.theme.StoryGold
+import com.example.mixtapp.data.model.FollowingStoryUi
 
 @Composable
 fun FollowingStoriesRow(
@@ -62,7 +61,13 @@ private fun FollowingStoryBubble(
         Modifier.background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f))
     } else {
         Modifier.background(
-            Brush.linearGradient(colors = listOf(MaterialTheme.colorScheme.primary, StoryGold, MaterialTheme.colorScheme.secondary))
+            Brush.linearGradient(
+                colors = listOf(
+                    MaterialTheme.colorScheme.primary,
+                    MaterialTheme.colorScheme.tertiaryContainer,
+                    MaterialTheme.colorScheme.secondary,
+                )
+            )
         )
     }
 

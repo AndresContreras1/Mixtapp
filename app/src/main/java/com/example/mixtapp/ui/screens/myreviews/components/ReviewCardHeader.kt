@@ -16,14 +16,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.data.model.MyReviewUi
 import com.example.mixtapp.ui.components.AlbumAsyncImage
 import com.example.mixtapp.ui.components.StarRating
-import com.example.mixtapp.ui.screens.myreviews.model.MyReviewUi
+import com.example.mixtapp.ui.theme.displayFontFamily
 
 // Portada + titulo/artista/estrellas
 @Composable
@@ -36,8 +36,8 @@ fun ReviewCardHeader(
         verticalAlignment = Alignment.Top
     ) {
         AlbumAsyncImage(
-            cover = review.cover,
-            contentDescription = stringResource(R.string.album_cover, review.title),
+            cover = review.album.cover,
+            contentDescription = stringResource(R.string.album_cover, review.album.title),
             alpha = 1f,
             modifier = Modifier
                 .size(56.dp)
@@ -48,16 +48,16 @@ fun ReviewCardHeader(
 
         Column {
             Text(
-                text = review.title,
+                text = review.album.title,
                 color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 17.sp,
                 fontWeight = FontWeight.Black,
-                fontFamily = FontFamily.Serif,
+                fontFamily = displayFontFamily,
                 maxLines = 1
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = review.artist,
+                text = review.album.artist,
                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.72f),
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Bold,

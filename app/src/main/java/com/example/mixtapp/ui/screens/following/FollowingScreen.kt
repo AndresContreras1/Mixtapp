@@ -13,11 +13,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalFollowingProvider
+import com.example.mixtapp.data.model.FollowingReviewUi
+import com.example.mixtapp.data.model.FollowingUi
 import com.example.mixtapp.ui.screens.following.components.FollowingBackground
 import com.example.mixtapp.ui.screens.following.components.FollowingList
 import com.example.mixtapp.ui.screens.following.model.FollowingFilterUi
-import com.example.mixtapp.ui.screens.following.model.FollowingReviewUi
-import com.example.mixtapp.ui.screens.following.model.FollowingUi
 import com.example.mixtapp.ui.screens.following.model.followingFilters
 import com.example.mixtapp.ui.theme.MixtappTheme
 

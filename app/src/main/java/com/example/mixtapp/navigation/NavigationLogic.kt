@@ -2,12 +2,12 @@ package com.example.mixtapp.navigation
 
 object NavigationLogic {
 
-    // Pantallas que NO deben mostrar la barra inferior
-    private val noBottomBarScreens = listOf(
-        Screen.Splash.route,
-        Screen.Login.route,
-        Screen.SignUp.route
+    private val bottomBarScreens = listOf(
+        Screen.Home.route,
+        Screen.Search.route,
+        Screen.MyReviews.route,
+        Screen.Profile.route
     )
 
-    fun shouldShowBottomBar(route: String?) = !noBottomBarScreens.contains(route)
+    fun shouldShowBottomBar(route: String?) = bottomBarScreens.contains(route)
 }

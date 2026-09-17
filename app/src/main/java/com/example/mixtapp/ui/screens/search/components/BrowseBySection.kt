@@ -22,15 +22,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
-import com.example.mixtapp.ui.screens.search.model.SearchCategoryUi
+import com.example.mixtapp.data.model.SearchCategoryUi
 
 @Composable
-fun BrowseBySection(
-    categories: List<SearchCategoryUi>,
-    selectedCategoryId: String?,
-    onCategoryClick: (String) -> Unit,
-    modifier: Modifier = Modifier,
-) {
+fun BrowseByHeader(modifier: Modifier = Modifier) {
     Column(modifier = modifier.fillMaxWidth()) {
         Text(
             text = stringResource(R.string.browse_by),
@@ -42,20 +37,11 @@ fun BrowseBySection(
         )
 
         HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.6f), thickness = 1.dp)
-
-        categories.forEach { category ->
-            SearchCategoryRow(
-                category = category,
-                selected = category.id == selectedCategoryId,
-                onClick = { onCategoryClick(category.id) },
-            )
-            HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.6f), thickness = 1.dp)
-        }
     }
 }
 
 @Composable
-private fun SearchCategoryRow(
+fun SearchCategoryRow(
     category: SearchCategoryUi,
     selected: Boolean,
     onClick: () -> Unit,
@@ -64,42 +50,46 @@ private fun SearchCategoryRow(
     val contentColor = if (selected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
     val subtitleColor = if (selected) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.72f)
 
-    Surface(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick),
-        color = Color.Transparent,
-    ) {
-        Row(
+    Column(modifier = modifier.fillMaxWidth()) {
+        Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .heightIn(min = 98.dp)
-                .padding(vertical = 19.dp),
-            verticalAlignment = Alignment.CenterVertically,
+                .clickable(onClick = onClick),
+            color = Color.Transparent,
         ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = category.title,
-                    color = contentColor,
-                    fontSize = 24.sp,
-                    lineHeight = 29.sp,
-                    fontWeight = FontWeight.Normal,
-                )
-                Text(
-                    text = category.subtitle,
-                    modifier = Modifier.padding(top = 7.dp),
-                    color = subtitleColor,
-                    fontSize = 13.sp,
-                    lineHeight = 17.sp,
-                    fontWeight = FontWeight.SemiBold,
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 98.dp)
+                    .padding(vertical = 19.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = category.title,
+                        color = contentColor,
+                        fontSize = 24.sp,
+                        lineHeight = 29.sp,
+                        fontWeight = FontWeight.Normal,
+                    )
+                    Text(
+                        text = category.subtitle,
+                        modifier = Modifier.padding(top = 7.dp),
+                        color = subtitleColor,
+                        fontSize = 13.sp,
+                        lineHeight = 17.sp,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                }
+
+                Icon(
+                    imageVector = Icons.Default.KeyboardArrowRight,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
                 )
             }
-
-            Icon(
-                imageVector = Icons.Default.KeyboardArrowRight,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-            )
         }
+
+        HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.6f), thickness = 1.dp)
     }
 }

@@ -7,9 +7,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.mixtapp.data.model.FollowingReviewUi
+import com.example.mixtapp.data.model.FollowingUi
 import com.example.mixtapp.ui.screens.following.model.FollowingFilterUi
-import com.example.mixtapp.ui.screens.following.model.FollowingReviewUi
-import com.example.mixtapp.ui.screens.following.model.FollowingUi
 
 @Composable
 fun FollowingList(

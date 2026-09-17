@@ -1,8 +1,7 @@
 package com.example.mixtapp.ui.screens.home.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,6 +14,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,74 +27,79 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.data.model.SongReviewUi
 import com.example.mixtapp.ui.components.AlbumAsyncImage
 import com.example.mixtapp.ui.components.StarRating
-import com.example.mixtapp.ui.screens.songreview.model.SongReviewUi
 import kotlin.math.roundToInt
 
 @Composable
 fun TrendingCard(
-    album: SongReviewUi,
+    songReview: SongReviewUi,
     onClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(
+    Card(
+        onClick = { onClick(songReview.album.id) },
         modifier = modifier
             .fillMaxWidth()
-            .height(190.dp)
-            .clip(RoundedCornerShape(12.dp))
-            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
-            .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), RoundedCornerShape(12.dp))
-            .clickable { onClick(album.id) }
+            .height(190.dp),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
     ) {
-        AlbumAsyncImage(
-            cover = album.cover,
-            contentDescription = stringResource(R.string.album_cover, album.title),
-            alpha = 0.4f,
-            modifier = Modifier.fillMaxSize()
-        )
-
-        Box(modifier = Modifier.fillMaxSize().padding(14.dp)) {
-            Text(
-                text = stringResource(R.string.now_trending),
-                modifier = Modifier
-                    .clip(RoundedCornerShape(18.dp))
-                    .background(MaterialTheme.colorScheme.primary)
-                    .padding(horizontal = 12.dp, vertical = 8.dp),
-                color = MaterialTheme.colorScheme.onSurface,
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Bold
+        Box(modifier = Modifier.fillMaxSize()) {
+            AlbumAsyncImage(
+                cover = songReview.album.cover,
+                contentDescription = stringResource(R.string.album_cover, songReview.album.title),
+                alpha = 0.4f,
+                modifier = Modifier.fillMaxSize()
             )
 
-            Column(
-                modifier = Modifier.align(Alignment.BottomStart)
-            ) {
+            Box(modifier = Modifier.fillMaxSize().padding(14.dp)) {
                 Text(
-                    text = stringResource(R.string.titulo_guion_subtitulo, album.artist, album.title),
+                    text = stringResource(R.string.now_trending),
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(18.dp))
+                        .background(MaterialTheme.colorScheme.primary)
+                        .padding(horizontal = 12.dp, vertical = 8.dp),
                     color = MaterialTheme.colorScheme.onSurface,
-                    fontSize = 14.sp,
+                    fontSize = 13.sp,
                     fontWeight = FontWeight.Bold
                 )
 
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    StarRating(
-                        rating = album.rating.roundToInt(),
-                        starCount = 5,
-                        starSize = 14.dp,
-                        spacing = 0.dp,
-                        filledTint = MaterialTheme.colorScheme.onBackground,
-                        emptyTint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f),
-                        emptyIcon = Icons.Default.Star,
-                        onRatingChange = null
-                    )
-
-                    Spacer(modifier = Modifier.width(10.dp))
-
+                Column(
+                    modifier = Modifier.align(Alignment.BottomStart)
+                ) {
                     Text(
-                        text = stringResource(R.string.plays_this_week),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        fontSize = 12.sp
+                        text = stringResource(R.string.titulo_guion_subtitulo, songReview.album.artist, songReview.album.title),
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold
                     )
+
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        StarRating(
+                            rating = songReview.rating.roundToInt(),
+                            starCount = 5,
+                            starSize = 14.dp,
+                            spacing = 0.dp,
+                            filledTint = MaterialTheme.colorScheme.onBackground,
+                            emptyTint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f),
+                            emptyIcon = Icons.Default.Star,
+                            onRatingChange = null
+                        )
+
+                        Spacer(modifier = Modifier.width(10.dp))
+
+                        Text(
+                            text = stringResource(R.string.plays_this_week),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            fontSize = 12.sp
+                        )
+                    }
                 }
             }
         }

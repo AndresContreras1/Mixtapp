@@ -19,10 +19,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.data.model.DiscussionReviewUi
 import com.example.mixtapp.ui.components.ReviewActionsRow
 import com.example.mixtapp.ui.components.ReviewAlbumRow
 import com.example.mixtapp.ui.components.ReviewAuthorRow
-import com.example.mixtapp.ui.screens.discussion.model.DiscussionReviewUi
 
 @Composable
 fun DiscussionReviewCard(
@@ -55,9 +55,9 @@ fun DiscussionReviewCard(
             Spacer(modifier = Modifier.height(14.dp))
 
             ReviewAlbumRow(
-                cover = review.cover,
-                albumTitle = review.albumTitle,
-                artistName = review.artistName,
+                cover = review.album.cover,
+                albumTitle = review.album.title,
+                artistName = review.album.artist,
                 rating = review.rating,
                 coverSize = 80.dp,
                 coverCorner = 10.dp,

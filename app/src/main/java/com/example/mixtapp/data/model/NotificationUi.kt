@@ -1,4 +1,4 @@
-package com.example.mixtapp.ui.screens.notifications.model
+package com.example.mixtapp.data.model
 
 data class NotificationUi(
     val id: String,

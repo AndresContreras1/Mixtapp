@@ -1,19 +1,22 @@
 package com.example.mixtapp.ui.screens.discussion
 
 import androidx.lifecycle.ViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
-import com.example.mixtapp.data.local.LocalDiscussionProvider
+import androidx.lifecycle.viewModelScope
+import com.example.mixtapp.data.model.DiscussionUi
 import com.example.mixtapp.data.repository.AuthRepository
-import com.example.mixtapp.ui.screens.discussion.model.DiscussionCommentUi
+import com.example.mixtapp.data.repository.ReviewRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class DiscussionViewModel @Inject constructor(
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val reviewRepository: ReviewRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(DiscussionState())
@@ -23,20 +26,26 @@ class DiscussionViewModel @Inject constructor(
     fun getDiscussionByReviewId(reviewId: String) {
         if (_uiState.value.discussion != null) return
 
-        val discussion = LocalDiscussionProvider.discussions.find { it.id == reviewId }
+        viewModelScope.launch {
+            val result = reviewRepository.getDiscussionByReviewId(reviewId = reviewId)
 
-        _uiState.update {
-            it.copy(
-                discussion = discussion,
-                comentarios = discussion?.comments ?: emptyList(),
-                isReviewLiked = discussion?.review?.isLiked ?: false,
-                isReviewShared = discussion?.review?.isShared ?: false,
-                likedCommentIds = discussion?.comments
-                    ?.filter { comentario -> comentario.isLiked }
-                    ?.map { comentario -> comentario.id }
-                    ?.toSet()
-                    ?: emptySet(),
-            )
+            if (result.isSuccess) {
+                val discussion = result.getOrNull()
+
+                _uiState.update {
+                    it.copy(
+                        discussion = discussion,
+                        comentarios = discussion?.comments ?: emptyList(),
+                        isReviewLiked = discussion?.review?.isLiked ?: false,
+                        isReviewShared = discussion?.review?.isShared ?: false,
+                        likedCommentIds = discussion?.comments
+                            ?.filter { comentario -> comentario.isLiked }
+                            ?.map { comentario -> comentario.id }
+                            ?.toSet()
+                            ?: emptySet(),
+                    )
+                }
+            }
         }
     }
 
@@ -46,46 +55,78 @@ class DiscussionViewModel @Inject constructor(
 
     fun publicarComentario() {
         val estado = _uiState.value
+        val reviewId = estado.discussion?.id ?: return
         val texto = estado.nuevoComentario.trim()
 
         if (texto.isEmpty()) return
 
         val autor = authRepository.currentUser?.email?.substringBefore("@") ?: ""
 
-        val comentario = DiscussionCommentUi(
-            id = "comentario-propio-" + (estado.comentarios.size + 1),
-            author = autor,
-            initials = autor.take(2).lowercase(),
-            timeAgo = "ahora",
-            content = texto,
-            likes = 0,
-            isReply = false,
-            isLiked = false,
-        )
-
-        _uiState.update {
-            it.copy(
-                comentarios = it.comentarios + comentario,
-                nuevoComentario = "",
+        viewModelScope.launch {
+            val result = reviewRepository.publicarComentario(
+                reviewId = reviewId,
+                autor = autor,
+                texto = texto,
             )
+
+            if (result.isSuccess) {
+                actualizarDiscusion(discussion = result.getOrNull())
+                _uiState.update { it.copy(nuevoComentario = "") }
+            }
         }
     }
 
     fun darQuitarLikeResena() {
-        val valorActual = _uiState.value.isReviewLiked
-        _uiState.update { it.copy(isReviewLiked = !valorActual) }
+        val reviewId = _uiState.value.discussion?.id ?: return
+
+        viewModelScope.launch {
+            val result = reviewRepository.darQuitarLikeResena(reviewId = reviewId)
+
+            if (result.isSuccess) {
+                actualizarDiscusion(discussion = result.getOrNull())
+            }
+        }
     }
 
     fun compartirQuitarResena() {
-        val valorActual = _uiState.value.isReviewShared
-        _uiState.update { it.copy(isReviewShared = !valorActual) }
+        val reviewId = _uiState.value.discussion?.id ?: return
+
+        viewModelScope.launch {
+            val result = reviewRepository.compartirQuitarResena(reviewId = reviewId)
+
+            if (result.isSuccess) {
+                actualizarDiscusion(discussion = result.getOrNull())
+            }
+        }
     }
 
     fun darQuitarLikeComentario(commentId: String) {
-        val actuales = _uiState.value.likedCommentIds
-        val nuevos = if (commentId in actuales) actuales - commentId else actuales + commentId
+        val reviewId = _uiState.value.discussion?.id ?: return
 
-        _uiState.update { it.copy(likedCommentIds = nuevos) }
+        viewModelScope.launch {
+            val result = reviewRepository.darQuitarLikeComentario(reviewId = reviewId, commentId = commentId)
+
+            if (result.isSuccess) {
+                actualizarDiscusion(discussion = result.getOrNull())
+            }
+        }
+    }
+
+    private fun actualizarDiscusion(discussion: DiscussionUi?) {
+        if (discussion == null) return
+
+        _uiState.update {
+            it.copy(
+                discussion = discussion,
+                comentarios = discussion.comments,
+                isReviewLiked = discussion.review.isLiked,
+                isReviewShared = discussion.review.isShared,
+                likedCommentIds = discussion.comments
+                    .filter { comentario -> comentario.isLiked }
+                    .map { comentario -> comentario.id }
+                    .toSet(),
+            )
+        }
     }
 
     fun responderComentario(commentId: String) {

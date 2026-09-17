@@ -30,7 +30,7 @@ class AuthRepository @Inject constructor(
         } catch (e: FirebaseTooManyRequestsException) {
             Result.failure(DemasiadosIntentosException())
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(ErrorDeInicioSesionException())
         }
     }
 
@@ -47,7 +47,7 @@ class AuthRepository @Inject constructor(
         } catch (e: FirebaseTooManyRequestsException) {
             Result.failure(DemasiadosIntentosException())
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(ErrorDeRegistroException())
         }
     }
 

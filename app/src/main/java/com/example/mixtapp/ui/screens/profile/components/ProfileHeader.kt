@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,6 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mixtapp.R
 import com.example.mixtapp.ui.screens.profile.model.ProfileTabUi
 
 @Composable
@@ -38,6 +40,8 @@ fun ProfileHeader(
     tabs: List<ProfileTabUi>,
     selectedTabId: String,
     onTabSelected: (String) -> Unit,
+    onSettingsClick: () -> Unit,
+    onMoreClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -53,24 +57,34 @@ fun ProfileHeader(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Icon(
-                imageVector = Icons.Default.Settings,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            IconButton(
+                onClick = onSettingsClick,
                 modifier = Modifier.size(28.dp)
-            )
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Settings,
+                    contentDescription = stringResource(R.string.ajustes),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(28.dp)
+                )
+            }
             Text(
                 text = usuario,
                 color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Black
             )
-            Icon(
-                imageVector = Icons.Default.MoreVert,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            IconButton(
+                onClick = onMoreClick,
                 modifier = Modifier.size(28.dp)
-            )
+            ) {
+                Icon(
+                    imageVector = Icons.Default.MoreVert,
+                    contentDescription = stringResource(R.string.mas_opciones),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(28.dp)
+                )
+            }
         }
 
         Row(

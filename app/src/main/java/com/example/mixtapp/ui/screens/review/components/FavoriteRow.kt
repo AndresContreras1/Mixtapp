@@ -1,6 +1,5 @@
 package com.example.mixtapp.ui.screens.review.components
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,6 +8,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -45,13 +45,16 @@ fun FavoriteRow(
             )
         }
 
-        Icon(
-            imageVector = Icons.Default.Favorite,
-            contentDescription = stringResource(R.string.favorite),
-            tint = if (isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primary.copy(alpha = 0.78f),
-            modifier = Modifier
-                .size(36.dp)
-                .clickable { onFavoriteChange(!isFavorite) }
-        )
+        IconButton(
+            onClick = { onFavoriteChange(!isFavorite) },
+            modifier = Modifier.size(36.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Favorite,
+                contentDescription = stringResource(R.string.favorite),
+                tint = if (isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primary.copy(alpha = 0.78f),
+                modifier = Modifier.size(36.dp)
+            )
+        }
     }
 }

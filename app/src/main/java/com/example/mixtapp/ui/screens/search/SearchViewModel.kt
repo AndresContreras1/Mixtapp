@@ -1,18 +1,24 @@
 package com.example.mixtapp.ui.screens.search
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.mixtapp.data.model.CATEGORIA_FECHA_LANZAMIENTO
+import com.example.mixtapp.data.model.CATEGORIA_MAS_POPULARES
+import com.example.mixtapp.data.model.CATEGORIA_MEJOR_CALIFICADOS
+import com.example.mixtapp.data.model.SongReviewUi
+import com.example.mixtapp.data.repository.AlbumRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import com.example.mixtapp.data.local.LocalSearchCategoriesProvider
-import com.example.mixtapp.data.local.LocalSongReviewProvider
-import com.example.mixtapp.ui.screens.songreview.model.SongReviewUi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SearchViewModel @Inject constructor() : ViewModel() {
+class SearchViewModel @Inject constructor(
+    private val albumRepository: AlbumRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SearchState())
     val uiState: StateFlow<SearchState> = _uiState.asStateFlow()
@@ -23,28 +29,64 @@ class SearchViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun getCategories() {
-        _uiState.update { it.copy(categories = LocalSearchCategoriesProvider.categories) }
-    }
+        viewModelScope.launch {
+            val result = albumRepository.getSearchCategories()
 
-    fun updateQuery(query: String) {
-        _uiState.update {
-            it.copy(
-                query = query,
-                resultados = buscarAlbumes(query = query),
-            )
+            if (result.isSuccess) {
+                _uiState.update { it.copy(categories = result.getOrNull() ?: emptyList()) }
+            }
         }
     }
 
-    private fun buscarAlbumes(query: String): List<SongReviewUi> {
-        if (query.isBlank()) return emptyList()
+    fun updateQuery(query: String) {
+        viewModelScope.launch {
+            val todos = albumRepository.getSongReviews().getOrNull() ?: emptyList()
 
-        return LocalSongReviewProvider.songs.filter { album ->
-            album.title.contains(query, ignoreCase = true) ||
-                    album.artist.contains(query, ignoreCase = true)
+            _uiState.update {
+                it.copy(
+                    query = query,
+                    selectedCategoryId = if (query.isBlank()) it.selectedCategoryId else null,
+                    resultados = buscarPorNombre(query = query, todos = todos),
+                )
+            }
         }
     }
 
     fun updateSelectedCategory(categoryId: String) {
-        _uiState.update { it.copy(selectedCategoryId = categoryId) }
+        val yaEstaba = _uiState.value.selectedCategoryId == categoryId
+
+        viewModelScope.launch {
+            val todos = albumRepository.getSongReviews().getOrNull() ?: emptyList()
+
+            _uiState.update {
+                it.copy(
+                    selectedCategoryId = if (yaEstaba) null else categoryId,
+                    resultados = if (yaEstaba) {
+                        emptyList()
+                    } else {
+                        ordenarPorCategoria(categoryId = categoryId, todos = todos)
+                    },
+                )
+            }
+        }
+    }
+
+    private fun buscarPorNombre(query: String, todos: List<SongReviewUi>): List<SongReviewUi> {
+        if (query.isBlank()) return emptyList()
+
+        return todos.filter { songReview ->
+            songReview.album.title.contains(query, ignoreCase = true) ||
+                    songReview.album.artist.contains(query, ignoreCase = true)
+        }
+    }
+
+    private fun ordenarPorCategoria(
+        categoryId: String,
+        todos: List<SongReviewUi>,
+    ): List<SongReviewUi> = when (categoryId) {
+        CATEGORIA_FECHA_LANZAMIENTO -> todos.sortedByDescending { it.album.year }
+        CATEGORIA_MEJOR_CALIFICADOS -> todos.sortedByDescending { it.rating }
+        CATEGORIA_MAS_POPULARES -> todos
+        else -> todos
     }
 }

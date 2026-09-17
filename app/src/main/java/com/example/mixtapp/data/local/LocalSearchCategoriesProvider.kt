@@ -1,6 +1,6 @@
 package com.example.mixtapp.data.local
 
-import com.example.mixtapp.ui.screens.search.model.SearchCategoryUi
+import com.example.mixtapp.data.model.SearchCategoryUi
 
 object LocalSearchCategoriesProvider {
     val categories = listOf(

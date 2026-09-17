@@ -1,4 +1,4 @@
-package com.example.mixtapp.ui.screens.following.model
+package com.example.mixtapp.data.model
 
 data class FollowingUi(
     val id: String,
@@ -20,9 +20,7 @@ data class FollowingReviewUi(
     val reviewerName: String,
     val reviewerInitials: String,
     val reviewedAt: String,
-    val cover: String,
-    val albumTitle: String,
-    val artistName: String,
+    val album: Album,
     val rating: Int,
     val reviewText: String,
     val likes: Int,

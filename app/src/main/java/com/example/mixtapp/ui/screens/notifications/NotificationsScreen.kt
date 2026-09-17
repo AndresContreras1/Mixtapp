@@ -17,12 +17,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.data.local.LocalNotificationsProvider
+import com.example.mixtapp.data.model.NotificationUi
 import com.example.mixtapp.ui.screens.notifications.components.NotificationRow
 import com.example.mixtapp.ui.screens.notifications.components.NotificationSectionLabel
 import com.example.mixtapp.ui.screens.notifications.components.NotificationsHeader
 import com.example.mixtapp.ui.screens.notifications.components.NotificationsTabs
 import com.example.mixtapp.ui.screens.notifications.model.NotificationTabUi
-import com.example.mixtapp.ui.screens.notifications.model.NotificationUi
 import com.example.mixtapp.ui.screens.notifications.model.TAB_TODAS
 import com.example.mixtapp.ui.screens.notifications.model.notificationTabs
 import com.example.mixtapp.ui.theme.MixtappTheme

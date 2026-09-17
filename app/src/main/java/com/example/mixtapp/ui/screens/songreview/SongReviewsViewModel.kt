@@ -1,16 +1,21 @@
 package com.example.mixtapp.ui.screens.songreview
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.mixtapp.data.model.SongReviewUi
+import com.example.mixtapp.data.repository.AlbumRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import com.example.mixtapp.data.local.LocalSongReviewProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SongReviewsViewModel @Inject constructor() : ViewModel() {
+class SongReviewsViewModel @Inject constructor(
+    private val albumRepository: AlbumRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SongReviewsState())
     val uiState: StateFlow<SongReviewsState> = _uiState.asStateFlow()
@@ -19,29 +24,94 @@ class SongReviewsViewModel @Inject constructor() : ViewModel() {
     fun getSongById(songId: String) {
         if (_uiState.value.song != null) return
 
-        val song = LocalSongReviewProvider.songs.find { cancion -> cancion.id == songId }
+        viewModelScope.launch {
+            val result = albumRepository.getSongReviewById(songId = songId)
 
-        _uiState.update {
-            it.copy(
-                song = song,
-                userRating = song?.userRating ?: 0,
-                isSaved = song?.isSaved ?: false,
-                isLiked = song?.isLiked ?: false,
-            )
+            if (result.isSuccess) {
+                val song = result.getOrNull()
+
+                _uiState.update {
+                    it.copy(
+                        song = song,
+                        userRating = song?.userRating ?: 0,
+                        isSaved = song?.isSaved ?: false,
+                        isLiked = song?.isLiked ?: false,
+                        likedReviewIds = song?.reviews
+                            ?.filter { resena -> resena.isLiked }
+                            ?.map { resena -> resena.id }
+                            ?.toSet()
+                            ?: emptySet(),
+                    )
+                }
+            }
         }
     }
 
     fun updateUserRating(rating: Int) {
-        _uiState.update { it.copy(userRating = rating) }
+        val songId = _uiState.value.song?.album?.id ?: return
+
+        viewModelScope.launch {
+            val result = albumRepository.calificarSongReview(songId = songId, rating = rating)
+
+            if (result.isSuccess) {
+                actualizarSong(song = result.getOrNull())
+            }
+        }
     }
 
     fun guardarQuitarGuardado() {
-        val valorActual = _uiState.value.isSaved
-        _uiState.update { it.copy(isSaved = !valorActual) }
+        val songId = _uiState.value.song?.album?.id ?: return
+
+        viewModelScope.launch {
+            val result = albumRepository.guardarQuitarSongReview(songId = songId)
+
+            if (result.isSuccess) {
+                actualizarSong(song = result.getOrNull())
+            }
+        }
     }
 
     fun darQuitarLike() {
-        val valorActual = _uiState.value.isLiked
-        _uiState.update { it.copy(isLiked = !valorActual) }
+        val songId = _uiState.value.song?.album?.id ?: return
+
+        viewModelScope.launch {
+            val result = albumRepository.darQuitarLikeSongReview(songId = songId)
+
+            if (result.isSuccess) {
+                actualizarSong(song = result.getOrNull())
+            }
+        }
+    }
+
+    fun darQuitarLikeResena(reviewId: String) {
+        val songId = _uiState.value.song?.album?.id ?: return
+
+        viewModelScope.launch {
+            val result = albumRepository.darQuitarLikeResenaDeAlbum(
+                songId = songId,
+                reviewId = reviewId,
+            )
+
+            if (result.isSuccess) {
+                actualizarSong(song = result.getOrNull())
+            }
+        }
+    }
+
+    private fun actualizarSong(song: SongReviewUi?) {
+        if (song == null) return
+
+        _uiState.update {
+            it.copy(
+                song = song,
+                userRating = song.userRating,
+                isSaved = song.isSaved,
+                isLiked = song.isLiked,
+                likedReviewIds = song.reviews
+                    .filter { resena -> resena.isLiked }
+                    .map { resena -> resena.id }
+                    .toSet(),
+            )
+        }
     }
 }

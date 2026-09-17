@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.mixtapp.ui.screens.songreview.model.SongReviewUi
+import com.example.mixtapp.data.model.SongReviewUi
 
 @Composable
 fun PopularAlbums(
@@ -18,13 +18,13 @@ fun PopularAlbums(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        albums.forEach { album ->
+        albums.forEach { songReview ->
             AlbumItem(
-                title = album.title,
-                artist = album.artist,
-                cover = album.cover,
+                title = songReview.album.title,
+                artist = songReview.album.artist,
+                cover = songReview.album.cover,
                 modifier = Modifier.weight(1f),
-                onClick = { onAlbumClick(album.id) }
+                onClick = { onAlbumClick(songReview.album.id) }
             )
         }
     }

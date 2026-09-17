@@ -1,20 +1,27 @@
 package com.example.mixtapp.ui.screens.home
 
 import androidx.lifecycle.ViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
-import com.example.mixtapp.data.local.LocalFriendActivityProvider
+import androidx.lifecycle.viewModelScope
+import com.example.mixtapp.data.model.SongReviewUi
+import com.example.mixtapp.data.repository.AlbumRepository
 import com.example.mixtapp.data.repository.AuthRepository
+import com.example.mixtapp.data.repository.SocialRepository
+import com.example.mixtapp.ui.screens.home.model.FILTRO_AMIGOS
+import com.example.mixtapp.ui.screens.home.model.FILTRO_TENDENCIAS
 import com.example.mixtapp.ui.screens.home.model.homeFilters
-import com.example.mixtapp.data.local.LocalSongReviewProvider
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val albumRepository: AlbumRepository,
+    private val socialRepository: SocialRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeState())
@@ -26,14 +33,23 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun getAlbums() {
-        _uiState.update {
-            it.copy(
-                albums = LocalSongReviewProvider.popularSongs,
-                trending = LocalSongReviewProvider.trendingSong,
-                friendActivity = LocalFriendActivityProvider.friendActivity,
-                filters = homeFilters,
-                selectedFilterId = homeFilters.first().id,
-            )
+        viewModelScope.launch {
+            val tendencia = albumRepository.getTrendingSongReview()
+            val actividad = socialRepository.getFriendActivity()
+            val filtroInicial = homeFilters.first().id
+            val albums = aplicarFiltro(filtroId = filtroInicial)
+
+            if (tendencia.isSuccess && actividad.isSuccess) {
+                _uiState.update {
+                    it.copy(
+                        albums = albums,
+                        trending = tendencia.getOrNull(),
+                        friendActivity = actividad.getOrNull(),
+                        filters = homeFilters,
+                        selectedFilterId = filtroInicial,
+                    )
+                }
+            }
         }
     }
 
@@ -44,6 +60,29 @@ class HomeViewModel @Inject constructor(
     }
 
     fun updateSelectedFilter(filtroId: String) {
-        _uiState.update { it.copy(selectedFilterId = filtroId) }
+        viewModelScope.launch {
+            val albums = aplicarFiltro(filtroId = filtroId)
+
+            _uiState.update { it.copy(selectedFilterId = filtroId, albums = albums) }
+        }
+    }
+
+    private suspend fun aplicarFiltro(filtroId: String): List<SongReviewUi> = when (filtroId) {
+        FILTRO_TENDENCIAS -> {
+            val result = albumRepository.getSongReviews()
+            result.getOrNull()?.sortedByDescending { it.rating }?.take(3) ?: emptyList()
+        }
+
+        FILTRO_AMIGOS -> albumesDeAmigos()
+
+        else -> albumRepository.getPopularSongReviews().getOrNull() ?: emptyList()
+    }
+
+    private suspend fun albumesDeAmigos(): List<SongReviewUi> {
+        val following = socialRepository.getFollowing().getOrNull() ?: return emptyList()
+        val todos = albumRepository.getSongReviews().getOrNull() ?: return emptyList()
+        val idsDeAmigos = following.reviews.map { it.album.id }
+
+        return todos.filter { it.album.id in idsDeAmigos }
     }
 }

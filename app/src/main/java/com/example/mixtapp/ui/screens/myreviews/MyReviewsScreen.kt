@@ -17,11 +17,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.data.local.LocalMyReviewsProvider
+import com.example.mixtapp.data.model.MyReviewUi
 import com.example.mixtapp.ui.screens.myreviews.components.MyReviewCard
 import com.example.mixtapp.ui.screens.myreviews.components.MyReviewsFilter
 import com.example.mixtapp.ui.screens.myreviews.components.MyReviewsHeader
 import com.example.mixtapp.ui.screens.myreviews.model.MyReviewFilterUi
-import com.example.mixtapp.ui.screens.myreviews.model.MyReviewUi
 import com.example.mixtapp.ui.screens.myreviews.model.myReviewFilters
 import com.example.mixtapp.ui.theme.MixtappTheme
 

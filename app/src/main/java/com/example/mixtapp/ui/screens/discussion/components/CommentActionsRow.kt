@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,14 +34,17 @@ fun CommentActionsRow(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(
-            imageVector = if (isLiked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-            contentDescription = stringResource(R.string.like_comment),
-            tint = if (isLiked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.62f),
-            modifier = Modifier
-                .size(12.dp)
-                .clickable { onLikeClick() },
-        )
+        IconButton(
+            onClick = onLikeClick,
+            modifier = Modifier.size(12.dp),
+        ) {
+            Icon(
+                imageVector = if (isLiked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                contentDescription = stringResource(R.string.like_comment),
+                tint = if (isLiked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.62f),
+                modifier = Modifier.size(12.dp),
+            )
+        }
         Text(
             text = (likes + if (isLiked) 1 else 0).toString(),
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.62f),

@@ -1,4 +1,4 @@
-package com.example.mixtapp.ui.screens.discussion.model
+package com.example.mixtapp.data.model
 
 data class DiscussionUi(
     val id: String,
@@ -11,9 +11,7 @@ data class DiscussionReviewUi(
     val reviewerName: String,
     val reviewerAvatarText: String,
     val reviewedAt: String,
-    val cover: String,
-    val albumTitle: String,
-    val artistName: String,
+    val album: Album,
     val rating: Int,
     val reviewText: String,
     val likes: Int,

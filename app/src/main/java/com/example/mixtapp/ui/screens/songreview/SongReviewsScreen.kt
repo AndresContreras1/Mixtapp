@@ -11,9 +11,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalSongReviewProvider
+import com.example.mixtapp.data.model.SongReviewUi
 import com.example.mixtapp.ui.components.AppBackground
 import com.example.mixtapp.ui.screens.songreview.components.SongReviewSections
-import com.example.mixtapp.ui.screens.songreview.model.SongReviewUi
 import com.example.mixtapp.ui.theme.MixtappTheme
 
 // Recibe solo el id; el ViewModel se encarga de buscar la cancion
@@ -23,6 +23,7 @@ fun SongReviewsScreen(
     songReviewsViewModel: SongReviewsViewModel,
     onWriteReviewClick: () -> Unit,
     onBackClick: () -> Unit,
+    onReviewReplyClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val state by songReviewsViewModel.uiState.collectAsState()
@@ -44,6 +45,9 @@ fun SongReviewsScreen(
             onLikeClick = { songReviewsViewModel.darQuitarLike() },
             onWriteReviewClick = onWriteReviewClick,
             onBackClick = onBackClick,
+            likedReviewIds = state.likedReviewIds,
+            onReviewLikeClick = { songReviewsViewModel.darQuitarLikeResena(reviewId = it) },
+            onReviewReplyClick = onReviewReplyClick,
             modifier = modifier
         )
     }
@@ -60,6 +64,9 @@ fun SongReviewsScreenContent(
     onLikeClick: () -> Unit,
     onWriteReviewClick: () -> Unit,
     onBackClick: () -> Unit,
+    likedReviewIds: Set<String>,
+    onReviewLikeClick: (String) -> Unit,
+    onReviewReplyClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -75,6 +82,9 @@ fun SongReviewsScreenContent(
             onLikeClick = onLikeClick,
             onWriteReviewClick = onWriteReviewClick,
             onBackClick = onBackClick,
+            likedReviewIds = likedReviewIds,
+            onReviewLikeClick = onReviewLikeClick,
+            onReviewReplyClick = onReviewReplyClick,
             modifier = Modifier.fillMaxSize()
         )
     }
@@ -95,7 +105,10 @@ fun SongReviewsScreenPreview() {
             onSaveClick = {},
             onLikeClick = {},
             onWriteReviewClick = {},
-            onBackClick = {}
+            onBackClick = {},
+            likedReviewIds = emptySet(),
+            onReviewLikeClick = {},
+            onReviewReplyClick = {}
         )
     }
 }

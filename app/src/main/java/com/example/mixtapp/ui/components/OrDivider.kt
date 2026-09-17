@@ -10,8 +10,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mixtapp.ui.theme.MixtappTheme
 
 @Composable
 fun OrDivider(
@@ -39,5 +41,14 @@ fun OrDivider(
             thickness = 1.dp,
             color = MaterialTheme.colorScheme.outlineVariant
         )
+    }
+}
+
+
+@Composable
+@Preview
+fun OrDividerPreview() {
+    MixtappTheme(darkTheme = true, dynamicColor = false) {
+        OrDivider(text = "O")
     }
 }

@@ -4,13 +4,16 @@ import android.net.Uri
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dagger.hilt.android.lifecycle.HiltViewModel
-import com.example.mixtapp.data.local.LocalProfileProvider
 import com.example.mixtapp.R
 import com.example.mixtapp.data.repository.AuthRepository
+import com.example.mixtapp.data.repository.CuotaExcedidaException
+import com.example.mixtapp.data.repository.PermisoDenegadoException
+import com.example.mixtapp.data.repository.SinConexionException
 import com.example.mixtapp.data.repository.SinSesionException
+import com.example.mixtapp.data.repository.SocialRepository
 import com.example.mixtapp.data.repository.StorageRepository
 import com.example.mixtapp.ui.screens.profile.model.profileTabs
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,7 +24,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val authRepository: AuthRepository,
-    private val storageRepository: StorageRepository
+    private val storageRepository: StorageRepository,
+    private val socialRepository: SocialRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfileState())
@@ -37,14 +41,20 @@ class ProfileViewModel @Inject constructor(
         val usuario = authRepository.currentUser?.email?.substringBefore("@") ?: ""
         val foto = authRepository.currentUser?.photoUrl?.toString() ?: ""
 
-        _uiState.update {
-            it.copy(
-                profile = LocalProfileProvider.profile,
-                tabs = profileTabs,
-                selectedTabId = profileTabs.first().id,
-                usuario = usuario,
-                profileImageUrl = foto,
-            )
+        viewModelScope.launch {
+            val result = socialRepository.getProfile()
+
+            if (result.isSuccess) {
+                _uiState.update {
+                    it.copy(
+                        profile = result.getOrNull(),
+                        tabs = profileTabs,
+                        selectedTabId = profileTabs.first().id,
+                        usuario = usuario,
+                        profileImageUrl = foto,
+                    )
+                }
+            }
         }
     }
 
@@ -76,6 +86,9 @@ class ProfileViewModel @Inject constructor(
     @StringRes
     private fun mensajeDeError(error: Throwable?): Int = when (error) {
         is SinSesionException -> R.string.error_sin_sesion
+        is SinConexionException -> R.string.error_sin_conexion
+        is CuotaExcedidaException -> R.string.error_cuota_excedida
+        is PermisoDenegadoException -> R.string.error_permiso_denegado
         else -> R.string.error_subir_imagen
     }
 

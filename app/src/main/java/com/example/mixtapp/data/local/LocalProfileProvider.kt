@@ -1,7 +1,7 @@
 package com.example.mixtapp.data.local
 
-import com.example.mixtapp.ui.screens.profile.model.ProfileUi
-import com.example.mixtapp.ui.screens.profile.model.RecentActivityUi
+import com.example.mixtapp.data.model.ProfileUi
+import com.example.mixtapp.data.model.RecentActivityUi
 
 object LocalProfileProvider {
 
@@ -15,7 +15,7 @@ object LocalProfileProvider {
         favoritesCount = 4,
         recentActivity = RecentActivityUi(
             id = "the-black-parade",
-            albumTitle = "The Black Parade",
+            album = LocalAlbumProvider.theBlackParade,
             rating = 5,
             comment = "A loud, dramatic favorite that still feels alive on every listen.",
         ),

@@ -1,4 +1,4 @@
-package com.example.mixtapp.ui.screens.profile.model
+package com.example.mixtapp.data.model
 
 data class ProfileUi(
     val id: String,
@@ -16,7 +16,7 @@ data class ProfileUi(
 
 data class RecentActivityUi(
     val id: String,
-    val albumTitle: String,
+    val album: Album,
     val rating: Int,
     val comment: String,
 )

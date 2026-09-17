@@ -15,11 +15,10 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mixtapp.data.model.FollowingReviewUi
 import com.example.mixtapp.ui.components.ReviewActionsRow
 import com.example.mixtapp.ui.components.ReviewAlbumRow
 import com.example.mixtapp.ui.components.ReviewAuthorRow
-import com.example.mixtapp.ui.screens.following.model.FollowingReviewUi
-import com.example.mixtapp.ui.theme.StoryGold
 
 @Composable
 fun FollowingReviewCard(
@@ -46,7 +45,11 @@ fun FollowingReviewCard(
                 reviewedAt = review.reviewedAt,
                 avatarSize = 44.dp,
                 avatarBrush = Brush.linearGradient(
-                    colors = listOf(MaterialTheme.colorScheme.primary, StoryGold, MaterialTheme.colorScheme.secondary)
+                    colors = listOf(
+                        MaterialTheme.colorScheme.primary,
+                        MaterialTheme.colorScheme.tertiaryContainer,
+                        MaterialTheme.colorScheme.secondary,
+                    )
                 ),
                 avatarTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
                 nameFontSize = 15.sp,
@@ -54,9 +57,9 @@ fun FollowingReviewCard(
             )
 
             ReviewAlbumRow(
-                cover = review.cover,
-                albumTitle = review.albumTitle,
-                artistName = review.artistName,
+                cover = review.album.cover,
+                albumTitle = review.album.title,
+                artistName = review.album.artist,
                 rating = review.rating,
                 coverSize = 88.dp,
                 coverCorner = 12.dp,

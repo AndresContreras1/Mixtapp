@@ -1,18 +1,26 @@
 package com.example.mixtapp.ui.screens.following
 
 import androidx.lifecycle.ViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
-import com.example.mixtapp.data.local.LocalFollowingProvider
-import com.example.mixtapp.ui.screens.following.model.FollowingReviewUi
+import androidx.lifecycle.viewModelScope
+import com.example.mixtapp.data.model.FollowingReviewUi
+import com.example.mixtapp.data.model.FollowingUi
+import com.example.mixtapp.data.repository.SocialRepository
+import com.example.mixtapp.ui.screens.following.model.FILTRO_CALIFICACIONES
+import com.example.mixtapp.ui.screens.following.model.FILTRO_LISTAS
+import com.example.mixtapp.ui.screens.following.model.FILTRO_RESENAS
 import com.example.mixtapp.ui.screens.following.model.followingFilters
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class FollowingViewModel @Inject constructor() : ViewModel() {
+class FollowingViewModel @Inject constructor(
+    private val socialRepository: SocialRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(FollowingState())
     val uiState: StateFlow<FollowingState> = _uiState.asStateFlow()
@@ -23,17 +31,28 @@ class FollowingViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun getFollowing() {
-        val following = LocalFollowingProvider.following
+        viewModelScope.launch {
+            val result = socialRepository.getFollowing()
 
-        _uiState.update {
-            it.copy(
-                following = following,
-                reviews = aplicarBusqueda(friendQuery = it.friendQuery, todas = following.reviews),
-                filters = followingFilters,
-                selectedFilterId = followingFilters.first().id,
-                likedReviewIds = following.reviews.filter { r -> r.isLiked }.map { r -> r.id }.toSet(),
-                sharedReviewIds = following.reviews.filter { r -> r.isShared }.map { r -> r.id }.toSet(),
-            )
+            if (result.isSuccess) {
+                val following = result.getOrNull() ?: return@launch
+                val filtroInicial = followingFilters.first().id
+
+                _uiState.update {
+                    it.copy(
+                        following = following,
+                        reviews = aplicarFiltros(
+                            friendQuery = it.friendQuery,
+                            filtroId = filtroInicial,
+                            todas = following.reviews,
+                        ),
+                        filters = followingFilters,
+                        selectedFilterId = filtroInicial,
+                        likedReviewIds = following.reviews.filter { r -> r.isLiked }.map { r -> r.id }.toSet(),
+                        sharedReviewIds = following.reviews.filter { r -> r.isShared }.map { r -> r.id }.toSet(),
+                    )
+                }
+            }
         }
     }
 
@@ -41,8 +60,9 @@ class FollowingViewModel @Inject constructor() : ViewModel() {
         _uiState.update {
             it.copy(
                 friendQuery = friendQuery,
-                reviews = aplicarBusqueda(
+                reviews = aplicarFiltros(
                     friendQuery = friendQuery,
+                    filtroId = it.selectedFilterId,
                     todas = it.following?.reviews ?: emptyList(),
                 ),
             )
@@ -50,7 +70,16 @@ class FollowingViewModel @Inject constructor() : ViewModel() {
     }
 
     fun updateSelectedFilter(filtroId: String) {
-        _uiState.update { it.copy(selectedFilterId = filtroId) }
+        _uiState.update {
+            it.copy(
+                selectedFilterId = filtroId,
+                reviews = aplicarFiltros(
+                    friendQuery = it.friendQuery,
+                    filtroId = filtroId,
+                    todas = it.following?.reviews ?: emptyList(),
+                ),
+            )
+        }
     }
 
     fun updateSelectedStory(storyId: String) {
@@ -58,22 +87,54 @@ class FollowingViewModel @Inject constructor() : ViewModel() {
     }
 
     fun darQuitarLike(reviewId: String) {
-        val actuales = _uiState.value.likedReviewIds
-        val nuevos = if (reviewId in actuales) actuales - reviewId else actuales + reviewId
+        viewModelScope.launch {
+            val result = socialRepository.darQuitarLikeFollowingReview(reviewId = reviewId)
 
-        _uiState.update { it.copy(likedReviewIds = nuevos) }
+            if (result.isSuccess) {
+                actualizarFollowing(following = result.getOrNull())
+            }
+        }
     }
 
     fun compartirQuitar(reviewId: String) {
-        val actuales = _uiState.value.sharedReviewIds
-        val nuevos = if (reviewId in actuales) actuales - reviewId else actuales + reviewId
+        viewModelScope.launch {
+            val result = socialRepository.compartirQuitarFollowingReview(reviewId = reviewId)
 
-        _uiState.update { it.copy(sharedReviewIds = nuevos) }
+            if (result.isSuccess) {
+                actualizarFollowing(following = result.getOrNull())
+            }
+        }
     }
 
-    private fun aplicarBusqueda(
+    private fun actualizarFollowing(following: FollowingUi?) {
+        if (following == null) return
+
+        _uiState.update {
+            it.copy(
+                following = following,
+                reviews = aplicarFiltros(
+                    friendQuery = it.friendQuery,
+                    filtroId = it.selectedFilterId,
+                    todas = following.reviews,
+                ),
+                likedReviewIds = following.reviews.filter { r -> r.isLiked }.map { r -> r.id }.toSet(),
+                sharedReviewIds = following.reviews.filter { r -> r.isShared }.map { r -> r.id }.toSet(),
+            )
+        }
+    }
+
+    private fun aplicarFiltros(
         friendQuery: String,
+        filtroId: String,
         todas: List<FollowingReviewUi>,
-    ): List<FollowingReviewUi> =
-        todas.filter { it.reviewerName.contains(friendQuery, ignoreCase = true) }
+    ): List<FollowingReviewUi> {
+        val porAmigo = todas.filter { it.reviewerName.contains(friendQuery, ignoreCase = true) }
+
+        return when (filtroId) {
+            FILTRO_RESENAS -> porAmigo.filter { it.reviewText.isNotBlank() }
+            FILTRO_CALIFICACIONES -> porAmigo.filter { it.reviewText.isBlank() }
+            FILTRO_LISTAS -> emptyList()
+            else -> porAmigo
+        }
+    }
 }

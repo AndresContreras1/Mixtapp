@@ -1,6 +1,6 @@
 package com.example.mixtapp.data.local
 
-import com.example.mixtapp.ui.screens.notifications.model.NotificationUi
+import com.example.mixtapp.data.model.NotificationUi
 
 object LocalNotificationsProvider {
 

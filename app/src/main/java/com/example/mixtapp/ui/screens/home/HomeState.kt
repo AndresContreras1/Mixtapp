@@ -1,8 +1,8 @@
 package com.example.mixtapp.ui.screens.home
 
-import com.example.mixtapp.ui.screens.home.model.FriendActivityUi
+import com.example.mixtapp.data.model.FriendActivityUi
+import com.example.mixtapp.data.model.SongReviewUi
 import com.example.mixtapp.ui.screens.home.model.HomeFilterUi
-import com.example.mixtapp.ui.screens.songreview.model.SongReviewUi
 
 data class HomeState(
     val albums: List<SongReviewUi> = emptyList(),

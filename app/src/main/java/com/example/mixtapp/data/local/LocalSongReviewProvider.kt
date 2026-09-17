@@ -1,17 +1,13 @@
 package com.example.mixtapp.data.local
 
-import com.example.mixtapp.ui.screens.songreview.model.SongReviewItemUi
-import com.example.mixtapp.ui.screens.songreview.model.SongReviewUi
+import com.example.mixtapp.data.model.SongReviewItemUi
+import com.example.mixtapp.data.model.SongReviewUi
 
 object LocalSongReviewProvider {
 
-    val songs = listOf(
+    val songs = mutableListOf(
         SongReviewUi(
-            id = "1",
-            cover = AlbumCovers.TEATRO_DIRA,
-            tags = listOf("2021", "rock", "Hard Rock"),
-            title = "Teatro D'ira Vol I",
-            artist = "Maneskin",
+            album = LocalAlbumProvider.teatroDira,
             rating = 4.8,
             ratingCount = "41.2k",
             recommendRate = 97,
@@ -26,15 +22,12 @@ object LocalSongReviewProvider {
                     rating = 5,
                     content = "Teatro d'ira: Vol. I captures Maneskin at their absolute peak. Razor-sharp riffs, explosive live energy and Damiano's theatrical vocals turn pure attitude into a tight, unforgettable record.",
                     likes = 31,
+                    isLiked = false,
                 )
             ),
         ),
         SongReviewUi(
-            id = "2",
-            cover = AlbumCovers.RUSH,
-            tags = listOf("2023", "pop rock", "Dance Punk"),
-            title = "Rush!",
-            artist = "Maneskin",
+            album = LocalAlbumProvider.rush,
             rating = 4.2,
             ratingCount = "33.7k",
             recommendRate = 89,
@@ -49,15 +42,12 @@ object LocalSongReviewProvider {
                     rating = 4,
                     content = "An infectious, high-octane pop-rock spectacle built for global arenas. It trades some of the raw Italian grit for polished dance-punk grooves, but the attitude never drops.",
                     likes = 18,
+                    isLiked = false,
                 )
             ),
         ),
         SongReviewUi(
-            id = "3",
-            cover = AlbumCovers.FINISTERRA,
-            tags = listOf("2000", "folk metal", "Power Metal"),
-            title = "Finisterra",
-            artist = "Mago de Oz",
+            album = LocalAlbumProvider.finisterra,
             rating = 4.7,
             ratingCount = "22.9k",
             recommendRate = 95,
@@ -72,15 +62,12 @@ object LocalSongReviewProvider {
                     rating = 5,
                     content = "Mago de Oz's ambitious folk metal masterpiece. Power metal riffs blended with Celtic flutes and violins turn an epic medieval concept into a legendary album.",
                     likes = 27,
+                    isLiked = false,
                 )
             ),
         ),
         SongReviewUi(
-            id = "4",
-            cover = AlbumCovers.FROM_ZERO,
-            tags = listOf("2024", "nu metal", "Rock Alternativo"),
-            title = "From Zero",
-            artist = "Linkin Park",
+            album = LocalAlbumProvider.fromZero,
             rating = 4.4,
             ratingCount = "58.1k",
             recommendRate = 92,
@@ -95,15 +82,12 @@ object LocalSongReviewProvider {
                     rating = 4,
                     content = "From Zero strikes a balance between heavy nostalgia and genuine reinvention. Emily Armstrong commands every track with raw power, signaling a confident new chapter.",
                     likes = 42,
+                    isLiked = false,
                 )
             ),
         ),
         SongReviewUi(
-            id = "5",
-            cover = AlbumCovers.RUSH,
-            tags = listOf("2006", "emo", "Rock Alternativo"),
-            title = "The Sharpest Lives",
-            artist = "My Chemical Romance",
+            album = LocalAlbumProvider.theSharpestLives,
             rating = 4.5,
             ratingCount = "28.4k",
             recommendRate = 94,
@@ -118,14 +102,17 @@ object LocalSongReviewProvider {
                     rating = 5,
                     content = "\"The Sharpest Lives\" is an absolute rush on The Black Parade, blending dark, frantic energy with an insanely catchy hook. Gerard Way's theatrical vocals and the sharp guitar work turn chaotic self-destruction into one of My Chemical Romance's most addictive anthems.",
                     likes = 24,
+                    isLiked = false,
                 )
             ),
         ),
     )
 
     // Los tres albumes que se muestran en la pantalla principal
-    val popularSongs = songs.take(3)
+    val popularSongs: List<SongReviewUi>
+        get() = songs.take(3)
 
     // El album destacado de la pantalla principal
-    val trendingSong = songs[2]
+    val trendingSong: SongReviewUi
+        get() = songs[2]
 }

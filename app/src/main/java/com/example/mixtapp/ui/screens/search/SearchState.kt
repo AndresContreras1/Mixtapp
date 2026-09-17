@@ -1,7 +1,7 @@
 package com.example.mixtapp.ui.screens.search
 
-import com.example.mixtapp.ui.screens.search.model.SearchCategoryUi
-import com.example.mixtapp.ui.screens.songreview.model.SongReviewUi
+import com.example.mixtapp.data.model.SearchCategoryUi
+import com.example.mixtapp.data.model.SongReviewUi
 
 data class SearchState(
     val query: String = "",

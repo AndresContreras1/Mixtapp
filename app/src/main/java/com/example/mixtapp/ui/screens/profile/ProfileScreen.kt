@@ -13,6 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalProfileProvider
+import com.example.mixtapp.data.model.ProfileUi
 import com.example.mixtapp.ui.screens.profile.components.FavoriteSection
 import com.example.mixtapp.ui.screens.profile.components.LogoutButton
 import com.example.mixtapp.ui.screens.profile.components.ProfileAvatarSection
@@ -20,13 +21,14 @@ import com.example.mixtapp.ui.screens.profile.components.ProfileHeader
 import com.example.mixtapp.ui.screens.profile.components.RatingsSection
 import com.example.mixtapp.ui.screens.profile.components.RecentActivitySection
 import com.example.mixtapp.ui.screens.profile.model.ProfileTabUi
-import com.example.mixtapp.ui.screens.profile.model.ProfileUi
 import com.example.mixtapp.ui.screens.profile.model.profileTabs
 import com.example.mixtapp.ui.theme.*
 
 @Composable
 fun ProfileScreen(
     profileViewModel: ProfileViewModel,
+    onSettingsClick: () -> Unit,
+    onMoreClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val state by profileViewModel.uiState.collectAsState()
@@ -44,6 +46,8 @@ fun ProfileScreen(
             tabs = state.tabs,
             selectedTabId = state.selectedTabId,
             onTabSelected = { profileViewModel.updateSelectedTab(tabId = it) },
+            onSettingsClick = onSettingsClick,
+            onMoreClick = onMoreClick,
             onLogoutClick = { profileViewModel.cerrarSesion() },
             modifier = modifier
         )
@@ -61,6 +65,8 @@ fun ProfileScreenContent(
     tabs: List<ProfileTabUi>,
     selectedTabId: String,
     onTabSelected: (String) -> Unit,
+    onSettingsClick: () -> Unit,
+    onMoreClick: () -> Unit,
     onLogoutClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -75,7 +81,9 @@ fun ProfileScreenContent(
                 usuario = usuario,
                 tabs = tabs,
                 selectedTabId = selectedTabId,
-                onTabSelected = onTabSelected
+                onTabSelected = onTabSelected,
+                onSettingsClick = onSettingsClick,
+                onMoreClick = onMoreClick
             )
 
             Column(
@@ -123,6 +131,8 @@ fun ProfileScreenPreview() {
             tabs = profileTabs,
             selectedTabId = profileTabs.first().id,
             onTabSelected = {},
+            onSettingsClick = {},
+            onMoreClick = {},
             onLogoutClick = {}
         )
     }

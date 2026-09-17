@@ -1,11 +1,7 @@
-package com.example.mixtapp.ui.screens.songreview.model
+package com.example.mixtapp.data.model
 
 data class SongReviewUi(
-    val id: String,
-    val cover: String,
-    val tags: List<String>,
-    val title: String,
-    val artist: String,
+    val album: Album,
     val rating: Double,
     val ratingCount: String,
     val recommendRate: Int,
@@ -22,4 +18,5 @@ data class SongReviewItemUi(
     val rating: Int,
     val content: String,
     val likes: Int,
+    val isLiked: Boolean,
 )

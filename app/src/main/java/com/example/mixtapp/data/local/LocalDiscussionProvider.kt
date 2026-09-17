@@ -1,14 +1,14 @@
 package com.example.mixtapp.data.local
 
-import com.example.mixtapp.ui.screens.discussion.model.DiscussionCommentUi
-import com.example.mixtapp.ui.screens.discussion.model.DiscussionReviewUi
-import com.example.mixtapp.ui.screens.discussion.model.DiscussionUi
+import com.example.mixtapp.data.model.DiscussionCommentUi
+import com.example.mixtapp.data.model.DiscussionReviewUi
+import com.example.mixtapp.data.model.DiscussionUi
 
 object LocalDiscussionProvider {
 
     // Cada discusion se identifica con el mismo id de la resena que la abre,
     // para que la navegacion pueda buscarla por ese id
-    val discussions = listOf(
+    val discussions = mutableListOf(
         DiscussionUi(
             id = "toxicity-liz",
             review = DiscussionReviewUi(
@@ -16,9 +16,7 @@ object LocalDiscussionProvider {
                 reviewerName = "Liz",
                 reviewerAvatarText = "Lz",
                 reviewedAt = "hace 4 h",
-                cover = AlbumCovers.TOXICITY,
-                albumTitle = "Toxicity",
-                artistName = "System of a down",
+                album = LocalAlbumProvider.toxicity,
                 rating = 5,
                 reviewText = "\"Toxicity\" is pure chaotic genius. Blending heavy, erratic riffs with Serj Tankian's manic vocals, System of a Down turns societal overload into an insanely catchy, immortal metal anthem.",
                 likes = 24,
@@ -35,9 +33,7 @@ object LocalDiscussionProvider {
                 reviewerName = "Jhon",
                 reviewerAvatarText = "Jh",
                 reviewedAt = "hace 1 hora",
-                cover = AlbumCovers.FROM_ZERO,
-                albumTitle = "From Zero",
-                artistName = "Linkin Park",
+                album = LocalAlbumProvider.fromZero,
                 rating = 5,
                 reviewText = "From Zero is a fiery, seamless rebirth for Linkin Park. Blending raw, heavy nostalgia with fresh, high-voltage energy-fueled by Emily Armstrong's powerhouse vocals-it proves the band can honor their iconic legacy while stepping boldly into a new era.",
                 likes = 24,
