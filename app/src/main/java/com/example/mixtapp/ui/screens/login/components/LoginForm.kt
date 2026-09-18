@@ -32,8 +32,6 @@ fun LoginForm(
     onContrasenaChange: (String) -> Unit,
     contrasenaVisible: Boolean,
     onContrasenaVisibleChange: () -> Unit,
-    // La regla de la longitud minima la aplica el ViewModel; aqui solo se pinta el aviso
-    mostrarErrorContrasena: Boolean,
     cargando: Boolean,
     onLoginClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -65,16 +63,6 @@ fun LoginForm(
             contrasenaVisible = contrasenaVisible,
             onContrasenaVisibleChange = onContrasenaVisibleChange
         )
-
-        if (mostrarErrorContrasena) {
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = stringResource(R.string.error_contrasena_corta),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                fontSize = 14.sp
-            )
-        }
 
         Spacer(modifier = Modifier.height(28.dp))
 

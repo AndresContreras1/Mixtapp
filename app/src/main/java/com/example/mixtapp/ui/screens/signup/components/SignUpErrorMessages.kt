@@ -15,7 +15,6 @@ import com.example.mixtapp.R
 
 @Composable
 fun SignUpErrorMessages(
-    mostrarErrorContrasenas: Boolean,
     errorMessageRes: Int?,
     modifier: Modifier = Modifier
 ) {
@@ -24,19 +23,6 @@ fun SignUpErrorMessages(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Aviso mientras se escribe: las dos contrasenas no coinciden
-        AnimatedVisibility(
-            visible = mostrarErrorContrasenas,
-            enter = fadeIn(),
-            exit = fadeOut()
-        ) {
-            Text(
-                text = stringResource(R.string.error_contrasenas_no_coinciden),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                fontSize = 14.sp
-            )
-        }
-
         // Error del intento de crear la cuenta, calculado por el ViewModel
         AnimatedVisibility(
             visible = errorMessageRes != null,

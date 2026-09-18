@@ -40,7 +40,6 @@ fun SignUpScreen(
         onConfirmarVisibleChange = { signUpViewModel.mostrarEsconderConfirmar() },
         terminos = state.terminos,
         onTerminosClick = { signUpViewModel.alternarTerminos() },
-        mostrarErrorContrasenas = state.mostrarErrorContrasenas,
         errorMessageRes = state.errorMessageRes,
         cargando = state.cargando,
         onSignUpClick = { signUpViewModel.signUpButtonPressed() },
@@ -65,7 +64,6 @@ fun SignUpScreenContent(
     onConfirmarVisibleChange: () -> Unit,
     terminos: Boolean,
     onTerminosClick: () -> Unit,
-    mostrarErrorContrasenas: Boolean,
     errorMessageRes: Int?,
     cargando: Boolean,
     onSignUpClick: () -> Unit,
@@ -109,7 +107,6 @@ fun SignUpScreenContent(
             )
 
             SignUpErrorMessages(
-                mostrarErrorContrasenas = mostrarErrorContrasenas,
                 errorMessageRes = errorMessageRes
             )
 
@@ -136,7 +133,6 @@ private fun SignUpScreenContentPreview() {
         onConfirmarVisibleChange = {},
         terminos = false,
         onTerminosClick = {},
-        mostrarErrorContrasenas = false,
         errorMessageRes = null,
         cargando = false,
         onSignUpClick = {},

@@ -37,14 +37,12 @@ class SignUpViewModel @Inject constructor(
 
     fun updateContrasena(contrasena: String) {
         _uiState.update { it.copy(contrasena = contrasena, errorMessageRes = null) }
-        validarContrasenas()
     }
 
     fun updateConfirmarContrasena(confirmarContrasena: String) {
         _uiState.update {
             it.copy(confirmarContrasena = confirmarContrasena, errorMessageRes = null)
         }
-        validarContrasenas()
     }
 
     fun mostrarEsconderContrasena() {
@@ -61,15 +59,6 @@ class SignUpViewModel @Inject constructor(
     fun alternarTerminos() {
         val valorActual = _uiState.value.terminos
         _uiState.update { it.copy(terminos = !valorActual, errorMessageRes = null) }
-    }
-
-    // El error solo se muestra cuando ya se escribio algo en la confirmacion
-    private fun validarContrasenas() {
-        val estado = _uiState.value
-        val hayError = estado.confirmarContrasena.isNotEmpty() &&
-                estado.contrasena != estado.confirmarContrasena
-
-        _uiState.update { it.copy(mostrarErrorContrasenas = hayError) }
     }
 
     // Decidir si se puede crear la cuenta es responsabilidad del ViewModel, no de la navegacion

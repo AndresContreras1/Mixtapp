@@ -33,15 +33,7 @@ class LoginViewModel @Inject constructor(
     }
 
     fun updateContrasena(contrasena: String) {
-        _uiState.update {
-            it.copy(
-                contrasena = contrasena,
-                // El aviso solo aparece cuando ya se escribio algo y se queda corto
-                mostrarErrorContrasena = contrasena.isNotEmpty() &&
-                        contrasena.length < MIN_PASSWORD_LENGTH,
-                errorMessageRes = null,
-            )
-        }
+        _uiState.update { it.copy(contrasena = contrasena, errorMessageRes = null) }
     }
 
     fun mostrarEsconderContrasena() {
