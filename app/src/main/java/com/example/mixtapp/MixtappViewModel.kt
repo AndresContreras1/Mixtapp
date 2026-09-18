@@ -28,7 +28,14 @@ class MixtappViewModel @Inject constructor(
             val result = albumRepository.getAlbumPorDefecto()
 
             if (result.isSuccess) {
-                _uiState.update { it.copy(albumParaResenar = result.getOrNull()?.id ?: "") }
+                _uiState.update {
+                    it.copy(
+                        albumParaResenar = result.getOrNull()?.id ?: "",
+                        mostrarBotonResena = true,
+                    )
+                }
+            } else {
+                _uiState.update { it.copy(mostrarBotonResena = false) }
             }
         }
     }

@@ -33,7 +33,7 @@ fun Mixtapp(modifier: Modifier = Modifier) {
             }
         },
         floatingActionButton = {
-            if (mostrarBarra) {
+            if (mostrarBarra && state.mostrarBotonResena) {
                 WriteReviewFab(
                     navController = navController,
                     albumId = state.albumParaResenar
