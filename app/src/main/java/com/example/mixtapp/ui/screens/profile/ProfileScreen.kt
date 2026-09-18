@@ -34,7 +34,7 @@ fun ProfileScreen(
     val state by profileViewModel.uiState.collectAsState()
 
     if (state.profile == null) {
-        Text(text = stringResource(R.string.perfil_no_encontrado))
+        Text(text = stringResource(state.errorMessageRes ?: R.string.perfil_no_encontrado))
     } else {
         ProfileScreenContent(
             profile = state.profile!!,

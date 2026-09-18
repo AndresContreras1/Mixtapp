@@ -52,8 +52,11 @@ class ProfileViewModel @Inject constructor(
                         selectedTabId = profileTabs.first().id,
                         usuario = usuario,
                         profileImageUrl = foto,
+                        errorMessageRes = null,
                     )
                 }
+            } else {
+                _uiState.update { it.copy(errorMessageRes = R.string.error_cargar_contenido) }
             }
         }
     }
