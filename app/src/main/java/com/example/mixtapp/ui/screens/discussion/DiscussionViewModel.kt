@@ -2,6 +2,7 @@ package com.example.mixtapp.ui.screens.discussion
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.mixtapp.R
 import com.example.mixtapp.data.model.DiscussionUi
 import com.example.mixtapp.data.repository.AuthRepository
 import com.example.mixtapp.data.repository.ReviewRepository
@@ -43,8 +44,11 @@ class DiscussionViewModel @Inject constructor(
                             ?.map { comentario -> comentario.id }
                             ?.toSet()
                             ?: emptySet(),
+                        errorMessageRes = null,
                     )
                 }
+            } else {
+                _uiState.update { it.copy(errorMessageRes = R.string.error_cargar_contenido) }
             }
         }
     }
@@ -72,6 +76,8 @@ class DiscussionViewModel @Inject constructor(
             if (result.isSuccess) {
                 actualizarDiscusion(discussion = result.getOrNull())
                 _uiState.update { it.copy(nuevoComentario = "") }
+            } else {
+                _uiState.update { it.copy(errorMessageRes = R.string.error_publicar_comentario) }
             }
         }
     }
@@ -84,6 +90,8 @@ class DiscussionViewModel @Inject constructor(
 
             if (result.isSuccess) {
                 actualizarDiscusion(discussion = result.getOrNull())
+            } else {
+                _uiState.update { it.copy(errorMessageRes = R.string.error_me_gusta) }
             }
         }
     }
@@ -96,6 +104,8 @@ class DiscussionViewModel @Inject constructor(
 
             if (result.isSuccess) {
                 actualizarDiscusion(discussion = result.getOrNull())
+            } else {
+                _uiState.update { it.copy(errorMessageRes = R.string.error_compartir) }
             }
         }
     }
@@ -108,6 +118,8 @@ class DiscussionViewModel @Inject constructor(
 
             if (result.isSuccess) {
                 actualizarDiscusion(discussion = result.getOrNull())
+            } else {
+                _uiState.update { it.copy(errorMessageRes = R.string.error_me_gusta) }
             }
         }
     }
@@ -125,6 +137,7 @@ class DiscussionViewModel @Inject constructor(
                     .filter { comentario -> comentario.isLiked }
                     .map { comentario -> comentario.id }
                     .toSet(),
+                errorMessageRes = null,
             )
         }
     }

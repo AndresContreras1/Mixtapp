@@ -24,6 +24,7 @@ import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalDiscussionProvider
 import com.example.mixtapp.data.model.DiscussionCommentUi
 import com.example.mixtapp.data.model.DiscussionUi
+import com.example.mixtapp.ui.components.ErrorMessage
 import com.example.mixtapp.ui.screens.discussion.components.CommentsDivider
 import com.example.mixtapp.ui.screens.discussion.components.DiscussionHeader
 import com.example.mixtapp.ui.screens.discussion.components.DiscussionReviewCard
@@ -46,7 +47,7 @@ fun DiscussionScreen(
     }
 
     if (state.discussion == null) {
-        Text(text = stringResource(R.string.discusion_no_encontrada))
+        Text(text = stringResource(state.errorMessageRes ?: R.string.discusion_no_encontrada))
     } else {
         DiscussionScreenContent(
             discussion = state.discussion!!,
@@ -56,6 +57,7 @@ fun DiscussionScreen(
             isReviewShared = state.isReviewShared,
             likedCommentIds = state.likedCommentIds,
             replyingToCommentId = state.replyingToCommentId,
+            errorMessageRes = state.errorMessageRes,
             onBackClick = onBackClick,
             onReviewLikeClick = { discussionViewModel.darQuitarLikeResena() },
             onReviewShareClick = { discussionViewModel.compartirQuitarResena() },
@@ -77,6 +79,7 @@ fun DiscussionScreenContent(
     isReviewShared: Boolean,
     likedCommentIds: Set<String>,
     replyingToCommentId: String?,
+    errorMessageRes: Int?,
     onBackClick: () -> Unit,
     onReviewLikeClick: () -> Unit,
     onReviewShareClick: () -> Unit,
@@ -135,6 +138,11 @@ fun DiscussionScreenContent(
                 }
             }
 
+            ErrorMessage(
+                messageRes = errorMessageRes,
+                modifier = Modifier.padding(start = 24.dp, end = 24.dp, bottom = 8.dp)
+            )
+
             NewCommentField(
                 value = nuevoComentario,
                 onValueChange = onNuevoComentarioChange,
@@ -157,6 +165,7 @@ fun DiscussionScreenPreview() {
             isReviewShared = false,
             likedCommentIds = emptySet(),
             replyingToCommentId = null,
+            errorMessageRes = null,
             onBackClick = {},
             onReviewLikeClick = {},
             onReviewShareClick = {},
