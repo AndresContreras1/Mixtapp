@@ -15,11 +15,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import com.example.mixtapp.ui.components.ErrorMessage
 
 @Composable
 fun ReviewActionsCard(
     listenedDate: String,
     isFavorite: Boolean,
+    errorMessageRes: Int?,
     onDateChange: (String) -> Unit,
     onDatePickerClick: () -> Unit,
     onFavoriteClick: () -> Unit,
@@ -55,6 +57,11 @@ fun ReviewActionsCard(
 
         PostButton(
             onClick = onPostClick
+        )
+
+        ErrorMessage(
+            messageRes = errorMessageRes,
+            modifier = Modifier.padding(top = 12.dp)
         )
     }
 }

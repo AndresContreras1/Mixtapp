@@ -2,6 +2,7 @@ package com.example.mixtapp.ui.screens.review
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.mixtapp.R
 import com.example.mixtapp.data.repository.AlbumRepository
 import com.example.mixtapp.data.repository.ReviewRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -42,6 +43,8 @@ class WriteReviewViewModel @Inject constructor(
                         listenedDate = fecha.getOrNull() ?: "",
                     )
                 }
+            } else {
+                _uiState.update { it.copy(errorMessageRes = R.string.error_cargar_contenido) }
             }
         }
     }
@@ -55,6 +58,8 @@ class WriteReviewViewModel @Inject constructor(
 
             if (result.isSuccess) {
                 _uiState.update { it.copy(album = result.getOrNull()) }
+            } else {
+                _uiState.update { it.copy(errorMessageRes = R.string.error_cargar_contenido) }
             }
         }
     }
@@ -67,7 +72,9 @@ class WriteReviewViewModel @Inject constructor(
     }
 
     fun updateReviewText(reviewText: String) {
-        _uiState.update { it.copy(reviewText = reviewText.take(MAX_REVIEW_LENGTH)) }
+        _uiState.update {
+            it.copy(reviewText = reviewText.take(MAX_REVIEW_LENGTH), errorMessageRes = null)
+        }
     }
 
     fun seleccionarQuitarMood(mood: String) {
@@ -86,7 +93,14 @@ class WriteReviewViewModel @Inject constructor(
             val result = reviewRepository.getFechaEscuchaSugerida()
 
             if (result.isSuccess) {
-                _uiState.update { it.copy(listenedDate = result.getOrNull() ?: it.listenedDate) }
+                _uiState.update {
+                    it.copy(
+                        listenedDate = result.getOrNull() ?: it.listenedDate,
+                        errorMessageRes = null,
+                    )
+                }
+            } else {
+                _uiState.update { it.copy(errorMessageRes = R.string.error_fecha_sugerida) }
             }
         }
     }
@@ -101,7 +115,10 @@ class WriteReviewViewModel @Inject constructor(
         val album = estado.album ?: return
         val texto = estado.reviewText.trim()
 
-        if (texto.isEmpty()) return
+        if (texto.isEmpty()) {
+            _uiState.update { it.copy(errorMessageRes = R.string.error_resena_vacia) }
+            return
+        }
 
         viewModelScope.launch {
             val result = reviewRepository.publicarResena(
@@ -113,7 +130,9 @@ class WriteReviewViewModel @Inject constructor(
             )
 
             if (result.isSuccess) {
-                _uiState.update { it.copy(publicada = true) }
+                _uiState.update { it.copy(publicada = true, errorMessageRes = null) }
+            } else {
+                _uiState.update { it.copy(errorMessageRes = R.string.error_publicar_resena) }
             }
         }
     }

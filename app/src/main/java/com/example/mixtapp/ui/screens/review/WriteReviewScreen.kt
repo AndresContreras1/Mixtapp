@@ -38,7 +38,7 @@ fun WriteReviewScreen(
     }
 
     if (state.album == null) {
-        Text(text = stringResource(R.string.album_no_encontrado))
+        Text(text = stringResource(state.errorMessageRes ?: R.string.album_no_encontrado))
     } else {
         WriteReviewScreenContent(
             album = state.album!!,
@@ -48,6 +48,7 @@ fun WriteReviewScreen(
             listenedDate = state.listenedDate,
             isFavorite = state.isFavorite,
             moods = state.moods,
+            errorMessageRes = state.errorMessageRes,
             onCancel = onCancel,
             onRatingChange = { writeReviewViewModel.updateRating(rating = it) },
             onReviewChange = { writeReviewViewModel.updateReviewText(reviewText = it) },
@@ -70,6 +71,7 @@ fun WriteReviewScreenContent(
     listenedDate: String,
     isFavorite: Boolean,
     moods: List<String>,
+    errorMessageRes: Int?,
     onCancel: () -> Unit,
     onRatingChange: (Int) -> Unit,
     onReviewChange: (String) -> Unit,
@@ -102,6 +104,7 @@ fun WriteReviewScreenContent(
                 listenedDate = listenedDate,
                 isFavorite = isFavorite,
                 moods = moods,
+                errorMessageRes = errorMessageRes,
                 onRatingChange = onRatingChange,
                 onReviewChange = onReviewChange,
                 onMoodClick = onMoodClick,
@@ -127,6 +130,7 @@ fun WriteReviewScreenPreview() {
             listenedDate = LocalReviewAlbumProvider.fechaEscuchaInicial,
             isFavorite = false,
             moods = LocalReviewAlbumProvider.moods,
+            errorMessageRes = null,
             onCancel = {},
             onRatingChange = {},
             onReviewChange = {},
