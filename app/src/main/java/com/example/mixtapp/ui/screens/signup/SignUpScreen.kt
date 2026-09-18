@@ -9,7 +9,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.ui.components.*
-import com.example.mixtapp.ui.screens.signup.components.SignUpErrorMessages
 import com.example.mixtapp.ui.screens.signup.components.SignUpFooter
 import com.example.mixtapp.ui.screens.signup.components.SignUpForm
 import com.example.mixtapp.ui.screens.signup.components.SignUpHeader
@@ -106,9 +105,7 @@ fun SignUpScreenContent(
                 onSignUpClick = onSignUpClick
             )
 
-            SignUpErrorMessages(
-                errorMessageRes = errorMessageRes
-            )
+            ErrorMessage(messageRes = errorMessageRes)
 
             SignUpFooter(onLoginClick = onLoginClick)
         }
