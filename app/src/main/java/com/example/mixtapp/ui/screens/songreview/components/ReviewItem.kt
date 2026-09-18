@@ -65,7 +65,7 @@ fun ReviewItem(
                         .background(MaterialTheme.colorScheme.surfaceContainer),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(review.author.take(2).lowercase(), color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                    Text(review.initials, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
                 }
                 Spacer(modifier = Modifier.width(12.dp))
                 Column(modifier = Modifier.weight(1f)) {

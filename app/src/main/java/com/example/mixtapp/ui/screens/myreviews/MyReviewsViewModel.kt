@@ -47,6 +47,7 @@ class MyReviewsViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         username = usuario,
+                        iniciales = usuario.take(2).uppercase(),
                         joinDate = perfil.getOrNull()?.joinDate ?: "",
                         filters = myReviewFilters,
                         selectedFilterId = filtroInicial,

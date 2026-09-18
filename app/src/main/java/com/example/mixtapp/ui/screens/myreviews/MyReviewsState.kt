@@ -6,6 +6,7 @@ import com.example.mixtapp.ui.screens.myreviews.model.MyReviewFilterUi
 
 data class MyReviewsState(
     val username: String = "",
+    val iniciales: String = "",
     val joinDate: String = "",
     // Ya vienen ordenadas o filtradas por el ViewModel
     val reviews: List<MyReviewUi> = emptyList(),

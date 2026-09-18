@@ -36,6 +36,7 @@ fun MyReviewsScreen(
 
     MyReviewsScreenContent(
         username = state.username,
+        iniciales = state.iniciales,
         joinDate = state.joinDate,
         reviews = state.reviews,
         filters = state.filters,
@@ -50,6 +51,7 @@ fun MyReviewsScreen(
 @Composable
 fun MyReviewsScreenContent(
     username: String,
+    iniciales: String,
     joinDate: String,
     reviews: List<MyReviewUi>,
     filters: List<MyReviewFilterUi>,
@@ -68,6 +70,7 @@ fun MyReviewsScreenContent(
             Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
                 MyReviewsHeader(
                     username = username,
+                    iniciales = iniciales,
                     joinDate = joinDate,
                     modifier = Modifier.padding(top = 24.dp, bottom = 16.dp)
                 )
@@ -104,6 +107,7 @@ fun MyReviewsScreenPreview() {
     MixtappTheme(darkTheme = true, dynamicColor = false) {
         MyReviewsScreenContent(
             username = "Yourname",
+            iniciales = "YO",
             joinDate = "march 2025",
             reviews = LocalMyReviewsProvider.reviews,
             filters = myReviewFilters,
