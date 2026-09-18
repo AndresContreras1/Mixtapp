@@ -1,5 +1,6 @@
 package com.example.mixtapp.ui.screens.myreviews
 
+import androidx.annotation.StringRes
 import com.example.mixtapp.data.model.MyReviewUi
 import com.example.mixtapp.ui.screens.myreviews.model.MyReviewFilterUi
 
@@ -11,4 +12,5 @@ data class MyReviewsState(
     // Los filtros los provee el ViewModel; el componente solo los pinta
     val filters: List<MyReviewFilterUi> = emptyList(),
     val selectedFilterId: String = "",
+    @StringRes val errorMessageRes: Int? = null,
 )

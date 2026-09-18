@@ -2,6 +2,7 @@ package com.example.mixtapp.ui.screens.myreviews
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.mixtapp.R
 import com.example.mixtapp.data.model.MyReviewUi
 import com.example.mixtapp.data.repository.AuthRepository
 import com.example.mixtapp.data.repository.ReviewRepository
@@ -53,8 +54,11 @@ class MyReviewsViewModel @Inject constructor(
                             filtroId = filtroInicial,
                             todas = resenas.getOrNull() ?: emptyList(),
                         ),
+                        errorMessageRes = null,
                     )
                 }
+            } else {
+                _uiState.update { it.copy(errorMessageRes = R.string.error_cargar_contenido) }
             }
         }
     }
@@ -71,8 +75,11 @@ class MyReviewsViewModel @Inject constructor(
                             filtroId = filtroId,
                             todas = resenas.getOrNull() ?: emptyList(),
                         ),
+                        errorMessageRes = null,
                     )
                 }
+            } else {
+                _uiState.update { it.copy(errorMessageRes = R.string.error_actualizar_lista) }
             }
         }
     }
