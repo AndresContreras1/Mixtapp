@@ -61,6 +61,7 @@
     <string name="error_credenciales">Correo o contraseña incorrectos</string>
     <string name="error_inicio_sesion">No se pudo iniciar sesión. Inténtalo de nuevo</string>
     <string name="error_registro">No se pudo crear la cuenta. Intenta con otro correo</string>
+    <string name="error_datos_registro_invalidos">El correo o la contraseña no son válidos</string>
     <string name="error_usuario_no_existe">No existe una cuenta con ese correo</string>
     <string name="error_correo_ya_registrado">Ese correo ya está registrado</string>
     <string name="error_contrasena_debil">La contraseña debe tener una mayúscula y un número</string>

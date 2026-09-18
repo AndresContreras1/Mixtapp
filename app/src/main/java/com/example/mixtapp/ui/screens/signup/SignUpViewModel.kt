@@ -139,7 +139,7 @@ class SignUpViewModel @Inject constructor(
     @StringRes
     private fun mensajeDeError(error: Throwable?): Int = when (error) {
         is CorreoYaRegistradoException -> R.string.error_correo_ya_registrado
-        is CredencialesInvalidasException -> R.string.error_email_invalido
+        is CredencialesInvalidasException -> R.string.error_datos_registro_invalidos
         is SinConexionException -> R.string.error_sin_conexion
         is DemasiadosIntentosException -> R.string.error_demasiados_intentos
         is ErrorDeRegistroException -> R.string.error_registro
