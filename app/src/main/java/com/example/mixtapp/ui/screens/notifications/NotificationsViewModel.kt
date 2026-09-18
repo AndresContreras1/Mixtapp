@@ -2,6 +2,7 @@ package com.example.mixtapp.ui.screens.notifications
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.mixtapp.R
 import com.example.mixtapp.data.model.NotificationUi
 import com.example.mixtapp.data.repository.SocialRepository
 import com.example.mixtapp.ui.screens.notifications.model.TAB_SIN_LEER
@@ -38,8 +39,11 @@ class NotificationsViewModel @Inject constructor(
                         tabs = notificationTabs,
                         notifications = aplicarFiltro(tabId = it.selectedTabId, todas = todas),
                         unreadCount = contarNoLeidas(todas = todas),
+                        errorMessageRes = null,
                     )
                 }
+            } else {
+                _uiState.update { it.copy(errorMessageRes = R.string.error_cargar_contenido) }
             }
         }
     }
@@ -56,8 +60,11 @@ class NotificationsViewModel @Inject constructor(
                         selectedTabId = tabId,
                         notifications = aplicarFiltro(tabId = tabId, todas = todas),
                         unreadCount = contarNoLeidas(todas = todas),
+                        errorMessageRes = null,
                     )
                 }
+            } else {
+                _uiState.update { it.copy(errorMessageRes = R.string.error_actualizar_lista) }
             }
         }
     }
