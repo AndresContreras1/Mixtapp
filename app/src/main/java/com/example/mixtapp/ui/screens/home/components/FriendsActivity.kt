@@ -2,18 +2,15 @@ package com.example.mixtapp.ui.screens.home.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.data.model.FriendActivityUi
+import com.example.mixtapp.ui.components.StarRating
 
 @Composable
 fun FriendsActivity(
@@ -40,16 +38,16 @@ fun FriendsActivity(
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.25f))
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Row {
-                repeat(activity.rating) {
-                    Icon(
-                        imageVector = Icons.Default.Star,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onBackground,
-                        modifier = Modifier.size(18.dp)
-                    )
-                }
-            }
+            StarRating(
+                rating = activity.rating,
+                starCount = activity.rating,
+                starSize = 18.dp,
+                spacing = 0.dp,
+                filledTint = MaterialTheme.colorScheme.onBackground,
+                emptyTint = MaterialTheme.colorScheme.onBackground,
+                emptyIcon = Icons.Filled.Star,
+                onRatingChange = null
+            )
 
             Spacer(modifier = Modifier.height(12.dp))
 

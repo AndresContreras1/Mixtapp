@@ -1,7 +1,6 @@
 package com.example.mixtapp.ui.screens.profile.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,7 +13,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.data.model.RecentActivityUi
+import com.example.mixtapp.ui.components.StarRating
 
 @Composable
 fun RecentActivitySection(
@@ -66,16 +65,16 @@ fun RecentActivitySection(
                     fontSize = 13.sp
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                    repeat(activity.rating) {
-                        Icon(
-                            imageVector = Icons.Default.Star,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(16.dp)
-                        )
-                    }
-                }
+                StarRating(
+                    rating = activity.rating,
+                    starCount = activity.rating,
+                    starSize = 16.dp,
+                    spacing = 4.dp,
+                    filledTint = MaterialTheme.colorScheme.primary,
+                    emptyTint = MaterialTheme.colorScheme.primary,
+                    emptyIcon = Icons.Filled.Star,
+                    onRatingChange = null
+                )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = activity.comment,
