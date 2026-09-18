@@ -124,11 +124,7 @@ fun SongReviewSections(
 
         items(songReview.reviews, key = { it.id }) { review ->
             ReviewItem(
-                author = review.author,
-                daysAgo = review.daysAgo,
-                rating = review.rating,
-                content = review.content,
-                likes = review.likes,
+                review = review,
                 isLiked = review.id in likedReviewIds,
                 onLikeClick = { onReviewLikeClick(review.id) },
                 onReplyClick = { onReviewReplyClick(review.id) }

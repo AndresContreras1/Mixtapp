@@ -33,15 +33,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.data.model.SongReviewItemUi
 import com.example.mixtapp.ui.components.StarRating
 
 @Composable
 fun ReviewItem(
-    author: String,
-    daysAgo: String,
-    rating: Int,
-    content: String,
-    likes: Int,
+    review: SongReviewItemUi,
     isLiked: Boolean,
     onLikeClick: () -> Unit,
     onReplyClick: () -> Unit,
@@ -67,15 +64,15 @@ fun ReviewItem(
                         .background(MaterialTheme.colorScheme.surfaceContainer),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(author.take(2).lowercase(), color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                    Text(review.author.take(2).lowercase(), color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
                 }
                 Spacer(modifier = Modifier.width(12.dp))
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(author, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold)
+                    Text(review.author, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold)
                     StarRating(
-                        rating = rating,
+                        rating = review.rating,
                         // Solo se dibujan las estrellas obtenidas, sin ranuras vacias
-                        starCount = rating,
+                        starCount = review.rating,
                         starSize = 12.dp,
                         spacing = 0.dp,
                         filledTint = MaterialTheme.colorScheme.primary,
@@ -84,13 +81,13 @@ fun ReviewItem(
                         onRatingChange = null
                     )
                 }
-                Text(daysAgo, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f), fontSize = 10.sp)
+                Text(review.daysAgo, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f), fontSize = 10.sp)
             }
 
             Spacer(modifier = Modifier.height(12.dp))
 
             Text(
-                text = content,
+                text = review.content,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.9f),
                 fontSize = 12.sp,
                 lineHeight = 18.sp
@@ -112,7 +109,7 @@ fun ReviewItem(
                 }
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
-                    text = (likes + if (isLiked) 1 else 0).toString(),
+                    text = (review.likes + if (isLiked) 1 else 0).toString(),
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                     fontSize = 12.sp
                 )
