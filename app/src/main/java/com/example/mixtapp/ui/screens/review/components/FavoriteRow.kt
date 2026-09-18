@@ -23,7 +23,7 @@ import com.example.mixtapp.R
 @Composable
 fun FavoriteRow(
     isFavorite: Boolean,
-    onFavoriteChange: (Boolean) -> Unit,
+    onFavoriteClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -46,7 +46,7 @@ fun FavoriteRow(
         }
 
         IconButton(
-            onClick = { onFavoriteChange(!isFavorite) },
+            onClick = onFavoriteClick,
             modifier = Modifier.size(36.dp)
         ) {
             Icon(

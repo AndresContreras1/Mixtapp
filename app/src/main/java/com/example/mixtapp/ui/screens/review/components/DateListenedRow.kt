@@ -49,7 +49,7 @@ fun DateListenedRow(
 
         OutlinedTextField(
             value = listenedDate,
-            onValueChange = { onDateChange(it.take(10)) },
+            onValueChange = onDateChange,
             modifier = Modifier.width(190.dp),
             singleLine = true,
             trailingIcon = {

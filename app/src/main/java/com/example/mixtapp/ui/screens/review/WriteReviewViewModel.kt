@@ -15,6 +15,8 @@ import javax.inject.Inject
 // Limite de caracteres de la resena
 const val MAX_REVIEW_LENGTH = 500
 
+const val MAX_DATE_LENGTH = 10
+
 @HiltViewModel
 class WriteReviewViewModel @Inject constructor(
     private val albumRepository: AlbumRepository,
@@ -58,7 +60,10 @@ class WriteReviewViewModel @Inject constructor(
     }
 
     fun updateRating(rating: Int) {
-        _uiState.update { it.copy(rating = rating) }
+        val calificacionActual = _uiState.value.rating
+        val nueva = if (rating == calificacionActual) 0 else rating
+
+        _uiState.update { it.copy(rating = nueva) }
     }
 
     fun updateReviewText(reviewText: String) {
@@ -73,7 +78,7 @@ class WriteReviewViewModel @Inject constructor(
     }
 
     fun updateListenedDate(listenedDate: String) {
-        _uiState.update { it.copy(listenedDate = listenedDate) }
+        _uiState.update { it.copy(listenedDate = listenedDate.take(MAX_DATE_LENGTH)) }
     }
 
     fun usarFechaSugerida() {
@@ -86,8 +91,9 @@ class WriteReviewViewModel @Inject constructor(
         }
     }
 
-    fun updateIsFavorite(isFavorite: Boolean) {
-        _uiState.update { it.copy(isFavorite = isFavorite) }
+    fun alternarFavorito() {
+        val valorActual = _uiState.value.isFavorite
+        _uiState.update { it.copy(isFavorite = !valorActual) }
     }
 
     fun publicarResena() {

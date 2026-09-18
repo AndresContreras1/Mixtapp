@@ -54,7 +54,7 @@ fun WriteReviewScreen(
             onMoodClick = { writeReviewViewModel.seleccionarQuitarMood(mood = it) },
             onDateChange = { writeReviewViewModel.updateListenedDate(listenedDate = it) },
             onDatePickerClick = { writeReviewViewModel.usarFechaSugerida() },
-            onFavoriteChange = { writeReviewViewModel.updateIsFavorite(isFavorite = it) },
+            onFavoriteClick = { writeReviewViewModel.alternarFavorito() },
             onPostClick = { writeReviewViewModel.publicarResena() },
             modifier = modifier,
         )
@@ -76,7 +76,7 @@ fun WriteReviewScreenContent(
     onMoodClick: (String) -> Unit,
     onDateChange: (String) -> Unit,
     onDatePickerClick: () -> Unit,
-    onFavoriteChange: (Boolean) -> Unit,
+    onFavoriteClick: () -> Unit,
     onPostClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -107,7 +107,7 @@ fun WriteReviewScreenContent(
                 onMoodClick = onMoodClick,
                 onDateChange = onDateChange,
                 onDatePickerClick = onDatePickerClick,
-                onFavoriteChange = onFavoriteChange,
+                onFavoriteClick = onFavoriteClick,
                 onPostClick = onPostClick,
                 modifier = Modifier.weight(1f)
             )
@@ -133,7 +133,7 @@ fun WriteReviewScreenPreview() {
             onMoodClick = {},
             onDateChange = {},
             onDatePickerClick = {},
-            onFavoriteChange = {},
+            onFavoriteClick = {},
             onPostClick = {},
         )
     }

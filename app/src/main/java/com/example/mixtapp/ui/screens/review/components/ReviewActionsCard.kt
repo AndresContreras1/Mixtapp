@@ -22,7 +22,7 @@ fun ReviewActionsCard(
     isFavorite: Boolean,
     onDateChange: (String) -> Unit,
     onDatePickerClick: () -> Unit,
-    onFavoriteChange: (Boolean) -> Unit,
+    onFavoriteClick: () -> Unit,
     onPostClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -47,7 +47,7 @@ fun ReviewActionsCard(
 
             FavoriteRow(
                 isFavorite = isFavorite,
-                onFavoriteChange = onFavoriteChange
+                onFavoriteClick = onFavoriteClick
             )
         }
 

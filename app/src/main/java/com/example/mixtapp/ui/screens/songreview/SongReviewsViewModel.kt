@@ -49,9 +49,11 @@ class SongReviewsViewModel @Inject constructor(
 
     fun updateUserRating(rating: Int) {
         val songId = _uiState.value.song?.album?.id ?: return
+        val calificacionActual = _uiState.value.userRating
+        val nueva = if (rating == calificacionActual) 0 else rating
 
         viewModelScope.launch {
-            val result = albumRepository.calificarSongReview(songId = songId, rating = rating)
+            val result = albumRepository.calificarSongReview(songId = songId, rating = nueva)
 
             if (result.isSuccess) {
                 actualizarSong(song = result.getOrNull())
