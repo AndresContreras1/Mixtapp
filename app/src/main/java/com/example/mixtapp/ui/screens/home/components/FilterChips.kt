@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.mixtapp.ui.components.AppChip
 import com.example.mixtapp.ui.screens.home.model.HomeFilterUi
 
@@ -31,7 +32,8 @@ fun FilterChips(
                 unselectedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
                 unselectedBorderColor = null,
                 unselectedTextColor = MaterialTheme.colorScheme.onSurface,
-                verticalPadding = 12.dp
+                verticalPadding = 12.dp,
+                fontSize = 13.sp
             )
         }
     }

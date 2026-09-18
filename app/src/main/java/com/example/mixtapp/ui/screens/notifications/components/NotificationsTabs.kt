@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.mixtapp.ui.components.AppChip
 import com.example.mixtapp.ui.screens.notifications.model.NotificationTabUi
 import com.example.mixtapp.ui.screens.notifications.model.TAB_SIN_LEER
@@ -39,6 +40,7 @@ fun NotificationsTabs(
                 unselectedBorderColor = MaterialTheme.colorScheme.outline,
                 unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
                 verticalPadding = 10.dp,
+                fontSize = 13.sp,
             )
         }
     }

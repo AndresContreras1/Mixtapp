@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.ui.theme.MixtappTheme
@@ -32,6 +33,7 @@ fun AppChip(
     unselectedBorderColor: Color?,
     unselectedTextColor: Color,
     verticalPadding: Dp,
+    fontSize: TextUnit,
     modifier: Modifier = Modifier,
 ) {
     val shape = RoundedCornerShape(20.dp)
@@ -55,7 +57,7 @@ fun AppChip(
         Text(
             text = text,
             color = if (isSelected) MaterialTheme.colorScheme.onSurface else unselectedTextColor,
-            fontSize = 13.sp,
+            fontSize = fontSize,
             fontWeight = FontWeight.Bold,
         )
     }
@@ -74,7 +76,8 @@ fun AppChipPreview() {
                 unselectedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
                 unselectedBorderColor = null,
                 unselectedTextColor = MaterialTheme.colorScheme.onSurface,
-                verticalPadding = 12.dp
+                verticalPadding = 12.dp,
+                fontSize = 13.sp
             )
             AppChip(
                 text = "Tendencias",
@@ -83,7 +86,8 @@ fun AppChipPreview() {
                 unselectedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
                 unselectedBorderColor = null,
                 unselectedTextColor = MaterialTheme.colorScheme.onSurface,
-                verticalPadding = 12.dp
+                verticalPadding = 12.dp,
+                fontSize = 13.sp
             )
         }
     }
