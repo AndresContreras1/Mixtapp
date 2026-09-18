@@ -71,6 +71,17 @@
     <string name="error_sin_sesion">No hay una sesión iniciada</string>
     <string name="error_cuota_excedida">Se agotó el espacio de almacenamiento. Inténtalo más tarde</string>
     <string name="error_permiso_denegado">No tienes permiso para subir esta imagen</string>
+    <string name="error_generico">Algo salió mal. Inténtalo de nuevo</string>
+    <string name="error_cargar_contenido">No se pudo cargar el contenido. Inténtalo de nuevo</string>
+    <string name="error_actualizar_lista">No se pudo actualizar la lista. Inténtalo de nuevo</string>
+    <string name="error_calificar">No se pudo guardar tu calificación</string>
+    <string name="error_guardar_album">No se pudo guardar el álbum</string>
+    <string name="error_me_gusta">No se pudo registrar tu me gusta</string>
+    <string name="error_compartir">No se pudo compartir la reseña</string>
+    <string name="error_publicar_resena">No se pudo publicar la reseña</string>
+    <string name="error_publicar_comentario">No se pudo publicar el comentario</string>
+    <string name="error_resena_vacia">Escribe tu reseña antes de publicar</string>
+    <string name="error_fecha_sugerida">No se pudo cargar la fecha sugerida</string>
     <string name="ajustes">Ajustes</string>
     <string name="mas_opciones">Más opciones</string>
     <string name="una_estrella">Una estrella</string>
