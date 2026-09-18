@@ -67,7 +67,7 @@ fun LoginScreenContent(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            LoginHeader()
+            LoginHeader(modifier = Modifier.padding(bottom = 32.dp))
 
             LoginForm(
                 email = email,
@@ -77,13 +77,17 @@ fun LoginScreenContent(
                 contrasenaVisible = contrasenaVisible,
                 onContrasenaVisibleChange = onContrasenaVisibleChange,
                 cargando = cargando,
-                onLoginClick = onLoginClick
+                onLoginClick = onLoginClick,
+                modifier = Modifier.padding(bottom = 19.dp)
             )
 
             // Error del intento de entrar, calculado por el ViewModel
             ErrorMessage(messageRes = errorMessageRes)
 
-            LoginFooter(onSignUpClick = onSignUpClick)
+            LoginFooter(
+                onSignUpClick = onSignUpClick,
+                modifier = Modifier.padding(bottom = 68.dp)
+            )
         }
     }
 }

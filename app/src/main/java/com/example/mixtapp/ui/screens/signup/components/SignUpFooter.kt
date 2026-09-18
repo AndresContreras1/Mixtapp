@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,7 +30,9 @@ fun SignUpFooter(
     ) {
         OrDivider(
             text = stringResource(R.string.o),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 83.dp)
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -53,7 +56,5 @@ fun SignUpFooter(
             lineHeight = 20.sp,
             modifier = Modifier.clickable { onLoginClick() }
         )
-
-        Spacer(modifier = Modifier.height(80.dp))
     }
 }

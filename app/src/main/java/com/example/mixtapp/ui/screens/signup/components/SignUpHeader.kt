@@ -47,7 +47,5 @@ fun SignUpHeader(
             lineHeight = 20.sp,
             fontWeight = FontWeight.Medium
         )
-
-        Spacer(modifier = Modifier.height(16.dp))
     }
 }

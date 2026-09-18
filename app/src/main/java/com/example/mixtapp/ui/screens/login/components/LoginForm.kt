@@ -95,7 +95,5 @@ fun LoginForm(
                 )
             }
         }
-
-        Spacer(modifier = Modifier.height(19.dp))
     }
 }

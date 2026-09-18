@@ -84,7 +84,7 @@ fun SignUpScreenContent(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            SignUpHeader()
+            SignUpHeader(modifier = Modifier.padding(bottom = 16.dp))
 
             SignUpForm(
                 usuario = usuario,
@@ -102,12 +102,16 @@ fun SignUpScreenContent(
                 terminos = terminos,
                 onTerminosClick = onTerminosClick,
                 cargando = cargando,
-                onSignUpClick = onSignUpClick
+                onSignUpClick = onSignUpClick,
+                modifier = Modifier.padding(bottom = 12.dp)
             )
 
             ErrorMessage(messageRes = errorMessageRes)
 
-            SignUpFooter(onLoginClick = onLoginClick)
+            SignUpFooter(
+                onLoginClick = onLoginClick,
+                modifier = Modifier.padding(bottom = 80.dp)
+            )
         }
     }
 }

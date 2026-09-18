@@ -99,8 +99,6 @@ fun SignUpForm(
                 )
             }
         }
-
-        Spacer(modifier = Modifier.height(12.dp))
     }
 }
 

@@ -119,7 +119,10 @@ fun SongReviewSections(
         }
 
         item {
-            ReviewsHeader(onWriteReviewClick = onWriteReviewClick)
+            ReviewsHeader(
+                onWriteReviewClick = onWriteReviewClick,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
         }
 
         items(songReview.reviews, key = { it.id }) { review ->

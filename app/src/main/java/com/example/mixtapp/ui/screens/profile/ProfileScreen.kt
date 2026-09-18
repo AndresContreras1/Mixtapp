@@ -102,14 +102,18 @@ fun ProfileScreenContent(
                     onImagePicked = onImagePicked,
                     reviewsCount = profile.reviewsCount,
                     albumsCount = profile.albumsCount,
-                    listsCount = profile.listsCount
+                    listsCount = profile.listsCount,
+                    modifier = Modifier.padding(bottom = 32.dp)
                 )
 
                 FavoriteSection(favoritesCount = profile.favoritesCount)
 
                 RecentActivitySection(activity = profile.recentActivity)
 
-                RatingsSection(ratingBars = profile.ratingBars)
+                RatingsSection(
+                    ratingBars = profile.ratingBars,
+                    modifier = Modifier.padding(bottom = 80.dp)
+                )
 
                 LogoutButton(onLogoutClick = onLogoutClick)
             }

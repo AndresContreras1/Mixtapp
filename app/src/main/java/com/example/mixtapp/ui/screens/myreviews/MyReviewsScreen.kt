@@ -69,7 +69,7 @@ fun MyReviewsScreenContent(
                 MyReviewsHeader(
                     username = username,
                     joinDate = joinDate,
-                    modifier = Modifier.padding(top = 24.dp)
+                    modifier = Modifier.padding(top = 24.dp, bottom = 16.dp)
                 )
                 MyReviewsFilter(
                     filters = filters,

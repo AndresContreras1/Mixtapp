@@ -74,7 +74,5 @@ fun MyReviewsHeader(
             fontWeight = FontWeight.Black,
             fontFamily = displayFontFamily
         )
-
-        Spacer(modifier = Modifier.height(16.dp))
     }
 }

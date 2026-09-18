@@ -94,7 +94,10 @@ fun NotificationsScreenContent(
             ) {
                 grouped.forEach { (section, items) ->
                     item(key = "header_$section") {
-                        NotificationSectionLabel(text = section)
+                        NotificationSectionLabel(
+                            text = section,
+                            modifier = Modifier.padding(vertical = 10.dp)
+                        )
                     }
 
                     items(items, key = { it.id }) { notification ->

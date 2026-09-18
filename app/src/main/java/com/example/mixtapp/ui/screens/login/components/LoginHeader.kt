@@ -49,7 +49,5 @@ fun LoginHeader(
             lineHeight = 23.sp,
             fontWeight = FontWeight.Medium
         )
-
-        Spacer(modifier = Modifier.height(32.dp))
     }
 }

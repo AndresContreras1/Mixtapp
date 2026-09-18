@@ -42,6 +42,7 @@ fun FollowingList(
                 followersCount = following.followersCount,
                 friendQuery = friendQuery,
                 onFriendQueryChange = onFriendQueryChange,
+                modifier = Modifier.padding(top = 18.dp),
             )
         }
 
@@ -50,6 +51,7 @@ fun FollowingList(
                 stories = following.stories,
                 selectedStoryId = selectedStoryId,
                 onStoryClick = onStoryClick,
+                modifier = Modifier.padding(top = 33.dp),
             )
         }
 
@@ -58,6 +60,7 @@ fun FollowingList(
                 filters = filters,
                 selectedFilterId = selectedFilterId,
                 onFilterSelected = onFilterSelected,
+                modifier = Modifier.padding(top = 21.dp, bottom = 20.dp),
             )
         }
 
@@ -76,6 +79,7 @@ fun FollowingList(
                 onLikeClick = { onLikeClick(review.id) },
                 onShareClick = { onShareClick(review.id) },
                 onCommentsClick = { onCommentsClick(review.id) },
+                modifier = Modifier.padding(bottom = 18.dp),
             )
         }
     }
