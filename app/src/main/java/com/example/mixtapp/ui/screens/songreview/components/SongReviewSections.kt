@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -21,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.data.model.SongReviewUi
+import com.example.mixtapp.ui.components.ErrorMessage
 import com.example.mixtapp.ui.theme.displayFontFamily
 
 @Composable
@@ -35,6 +37,7 @@ fun SongReviewSections(
     onWriteReviewClick: () -> Unit,
     onBackClick: () -> Unit,
     likedReviewIds: Set<String>,
+    errorMessageRes: Int?,
     onReviewLikeClick: (String) -> Unit,
     onReviewReplyClick: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -104,6 +107,11 @@ fun SongReviewSections(
                     isLiked = isLiked,
                     onSaveClick = onSaveClick,
                     onLikeClick = onLikeClick
+                )
+
+                ErrorMessage(
+                    messageRes = errorMessageRes,
+                    modifier = Modifier.padding(top = 12.dp)
                 )
 
                 Spacer(modifier = Modifier.height(32.dp))

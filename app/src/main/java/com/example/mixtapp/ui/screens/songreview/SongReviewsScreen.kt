@@ -33,7 +33,7 @@ fun SongReviewsScreen(
     }
 
     if (state.song == null) {
-        Text(text = stringResource(R.string.cancion_no_encontrada))
+        Text(text = stringResource(state.errorMessageRes ?: R.string.cancion_no_encontrada))
     } else {
         SongReviewsScreenContent(
             songReview = state.song!!,
@@ -46,6 +46,7 @@ fun SongReviewsScreen(
             onWriteReviewClick = onWriteReviewClick,
             onBackClick = onBackClick,
             likedReviewIds = state.likedReviewIds,
+            errorMessageRes = state.errorMessageRes,
             onReviewLikeClick = { songReviewsViewModel.darQuitarLikeResena(reviewId = it) },
             onReviewReplyClick = onReviewReplyClick,
             modifier = modifier
@@ -65,6 +66,7 @@ fun SongReviewsScreenContent(
     onWriteReviewClick: () -> Unit,
     onBackClick: () -> Unit,
     likedReviewIds: Set<String>,
+    errorMessageRes: Int?,
     onReviewLikeClick: (String) -> Unit,
     onReviewReplyClick: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -83,6 +85,7 @@ fun SongReviewsScreenContent(
             onWriteReviewClick = onWriteReviewClick,
             onBackClick = onBackClick,
             likedReviewIds = likedReviewIds,
+            errorMessageRes = errorMessageRes,
             onReviewLikeClick = onReviewLikeClick,
             onReviewReplyClick = onReviewReplyClick,
             modifier = Modifier.fillMaxSize()
@@ -107,6 +110,7 @@ fun SongReviewsScreenPreview() {
             onWriteReviewClick = {},
             onBackClick = {},
             likedReviewIds = emptySet(),
+            errorMessageRes = null,
             onReviewLikeClick = {},
             onReviewReplyClick = {}
         )

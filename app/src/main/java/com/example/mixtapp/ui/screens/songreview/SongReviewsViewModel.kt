@@ -2,6 +2,7 @@ package com.example.mixtapp.ui.screens.songreview
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.mixtapp.R
 import com.example.mixtapp.data.model.SongReviewUi
 import com.example.mixtapp.data.repository.AlbumRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -41,8 +42,11 @@ class SongReviewsViewModel @Inject constructor(
                             ?.map { resena -> resena.id }
                             ?.toSet()
                             ?: emptySet(),
+                        errorMessageRes = null,
                     )
                 }
+            } else {
+                _uiState.update { it.copy(errorMessageRes = R.string.error_cargar_contenido) }
             }
         }
     }
@@ -57,6 +61,8 @@ class SongReviewsViewModel @Inject constructor(
 
             if (result.isSuccess) {
                 actualizarSong(song = result.getOrNull())
+            } else {
+                _uiState.update { it.copy(errorMessageRes = R.string.error_calificar) }
             }
         }
     }
@@ -69,6 +75,8 @@ class SongReviewsViewModel @Inject constructor(
 
             if (result.isSuccess) {
                 actualizarSong(song = result.getOrNull())
+            } else {
+                _uiState.update { it.copy(errorMessageRes = R.string.error_guardar_album) }
             }
         }
     }
@@ -81,6 +89,8 @@ class SongReviewsViewModel @Inject constructor(
 
             if (result.isSuccess) {
                 actualizarSong(song = result.getOrNull())
+            } else {
+                _uiState.update { it.copy(errorMessageRes = R.string.error_me_gusta) }
             }
         }
     }
@@ -96,6 +106,8 @@ class SongReviewsViewModel @Inject constructor(
 
             if (result.isSuccess) {
                 actualizarSong(song = result.getOrNull())
+            } else {
+                _uiState.update { it.copy(errorMessageRes = R.string.error_me_gusta) }
             }
         }
     }
@@ -113,6 +125,7 @@ class SongReviewsViewModel @Inject constructor(
                     .filter { resena -> resena.isLiked }
                     .map { resena -> resena.id }
                     .toSet(),
+                errorMessageRes = null,
             )
         }
     }
