@@ -43,11 +43,9 @@ fun LoginFooter(
             Text(
                 text = buildAnnotatedString {
                     withStyle(SpanStyle(color = MaterialTheme.colorScheme.onSurface)) {
-                        append(stringResource(R.string.no_tienes_cuenta_registrate).substringBefore(" "))
-                        append(" ")
-                        append(stringResource(R.string.no_tienes_cuenta_registrate).substringAfter(" ").substringBefore("?"))
-                        append("?  ")
+                        append(stringResource(R.string.no_tienes_cuenta))
                     }
+                    append(" ")
                     withStyle(
                         SpanStyle(
                             color = MaterialTheme.colorScheme.inversePrimary,

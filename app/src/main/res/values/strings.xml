@@ -2,7 +2,7 @@
     <string name="app_name">Mixtapp</string>
     <string name="ingresar">Ingresar</string>
     <string name="descripcion_login">Ingresa a tu cuenta para seguir calificando álbumes o para seguir a tus amigos.</string>
-    <string name="no_tienes_cuenta_registrate">¿No tienes cuenta? Regístrate</string>
+    <string name="no_tienes_cuenta">¿No tienes cuenta?</string>
     <string name="email">Correo</string>
     <string name="enter_your_email">Ingresa tu correo</string>
     <string name="contrasena">Contraseña</string>
