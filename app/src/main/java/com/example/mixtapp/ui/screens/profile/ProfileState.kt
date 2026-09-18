@@ -16,6 +16,4 @@ data class ProfileState(
     val subiendoImagen: Boolean = false,
     @StringRes val errorImagenRes: Int? = null,
     @StringRes val errorMessageRes: Int? = null,
-    // Lo pone el ViewModel al cerrar sesion; la navegacion solo lo ejecuta
-    val sesionCerrada: Boolean = false,
 )

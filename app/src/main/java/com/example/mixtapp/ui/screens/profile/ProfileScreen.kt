@@ -29,6 +29,7 @@ fun ProfileScreen(
     profileViewModel: ProfileViewModel,
     onSettingsClick: () -> Unit,
     onMoreClick: () -> Unit,
+    logoutButtonPressed: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val state by profileViewModel.uiState.collectAsState()
@@ -48,7 +49,10 @@ fun ProfileScreen(
             onTabSelected = { profileViewModel.updateSelectedTab(tabId = it) },
             onSettingsClick = onSettingsClick,
             onMoreClick = onMoreClick,
-            onLogoutClick = { profileViewModel.cerrarSesion() },
+            onLogoutClick = {
+                profileViewModel.cerrarSesion()
+                logoutButtonPressed()
+            },
             modifier = modifier
         )
     }
