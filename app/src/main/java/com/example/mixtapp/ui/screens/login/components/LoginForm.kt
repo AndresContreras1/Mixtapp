@@ -4,14 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,6 +14,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.ui.components.AppButton
 import com.example.mixtapp.ui.components.AppTextField
 import com.example.mixtapp.ui.components.FieldIcon
 
@@ -66,34 +60,15 @@ fun LoginForm(
 
         Spacer(modifier = Modifier.height(28.dp))
 
-        Button(
+        AppButton(
+            texto = stringResource(R.string.ingresar).uppercase(),
             onClick = onLoginClick,
+            cargando = cargando,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Black,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(82.dp),
-            enabled = !cargando,
-            shape = RoundedCornerShape(41.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onSurface,
-                disabledContainerColor = MaterialTheme.colorScheme.primary,
-                disabledContentColor = MaterialTheme.colorScheme.onSurface
-            ),
-            elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
-        ) {
-            if (cargando) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(28.dp),
-                    color = MaterialTheme.colorScheme.onSurface,
-                    strokeWidth = 3.dp
-                )
-            } else {
-                Text(
-                    text = stringResource(R.string.ingresar).uppercase(),
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Black
-                )
-            }
-        }
+                .height(82.dp)
+        )
     }
 }
