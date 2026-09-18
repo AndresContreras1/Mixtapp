@@ -65,6 +65,5 @@ fun ProfileAvatarSection(
             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
             fontSize = 14.sp
         )
-        Spacer(modifier = Modifier.height(32.dp))
     }
 }

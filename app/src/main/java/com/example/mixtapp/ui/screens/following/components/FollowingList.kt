@@ -2,6 +2,7 @@ package com.example.mixtapp.ui.screens.following.components
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
@@ -9,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.data.model.FollowingReviewUi
 import com.example.mixtapp.data.model.FollowingUi
+import com.example.mixtapp.ui.components.ErrorMessage
 import com.example.mixtapp.ui.screens.following.model.FollowingFilterUi
 
 @Composable
@@ -21,6 +23,7 @@ fun FollowingList(
     selectedStoryId: String?,
     likedReviewIds: Set<String>,
     sharedReviewIds: Set<String>,
+    errorMessageRes: Int?,
     onFriendQueryChange: (String) -> Unit,
     onFilterSelected: (String) -> Unit,
     onStoryClick: (String) -> Unit,
@@ -39,6 +42,7 @@ fun FollowingList(
                 followersCount = following.followersCount,
                 friendQuery = friendQuery,
                 onFriendQueryChange = onFriendQueryChange,
+                modifier = Modifier.padding(top = 18.dp),
             )
         }
 
@@ -47,6 +51,7 @@ fun FollowingList(
                 stories = following.stories,
                 selectedStoryId = selectedStoryId,
                 onStoryClick = onStoryClick,
+                modifier = Modifier.padding(top = 33.dp),
             )
         }
 
@@ -55,6 +60,14 @@ fun FollowingList(
                 filters = filters,
                 selectedFilterId = selectedFilterId,
                 onFilterSelected = onFilterSelected,
+                modifier = Modifier.padding(top = 21.dp, bottom = 20.dp),
+            )
+        }
+
+        item {
+            ErrorMessage(
+                messageRes = errorMessageRes,
+                modifier = Modifier.padding(bottom = 12.dp)
             )
         }
 
@@ -66,6 +79,7 @@ fun FollowingList(
                 onLikeClick = { onLikeClick(review.id) },
                 onShareClick = { onShareClick(review.id) },
                 onCommentsClick = { onCommentsClick(review.id) },
+                modifier = Modifier.padding(bottom = 18.dp),
             )
         }
     }

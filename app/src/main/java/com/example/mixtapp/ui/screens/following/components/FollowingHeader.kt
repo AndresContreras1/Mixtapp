@@ -27,9 +27,7 @@ fun FollowingHeader(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(top = 18.dp)
+        modifier = modifier.fillMaxWidth()
     ) {
         Spacer(modifier = Modifier.height(49.dp))
 

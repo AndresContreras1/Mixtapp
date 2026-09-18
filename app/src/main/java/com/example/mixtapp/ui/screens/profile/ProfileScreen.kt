@@ -29,12 +29,13 @@ fun ProfileScreen(
     profileViewModel: ProfileViewModel,
     onSettingsClick: () -> Unit,
     onMoreClick: () -> Unit,
+    logoutButtonPressed: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val state by profileViewModel.uiState.collectAsState()
 
     if (state.profile == null) {
-        Text(text = stringResource(R.string.perfil_no_encontrado))
+        Text(text = stringResource(state.errorMessageRes ?: R.string.perfil_no_encontrado))
     } else {
         ProfileScreenContent(
             profile = state.profile!!,
@@ -48,7 +49,10 @@ fun ProfileScreen(
             onTabSelected = { profileViewModel.updateSelectedTab(tabId = it) },
             onSettingsClick = onSettingsClick,
             onMoreClick = onMoreClick,
-            onLogoutClick = { profileViewModel.cerrarSesion() },
+            onLogoutClick = {
+                profileViewModel.cerrarSesion()
+                logoutButtonPressed()
+            },
             modifier = modifier
         )
     }
@@ -102,14 +106,18 @@ fun ProfileScreenContent(
                     onImagePicked = onImagePicked,
                     reviewsCount = profile.reviewsCount,
                     albumsCount = profile.albumsCount,
-                    listsCount = profile.listsCount
+                    listsCount = profile.listsCount,
+                    modifier = Modifier.padding(bottom = 32.dp)
                 )
 
                 FavoriteSection(favoritesCount = profile.favoritesCount)
 
                 RecentActivitySection(activity = profile.recentActivity)
 
-                RatingsSection(ratingBars = profile.ratingBars)
+                RatingsSection(
+                    ratingBars = profile.ratingBars,
+                    modifier = Modifier.padding(bottom = 80.dp)
+                )
 
                 LogoutButton(onLogoutClick = onLogoutClick)
             }

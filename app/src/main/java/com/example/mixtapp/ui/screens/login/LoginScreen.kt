@@ -1,21 +1,13 @@
 package com.example.mixtapp.ui.screens.login
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.example.mixtapp.R
 import com.example.mixtapp.ui.components.*
 import com.example.mixtapp.ui.screens.login.components.LoginFooter
 import com.example.mixtapp.ui.screens.login.components.LoginForm
@@ -37,7 +29,6 @@ fun LoginScreen(
         onContrasenaChange = { loginViewModel.updateContrasena(contrasena = it) },
         contrasenaVisible = state.contrasenaVisible,
         onContrasenaVisibleChange = { loginViewModel.mostrarEsconderContrasena() },
-        mostrarErrorContrasena = state.mostrarErrorContrasena,
         errorMessageRes = state.errorMessageRes,
         cargando = state.cargando,
         onLoginClick = { loginViewModel.loginButtonPressed() },
@@ -54,7 +45,6 @@ fun LoginScreenContent(
     onContrasenaChange: (String) -> Unit,
     contrasenaVisible: Boolean,
     onContrasenaVisibleChange: () -> Unit,
-    mostrarErrorContrasena: Boolean,
     errorMessageRes: Int?,
     cargando: Boolean,
     onLoginClick: () -> Unit,
@@ -77,7 +67,7 @@ fun LoginScreenContent(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            LoginHeader()
+            LoginHeader(modifier = Modifier.padding(bottom = 32.dp))
 
             LoginForm(
                 email = email,
@@ -86,25 +76,18 @@ fun LoginScreenContent(
                 onContrasenaChange = onContrasenaChange,
                 contrasenaVisible = contrasenaVisible,
                 onContrasenaVisibleChange = onContrasenaVisibleChange,
-                mostrarErrorContrasena = mostrarErrorContrasena,
                 cargando = cargando,
-                onLoginClick = onLoginClick
+                onLoginClick = onLoginClick,
+                modifier = Modifier.padding(bottom = 19.dp)
             )
 
             // Error del intento de entrar, calculado por el ViewModel
-            AnimatedVisibility(
-                visible = errorMessageRes != null,
-                enter = fadeIn(),
-                exit = fadeOut()
-            ) {
-                Text(
-                    text = stringResource(errorMessageRes ?: R.string.error_inicio_sesion),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    fontSize = 14.sp
-                )
-            }
+            ErrorMessage(messageRes = errorMessageRes)
 
-            LoginFooter(onSignUpClick = onSignUpClick)
+            LoginFooter(
+                onSignUpClick = onSignUpClick,
+                modifier = Modifier.padding(bottom = 68.dp)
+            )
         }
     }
 }
@@ -120,7 +103,6 @@ fun LoginScreenLightPreview() {
             onContrasenaChange = {},
             contrasenaVisible = false,
             onContrasenaVisibleChange = {},
-            mostrarErrorContrasena = false,
             errorMessageRes = null,
             cargando = false,
             onLoginClick = {},
@@ -140,7 +122,6 @@ fun LoginScreenDarkPreview() {
             onContrasenaChange = {},
             contrasenaVisible = false,
             onContrasenaVisibleChange = {},
-            mostrarErrorContrasena = false,
             errorMessageRes = null,
             cargando = false,
             onLoginClick = {},

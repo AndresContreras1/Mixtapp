@@ -30,7 +30,7 @@ fun FollowingScreen(
     val state by followingViewModel.uiState.collectAsState()
 
     if (state.following == null) {
-        Text(text = stringResource(R.string.resenas_no_encontradas))
+        Text(text = stringResource(state.errorMessageRes ?: R.string.resenas_no_encontradas))
     } else {
         FollowingScreenContent(
             following = state.following!!,
@@ -41,6 +41,7 @@ fun FollowingScreen(
             selectedStoryId = state.selectedStoryId,
             likedReviewIds = state.likedReviewIds,
             sharedReviewIds = state.sharedReviewIds,
+            errorMessageRes = state.errorMessageRes,
             onFriendQueryChange = { followingViewModel.updateFriendQuery(friendQuery = it) },
             onFilterSelected = { followingViewModel.updateSelectedFilter(filtroId = it) },
             onStoryClick = { followingViewModel.updateSelectedStory(storyId = it) },
@@ -62,6 +63,7 @@ fun FollowingScreenContent(
     selectedStoryId: String?,
     likedReviewIds: Set<String>,
     sharedReviewIds: Set<String>,
+    errorMessageRes: Int?,
     onFriendQueryChange: (String) -> Unit,
     onFilterSelected: (String) -> Unit,
     onStoryClick: (String) -> Unit,
@@ -86,6 +88,7 @@ fun FollowingScreenContent(
             selectedStoryId = selectedStoryId,
             likedReviewIds = likedReviewIds,
             sharedReviewIds = sharedReviewIds,
+            errorMessageRes = errorMessageRes,
             onFriendQueryChange = onFriendQueryChange,
             onFilterSelected = onFilterSelected,
             onStoryClick = onStoryClick,
@@ -112,6 +115,7 @@ fun FollowingScreenPreview() {
             selectedStoryId = null,
             likedReviewIds = emptySet(),
             sharedReviewIds = emptySet(),
+            errorMessageRes = null,
             onFriendQueryChange = {},
             onFilterSelected = {},
             onStoryClick = {},

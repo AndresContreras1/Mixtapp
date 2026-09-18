@@ -1,5 +1,6 @@
 package com.example.mixtapp.ui.screens.notifications
 
+import androidx.annotation.StringRes
 import com.example.mixtapp.data.model.NotificationUi
 import com.example.mixtapp.ui.screens.notifications.model.NotificationTabUi
 import com.example.mixtapp.ui.screens.notifications.model.TAB_TODAS
@@ -10,4 +11,5 @@ data class NotificationsState(
     val tabs: List<NotificationTabUi> = emptyList(),
     val unreadCount: Int = 0,
     val selectedTabId: String = TAB_TODAS,
+    @StringRes val errorMessageRes: Int? = null,
 )

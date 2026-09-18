@@ -9,7 +9,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.ui.components.*
-import com.example.mixtapp.ui.screens.signup.components.SignUpErrorMessages
 import com.example.mixtapp.ui.screens.signup.components.SignUpFooter
 import com.example.mixtapp.ui.screens.signup.components.SignUpForm
 import com.example.mixtapp.ui.screens.signup.components.SignUpHeader
@@ -40,7 +39,6 @@ fun SignUpScreen(
         onConfirmarVisibleChange = { signUpViewModel.mostrarEsconderConfirmar() },
         terminos = state.terminos,
         onTerminosClick = { signUpViewModel.alternarTerminos() },
-        mostrarErrorContrasenas = state.mostrarErrorContrasenas,
         errorMessageRes = state.errorMessageRes,
         cargando = state.cargando,
         onSignUpClick = { signUpViewModel.signUpButtonPressed() },
@@ -65,7 +63,6 @@ fun SignUpScreenContent(
     onConfirmarVisibleChange: () -> Unit,
     terminos: Boolean,
     onTerminosClick: () -> Unit,
-    mostrarErrorContrasenas: Boolean,
     errorMessageRes: Int?,
     cargando: Boolean,
     onSignUpClick: () -> Unit,
@@ -87,7 +84,7 @@ fun SignUpScreenContent(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            SignUpHeader()
+            SignUpHeader(modifier = Modifier.padding(bottom = 16.dp))
 
             SignUpForm(
                 usuario = usuario,
@@ -105,15 +102,16 @@ fun SignUpScreenContent(
                 terminos = terminos,
                 onTerminosClick = onTerminosClick,
                 cargando = cargando,
-                onSignUpClick = onSignUpClick
+                onSignUpClick = onSignUpClick,
+                modifier = Modifier.padding(bottom = 12.dp)
             )
 
-            SignUpErrorMessages(
-                mostrarErrorContrasenas = mostrarErrorContrasenas,
-                errorMessageRes = errorMessageRes
-            )
+            ErrorMessage(messageRes = errorMessageRes)
 
-            SignUpFooter(onLoginClick = onLoginClick)
+            SignUpFooter(
+                onLoginClick = onLoginClick,
+                modifier = Modifier.padding(bottom = 80.dp)
+            )
         }
     }
 }
@@ -136,7 +134,6 @@ private fun SignUpScreenContentPreview() {
         onConfirmarVisibleChange = {},
         terminos = false,
         onTerminosClick = {},
-        mostrarErrorContrasenas = false,
         errorMessageRes = null,
         cargando = false,
         onSignUpClick = {},

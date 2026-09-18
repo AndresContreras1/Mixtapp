@@ -2,6 +2,7 @@ package com.example.mixtapp.ui.screens.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.mixtapp.R
 import com.example.mixtapp.data.model.CATEGORIA_FECHA_LANZAMIENTO
 import com.example.mixtapp.data.model.CATEGORIA_MAS_POPULARES
 import com.example.mixtapp.data.model.CATEGORIA_MEJOR_CALIFICADOS
@@ -33,21 +34,34 @@ class SearchViewModel @Inject constructor(
             val result = albumRepository.getSearchCategories()
 
             if (result.isSuccess) {
-                _uiState.update { it.copy(categories = result.getOrNull() ?: emptyList()) }
+                _uiState.update {
+                    it.copy(categories = result.getOrNull() ?: emptyList(), errorMessageRes = null)
+                }
+            } else {
+                _uiState.update { it.copy(errorMessageRes = R.string.error_cargar_contenido) }
             }
         }
     }
 
     fun updateQuery(query: String) {
         viewModelScope.launch {
-            val todos = albumRepository.getSongReviews().getOrNull() ?: emptyList()
+            val result = albumRepository.getSongReviews()
 
-            _uiState.update {
-                it.copy(
-                    query = query,
-                    selectedCategoryId = if (query.isBlank()) it.selectedCategoryId else null,
-                    resultados = buscarPorNombre(query = query, todos = todos),
-                )
+            if (result.isSuccess) {
+                val todos = result.getOrNull() ?: emptyList()
+
+                _uiState.update {
+                    it.copy(
+                        query = query,
+                        selectedCategoryId = if (query.isBlank()) it.selectedCategoryId else null,
+                        resultados = buscarPorNombre(query = query, todos = todos),
+                        errorMessageRes = null,
+                    )
+                }
+            } else {
+                _uiState.update {
+                    it.copy(query = query, errorMessageRes = R.string.error_actualizar_lista)
+                }
             }
         }
     }
@@ -56,17 +70,24 @@ class SearchViewModel @Inject constructor(
         val yaEstaba = _uiState.value.selectedCategoryId == categoryId
 
         viewModelScope.launch {
-            val todos = albumRepository.getSongReviews().getOrNull() ?: emptyList()
+            val result = albumRepository.getSongReviews()
 
-            _uiState.update {
-                it.copy(
-                    selectedCategoryId = if (yaEstaba) null else categoryId,
-                    resultados = if (yaEstaba) {
-                        emptyList()
-                    } else {
-                        ordenarPorCategoria(categoryId = categoryId, todos = todos)
-                    },
-                )
+            if (result.isSuccess) {
+                val todos = result.getOrNull() ?: emptyList()
+
+                _uiState.update {
+                    it.copy(
+                        selectedCategoryId = if (yaEstaba) null else categoryId,
+                        resultados = if (yaEstaba) {
+                            emptyList()
+                        } else {
+                            ordenarPorCategoria(categoryId = categoryId, todos = todos)
+                        },
+                        errorMessageRes = null,
+                    )
+                }
+            } else {
+                _uiState.update { it.copy(errorMessageRes = R.string.error_actualizar_lista) }
             }
         }
     }

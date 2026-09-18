@@ -35,7 +35,11 @@ fun SignUpFields(
             placeholder = stringResource(R.string.choose_username),
             value = usuario,
             onValueChange = onUsuarioChange,
-            icon = FieldIcon.User
+            keyboardOptions = KeyboardOptions.Default,
+            icon = FieldIcon.User,
+            esContrasena = false,
+            contrasenaVisible = false,
+            onContrasenaVisibleChange = {}
         )
 
         Spacer(modifier = Modifier.height(14.dp))
@@ -46,7 +50,10 @@ fun SignUpFields(
             value = email,
             onValueChange = onEmailChange,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            icon = FieldIcon.Email
+            icon = FieldIcon.Email,
+            esContrasena = false,
+            contrasenaVisible = false,
+            onContrasenaVisibleChange = {}
         )
 
         Spacer(modifier = Modifier.height(14.dp))

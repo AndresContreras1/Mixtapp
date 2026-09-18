@@ -3,6 +3,7 @@ package com.example.mixtapp.data.repository
 import com.example.mixtapp.data.datasource.AlbumLocalDataSource
 import com.example.mixtapp.data.datasource.ReviewLocalDataSource
 import com.example.mixtapp.data.model.Album
+import com.example.mixtapp.data.model.DiscussionCommentUi
 import com.example.mixtapp.data.model.DiscussionUi
 import com.example.mixtapp.data.model.MyReviewUi
 import javax.inject.Inject
@@ -60,13 +61,15 @@ class ReviewRepository @Inject constructor(
         fecha: String,
     ): Result<MyReviewUi> {
         return try {
-            val resena = reviewLocalDataSource.publicarResena(
+            val resena = MyReviewUi(
+                id = "resena-propia-" + (reviewLocalDataSource.getMyReviews().size + 1),
                 album = album,
                 rating = rating,
-                texto = texto,
-                moods = moods,
-                fecha = fecha,
+                excerpt = texto,
+                tags = moods,
+                date = fecha,
             )
+            reviewLocalDataSource.agregarResena(resena = resena)
             albumLocalDataSource.calificarSongReview(songId = album.id, rating = rating)
             Result.success(resena)
         } catch (e: Exception) {
@@ -76,9 +79,28 @@ class ReviewRepository @Inject constructor(
 
     suspend fun publicarComentario(reviewId: String, autor: String, texto: String): Result<DiscussionUi?> {
         return try {
-            Result.success(
-                reviewLocalDataSource.publicarComentario(reviewId = reviewId, autor = autor, texto = texto)
-            )
+            val discusion = reviewLocalDataSource.getDiscussionByReviewId(reviewId = reviewId)
+
+            if (discusion == null) {
+                Result.success(null)
+            } else {
+                val comentario = DiscussionCommentUi(
+                    id = "comentario-propio-" + (discusion.comments.size + 1),
+                    author = autor,
+                    initials = autor.take(2).lowercase(),
+                    timeAgo = "ahora",
+                    content = texto,
+                    likes = 0,
+                    isReply = false,
+                    isLiked = false,
+                )
+
+                Result.success(
+                    reviewLocalDataSource.guardarDiscusion(
+                        discusion = discusion.copy(comments = discusion.comments + comentario)
+                    )
+                )
+            }
         } catch (e: Exception) {
             Result.failure(e)
         }

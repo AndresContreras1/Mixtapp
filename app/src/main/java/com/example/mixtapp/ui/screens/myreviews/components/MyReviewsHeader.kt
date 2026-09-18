@@ -26,6 +26,7 @@ import com.example.mixtapp.ui.theme.displayFontFamily
 @Composable
 fun MyReviewsHeader(
     username: String,
+    iniciales: String,
     joinDate: String,
     modifier: Modifier = Modifier,
 ) {
@@ -39,7 +40,7 @@ fun MyReviewsHeader(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = username.take(2).uppercase(),
+                    text = iniciales,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Bold,
@@ -74,7 +75,5 @@ fun MyReviewsHeader(
             fontWeight = FontWeight.Black,
             fontFamily = displayFontFamily
         )
-
-        Spacer(modifier = Modifier.height(16.dp))
     }
 }

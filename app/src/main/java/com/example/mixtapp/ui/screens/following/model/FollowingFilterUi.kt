@@ -15,7 +15,7 @@ const val FILTRO_LISTAS = "listas"
 
 val followingFilters = listOf(
     FollowingFilterUi(id = FILTRO_TODO, label = R.string.following_filtro_todo),
-    FollowingFilterUi(id = FILTRO_RESENAS, label = R.string.following_filtro_resenas),
-    FollowingFilterUi(id = FILTRO_CALIFICACIONES, label = R.string.following_filtro_calificaciones),
-    FollowingFilterUi(id = FILTRO_LISTAS, label = R.string.following_filtro_listas)
+    FollowingFilterUi(id = FILTRO_RESENAS, label = R.string.reviews),
+    FollowingFilterUi(id = FILTRO_CALIFICACIONES, label = R.string.calificaciones),
+    FollowingFilterUi(id = FILTRO_LISTAS, label = R.string.profile_tab_lists)
 )

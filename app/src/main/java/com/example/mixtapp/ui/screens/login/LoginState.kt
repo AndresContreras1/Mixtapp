@@ -6,8 +6,6 @@ data class LoginState(
     val email: String = "",
     val contrasena: String = "",
     val contrasenaVisible: Boolean = false,
-    // Aviso de contrasena corta mientras se escribe. Lo calcula el ViewModel, no la pantalla
-    val mostrarErrorContrasena: Boolean = false,
     // Se guarda el id del string, no el texto: el ViewModel no tiene acceso a los recursos.
     // null significa que no hay error que mostrar
     @StringRes val errorMessageRes: Int? = null,

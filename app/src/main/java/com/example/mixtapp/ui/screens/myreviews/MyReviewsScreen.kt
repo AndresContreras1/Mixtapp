@@ -18,6 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.data.local.LocalMyReviewsProvider
 import com.example.mixtapp.data.model.MyReviewUi
+import com.example.mixtapp.ui.components.ErrorMessage
 import com.example.mixtapp.ui.screens.myreviews.components.MyReviewCard
 import com.example.mixtapp.ui.screens.myreviews.components.MyReviewsFilter
 import com.example.mixtapp.ui.screens.myreviews.components.MyReviewsHeader
@@ -35,10 +36,12 @@ fun MyReviewsScreen(
 
     MyReviewsScreenContent(
         username = state.username,
+        iniciales = state.iniciales,
         joinDate = state.joinDate,
         reviews = state.reviews,
         filters = state.filters,
         selectedFilterId = state.selectedFilterId,
+        errorMessageRes = state.errorMessageRes,
         onFilterSelected = { myReviewsViewModel.updateSelectedFilter(filtroId = it) },
         onReviewClick = onReviewClick,
         modifier = modifier
@@ -48,10 +51,12 @@ fun MyReviewsScreen(
 @Composable
 fun MyReviewsScreenContent(
     username: String,
+    iniciales: String,
     joinDate: String,
     reviews: List<MyReviewUi>,
     filters: List<MyReviewFilterUi>,
     selectedFilterId: String,
+    errorMessageRes: Int?,
     onFilterSelected: (String) -> Unit,
     onReviewClick: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -65,13 +70,18 @@ fun MyReviewsScreenContent(
             Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
                 MyReviewsHeader(
                     username = username,
+                    iniciales = iniciales,
                     joinDate = joinDate,
-                    modifier = Modifier.padding(top = 24.dp)
+                    modifier = Modifier.padding(top = 24.dp, bottom = 16.dp)
                 )
                 MyReviewsFilter(
                     filters = filters,
                     selectedId = selectedFilterId,
                     onFilterSelected = onFilterSelected,
+                )
+                ErrorMessage(
+                    messageRes = errorMessageRes,
+                    modifier = Modifier.padding(top = 8.dp)
                 )
             }
 
@@ -97,10 +107,12 @@ fun MyReviewsScreenPreview() {
     MixtappTheme(darkTheme = true, dynamicColor = false) {
         MyReviewsScreenContent(
             username = "Yourname",
+            iniciales = "YO",
             joinDate = "march 2025",
             reviews = LocalMyReviewsProvider.reviews,
             filters = myReviewFilters,
             selectedFilterId = myReviewFilters.first().id,
+            errorMessageRes = null,
             onFilterSelected = {},
             onReviewClick = {}
         )

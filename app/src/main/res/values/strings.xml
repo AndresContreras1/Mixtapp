@@ -2,12 +2,11 @@
     <string name="app_name">Mixtapp</string>
     <string name="ingresar">Ingresar</string>
     <string name="descripcion_login">Ingresa a tu cuenta para seguir calificando álbumes o para seguir a tus amigos.</string>
-    <string name="no_tienes_cuenta_registrate">¿No tienes cuenta? Regístrate</string>
+    <string name="no_tienes_cuenta">¿No tienes cuenta?</string>
     <string name="email">Correo</string>
     <string name="enter_your_email">Ingresa tu correo</string>
     <string name="contrasena">Contraseña</string>
     <string name="o">O</string>
-    <string name="profile_tab_profile">Perfil</string>
     <string name="profile_tab_diary">Diario</string>
     <string name="profile_tab_lists">Listas</string>
     <string name="profile_tab_library">Biblioteca</string>
@@ -30,7 +29,6 @@
     <string name="log_in">Iniciar sesión</string>
 
     <!-- Home Extra -->
-    <string name="search_icon">Buscar</string>
     <string name="for_you">Para ti</string>
     <string name="trending">Tendencias</string>
     <string name="friends">Amigos</string>
@@ -61,6 +59,7 @@
     <string name="error_credenciales">Correo o contraseña incorrectos</string>
     <string name="error_inicio_sesion">No se pudo iniciar sesión. Inténtalo de nuevo</string>
     <string name="error_registro">No se pudo crear la cuenta. Intenta con otro correo</string>
+    <string name="error_datos_registro_invalidos">El correo o la contraseña no son válidos</string>
     <string name="error_usuario_no_existe">No existe una cuenta con ese correo</string>
     <string name="error_correo_ya_registrado">Ese correo ya está registrado</string>
     <string name="error_contrasena_debil">La contraseña debe tener una mayúscula y un número</string>
@@ -70,6 +69,17 @@
     <string name="error_sin_sesion">No hay una sesión iniciada</string>
     <string name="error_cuota_excedida">Se agotó el espacio de almacenamiento. Inténtalo más tarde</string>
     <string name="error_permiso_denegado">No tienes permiso para subir esta imagen</string>
+    <string name="error_generico">Algo salió mal. Inténtalo de nuevo</string>
+    <string name="error_cargar_contenido">No se pudo cargar el contenido. Inténtalo de nuevo</string>
+    <string name="error_actualizar_lista">No se pudo actualizar la lista. Inténtalo de nuevo</string>
+    <string name="error_calificar">No se pudo guardar tu calificación</string>
+    <string name="error_guardar_album">No se pudo guardar el álbum</string>
+    <string name="error_me_gusta">No se pudo registrar tu me gusta</string>
+    <string name="error_compartir">No se pudo compartir la reseña</string>
+    <string name="error_publicar_resena">No se pudo publicar la reseña</string>
+    <string name="error_publicar_comentario">No se pudo publicar el comentario</string>
+    <string name="error_resena_vacia">Escribe tu reseña antes de publicar</string>
+    <string name="error_fecha_sugerida">No se pudo cargar la fecha sugerida</string>
     <string name="ajustes">Ajustes</string>
     <string name="mas_opciones">Más opciones</string>
     <string name="una_estrella">Una estrella</string>
@@ -91,16 +101,12 @@
     <string name="like_review">Me gusta la reseña</string>
     <string name="share_review">Compartir la reseña</string>
     <string name="open_discussion">Abrir la discusión</string>
-    <string name="notifications_icon">Notificaciones</string>
 
     <!-- Following -->
     <string name="following_title">Siguiendo</string>
     <string name="following_followers_count">%1$d siguiendo • %2$d seguidores</string>
     <string name="find_friends">Buscar amigos</string>
     <string name="following_filtro_todo">Todo</string>
-    <string name="following_filtro_resenas">Reseñas</string>
-    <string name="following_filtro_calificaciones">Calificaciones</string>
-    <string name="following_filtro_listas">Listas</string>
 
     <!-- Home -->
     <string name="titulo_guion_subtitulo">%1$s - %2$s</string>
@@ -170,8 +176,5 @@
     <string name="mostrar_contrasena">Mostrar contraseña</string>
     <string name="ocultar_contrasena">Ocultar contraseña</string>
     <string name="nav_home">Inicio</string>
-    <string name="nav_search">Buscar</string>
-    <string name="nav_write_review">Escribir reseña</string>
-    <string name="nav_my_reviews">Mis reseñas</string>
     <string name="nav_profile">Perfil</string>
 </resources>

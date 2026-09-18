@@ -166,19 +166,14 @@ fun AppNavigation(
 
         composable(route = Screen.Profile.route) {
             val profileViewModel: ProfileViewModel = hiltViewModel()
-            val state by profileViewModel.uiState.collectAsState()
-
-            // El ViewModel cierra la sesion y autoriza; la navegacion solo ejecuta
-            LaunchedEffect(state.sesionCerrada) {
-                if (state.sesionCerrada) {
-                    navController.navegarLimpiandoLaPila(Screen.Login.route)
-                }
-            }
 
             ProfileScreen(
                 profileViewModel = profileViewModel,
                 onSettingsClick = {},
-                onMoreClick = {}
+                onMoreClick = {},
+                logoutButtonPressed = {
+                    navController.navegarLimpiandoLaPila(Screen.Login.route)
+                }
             )
         }
 

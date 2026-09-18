@@ -2,6 +2,7 @@ package com.example.mixtapp.ui.screens.following
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.mixtapp.R
 import com.example.mixtapp.data.model.FollowingReviewUi
 import com.example.mixtapp.data.model.FollowingUi
 import com.example.mixtapp.data.repository.SocialRepository
@@ -50,8 +51,11 @@ class FollowingViewModel @Inject constructor(
                         selectedFilterId = filtroInicial,
                         likedReviewIds = following.reviews.filter { r -> r.isLiked }.map { r -> r.id }.toSet(),
                         sharedReviewIds = following.reviews.filter { r -> r.isShared }.map { r -> r.id }.toSet(),
+                        errorMessageRes = null,
                     )
                 }
+            } else {
+                _uiState.update { it.copy(errorMessageRes = R.string.error_cargar_contenido) }
             }
         }
     }
@@ -92,6 +96,8 @@ class FollowingViewModel @Inject constructor(
 
             if (result.isSuccess) {
                 actualizarFollowing(following = result.getOrNull())
+            } else {
+                _uiState.update { it.copy(errorMessageRes = R.string.error_me_gusta) }
             }
         }
     }
@@ -102,6 +108,8 @@ class FollowingViewModel @Inject constructor(
 
             if (result.isSuccess) {
                 actualizarFollowing(following = result.getOrNull())
+            } else {
+                _uiState.update { it.copy(errorMessageRes = R.string.error_compartir) }
             }
         }
     }
@@ -119,6 +127,7 @@ class FollowingViewModel @Inject constructor(
                 ),
                 likedReviewIds = following.reviews.filter { r -> r.isLiked }.map { r -> r.id }.toSet(),
                 sharedReviewIds = following.reviews.filter { r -> r.isShared }.map { r -> r.id }.toSet(),
+                errorMessageRes = null,
             )
         }
     }

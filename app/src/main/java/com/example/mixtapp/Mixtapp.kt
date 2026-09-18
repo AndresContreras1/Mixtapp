@@ -11,7 +11,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.mixtapp.navigation.AppNavigation
 import com.example.mixtapp.navigation.NavigationLogic
-import com.example.mixtapp.navigation.Screen
 import com.example.mixtapp.ui.components.BottomNav
 import com.example.mixtapp.ui.components.WriteReviewFab
 
@@ -34,13 +33,10 @@ fun Mixtapp(modifier: Modifier = Modifier) {
             }
         },
         floatingActionButton = {
-            if (mostrarBarra) {
+            if (mostrarBarra && state.mostrarBotonResena) {
                 WriteReviewFab(
-                    onClick = {
-                        navController.navigate(
-                            Screen.WriteReview.createRoute(albumId = state.albumParaResenar)
-                        )
-                    }
+                    navController = navController,
+                    albumId = state.albumParaResenar
                 )
             }
         }

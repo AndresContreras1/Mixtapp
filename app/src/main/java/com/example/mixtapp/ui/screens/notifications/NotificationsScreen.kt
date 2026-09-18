@@ -18,6 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.data.local.LocalNotificationsProvider
 import com.example.mixtapp.data.model.NotificationUi
+import com.example.mixtapp.ui.components.ErrorMessage
 import com.example.mixtapp.ui.screens.notifications.components.NotificationRow
 import com.example.mixtapp.ui.screens.notifications.components.NotificationSectionLabel
 import com.example.mixtapp.ui.screens.notifications.components.NotificationsHeader
@@ -40,6 +41,7 @@ fun NotificationsScreen(
         tabs = state.tabs,
         unreadCount = state.unreadCount,
         selectedTabId = state.selectedTabId,
+        errorMessageRes = state.errorMessageRes,
         onTabSelected = { notificationsViewModel.updateSelectedTab(tabId = it) },
         onBackClick = onBackClick,
         modifier = modifier,
@@ -52,6 +54,7 @@ fun NotificationsScreenContent(
     tabs: List<NotificationTabUi>,
     unreadCount: Int,
     selectedTabId: String,
+    errorMessageRes: Int?,
     onTabSelected: (String) -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -77,6 +80,10 @@ fun NotificationsScreenContent(
                     selectedTabId = selectedTabId,
                     onTabSelected = onTabSelected,
                 )
+                ErrorMessage(
+                    messageRes = errorMessageRes,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
             }
 
             LazyColumn(
@@ -87,7 +94,10 @@ fun NotificationsScreenContent(
             ) {
                 grouped.forEach { (section, items) ->
                     item(key = "header_$section") {
-                        NotificationSectionLabel(text = section)
+                        NotificationSectionLabel(
+                            text = section,
+                            modifier = Modifier.padding(vertical = 10.dp)
+                        )
                     }
 
                     items(items, key = { it.id }) { notification ->
@@ -113,6 +123,7 @@ fun NotificationsScreenPreview() {
             tabs = notificationTabs,
             unreadCount = todas.count { !it.isRead },
             selectedTabId = TAB_TODAS,
+            errorMessageRes = null,
             onTabSelected = {},
             onBackClick = {},
         )

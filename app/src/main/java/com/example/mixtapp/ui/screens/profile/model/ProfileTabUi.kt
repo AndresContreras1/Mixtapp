@@ -14,7 +14,7 @@ const val PESTANA_LISTAS = "listas"
 const val PESTANA_BIBLIOTECA = "biblioteca"
 
 val profileTabs = listOf(
-    ProfileTabUi(id = PESTANA_PERFIL, label = R.string.profile_tab_profile),
+    ProfileTabUi(id = PESTANA_PERFIL, label = R.string.nav_profile),
     ProfileTabUi(id = PESTANA_DIARIO, label = R.string.profile_tab_diary),
     ProfileTabUi(id = PESTANA_LISTAS, label = R.string.profile_tab_lists),
     ProfileTabUi(id = PESTANA_BIBLIOTECA, label = R.string.profile_tab_library)

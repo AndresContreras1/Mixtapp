@@ -1,5 +1,6 @@
 package com.example.mixtapp.ui.screens.review
 
+import androidx.annotation.StringRes
 import com.example.mixtapp.data.model.Album
 
 // El album es nulable porque puede que el id no exista
@@ -12,4 +13,5 @@ data class WriteReviewState(
     val listenedDate: String = "",
     val isFavorite: Boolean = false,
     val publicada: Boolean = false,
+    @StringRes val errorMessageRes: Int? = null,
 )

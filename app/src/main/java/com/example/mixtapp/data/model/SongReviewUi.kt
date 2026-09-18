@@ -14,6 +14,7 @@ data class SongReviewUi(
 data class SongReviewItemUi(
     val id: String,
     val author: String,
+    val initials: String,
     val daysAgo: String,
     val rating: Int,
     val content: String,

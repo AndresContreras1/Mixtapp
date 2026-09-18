@@ -1,5 +1,6 @@
 package com.example.mixtapp.ui.screens.discussion
 
+import androidx.annotation.StringRes
 import com.example.mixtapp.data.model.DiscussionCommentUi
 import com.example.mixtapp.data.model.DiscussionUi
 
@@ -12,4 +13,5 @@ data class DiscussionState(
     val isReviewShared: Boolean = false,
     val likedCommentIds: Set<String> = emptySet(),
     val replyingToCommentId: String? = null,
+    @StringRes val errorMessageRes: Int? = null,
 )

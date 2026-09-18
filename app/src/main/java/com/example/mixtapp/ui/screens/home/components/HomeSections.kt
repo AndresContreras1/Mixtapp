@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
 import com.example.mixtapp.data.model.FriendActivityUi
 import com.example.mixtapp.data.model.SongReviewUi
+import com.example.mixtapp.ui.components.ErrorMessage
 import com.example.mixtapp.ui.screens.home.model.HomeFilterUi
 
 @Composable
@@ -23,6 +24,7 @@ fun HomeSections(
     filters: List<HomeFilterUi>,
     selectedFilterId: String,
     profileImageUrl: String,
+    errorMessageRes: Int?,
     onFilterSelected: (String) -> Unit,
     onAlbumClick: (String) -> Unit,
     onSearchClick: () -> Unit,
@@ -49,6 +51,11 @@ fun HomeSections(
             filters = filters,
             selectedId = selectedFilterId,
             onFilterSelected = onFilterSelected
+        )
+
+        ErrorMessage(
+            messageRes = errorMessageRes,
+            modifier = Modifier.padding(top = 8.dp)
         )
 
         Spacer(modifier = Modifier.height(28.dp))

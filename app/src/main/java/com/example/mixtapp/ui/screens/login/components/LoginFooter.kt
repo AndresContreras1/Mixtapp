@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -31,7 +32,9 @@ fun LoginFooter(
     ) {
         OrDivider(
             text = stringResource(R.string.o),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 83.dp)
         )
 
         Spacer(modifier = Modifier.height(22.dp))
@@ -40,11 +43,9 @@ fun LoginFooter(
             Text(
                 text = buildAnnotatedString {
                     withStyle(SpanStyle(color = MaterialTheme.colorScheme.onSurface)) {
-                        append(stringResource(R.string.no_tienes_cuenta_registrate).substringBefore(" "))
-                        append(" ")
-                        append(stringResource(R.string.no_tienes_cuenta_registrate).substringAfter(" ").substringBefore("?"))
-                        append("?  ")
+                        append(stringResource(R.string.no_tienes_cuenta))
                     }
+                    append(" ")
                     withStyle(
                         SpanStyle(
                             color = MaterialTheme.colorScheme.inversePrimary,
@@ -58,7 +59,5 @@ fun LoginFooter(
                 lineHeight = 24.sp
             )
         }
-
-        Spacer(modifier = Modifier.height(68.dp))
     }
 }

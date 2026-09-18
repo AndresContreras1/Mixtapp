@@ -10,8 +10,6 @@ data class SignUpState(
     val terminos: Boolean = false,
     val contrasenaVisible: Boolean = false,
     val confirmarVisible: Boolean = false,
-    // La validacion la calcula el ViewModel, no la pantalla
-    val mostrarErrorContrasenas: Boolean = false,
     // Se guarda el id del string, no el texto: el ViewModel no tiene acceso a los recursos.
     // null significa que no hay error que mostrar
     @StringRes val errorMessageRes: Int? = null,

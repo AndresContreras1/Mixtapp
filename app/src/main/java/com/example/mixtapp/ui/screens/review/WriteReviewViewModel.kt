@@ -2,6 +2,7 @@ package com.example.mixtapp.ui.screens.review
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.mixtapp.R
 import com.example.mixtapp.data.repository.AlbumRepository
 import com.example.mixtapp.data.repository.ReviewRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,6 +15,8 @@ import javax.inject.Inject
 
 // Limite de caracteres de la resena
 const val MAX_REVIEW_LENGTH = 500
+
+const val MAX_DATE_LENGTH = 10
 
 @HiltViewModel
 class WriteReviewViewModel @Inject constructor(
@@ -40,6 +43,8 @@ class WriteReviewViewModel @Inject constructor(
                         listenedDate = fecha.getOrNull() ?: "",
                     )
                 }
+            } else {
+                _uiState.update { it.copy(errorMessageRes = R.string.error_cargar_contenido) }
             }
         }
     }
@@ -53,16 +58,23 @@ class WriteReviewViewModel @Inject constructor(
 
             if (result.isSuccess) {
                 _uiState.update { it.copy(album = result.getOrNull()) }
+            } else {
+                _uiState.update { it.copy(errorMessageRes = R.string.error_cargar_contenido) }
             }
         }
     }
 
     fun updateRating(rating: Int) {
-        _uiState.update { it.copy(rating = rating) }
+        val calificacionActual = _uiState.value.rating
+        val nueva = if (rating == calificacionActual) 0 else rating
+
+        _uiState.update { it.copy(rating = nueva) }
     }
 
     fun updateReviewText(reviewText: String) {
-        _uiState.update { it.copy(reviewText = reviewText.take(MAX_REVIEW_LENGTH)) }
+        _uiState.update {
+            it.copy(reviewText = reviewText.take(MAX_REVIEW_LENGTH), errorMessageRes = null)
+        }
     }
 
     fun seleccionarQuitarMood(mood: String) {
@@ -73,7 +85,7 @@ class WriteReviewViewModel @Inject constructor(
     }
 
     fun updateListenedDate(listenedDate: String) {
-        _uiState.update { it.copy(listenedDate = listenedDate) }
+        _uiState.update { it.copy(listenedDate = listenedDate.take(MAX_DATE_LENGTH)) }
     }
 
     fun usarFechaSugerida() {
@@ -81,13 +93,21 @@ class WriteReviewViewModel @Inject constructor(
             val result = reviewRepository.getFechaEscuchaSugerida()
 
             if (result.isSuccess) {
-                _uiState.update { it.copy(listenedDate = result.getOrNull() ?: it.listenedDate) }
+                _uiState.update {
+                    it.copy(
+                        listenedDate = result.getOrNull() ?: it.listenedDate,
+                        errorMessageRes = null,
+                    )
+                }
+            } else {
+                _uiState.update { it.copy(errorMessageRes = R.string.error_fecha_sugerida) }
             }
         }
     }
 
-    fun updateIsFavorite(isFavorite: Boolean) {
-        _uiState.update { it.copy(isFavorite = isFavorite) }
+    fun alternarFavorito() {
+        val valorActual = _uiState.value.isFavorite
+        _uiState.update { it.copy(isFavorite = !valorActual) }
     }
 
     fun publicarResena() {
@@ -95,7 +115,10 @@ class WriteReviewViewModel @Inject constructor(
         val album = estado.album ?: return
         val texto = estado.reviewText.trim()
 
-        if (texto.isEmpty()) return
+        if (texto.isEmpty()) {
+            _uiState.update { it.copy(errorMessageRes = R.string.error_resena_vacia) }
+            return
+        }
 
         viewModelScope.launch {
             val result = reviewRepository.publicarResena(
@@ -107,7 +130,9 @@ class WriteReviewViewModel @Inject constructor(
             )
 
             if (result.isSuccess) {
-                _uiState.update { it.copy(publicada = true) }
+                _uiState.update { it.copy(publicada = true, errorMessageRes = null) }
+            } else {
+                _uiState.update { it.copy(errorMessageRes = R.string.error_publicar_resena) }
             }
         }
     }

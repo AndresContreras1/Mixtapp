@@ -52,8 +52,11 @@ class ProfileViewModel @Inject constructor(
                         selectedTabId = profileTabs.first().id,
                         usuario = usuario,
                         profileImageUrl = foto,
+                        errorMessageRes = null,
                     )
                 }
+            } else {
+                _uiState.update { it.copy(errorMessageRes = R.string.error_cargar_contenido) }
             }
         }
     }
@@ -99,6 +102,5 @@ class ProfileViewModel @Inject constructor(
     // signOut no lleva suspend: solo borra la sesion del celular, no va a la red
     fun cerrarSesion() {
         authRepository.signOut()
-        _uiState.update { it.copy(sesionCerrada = true) }
     }
 }

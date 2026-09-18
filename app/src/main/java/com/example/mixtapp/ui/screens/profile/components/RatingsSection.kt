@@ -97,6 +97,5 @@ fun RatingsSection(
                 onRatingChange = null
             )
         }
-        Spacer(modifier = Modifier.height(80.dp))
     }
 }
