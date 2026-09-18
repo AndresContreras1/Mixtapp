@@ -41,7 +41,10 @@ fun LoginForm(
             value = email,
             onValueChange = onEmailChange,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            icon = FieldIcon.Email
+            icon = FieldIcon.Email,
+            esContrasena = false,
+            contrasenaVisible = false,
+            onContrasenaVisibleChange = {}
         )
 
         Spacer(modifier = Modifier.height(16.dp))

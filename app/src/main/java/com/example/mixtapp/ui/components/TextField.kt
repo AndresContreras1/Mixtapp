@@ -21,18 +21,17 @@ fun AppTextField(
     value: String,
     onValueChange: (String) -> Unit,
     icon: FieldIcon,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-    visualTransformation: VisualTransformation = VisualTransformation.None,
-    esContrasena: Boolean = false,
-    contrasenaVisible: Boolean = false,
-    onContrasenaVisibleChange: () -> Unit = {},
+    keyboardOptions: KeyboardOptions,
+    esContrasena: Boolean,
+    contrasenaVisible: Boolean,
+    onContrasenaVisibleChange: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val currentTransformation =
         if (esContrasena && !contrasenaVisible) {
             PasswordVisualTransformation()
         } else {
-            visualTransformation
+            VisualTransformation.None
         }
 
     OutlinedTextField(
@@ -72,7 +71,11 @@ fun AppTextFieldPreview() {
             placeholder = "Escribe tu correo",
             value = "",
             onValueChange = {},
-            icon = FieldIcon.Email
+            icon = FieldIcon.Email,
+            keyboardOptions = KeyboardOptions.Default,
+            esContrasena = false,
+            contrasenaVisible = false,
+            onContrasenaVisibleChange = {}
         )
     }
 }
