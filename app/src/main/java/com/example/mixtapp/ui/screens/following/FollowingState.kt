@@ -1,5 +1,6 @@
 package com.example.mixtapp.ui.screens.following
 
+import androidx.annotation.StringRes
 import com.example.mixtapp.data.model.FollowingReviewUi
 import com.example.mixtapp.data.model.FollowingUi
 import com.example.mixtapp.ui.screens.following.model.FollowingFilterUi
@@ -14,4 +15,5 @@ data class FollowingState(
     val selectedStoryId: String? = null,
     val likedReviewIds: Set<String> = emptySet(),
     val sharedReviewIds: Set<String> = emptySet(),
+    @StringRes val errorMessageRes: Int? = null,
 )
