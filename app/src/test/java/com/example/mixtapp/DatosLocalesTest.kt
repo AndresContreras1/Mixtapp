@@ -17,7 +17,7 @@ class DatosLocalesTest {
 
     @Test
     fun cadaAlbumTieneUnIdUnico() {
-        val ids = LocalSongReviewProvider.songs.map { it.id }
+        val ids = LocalSongReviewProvider.songs.map { it.album.id }
 
         assertEquals(ids.size, ids.toSet().size)
     }
@@ -42,10 +42,10 @@ class DatosLocalesTest {
 
     @Test
     fun cadaResenaAbreUnAlbumQueExiste() {
-        val idsDeAlbumes = LocalSongReviewProvider.songs.map { it.id }.toSet()
+        val idsDeAlbumes = LocalSongReviewProvider.songs.map { it.album.id }.toSet()
 
         LocalMyReviewsProvider.reviews.forEach { resena ->
-            assertTrue(resena.songId in idsDeAlbumes)
+            assertTrue(resena.album.id in idsDeAlbumes)
         }
     }
 }
