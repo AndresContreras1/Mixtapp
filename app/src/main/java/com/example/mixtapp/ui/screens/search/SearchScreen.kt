@@ -25,6 +25,7 @@ import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalSearchCategoriesProvider
 import com.example.mixtapp.data.model.SearchCategoryUi
 import com.example.mixtapp.data.model.SongReviewUi
+import com.example.mixtapp.ui.components.ErrorMessage
 import com.example.mixtapp.ui.components.ReviewAlbumRow
 import com.example.mixtapp.ui.screens.search.components.BrowseByHeader
 import com.example.mixtapp.ui.screens.search.components.SearchCategoryRow
@@ -47,6 +48,7 @@ fun SearchScreen(
         selectedCategoryId = state.selectedCategoryId,
         onCategoryClick = { searchViewModel.updateSelectedCategory(categoryId = it) },
         resultados = state.resultados,
+        errorMessageRes = state.errorMessageRes,
         onAlbumClick = onAlbumClick,
         modifier = modifier,
     )
@@ -60,6 +62,7 @@ fun SearchScreenContent(
     selectedCategoryId: String?,
     onCategoryClick: (String) -> Unit,
     resultados: List<SongReviewUi>,
+    errorMessageRes: Int?,
     onAlbumClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -76,6 +79,13 @@ fun SearchScreenContent(
                 SearchHeader(
                     query = query,
                     onQueryChange = onQueryChange,
+                )
+            }
+
+            item {
+                ErrorMessage(
+                    messageRes = errorMessageRes,
+                    modifier = Modifier.padding(horizontal = 24.dp)
                 )
             }
 
@@ -137,6 +147,7 @@ fun SearchScreenPreview() {
             selectedCategoryId = null,
             onCategoryClick = {},
             resultados = emptyList(),
+            errorMessageRes = null,
             onAlbumClick = {},
         )
     }
