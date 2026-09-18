@@ -37,7 +37,7 @@ fun HomeScreen(
     }
 
     if (state.trending == null || state.friendActivity == null) {
-        Text(text = stringResource(R.string.contenido_no_encontrado))
+        Text(text = stringResource(state.errorMessageRes ?: R.string.contenido_no_encontrado))
     } else {
         HomeScreenContent(
             albums = state.albums,
@@ -46,6 +46,7 @@ fun HomeScreen(
             filters = state.filters,
             selectedFilterId = state.selectedFilterId,
             profileImageUrl = state.profileImageUrl,
+            errorMessageRes = state.errorMessageRes,
             onFilterSelected = { homeViewModel.updateSelectedFilter(filtroId = it) },
             onAlbumClick = onAlbumClick,
             onSearchClick = onSearchClick,
@@ -65,6 +66,7 @@ fun HomeScreenContent(
     filters: List<HomeFilterUi>,
     selectedFilterId: String,
     profileImageUrl: String,
+    errorMessageRes: Int?,
     onFilterSelected: (String) -> Unit,
     onAlbumClick: (String) -> Unit,
     onSearchClick: () -> Unit,
@@ -83,6 +85,7 @@ fun HomeScreenContent(
             filters = filters,
             selectedFilterId = selectedFilterId,
             profileImageUrl = profileImageUrl,
+            errorMessageRes = errorMessageRes,
             onFilterSelected = onFilterSelected,
             onAlbumClick = onAlbumClick,
             onSearchClick = onSearchClick,
@@ -105,6 +108,7 @@ fun HomeScreenPreview() {
             filters = homeFilters,
             selectedFilterId = homeFilters.first().id,
             profileImageUrl = "",
+            errorMessageRes = null,
             onFilterSelected = {},
             onAlbumClick = {},
             onSearchClick = {},
