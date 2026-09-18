@@ -32,13 +32,13 @@ val bottomNavItems = listOf(
         filledIcon = Icons.Filled.Search,
         outlineIcon = Icons.Outlined.Search,
         route = Screen.Search.route,
-        label = R.string.nav_search
+        label = R.string.search_title
     ),
     BottomNavItem(
         filledIcon = Icons.AutoMirrored.Filled.List,
         outlineIcon = Icons.AutoMirrored.Outlined.List,
         route = Screen.MyReviews.route,
-        label = R.string.nav_my_reviews
+        label = R.string.my_reviews
     ),
     BottomNavItem(
         filledIcon = Icons.Filled.Person,

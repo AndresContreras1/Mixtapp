@@ -51,7 +51,7 @@ fun HomeHeader(
             ) {
                 Icon(
                     imageVector = Icons.Default.Search,
-                    contentDescription = stringResource(R.string.search_icon),
+                    contentDescription = stringResource(R.string.search_title),
                     tint = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier.size(32.dp)
                 )
@@ -65,7 +65,7 @@ fun HomeHeader(
             ) {
                 Icon(
                     imageVector = Icons.Default.Notifications,
-                    contentDescription = stringResource(R.string.notifications_icon),
+                    contentDescription = stringResource(R.string.notifications_title),
                     tint = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier.size(30.dp)
                 )

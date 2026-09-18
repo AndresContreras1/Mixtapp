@@ -31,7 +31,7 @@ fun WriteReviewFab(
     ) {
         Icon(
             imageVector = Icons.Filled.Add,
-            contentDescription = stringResource(R.string.nav_write_review)
+            contentDescription = stringResource(R.string.write_review)
         )
     }
 }

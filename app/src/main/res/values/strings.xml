@@ -7,7 +7,6 @@
     <string name="enter_your_email">Ingresa tu correo</string>
     <string name="contrasena">Contraseña</string>
     <string name="o">O</string>
-    <string name="profile_tab_profile">Perfil</string>
     <string name="profile_tab_diary">Diario</string>
     <string name="profile_tab_lists">Listas</string>
     <string name="profile_tab_library">Biblioteca</string>
@@ -30,7 +29,6 @@
     <string name="log_in">Iniciar sesión</string>
 
     <!-- Home Extra -->
-    <string name="search_icon">Buscar</string>
     <string name="for_you">Para ti</string>
     <string name="trending">Tendencias</string>
     <string name="friends">Amigos</string>
@@ -103,16 +101,12 @@
     <string name="like_review">Me gusta la reseña</string>
     <string name="share_review">Compartir la reseña</string>
     <string name="open_discussion">Abrir la discusión</string>
-    <string name="notifications_icon">Notificaciones</string>
 
     <!-- Following -->
     <string name="following_title">Siguiendo</string>
     <string name="following_followers_count">%1$d siguiendo • %2$d seguidores</string>
     <string name="find_friends">Buscar amigos</string>
     <string name="following_filtro_todo">Todo</string>
-    <string name="following_filtro_resenas">Reseñas</string>
-    <string name="following_filtro_calificaciones">Calificaciones</string>
-    <string name="following_filtro_listas">Listas</string>
 
     <!-- Home -->
     <string name="titulo_guion_subtitulo">%1$s - %2$s</string>
@@ -182,8 +176,5 @@
     <string name="mostrar_contrasena">Mostrar contraseña</string>
     <string name="ocultar_contrasena">Ocultar contraseña</string>
     <string name="nav_home">Inicio</string>
-    <string name="nav_search">Buscar</string>
-    <string name="nav_write_review">Escribir reseña</string>
-    <string name="nav_my_reviews">Mis reseñas</string>
     <string name="nav_profile">Perfil</string>
 </resources>
