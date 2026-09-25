@@ -1,7 +1,5 @@
 package com.example.mixtapp.ui.screens.profile.components
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -25,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.data.model.RecentActivityUi
+import com.example.mixtapp.ui.components.AlbumAsyncImage
 import com.example.mixtapp.ui.components.StarRating
 
 @Composable
@@ -41,11 +40,13 @@ fun RecentActivitySection(
         )
         Spacer(modifier = Modifier.height(16.dp))
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Top) {
-            Box(
+            AlbumAsyncImage(
+                cover = activity.album.cover,
+                contentDescription = stringResource(R.string.album_cover, activity.album.title),
+                alpha = 1f,
                 modifier = Modifier
                     .size(100.dp)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(MaterialTheme.colorScheme.surfaceVariant)
             )
             Spacer(modifier = Modifier.width(16.dp))
             Column {

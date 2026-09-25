@@ -110,7 +110,7 @@ fun ProfileScreenContent(
                     modifier = Modifier.padding(bottom = 32.dp)
                 )
 
-                FavoriteSection(favoritesCount = profile.favoritesCount)
+                FavoriteSection(favoriteAlbums = profile.favoriteAlbums)
 
                 RecentActivitySection(activity = profile.recentActivity)
 
