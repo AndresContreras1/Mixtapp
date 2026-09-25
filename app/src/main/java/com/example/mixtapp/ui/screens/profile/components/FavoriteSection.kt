@@ -1,8 +1,6 @@
 package com.example.mixtapp.ui.screens.profile.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -21,10 +19,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.data.model.Album
+import com.example.mixtapp.ui.components.AlbumAsyncImage
 
 @Composable
 fun FavoriteSection(
-    favoritesCount: Int,
+    favoriteAlbums: List<Album>,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
@@ -39,13 +39,15 @@ fun FavoriteSection(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            repeat(favoritesCount) {
-                Box(
+            favoriteAlbums.forEach { album ->
+                AlbumAsyncImage(
+                    cover = album.cover,
+                    contentDescription = stringResource(R.string.album_cover, album.title),
+                    alpha = 1f,
                     modifier = Modifier
                         .weight(1f)
                         .aspectRatio(1f)
                         .clip(RoundedCornerShape(8.dp))
-                        .background(MaterialTheme.colorScheme.surfaceVariant)
                 )
             }
         }

@@ -9,14 +9,8 @@ data class ProfileUi(
     val listsCount: Int,
     // Cuantos espacios de favorito se dibujan en la fila
     val favoritesCount: Int,
+    val favoriteAlbums: List<Album> = emptyList(),
     val recentActivity: RecentActivityUi,
     // Altura de cada barra del grafico de calificaciones, de 0f a 1f
     val ratingBars: List<Float>,
-)
-
-data class RecentActivityUi(
-    val id: String,
-    val album: Album,
-    val rating: Int,
-    val comment: String,
 )
