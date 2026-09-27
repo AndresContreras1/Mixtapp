@@ -10,20 +10,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.mixtapp.R
-import com.example.mixtapp.navigation.Screen
 import com.example.mixtapp.ui.theme.MixtappTheme
 
 @Composable
 fun WriteReviewFab(
-    navController: NavHostController,
-    albumId: String,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     FloatingActionButton(
-        onClick = { navController.navigate(Screen.WriteReview.createRoute(albumId = albumId)) },
+        onClick = onClick,
         modifier = modifier,
         containerColor = MaterialTheme.colorScheme.primary,
         contentColor = MaterialTheme.colorScheme.onSurface,
@@ -37,9 +33,9 @@ fun WriteReviewFab(
 }
 
 @Composable
-@Preview
+@Preview(showBackground = true)
 fun WriteReviewFabPreview() {
     MixtappTheme(darkTheme = true, dynamicColor = false) {
-        WriteReviewFab(navController = rememberNavController(), albumId = "")
+        WriteReviewFab(onClick = {})
     }
 }
