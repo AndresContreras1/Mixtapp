@@ -1,6 +1,7 @@
 package com.example.mixtapp.data.model
 
 data class SongReviewUi(
+    val id: String,
     val album: Album,
     val rating: Double,
     val ratingCount: String,

@@ -7,6 +7,7 @@ object LocalSongReviewProvider {
 
     val songs = mutableListOf(
         SongReviewUi(
+            id = "1",
             album = LocalAlbumProvider.teatroDira,
             rating = 4.8,
             ratingCount = "41.2k",
@@ -28,6 +29,7 @@ object LocalSongReviewProvider {
             ),
         ),
         SongReviewUi(
+            id = "2",
             album = LocalAlbumProvider.rush,
             rating = 4.2,
             ratingCount = "33.7k",
@@ -49,6 +51,7 @@ object LocalSongReviewProvider {
             ),
         ),
         SongReviewUi(
+            id = "3",
             album = LocalAlbumProvider.finisterra,
             rating = 4.7,
             ratingCount = "22.9k",
@@ -70,6 +73,7 @@ object LocalSongReviewProvider {
             ),
         ),
         SongReviewUi(
+            id = "4",
             album = LocalAlbumProvider.fromZero,
             rating = 4.4,
             ratingCount = "58.1k",
@@ -91,6 +95,7 @@ object LocalSongReviewProvider {
             ),
         ),
         SongReviewUi(
+            id = "5",
             album = LocalAlbumProvider.theSharpestLives,
             rating = 4.5,
             ratingCount = "28.4k",
