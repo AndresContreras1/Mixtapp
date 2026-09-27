@@ -6,6 +6,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
@@ -18,6 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.ui.components.ErrorMessage
 import com.example.mixtapp.ui.components.PickImageButton
 import com.example.mixtapp.ui.components.ProfileAsyncImage
 
@@ -51,14 +53,10 @@ fun ProfileAvatarSection(
             action = onImagePicked,
             cargando = subiendoImagen
         )
-        if (errorImagenRes != null) {
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = stringResource(errorImagenRes),
-                color = MaterialTheme.colorScheme.primary,
-                fontSize = 12.sp
-            )
-        }
+        ErrorMessage(
+            messageRes = errorImagenRes,
+            modifier = Modifier.padding(top = 8.dp)
+        )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = stringResource(R.string.user_stats, reviewsCount, albumsCount, listsCount),
