@@ -112,7 +112,12 @@ class ReviewRepository @Inject constructor(
             isLiked = false,
         )
 
-        discusion.copy(comments = discusion.comments + comentario)
+        discusion.copy(
+            review = discusion.review.copy(
+                commentsCount = discusion.review.commentsCount + 1
+            ),
+            comments = discusion.comments + comentario,
+        )
     }
 
     suspend fun darQuitarLikeResena(reviewId: String): Result<DiscussionUi> =
