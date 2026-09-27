@@ -32,6 +32,7 @@ fun NewCommentField(
             value = value,
             onValueChange = onValueChange,
             modifier = Modifier.weight(1f),
+            label = { Text(text = stringResource(R.string.label_comentario)) },
             placeholder = { Text(text = stringResource(R.string.comentario_placeholder)) },
             singleLine = true
         )

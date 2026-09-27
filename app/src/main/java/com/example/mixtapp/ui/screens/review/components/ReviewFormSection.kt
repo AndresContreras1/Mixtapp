@@ -39,6 +39,7 @@ fun ReviewFormSection(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(126.dp),
+            label = { Text(text = stringResource(R.string.label_resena)) },
             placeholder = { Text(text = stringResource(R.string.review_placeholder)) }
         )
 

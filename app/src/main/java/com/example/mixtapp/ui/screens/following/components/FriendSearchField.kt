@@ -17,6 +17,7 @@ fun FriendSearchField(
         value = value,
         onValueChange = onValueChange,
         modifier = modifier,
+        label = { Text(text = stringResource(R.string.label_buscar_amigos)) },
         placeholder = { Text(text = stringResource(R.string.find_friends)) },
         singleLine = true
     )

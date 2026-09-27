@@ -44,6 +44,11 @@
     <string name="reviewed_today">reseñado hoy</string>
 
     <!-- Validacion -->
+    <string name="label_buscar">Buscar</string>
+    <string name="label_buscar_amigos">Amigos</string>
+    <string name="label_comentario">Comentario</string>
+    <string name="label_fecha_escucha">Fecha</string>
+    <string name="label_resena">Reseña</string>
     <string name="error_campos_obligatorios">Todos los campos son obligatorios</string>
     <string name="error_email_invalido">El correo debe contener una arroba</string>
     <string name="error_terminos">Debes aceptar los términos y condiciones</string>
