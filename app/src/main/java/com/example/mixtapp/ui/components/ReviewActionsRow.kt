@@ -101,7 +101,7 @@ fun ReviewActionsRow(
 
 
 @Composable
-@Preview
+@Preview(showBackground = true)
 fun ReviewActionsRowPreview() {
     MixtappTheme(darkTheme = true, dynamicColor = false) {
         ReviewActionsRow(

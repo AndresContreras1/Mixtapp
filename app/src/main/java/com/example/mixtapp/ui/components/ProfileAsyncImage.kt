@@ -34,7 +34,7 @@ fun ProfileAsyncImage(
 
 
 @Composable
-@Preview
+@Preview(showBackground = true)
 fun ProfileAsyncImagePreview() {
     MixtappTheme(darkTheme = true, dynamicColor = false) {
         ProfileAsyncImage(

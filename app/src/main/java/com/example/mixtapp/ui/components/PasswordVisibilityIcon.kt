@@ -37,7 +37,7 @@ fun PasswordVisibilityIcon(
 
 
 @Composable
-@Preview
+@Preview(showBackground = true)
 fun PasswordVisibilityIconPreview() {
     MixtappTheme(darkTheme = true, dynamicColor = false) {
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {

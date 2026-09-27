@@ -105,7 +105,7 @@ fun FieldIconView(
 
 
 @Composable
-@Preview
+@Preview(showBackground = true)
 fun FieldIconViewPreview() {
     MixtappTheme(darkTheme = true, dynamicColor = false) {
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {

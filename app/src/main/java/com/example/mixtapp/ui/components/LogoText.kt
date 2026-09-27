@@ -45,7 +45,7 @@ fun LogoText(
 
 
 @Composable
-@Preview
+@Preview(showBackground = true)
 fun LogoTextPreview() {
     MixtappTheme(darkTheme = true, dynamicColor = false) {
         LogoText(

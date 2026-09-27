@@ -39,7 +39,7 @@ fun BottomNav(
 }
 
 @Composable
-@Preview
+@Preview(showBackground = true)
 fun BottomNavPreview() {
     MixtappTheme(darkTheme = true, dynamicColor = false) {
         BottomNav(navController = rememberNavController())

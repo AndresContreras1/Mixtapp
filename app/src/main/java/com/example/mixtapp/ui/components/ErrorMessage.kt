@@ -34,7 +34,7 @@ fun ErrorMessage(
 }
 
 @Composable
-@Preview
+@Preview(showBackground = true)
 fun ErrorMessagePreview() {
     MixtappTheme(darkTheme = true, dynamicColor = false) {
         ErrorMessage(messageRes = R.string.error_generico)

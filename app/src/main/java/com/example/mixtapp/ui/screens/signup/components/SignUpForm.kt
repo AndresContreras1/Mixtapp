@@ -77,7 +77,7 @@ fun SignUpForm(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun SignUpFormPreview(){
     MixtappTheme(darkTheme = true, dynamicColor = false) {

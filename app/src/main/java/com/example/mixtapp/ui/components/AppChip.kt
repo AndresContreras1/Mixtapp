@@ -65,7 +65,7 @@ fun AppChip(
 
 
 @Composable
-@Preview
+@Preview(showBackground = true)
 fun AppChipPreview() {
     MixtappTheme(darkTheme = true, dynamicColor = false) {
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {

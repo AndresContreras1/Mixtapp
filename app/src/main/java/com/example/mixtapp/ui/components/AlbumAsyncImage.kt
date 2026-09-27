@@ -37,7 +37,7 @@ fun AlbumAsyncImage(
 
 
 @Composable
-@Preview
+@Preview(showBackground = true)
 fun AlbumAsyncImagePreview() {
     MixtappTheme(darkTheme = true, dynamicColor = false) {
         AlbumAsyncImage(

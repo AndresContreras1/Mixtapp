@@ -63,7 +63,7 @@ fun AppTextField(
 
 
 @Composable
-@Preview
+@Preview(showBackground = true)
 fun AppTextFieldPreview() {
     MixtappTheme(darkTheme = true, dynamicColor = false) {
         AppTextField(

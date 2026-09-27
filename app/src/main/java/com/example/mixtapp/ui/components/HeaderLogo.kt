@@ -41,7 +41,7 @@ fun HeaderLogo(modifier: Modifier = Modifier) {
 
 
 @Composable
-@Preview
+@Preview(showBackground = true)
 fun HeaderLogoPreview() {
     MixtappTheme(darkTheme = true, dynamicColor = false) {
         HeaderLogo()

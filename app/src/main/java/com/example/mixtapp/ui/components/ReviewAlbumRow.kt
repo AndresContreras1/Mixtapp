@@ -86,7 +86,7 @@ fun ReviewAlbumRow(
 
 
 @Composable
-@Preview
+@Preview(showBackground = true)
 fun ReviewAlbumRowPreview() {
     MixtappTheme(darkTheme = true, dynamicColor = false) {
         ReviewAlbumRow(

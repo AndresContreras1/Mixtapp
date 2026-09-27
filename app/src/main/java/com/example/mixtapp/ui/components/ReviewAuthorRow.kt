@@ -86,7 +86,7 @@ fun ReviewAuthorRow(
 
 
 @Composable
-@Preview
+@Preview(showBackground = true)
 fun ReviewAuthorRowPreview() {
     MixtappTheme(darkTheme = true, dynamicColor = false) {
         ReviewAuthorRow(

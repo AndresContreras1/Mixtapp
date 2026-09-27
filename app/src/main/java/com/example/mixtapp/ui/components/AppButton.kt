@@ -57,7 +57,7 @@ fun AppButton(
 }
 
 @Composable
-@Preview
+@Preview(showBackground = true)
 fun AppButtonPreview() {
     MixtappTheme(darkTheme = true, dynamicColor = false) {
         AppButton(
