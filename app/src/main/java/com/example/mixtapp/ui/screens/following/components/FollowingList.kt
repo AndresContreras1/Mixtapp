@@ -21,8 +21,6 @@ fun FollowingList(
     filters: List<FollowingFilterUi>,
     selectedFilterId: String,
     selectedStoryId: String?,
-    likedReviewIds: Set<String>,
-    sharedReviewIds: Set<String>,
     errorMessageRes: Int?,
     onFriendQueryChange: (String) -> Unit,
     onFilterSelected: (String) -> Unit,
@@ -74,8 +72,6 @@ fun FollowingList(
         items(reviews, key = { it.id }) { review ->
             FollowingReviewCard(
                 review = review,
-                isLiked = review.id in likedReviewIds,
-                isShared = review.id in sharedReviewIds,
                 onLikeClick = { onLikeClick(review.id) },
                 onShareClick = { onShareClick(review.id) },
                 onCommentsClick = { onCommentsClick(review.id) },

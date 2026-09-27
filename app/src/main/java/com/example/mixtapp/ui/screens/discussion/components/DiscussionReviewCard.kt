@@ -28,8 +28,6 @@ import com.example.mixtapp.ui.components.ReviewAuthorRow
 @Composable
 fun DiscussionReviewCard(
     review: DiscussionReviewUi,
-    isLiked: Boolean,
-    isShared: Boolean,
     onLikeClick: () -> Unit,
     onShareClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -85,11 +83,11 @@ fun DiscussionReviewCard(
 
             ReviewActionsRow(
                 likes = review.likes,
-                isLiked = isLiked,
+                isLiked = review.isLiked,
                 onLikeClick = onLikeClick,
                 commentsLabel = stringResource(R.string.comments_count, review.commentsCount),
                 onCommentsClick = null,
-                isShared = isShared,
+                isShared = review.isShared,
                 onShareClick = onShareClick,
                 modifier = Modifier
                     .fillMaxWidth()

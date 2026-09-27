@@ -22,7 +22,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalDiscussionProvider
-import com.example.mixtapp.data.model.DiscussionCommentUi
 import com.example.mixtapp.data.model.DiscussionUi
 import com.example.mixtapp.ui.components.ErrorMessage
 import com.example.mixtapp.ui.screens.discussion.components.CommentsDivider
@@ -51,11 +50,7 @@ fun DiscussionScreen(
     } else {
         DiscussionScreenContent(
             discussion = state.discussion!!,
-            comentarios = state.comentarios,
             nuevoComentario = state.nuevoComentario,
-            isReviewLiked = state.isReviewLiked,
-            isReviewShared = state.isReviewShared,
-            likedCommentIds = state.likedCommentIds,
             replyingToCommentId = state.replyingToCommentId,
             errorMessageRes = state.errorMessageRes,
             onBackClick = onBackClick,
@@ -73,11 +68,7 @@ fun DiscussionScreen(
 @Composable
 fun DiscussionScreenContent(
     discussion: DiscussionUi,
-    comentarios: List<DiscussionCommentUi>,
     nuevoComentario: String,
-    isReviewLiked: Boolean,
-    isReviewShared: Boolean,
-    likedCommentIds: Set<String>,
     replyingToCommentId: String?,
     errorMessageRes: Int?,
     onBackClick: () -> Unit,
@@ -114,8 +105,6 @@ fun DiscussionScreenContent(
                 item {
                     DiscussionReviewCard(
                         review = discussion.review,
-                        isLiked = isReviewLiked,
-                        isShared = isReviewShared,
                         onLikeClick = onReviewLikeClick,
                         onShareClick = onReviewShareClick,
                     )
@@ -127,10 +116,9 @@ fun DiscussionScreenContent(
                     )
                 }
 
-                items(comentarios, key = { it.id }) { comment ->
+                items(discussion.comments, key = { it.id }) { comment ->
                     ThreadCommentItem(
                         comment = comment,
-                        isLiked = comment.id in likedCommentIds,
                         isReplying = replyingToCommentId == comment.id,
                         onLikeClick = { onCommentLikeClick(comment.id) },
                         onReplyClick = { onCommentReplyClick(comment.id) },
@@ -159,11 +147,7 @@ fun DiscussionScreenPreview() {
     MixtappTheme(darkTheme = true, dynamicColor = false) {
         DiscussionScreenContent(
             discussion = LocalDiscussionProvider.discussions.first(),
-            comentarios = LocalDiscussionProvider.discussions.first().comments,
             nuevoComentario = "",
-            isReviewLiked = false,
-            isReviewShared = false,
-            likedCommentIds = emptySet(),
             replyingToCommentId = null,
             errorMessageRes = null,
             onBackClick = {},

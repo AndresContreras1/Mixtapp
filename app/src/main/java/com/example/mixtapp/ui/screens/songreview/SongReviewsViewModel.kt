@@ -1,10 +1,12 @@
 package com.example.mixtapp.ui.screens.songreview
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
 import com.example.mixtapp.data.model.SongReviewUi
 import com.example.mixtapp.data.repository.AlbumRepository
+import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -29,74 +31,54 @@ class SongReviewsViewModel @Inject constructor(
             val result = albumRepository.getSongReviewById(songId = songId)
 
             if (result.isSuccess) {
-                val song = result.getOrNull()
-
+                _uiState.update { it.copy(song = result.getOrNull(), errorMessageRes = null) }
+            } else {
                 _uiState.update {
                     it.copy(
-                        song = song,
-                        userRating = song?.userRating ?: 0,
-                        isSaved = song?.isSaved ?: false,
-                        isLiked = song?.isLiked ?: false,
-                        likedReviewIds = song?.reviews
-                            ?.filter { resena -> resena.isLiked }
-                            ?.map { resena -> resena.id }
-                            ?.toSet()
-                            ?: emptySet(),
-                        errorMessageRes = null,
+                        errorMessageRes = mensajeDeError(
+                            error = result.exceptionOrNull(),
+                            generico = R.string.error_cargar_contenido,
+                        )
                     )
                 }
-            } else {
-                _uiState.update { it.copy(errorMessageRes = R.string.error_cargar_contenido) }
             }
         }
     }
 
     fun updateUserRating(rating: Int) {
-        val songId = _uiState.value.song?.album?.id ?: return
-        val calificacionActual = _uiState.value.userRating
+        val songId = _uiState.value.song?.id ?: return
+        val calificacionActual = _uiState.value.song?.userRating ?: 0
         val nueva = if (rating == calificacionActual) 0 else rating
 
         viewModelScope.launch {
             val result = albumRepository.calificarSongReview(songId = songId, rating = nueva)
 
-            if (result.isSuccess) {
-                actualizarSong(song = result.getOrNull())
-            } else {
-                _uiState.update { it.copy(errorMessageRes = R.string.error_calificar) }
-            }
+            actualizarDesde(result = result, generico = R.string.error_calificar)
         }
     }
 
     fun guardarQuitarGuardado() {
-        val songId = _uiState.value.song?.album?.id ?: return
+        val songId = _uiState.value.song?.id ?: return
 
         viewModelScope.launch {
             val result = albumRepository.guardarQuitarSongReview(songId = songId)
 
-            if (result.isSuccess) {
-                actualizarSong(song = result.getOrNull())
-            } else {
-                _uiState.update { it.copy(errorMessageRes = R.string.error_guardar_album) }
-            }
+            actualizarDesde(result = result, generico = R.string.error_guardar_album)
         }
     }
 
     fun darQuitarLike() {
-        val songId = _uiState.value.song?.album?.id ?: return
+        val songId = _uiState.value.song?.id ?: return
 
         viewModelScope.launch {
             val result = albumRepository.darQuitarLikeSongReview(songId = songId)
 
-            if (result.isSuccess) {
-                actualizarSong(song = result.getOrNull())
-            } else {
-                _uiState.update { it.copy(errorMessageRes = R.string.error_me_gusta) }
-            }
+            actualizarDesde(result = result, generico = R.string.error_me_gusta)
         }
     }
 
     fun darQuitarLikeResena(reviewId: String) {
-        val songId = _uiState.value.song?.album?.id ?: return
+        val songId = _uiState.value.song?.id ?: return
 
         viewModelScope.launch {
             val result = albumRepository.darQuitarLikeResenaDeAlbum(
@@ -104,29 +86,31 @@ class SongReviewsViewModel @Inject constructor(
                 reviewId = reviewId,
             )
 
-            if (result.isSuccess) {
-                actualizarSong(song = result.getOrNull())
-            } else {
-                _uiState.update { it.copy(errorMessageRes = R.string.error_me_gusta) }
+            actualizarDesde(result = result, generico = R.string.error_me_gusta)
+        }
+    }
+
+    private fun actualizarDesde(
+        result: Result<SongReviewUi>,
+        @StringRes generico: Int,
+    ) {
+        if (result.isSuccess) {
+            _uiState.update { it.copy(song = result.getOrNull(), errorMessageRes = null) }
+        } else {
+            _uiState.update {
+                it.copy(
+                    errorMessageRes = mensajeDeError(
+                        error = result.exceptionOrNull(),
+                        generico = generico,
+                    )
+                )
             }
         }
     }
 
-    private fun actualizarSong(song: SongReviewUi?) {
-        if (song == null) return
-
-        _uiState.update {
-            it.copy(
-                song = song,
-                userRating = song.userRating,
-                isSaved = song.isSaved,
-                isLiked = song.isLiked,
-                likedReviewIds = song.reviews
-                    .filter { resena -> resena.isLiked }
-                    .map { resena -> resena.id }
-                    .toSet(),
-                errorMessageRes = null,
-            )
-        }
+    @StringRes
+    private fun mensajeDeError(error: Throwable?, @StringRes generico: Int): Int = when (error) {
+        is ContenidoNoEncontradoException -> R.string.contenido_no_encontrado
+        else -> generico
     }
 }

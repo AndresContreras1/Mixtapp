@@ -50,7 +50,7 @@ fun ReviewActionsRow(
             )
         }
         Text(
-            text = (likes + if (isLiked) 1 else 0).toString(),
+            text = likes.toString(),
             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.55f),
             fontSize = 12.sp,
         )

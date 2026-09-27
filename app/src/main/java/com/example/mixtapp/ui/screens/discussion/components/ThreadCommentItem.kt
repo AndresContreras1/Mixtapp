@@ -20,7 +20,6 @@ import com.example.mixtapp.ui.theme.displayFontFamily
 @Composable
 fun ThreadCommentItem(
     comment: DiscussionCommentUi,
-    isLiked: Boolean,
     isReplying: Boolean,
     onLikeClick: () -> Unit,
     onReplyClick: () -> Unit,
@@ -74,7 +73,7 @@ fun ThreadCommentItem(
 
             CommentActionsRow(
                 likes = comment.likes,
-                isLiked = isLiked,
+                isLiked = comment.isLiked,
                 isReplying = isReplying,
                 onLikeClick = onLikeClick,
                 onReplyClick = onReplyClick,
