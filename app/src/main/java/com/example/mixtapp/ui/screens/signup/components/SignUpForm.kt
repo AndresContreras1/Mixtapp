@@ -80,7 +80,7 @@ fun SignUpForm(
 @Preview(showBackground = true)
 @Composable
 fun SignUpFormPreview(){
-    MixtappTheme(darkTheme = true, dynamicColor = false) {
+    MixtappTheme(darkTheme = true) {
         SignUpForm(
             usuario = "",
             onUsuarioChange = {},

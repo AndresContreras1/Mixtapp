@@ -65,7 +65,7 @@ fun AppTextField(
 @Composable
 @Preview(showBackground = true)
 fun AppTextFieldPreview() {
-    MixtappTheme(darkTheme = true, dynamicColor = false) {
+    MixtappTheme(darkTheme = true) {
         AppTextField(
             label = "Correo",
             placeholder = "Escribe tu correo",

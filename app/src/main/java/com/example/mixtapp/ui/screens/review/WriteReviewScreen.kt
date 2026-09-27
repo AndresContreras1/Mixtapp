@@ -121,7 +121,7 @@ fun WriteReviewScreenContent(
 @Preview(showBackground = true, device = "spec:width=393dp,height=852dp")
 @Composable
 fun WriteReviewScreenPreview() {
-    MixtappTheme(darkTheme = true, dynamicColor = false) {
+    MixtappTheme(darkTheme = true) {
         WriteReviewScreenContent(
             album = LocalAlbumProvider.albums.first(),
             rating = 0,

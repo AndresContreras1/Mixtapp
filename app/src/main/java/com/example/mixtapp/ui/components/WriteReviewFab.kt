@@ -35,7 +35,7 @@ fun WriteReviewFab(
 @Composable
 @Preview(showBackground = true)
 fun WriteReviewFabPreview() {
-    MixtappTheme(darkTheme = true, dynamicColor = false) {
+    MixtappTheme(darkTheme = true) {
         WriteReviewFab(onClick = {})
     }
 }

@@ -86,7 +86,7 @@ fun SongReviewsScreenContent(
 fun SongReviewsScreenPreview() {
     val song = LocalSongReviewProvider.songs.first()
 
-    MixtappTheme(darkTheme = true, dynamicColor = false) {
+    MixtappTheme(darkTheme = true) {
         SongReviewsScreenContent(
             songReview = song,
             onRatingChange = {},

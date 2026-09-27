@@ -47,7 +47,7 @@ fun OrDivider(
 @Composable
 @Preview(showBackground = true)
 fun OrDividerPreview() {
-    MixtappTheme(darkTheme = true, dynamicColor = false) {
+    MixtappTheme(darkTheme = true) {
         OrDivider(text = "O")
     }
 }

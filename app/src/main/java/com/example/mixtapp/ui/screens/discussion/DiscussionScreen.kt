@@ -144,7 +144,7 @@ fun DiscussionScreenContent(
 @Preview(showBackground = true, device = "spec:width=393dp,height=852dp")
 @Composable
 fun DiscussionScreenPreview() {
-    MixtappTheme(darkTheme = true, dynamicColor = false) {
+    MixtappTheme(darkTheme = true) {
         DiscussionScreenContent(
             discussion = LocalDiscussionProvider.discussions.first(),
             nuevoComentario = "",

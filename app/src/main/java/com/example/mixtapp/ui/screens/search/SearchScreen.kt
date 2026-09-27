@@ -138,7 +138,7 @@ fun SearchScreenContent(
 @Preview(showBackground = true, device = "spec:width=393dp,height=852dp")
 @Composable
 fun SearchScreenPreview() {
-    MixtappTheme(darkTheme = true, dynamicColor = false) {
+    MixtappTheme(darkTheme = true) {
         SearchScreenContent(
             query = "",
             onQueryChange = {},

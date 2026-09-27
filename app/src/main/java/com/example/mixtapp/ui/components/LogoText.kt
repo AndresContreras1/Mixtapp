@@ -47,7 +47,7 @@ fun LogoText(
 @Composable
 @Preview(showBackground = true)
 fun LogoTextPreview() {
-    MixtappTheme(darkTheme = true, dynamicColor = false) {
+    MixtappTheme(darkTheme = true) {
         LogoText(
             fontSize = 36.sp,
             fontWeight = FontWeight.Bold

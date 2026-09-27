@@ -78,7 +78,7 @@ fun StarRating(
 @Composable
 @Preview(showBackground = true)
 fun StarRatingPreview() {
-    MixtappTheme(darkTheme = true, dynamicColor = false) {
+    MixtappTheme(darkTheme = true) {
         StarRating(
             rating = 3,
             starCount = 5,

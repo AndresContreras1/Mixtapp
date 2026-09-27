@@ -107,7 +107,7 @@ fun FieldIconView(
 @Composable
 @Preview(showBackground = true)
 fun FieldIconViewPreview() {
-    MixtappTheme(darkTheme = true, dynamicColor = false) {
+    MixtappTheme(darkTheme = true) {
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             FieldIconView(icon = FieldIcon.User, modifier = Modifier.size(24.dp))
             FieldIconView(icon = FieldIcon.Email, modifier = Modifier.size(24.dp))

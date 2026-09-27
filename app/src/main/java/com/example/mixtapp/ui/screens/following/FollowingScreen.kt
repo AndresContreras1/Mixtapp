@@ -99,7 +99,7 @@ fun FollowingScreenContent(
 fun FollowingScreenPreview() {
     val following = LocalFollowingProvider.following
 
-    MixtappTheme(darkTheme = true, dynamicColor = false) {
+    MixtappTheme(darkTheme = true) {
         FollowingScreenContent(
             following = following,
             reviews = following.reviews,

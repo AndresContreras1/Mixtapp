@@ -67,7 +67,7 @@ fun AppChip(
 @Composable
 @Preview(showBackground = true)
 fun AppChipPreview() {
-    MixtappTheme(darkTheme = true, dynamicColor = false) {
+    MixtappTheme(darkTheme = true) {
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             AppChip(
                 text = "Para ti",

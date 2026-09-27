@@ -114,7 +114,7 @@ fun NotificationsScreenContent(
 fun NotificationsScreenPreview() {
     val todas = LocalNotificationsProvider.notifications
 
-    MixtappTheme(darkTheme = true, dynamicColor = false) {
+    MixtappTheme(darkTheme = true) {
         NotificationsScreenContent(
             sections = listOf(
                 NotificationSectionUi(
