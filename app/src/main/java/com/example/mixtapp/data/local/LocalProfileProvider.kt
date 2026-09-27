@@ -12,7 +12,6 @@ object LocalProfileProvider {
         reviewsCount = 128,
         albumsCount = 64,
         listsCount = 18,
-        favoritesCount = 4,
         favoriteAlbums = LocalAlbumProvider.albums.take(4),
         recentActivity = RecentActivityUi(
             id = "the-black-parade",
