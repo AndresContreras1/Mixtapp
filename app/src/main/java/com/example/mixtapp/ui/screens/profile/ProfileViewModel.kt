@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
 import com.example.mixtapp.data.repository.AuthRepository
+import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
 import com.example.mixtapp.data.repository.CuotaExcedidaException
 import com.example.mixtapp.data.repository.PermisoDenegadoException
 import com.example.mixtapp.data.repository.SinConexionException
@@ -56,7 +57,9 @@ class ProfileViewModel @Inject constructor(
                     )
                 }
             } else {
-                _uiState.update { it.copy(errorMessageRes = R.string.error_cargar_contenido) }
+                _uiState.update {
+                    it.copy(errorMessageRes = mensajeDeCarga(result.exceptionOrNull()))
+                }
             }
         }
     }
@@ -84,6 +87,12 @@ class ProfileViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    @StringRes
+    private fun mensajeDeCarga(error: Throwable?): Int = when (error) {
+        is ContenidoNoEncontradoException -> R.string.contenido_no_encontrado
+        else -> R.string.error_cargar_contenido
     }
 
     @StringRes
