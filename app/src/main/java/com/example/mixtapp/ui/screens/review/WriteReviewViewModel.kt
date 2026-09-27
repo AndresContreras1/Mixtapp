@@ -1,11 +1,14 @@
 package com.example.mixtapp.ui.screens.review
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
 import com.example.mixtapp.data.repository.AlbumRepository
+import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
 import com.example.mixtapp.data.repository.ReviewRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -33,8 +36,12 @@ class WriteReviewViewModel @Inject constructor(
 
     private fun getDatosIniciales() {
         viewModelScope.launch {
-            val moods = reviewRepository.getMoods()
-            val fecha = reviewRepository.getFechaEscuchaInicial()
+            // Las dos peticiones salen a la vez y se espera la mas lenta
+            val moodsPendientes = async { reviewRepository.getMoods() }
+            val fechaPendiente = async { reviewRepository.getFechaEscuchaInicial() }
+
+            val moods = moodsPendientes.await()
+            val fecha = fechaPendiente.await()
 
             if (moods.isSuccess && fecha.isSuccess) {
                 _uiState.update {
@@ -44,7 +51,14 @@ class WriteReviewViewModel @Inject constructor(
                     )
                 }
             } else {
-                _uiState.update { it.copy(errorMessageRes = R.string.error_cargar_contenido) }
+                _uiState.update {
+                    it.copy(
+                        errorMessageRes = mensajeDeError(
+                            error = moods.exceptionOrNull() ?: fecha.exceptionOrNull(),
+                            generico = R.string.error_cargar_contenido,
+                        )
+                    )
+                }
             }
         }
     }
@@ -54,12 +68,36 @@ class WriteReviewViewModel @Inject constructor(
         if (_uiState.value.album != null) return
 
         viewModelScope.launch {
-            val result = albumRepository.getAlbumById(albumId = albumId)
+            // El album y la resena que ya existe salen a la vez
+            val albumPendiente = async { albumRepository.getAlbumById(albumId = albumId) }
+            val resenaPendiente = async { reviewRepository.getMyReviewByAlbumId(albumId = albumId) }
 
-            if (result.isSuccess) {
-                _uiState.update { it.copy(album = result.getOrNull()) }
+            val album = albumPendiente.await()
+            val resena = resenaPendiente.await()
+
+            if (album.isSuccess && resena.isSuccess) {
+                // Solo se permite una calificacion por album: si ya existe se edita
+                val yaCalificado = resena.getOrNull()
+
+                _uiState.update {
+                    it.copy(
+                        album = album.getOrNull(),
+                        rating = yaCalificado?.rating ?: it.rating,
+                        reviewText = yaCalificado?.excerpt ?: it.reviewText,
+                        selectedMoods = yaCalificado?.tags ?: it.selectedMoods,
+                        listenedDate = yaCalificado?.date ?: it.listenedDate,
+                        errorMessageRes = null,
+                    )
+                }
             } else {
-                _uiState.update { it.copy(errorMessageRes = R.string.error_cargar_contenido) }
+                _uiState.update {
+                    it.copy(
+                        errorMessageRes = mensajeDeError(
+                            error = album.exceptionOrNull() ?: resena.exceptionOrNull(),
+                            generico = R.string.error_cargar_contenido,
+                        )
+                    )
+                }
             }
         }
     }
@@ -89,24 +127,34 @@ class WriteReviewViewModel @Inject constructor(
     }
 
     fun usarFechaSugerida() {
+        val fechaActual = _uiState.value.listenedDate
+
         viewModelScope.launch {
             val result = reviewRepository.getFechaEscuchaSugerida()
 
             if (result.isSuccess) {
                 _uiState.update {
                     it.copy(
-                        listenedDate = result.getOrNull() ?: it.listenedDate,
+                        listenedDate = result.getOrNull() ?: fechaActual,
                         errorMessageRes = null,
                     )
                 }
             } else {
-                _uiState.update { it.copy(errorMessageRes = R.string.error_fecha_sugerida) }
+                _uiState.update {
+                    it.copy(
+                        errorMessageRes = mensajeDeError(
+                            error = result.exceptionOrNull(),
+                            generico = R.string.error_fecha_sugerida,
+                        )
+                    )
+                }
             }
         }
     }
 
     fun alternarFavorito() {
         val valorActual = _uiState.value.isFavorite
+
         _uiState.update { it.copy(isFavorite = !valorActual) }
     }
 
@@ -132,8 +180,21 @@ class WriteReviewViewModel @Inject constructor(
             if (result.isSuccess) {
                 _uiState.update { it.copy(publicada = true, errorMessageRes = null) }
             } else {
-                _uiState.update { it.copy(errorMessageRes = R.string.error_publicar_resena) }
+                _uiState.update {
+                    it.copy(
+                        errorMessageRes = mensajeDeError(
+                            error = result.exceptionOrNull(),
+                            generico = R.string.error_publicar_resena,
+                        )
+                    )
+                }
             }
         }
+    }
+
+    @StringRes
+    private fun mensajeDeError(error: Throwable?, @StringRes generico: Int): Int = when (error) {
+        is ContenidoNoEncontradoException -> R.string.contenido_no_encontrado
+        else -> generico
     }
 }
