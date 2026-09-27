@@ -17,12 +17,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.data.local.LocalNotificationsProvider
-import com.example.mixtapp.data.model.NotificationUi
 import com.example.mixtapp.ui.components.ErrorMessage
 import com.example.mixtapp.ui.screens.notifications.components.NotificationRow
 import com.example.mixtapp.ui.screens.notifications.components.NotificationSectionLabel
 import com.example.mixtapp.ui.screens.notifications.components.NotificationsHeader
 import com.example.mixtapp.ui.screens.notifications.components.NotificationsTabs
+import com.example.mixtapp.ui.screens.notifications.model.NotificationSectionUi
 import com.example.mixtapp.ui.screens.notifications.model.NotificationTabUi
 import com.example.mixtapp.ui.screens.notifications.model.TAB_TODAS
 import com.example.mixtapp.ui.screens.notifications.model.notificationTabs
@@ -37,7 +37,7 @@ fun NotificationsScreen(
     val state by notificationsViewModel.uiState.collectAsState()
 
     NotificationsScreenContent(
-        notifications = state.notifications,
+        sections = state.sections,
         tabs = state.tabs,
         unreadCount = state.unreadCount,
         selectedTabId = state.selectedTabId,
@@ -50,7 +50,7 @@ fun NotificationsScreen(
 
 @Composable
 fun NotificationsScreenContent(
-    notifications: List<NotificationUi>,
+    sections: List<NotificationSectionUi>,
     tabs: List<NotificationTabUi>,
     unreadCount: Int,
     selectedTabId: String,
@@ -59,9 +59,6 @@ fun NotificationsScreenContent(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    // Agrupa manteniendo el orden en que ya vienen (Today antes que Earlier)
-    val grouped = notifications.groupBy { it.section }
-
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -92,15 +89,15 @@ fun NotificationsScreenContent(
                     .weight(1f),
                 contentPadding = PaddingValues(horizontal = 20.dp, vertical = 16.dp),
             ) {
-                grouped.forEach { (section, items) ->
-                    item(key = "header_$section") {
+                sections.forEach { seccion ->
+                    item(key = "header_" + seccion.section) {
                         NotificationSectionLabel(
-                            text = section,
+                            text = seccion.section,
                             modifier = Modifier.padding(vertical = 10.dp)
                         )
                     }
 
-                    items(items, key = { it.id }) { notification ->
+                    items(seccion.notifications, key = { it.id }) { notification ->
                         NotificationRow(
                             notification = notification,
                             modifier = Modifier.padding(bottom = 18.dp),
@@ -119,7 +116,12 @@ fun NotificationsScreenPreview() {
 
     MixtappTheme(darkTheme = true, dynamicColor = false) {
         NotificationsScreenContent(
-            notifications = todas,
+            sections = listOf(
+                NotificationSectionUi(
+                    section = todas.first().section,
+                    notifications = todas,
+                )
+            ),
             tabs = notificationTabs,
             unreadCount = todas.count { !it.isRead },
             selectedTabId = TAB_TODAS,
