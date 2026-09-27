@@ -1,5 +1,6 @@
 package com.example.mixtapp.ui.screens.login
 
+import android.util.Log
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -80,6 +81,8 @@ class LoginViewModel @Inject constructor(
                     it.copy(cargando = false, errorMessageRes = null, navigate = true)
                 }
             } else {
+                Log.d("LoginViewModel", result.exceptionOrNull()?.message.toString())
+
                 _uiState.update {
                     it.copy(
                         cargando = false,

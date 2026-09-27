@@ -1,6 +1,7 @@
 package com.example.mixtapp.ui.screens.profile
 
 import android.net.Uri
+import android.util.Log
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -65,6 +66,8 @@ class ProfileViewModel @Inject constructor(
     }
 
     fun subirFotoDePerfil(uri: Uri) {
+        Log.d("ProfileViewModel", uri.toString())
+
         viewModelScope.launch {
             _uiState.update { it.copy(subiendoImagen = true, errorImagenRes = null) }
 
@@ -79,6 +82,8 @@ class ProfileViewModel @Inject constructor(
                     )
                 }
             } else {
+                Log.d("ProfileViewModel", result.exceptionOrNull()?.message.toString())
+
                 _uiState.update {
                     it.copy(
                         subiendoImagen = false,

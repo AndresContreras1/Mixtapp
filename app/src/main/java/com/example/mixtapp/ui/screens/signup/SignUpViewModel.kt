@@ -1,5 +1,6 @@
 package com.example.mixtapp.ui.screens.signup
 
+import android.util.Log
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -114,6 +115,8 @@ class SignUpViewModel @Inject constructor(
                     it.copy(cargando = false, errorMessageRes = null, navigate = true)
                 }
             } else {
+                Log.d("SignUpViewModel", result.exceptionOrNull()?.message.toString())
+
                 _uiState.update {
                     it.copy(
                         cargando = false,
