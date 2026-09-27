@@ -78,14 +78,15 @@ class WriteReviewViewModel @Inject constructor(
             if (album.isSuccess && resena.isSuccess) {
                 // Solo se permite una calificacion por album: si ya existe se edita
                 val yaCalificado = resena.getOrNull()
+                val estado = _uiState.value
 
                 _uiState.update {
                     it.copy(
                         album = album.getOrNull(),
-                        rating = yaCalificado?.rating ?: it.rating,
-                        reviewText = yaCalificado?.excerpt ?: it.reviewText,
-                        selectedMoods = yaCalificado?.tags ?: it.selectedMoods,
-                        listenedDate = yaCalificado?.date ?: it.listenedDate,
+                        rating = yaCalificado?.rating ?: estado.rating,
+                        reviewText = yaCalificado?.excerpt ?: estado.reviewText,
+                        selectedMoods = yaCalificado?.tags ?: estado.selectedMoods,
+                        listenedDate = yaCalificado?.date ?: estado.listenedDate,
                         errorMessageRes = null,
                     )
                 }

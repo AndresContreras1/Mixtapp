@@ -23,6 +23,13 @@ class DatosLocalesTest {
     }
 
     @Test
+    fun cadaResenaDeAlbumTieneUnIdUnico() {
+        val ids = LocalSongReviewProvider.songs.map { it.id }
+
+        assertEquals(ids.size, ids.toSet().size)
+    }
+
+    @Test
     fun lasCalificacionesDeLasResenasVanDeCeroACinco() {
         LocalMyReviewsProvider.reviews.forEach { resena ->
             assertTrue(resena.rating in 0..5)
