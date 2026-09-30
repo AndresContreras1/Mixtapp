@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
 import com.example.mixtapp.data.model.MIN_PASSWORD_LENGTH
 import com.example.mixtapp.data.repository.AuthRepository
+import com.example.mixtapp.data.repository.CorreoNoRegistradoException
 import com.example.mixtapp.data.repository.CredencialesInvalidasException
 import com.example.mixtapp.data.repository.DemasiadosIntentosException
 import com.example.mixtapp.data.repository.ErrorDeInicioSesionException
@@ -97,6 +98,7 @@ class LoginViewModel @Inject constructor(
     @StringRes
     private fun mensajeDeError(error: Throwable?): Int = when (error) {
         is CredencialesInvalidasException -> R.string.error_credenciales
+        is CorreoNoRegistradoException -> R.string.error_correo_no_registrado
         is SinConexionException -> R.string.error_sin_conexion
         is DemasiadosIntentosException -> R.string.error_demasiados_intentos
         is ErrorDeInicioSesionException -> R.string.error_inicio_sesion

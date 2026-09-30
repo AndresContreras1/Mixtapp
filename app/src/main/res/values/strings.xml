@@ -62,6 +62,7 @@
     <string name="perfil_no_encontrado">No se encontró el perfil</string>
     <string name="reply">Responder</string>
     <string name="error_credenciales">Correo o contraseña incorrectos</string>
+    <string name="error_correo_no_registrado">No existe una cuenta con ese correo</string>
     <string name="error_inicio_sesion">No se pudo iniciar sesión. Inténtalo de nuevo</string>
     <string name="error_registro">No se pudo crear la cuenta. Intenta con otro correo</string>
     <string name="error_datos_registro_invalidos">El correo o la contraseña no son válidos</string>
