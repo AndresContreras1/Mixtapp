@@ -40,7 +40,6 @@ import com.example.mixtapp.ui.components.StarRating
 @Composable
 fun ReviewItem(
     review: SongReviewItemUi,
-    isLiked: Boolean,
     onLikeClick: () -> Unit,
     onReplyClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -102,15 +101,15 @@ fun ReviewItem(
                     modifier = Modifier.size(14.dp)
                 ) {
                     Icon(
-                        imageVector = if (isLiked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                        imageVector = if (review.isLiked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
                         contentDescription = stringResource(R.string.like_review),
-                        tint = if (isLiked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        tint = if (review.isLiked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                         modifier = Modifier.size(14.dp)
                     )
                 }
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
-                    text = (review.likes + if (isLiked) 1 else 0).toString(),
+                    text = review.likes.toString(),
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                     fontSize = 12.sp
                 )

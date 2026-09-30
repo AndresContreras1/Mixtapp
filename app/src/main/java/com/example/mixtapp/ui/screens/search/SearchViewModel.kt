@@ -1,5 +1,6 @@
 package com.example.mixtapp.ui.screens.search
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
@@ -8,6 +9,8 @@ import com.example.mixtapp.data.model.CATEGORIA_MAS_POPULARES
 import com.example.mixtapp.data.model.CATEGORIA_MEJOR_CALIFICADOS
 import com.example.mixtapp.data.model.SongReviewUi
 import com.example.mixtapp.data.repository.AlbumRepository
+import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
+import com.example.mixtapp.ui.screens.search.model.SearchResultUi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,6 +18,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
@@ -38,12 +42,21 @@ class SearchViewModel @Inject constructor(
                     it.copy(categories = result.getOrNull() ?: emptyList(), errorMessageRes = null)
                 }
             } else {
-                _uiState.update { it.copy(errorMessageRes = R.string.error_cargar_contenido) }
+                _uiState.update {
+                    it.copy(
+                        errorMessageRes = mensajeDeError(
+                            error = result.exceptionOrNull(),
+                            generico = R.string.error_cargar_contenido,
+                        )
+                    )
+                }
             }
         }
     }
 
     fun updateQuery(query: String) {
+        val categoriaActual = _uiState.value.selectedCategoryId
+
         viewModelScope.launch {
             val result = albumRepository.getSongReviews()
 
@@ -53,14 +66,22 @@ class SearchViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         query = query,
-                        selectedCategoryId = if (query.isBlank()) it.selectedCategoryId else null,
-                        resultados = buscarPorNombre(query = query, todos = todos),
+                        selectedCategoryId = if (query.isBlank()) categoriaActual else null,
+                        resultados = aResultados(
+                            songReviews = buscarPorNombre(query = query, todos = todos)
+                        ),
                         errorMessageRes = null,
                     )
                 }
             } else {
                 _uiState.update {
-                    it.copy(query = query, errorMessageRes = R.string.error_actualizar_lista)
+                    it.copy(
+                        query = query,
+                        errorMessageRes = mensajeDeError(
+                            error = result.exceptionOrNull(),
+                            generico = R.string.error_actualizar_lista,
+                        ),
+                    )
                 }
             }
         }
@@ -81,13 +102,25 @@ class SearchViewModel @Inject constructor(
                         resultados = if (yaEstaba) {
                             emptyList()
                         } else {
-                            ordenarPorCategoria(categoryId = categoryId, todos = todos)
+                            aResultados(
+                                songReviews = ordenarPorCategoria(
+                                    categoryId = categoryId,
+                                    todos = todos,
+                                )
+                            )
                         },
                         errorMessageRes = null,
                     )
                 }
             } else {
-                _uiState.update { it.copy(errorMessageRes = R.string.error_actualizar_lista) }
+                _uiState.update {
+                    it.copy(
+                        errorMessageRes = mensajeDeError(
+                            error = result.exceptionOrNull(),
+                            generico = R.string.error_actualizar_lista,
+                        )
+                    )
+                }
             }
         }
     }
@@ -107,7 +140,19 @@ class SearchViewModel @Inject constructor(
     ): List<SongReviewUi> = when (categoryId) {
         CATEGORIA_FECHA_LANZAMIENTO -> todos.sortedByDescending { it.album.year }
         CATEGORIA_MEJOR_CALIFICADOS -> todos.sortedByDescending { it.rating }
-        CATEGORIA_MAS_POPULARES -> todos
+        CATEGORIA_MAS_POPULARES -> todos.sortedByDescending { it.recommendRate }
         else -> todos
+    }
+
+    // Redondear es del ViewModel: la pantalla solo recibe el numero de estrellas
+    private fun aResultados(songReviews: List<SongReviewUi>): List<SearchResultUi> =
+        songReviews.map { songReview ->
+            SearchResultUi(songReview = songReview, estrellas = songReview.rating.roundToInt())
+        }
+
+    @StringRes
+    private fun mensajeDeError(error: Throwable?, @StringRes generico: Int): Int = when (error) {
+        is ContenidoNoEncontradoException -> R.string.contenido_no_encontrado
+        else -> generico
     }
 }

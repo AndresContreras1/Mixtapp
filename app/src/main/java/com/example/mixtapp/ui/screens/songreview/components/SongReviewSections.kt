@@ -28,15 +28,11 @@ import com.example.mixtapp.ui.theme.displayFontFamily
 @Composable
 fun SongReviewSections(
     songReview: SongReviewUi,
-    userRating: Int,
-    isSaved: Boolean,
-    isLiked: Boolean,
     onRatingChange: (Int) -> Unit,
     onSaveClick: () -> Unit,
     onLikeClick: () -> Unit,
     onWriteReviewClick: () -> Unit,
     onBackClick: () -> Unit,
-    likedReviewIds: Set<String>,
     errorMessageRes: Int?,
     onReviewLikeClick: (String) -> Unit,
     onReviewReplyClick: (String) -> Unit,
@@ -96,15 +92,15 @@ fun SongReviewSections(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 UserRatingSection(
-                    rating = userRating,
+                    rating = songReview.userRating,
                     onRatingChange = onRatingChange
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
 
                 ActionButtons(
-                    isSaved = isSaved,
-                    isLiked = isLiked,
+                    isSaved = songReview.isSaved,
+                    isLiked = songReview.isLiked,
                     onSaveClick = onSaveClick,
                     onLikeClick = onLikeClick
                 )
@@ -128,7 +124,6 @@ fun SongReviewSections(
         items(songReview.reviews, key = { it.id }) { review ->
             ReviewItem(
                 review = review,
-                isLiked = review.id in likedReviewIds,
                 onLikeClick = { onReviewLikeClick(review.id) },
                 onReplyClick = { onReviewReplyClick(review.id) }
             )

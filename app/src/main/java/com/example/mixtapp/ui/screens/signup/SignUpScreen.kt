@@ -141,18 +141,10 @@ private fun SignUpScreenContentPreview() {
     )
 }
 
-@Preview(showBackground = true, widthDp = 393, heightDp = 852, name = "SignUp Light")
-@Composable
-fun SignUpScreenLightPreview() {
-    MixtappTheme(darkTheme = false, dynamicColor = false) {
-        SignUpScreenContentPreview()
-    }
-}
-
 @Preview(showBackground = true, widthDp = 393, heightDp = 852, name = "SignUp Dark")
 @Composable
 fun SignUpScreenDarkPreview() {
-    MixtappTheme(darkTheme = true, dynamicColor = false) {
+    MixtappTheme(darkTheme = true) {
         SignUpScreenContentPreview()
     }
 }

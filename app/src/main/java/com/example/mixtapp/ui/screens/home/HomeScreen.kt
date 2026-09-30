@@ -100,7 +100,7 @@ fun HomeScreenContent(
 @Composable
 @Preview(showBackground = true)
 fun HomeScreenPreview() {
-    MixtappTheme(darkTheme = true, dynamicColor = false) {
+    MixtappTheme(darkTheme = true) {
         HomeScreenContent(
             albums = LocalSongReviewProvider.popularSongs,
             trending = LocalSongReviewProvider.trendingSong,

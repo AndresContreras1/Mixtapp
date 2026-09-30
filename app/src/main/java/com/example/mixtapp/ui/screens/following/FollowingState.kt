@@ -13,7 +13,5 @@ data class FollowingState(
     val filters: List<FollowingFilterUi> = emptyList(),
     val selectedFilterId: String = "",
     val selectedStoryId: String? = null,
-    val likedReviewIds: Set<String> = emptySet(),
-    val sharedReviewIds: Set<String> = emptySet(),
     @StringRes val errorMessageRes: Int? = null,
 )

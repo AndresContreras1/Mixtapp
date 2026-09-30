@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.outlined.ChatBubbleOutline
+import androidx.compose.material.icons.automirrored.outlined.ChatBubbleOutline
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.Icon
@@ -50,7 +50,7 @@ fun ReviewActionsRow(
             )
         }
         Text(
-            text = (likes + if (isLiked) 1 else 0).toString(),
+            text = likes.toString(),
             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.55f),
             fontSize = 12.sp,
         )
@@ -59,7 +59,7 @@ fun ReviewActionsRow(
 
         if (onCommentsClick == null) {
             Icon(
-                imageVector = Icons.Outlined.ChatBubbleOutline,
+                imageVector = Icons.AutoMirrored.Outlined.ChatBubbleOutline,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.55f),
                 modifier = Modifier.size(15.dp),
@@ -70,7 +70,7 @@ fun ReviewActionsRow(
                 modifier = Modifier.size(15.dp),
             ) {
                 Icon(
-                    imageVector = Icons.Outlined.ChatBubbleOutline,
+                    imageVector = Icons.AutoMirrored.Outlined.ChatBubbleOutline,
                     contentDescription = stringResource(R.string.open_discussion),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.55f),
                     modifier = Modifier.size(15.dp),
@@ -101,9 +101,9 @@ fun ReviewActionsRow(
 
 
 @Composable
-@Preview
+@Preview(showBackground = true)
 fun ReviewActionsRowPreview() {
-    MixtappTheme(darkTheme = true, dynamicColor = false) {
+    MixtappTheme(darkTheme = true) {
         ReviewActionsRow(
             likes = 24,
             isLiked = false,

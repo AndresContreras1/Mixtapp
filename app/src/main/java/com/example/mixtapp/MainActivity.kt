@@ -14,7 +14,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            MixtappTheme(darkTheme = true, dynamicColor = false) {
+            MixtappTheme(darkTheme = true) {
                 Mixtapp()
             }
         }

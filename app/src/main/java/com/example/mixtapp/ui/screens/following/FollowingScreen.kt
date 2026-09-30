@@ -39,8 +39,6 @@ fun FollowingScreen(
             filters = state.filters,
             selectedFilterId = state.selectedFilterId,
             selectedStoryId = state.selectedStoryId,
-            likedReviewIds = state.likedReviewIds,
-            sharedReviewIds = state.sharedReviewIds,
             errorMessageRes = state.errorMessageRes,
             onFriendQueryChange = { followingViewModel.updateFriendQuery(friendQuery = it) },
             onFilterSelected = { followingViewModel.updateSelectedFilter(filtroId = it) },
@@ -61,8 +59,6 @@ fun FollowingScreenContent(
     filters: List<FollowingFilterUi>,
     selectedFilterId: String,
     selectedStoryId: String?,
-    likedReviewIds: Set<String>,
-    sharedReviewIds: Set<String>,
     errorMessageRes: Int?,
     onFriendQueryChange: (String) -> Unit,
     onFilterSelected: (String) -> Unit,
@@ -86,8 +82,6 @@ fun FollowingScreenContent(
             filters = filters,
             selectedFilterId = selectedFilterId,
             selectedStoryId = selectedStoryId,
-            likedReviewIds = likedReviewIds,
-            sharedReviewIds = sharedReviewIds,
             errorMessageRes = errorMessageRes,
             onFriendQueryChange = onFriendQueryChange,
             onFilterSelected = onFilterSelected,
@@ -105,7 +99,7 @@ fun FollowingScreenContent(
 fun FollowingScreenPreview() {
     val following = LocalFollowingProvider.following
 
-    MixtappTheme(darkTheme = true, dynamicColor = false) {
+    MixtappTheme(darkTheme = true) {
         FollowingScreenContent(
             following = following,
             reviews = following.reviews,
@@ -113,8 +107,6 @@ fun FollowingScreenPreview() {
             filters = followingFilters,
             selectedFilterId = followingFilters.first().id,
             selectedStoryId = null,
-            likedReviewIds = emptySet(),
-            sharedReviewIds = emptySet(),
             errorMessageRes = null,
             onFriendQueryChange = {},
             onFilterSelected = {},

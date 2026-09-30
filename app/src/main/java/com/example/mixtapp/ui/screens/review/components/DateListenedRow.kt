@@ -51,6 +51,7 @@ fun DateListenedRow(
             value = listenedDate,
             onValueChange = onDateChange,
             modifier = Modifier.width(190.dp),
+            label = { Text(text = stringResource(R.string.label_fecha_escucha)) },
             singleLine = true,
             trailingIcon = {
                 IconButton(onClick = onDatePickerClick) {

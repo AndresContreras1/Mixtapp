@@ -37,15 +37,11 @@ fun SongReviewsScreen(
     } else {
         SongReviewsScreenContent(
             songReview = state.song!!,
-            userRating = state.userRating,
-            isSaved = state.isSaved,
-            isLiked = state.isLiked,
             onRatingChange = { songReviewsViewModel.updateUserRating(rating = it) },
             onSaveClick = { songReviewsViewModel.guardarQuitarGuardado() },
             onLikeClick = { songReviewsViewModel.darQuitarLike() },
             onWriteReviewClick = onWriteReviewClick,
             onBackClick = onBackClick,
-            likedReviewIds = state.likedReviewIds,
             errorMessageRes = state.errorMessageRes,
             onReviewLikeClick = { songReviewsViewModel.darQuitarLikeResena(reviewId = it) },
             onReviewReplyClick = onReviewReplyClick,
@@ -57,15 +53,11 @@ fun SongReviewsScreen(
 @Composable
 fun SongReviewsScreenContent(
     songReview: SongReviewUi,
-    userRating: Int,
-    isSaved: Boolean,
-    isLiked: Boolean,
     onRatingChange: (Int) -> Unit,
     onSaveClick: () -> Unit,
     onLikeClick: () -> Unit,
     onWriteReviewClick: () -> Unit,
     onBackClick: () -> Unit,
-    likedReviewIds: Set<String>,
     errorMessageRes: Int?,
     onReviewLikeClick: (String) -> Unit,
     onReviewReplyClick: (String) -> Unit,
@@ -76,15 +68,11 @@ fun SongReviewsScreenContent(
 
         SongReviewSections(
             songReview = songReview,
-            userRating = userRating,
-            isSaved = isSaved,
-            isLiked = isLiked,
             onRatingChange = onRatingChange,
             onSaveClick = onSaveClick,
             onLikeClick = onLikeClick,
             onWriteReviewClick = onWriteReviewClick,
             onBackClick = onBackClick,
-            likedReviewIds = likedReviewIds,
             errorMessageRes = errorMessageRes,
             onReviewLikeClick = onReviewLikeClick,
             onReviewReplyClick = onReviewReplyClick,
@@ -98,18 +86,14 @@ fun SongReviewsScreenContent(
 fun SongReviewsScreenPreview() {
     val song = LocalSongReviewProvider.songs.first()
 
-    MixtappTheme(darkTheme = true, dynamicColor = false) {
+    MixtappTheme(darkTheme = true) {
         SongReviewsScreenContent(
             songReview = song,
-            userRating = song.userRating,
-            isSaved = song.isSaved,
-            isLiked = song.isLiked,
             onRatingChange = {},
             onSaveClick = {},
             onLikeClick = {},
             onWriteReviewClick = {},
             onBackClick = {},
-            likedReviewIds = emptySet(),
             errorMessageRes = null,
             onReviewLikeClick = {},
             onReviewReplyClick = {}

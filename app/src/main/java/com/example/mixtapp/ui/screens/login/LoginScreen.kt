@@ -93,28 +93,9 @@ fun LoginScreenContent(
 }
 
 @Composable
-@Preview(showBackground = true, widthDp = 393, heightDp = 852, name = "Login Light")
-fun LoginScreenLightPreview() {
-    MixtappTheme(darkTheme = false, dynamicColor = false) {
-        LoginScreenContent(
-            email = "",
-            onEmailChange = {},
-            contrasena = "",
-            onContrasenaChange = {},
-            contrasenaVisible = false,
-            onContrasenaVisibleChange = {},
-            errorMessageRes = null,
-            cargando = false,
-            onLoginClick = {},
-            onSignUpClick = {}
-        )
-    }
-}
-
-@Composable
 @Preview(showBackground = true, widthDp = 393, heightDp = 852, name = "Login Dark")
 fun LoginScreenDarkPreview() {
-    MixtappTheme(darkTheme = true, dynamicColor = false) {
+    MixtappTheme(darkTheme = true) {
         LoginScreenContent(
             email = "",
             onEmailChange = {},

@@ -1,10 +1,12 @@
 package com.example.mixtapp.ui.screens.myreviews
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
 import com.example.mixtapp.data.model.MyReviewUi
 import com.example.mixtapp.data.repository.AuthRepository
+import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
 import com.example.mixtapp.data.repository.ReviewRepository
 import com.example.mixtapp.data.repository.SocialRepository
 import com.example.mixtapp.ui.screens.myreviews.model.FILTRO_A_Z
@@ -13,6 +15,7 @@ import com.example.mixtapp.ui.screens.myreviews.model.FILTRO_CALIFICACION_5
 import com.example.mixtapp.ui.screens.myreviews.model.FILTRO_MEJOR_CALIFICADAS
 import com.example.mixtapp.ui.screens.myreviews.model.myReviewFilters
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -40,8 +43,12 @@ class MyReviewsViewModel @Inject constructor(
         val filtroInicial = myReviewFilters.first().id
 
         viewModelScope.launch {
-            val perfil = socialRepository.getProfile()
-            val resenas = reviewRepository.getMyReviews()
+            // Las dos peticiones salen a la vez y se espera la mas lenta
+            val perfilPendiente = async { socialRepository.getProfile() }
+            val resenasPendientes = async { reviewRepository.getMyReviews() }
+
+            val perfil = perfilPendiente.await()
+            val resenas = resenasPendientes.await()
 
             if (perfil.isSuccess && resenas.isSuccess) {
                 _uiState.update {
@@ -59,7 +66,14 @@ class MyReviewsViewModel @Inject constructor(
                     )
                 }
             } else {
-                _uiState.update { it.copy(errorMessageRes = R.string.error_cargar_contenido) }
+                _uiState.update {
+                    it.copy(
+                        errorMessageRes = mensajeDeError(
+                            error = perfil.exceptionOrNull() ?: resenas.exceptionOrNull(),
+                            generico = R.string.error_cargar_contenido,
+                        )
+                    )
+                }
             }
         }
     }
@@ -80,7 +94,14 @@ class MyReviewsViewModel @Inject constructor(
                     )
                 }
             } else {
-                _uiState.update { it.copy(errorMessageRes = R.string.error_actualizar_lista) }
+                _uiState.update {
+                    it.copy(
+                        errorMessageRes = mensajeDeError(
+                            error = resenas.exceptionOrNull(),
+                            generico = R.string.error_actualizar_lista,
+                        )
+                    )
+                }
             }
         }
     }
@@ -94,5 +115,11 @@ class MyReviewsViewModel @Inject constructor(
             FILTRO_CALIFICACION_4 -> todas.filter { it.rating == 4 }
             else -> todas
         }
+    }
+
+    @StringRes
+    private fun mensajeDeError(error: Throwable?, @StringRes generico: Int): Int = when (error) {
+        is ContenidoNoEncontradoException -> R.string.contenido_no_encontrado
+        else -> generico
     }
 }

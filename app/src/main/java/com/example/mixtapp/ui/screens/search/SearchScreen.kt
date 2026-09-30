@@ -24,14 +24,13 @@ import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalSearchCategoriesProvider
 import com.example.mixtapp.data.model.SearchCategoryUi
-import com.example.mixtapp.data.model.SongReviewUi
+import com.example.mixtapp.ui.screens.search.model.SearchResultUi
 import com.example.mixtapp.ui.components.ErrorMessage
 import com.example.mixtapp.ui.components.ReviewAlbumRow
 import com.example.mixtapp.ui.screens.search.components.BrowseByHeader
 import com.example.mixtapp.ui.screens.search.components.SearchCategoryRow
 import com.example.mixtapp.ui.screens.search.components.SearchHeader
 import com.example.mixtapp.ui.theme.MixtappTheme
-import kotlin.math.roundToInt
 
 @Composable
 fun SearchScreen(
@@ -61,7 +60,7 @@ fun SearchScreenContent(
     categories: List<SearchCategoryUi>,
     selectedCategoryId: String?,
     onCategoryClick: (String) -> Unit,
-    resultados: List<SongReviewUi>,
+    resultados: List<SearchResultUi>,
     errorMessageRes: Int?,
     onAlbumClick: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -112,18 +111,18 @@ fun SearchScreenContent(
                     )
                 }
             } else {
-                items(resultados, key = { it.album.id }) { songReview ->
+                items(resultados, key = { it.songReview.id }) { resultado ->
                     ReviewAlbumRow(
-                        cover = songReview.album.cover,
-                        albumTitle = songReview.album.title,
-                        artistName = songReview.album.artist,
-                        rating = songReview.rating.roundToInt(),
+                        cover = resultado.songReview.album.cover,
+                        albumTitle = resultado.songReview.album.title,
+                        artistName = resultado.songReview.album.artist,
+                        rating = resultado.estrellas,
                         coverSize = 64.dp,
                         coverCorner = 10.dp,
                         starSize = 14.dp,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { onAlbumClick(songReview.album.id) }
+                            .clickable { onAlbumClick(resultado.songReview.id) }
                             .padding(horizontal = 24.dp, vertical = 12.dp),
                     )
                 }
@@ -139,7 +138,7 @@ fun SearchScreenContent(
 @Preview(showBackground = true, device = "spec:width=393dp,height=852dp")
 @Composable
 fun SearchScreenPreview() {
-    MixtappTheme(darkTheme = true, dynamicColor = false) {
+    MixtappTheme(darkTheme = true) {
         SearchScreenContent(
             query = "",
             onQueryChange = {},

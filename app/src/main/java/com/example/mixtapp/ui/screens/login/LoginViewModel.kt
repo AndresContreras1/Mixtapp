@@ -1,5 +1,6 @@
 package com.example.mixtapp.ui.screens.login
 
+import android.util.Log
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,7 +11,6 @@ import com.example.mixtapp.data.repository.CredencialesInvalidasException
 import com.example.mixtapp.data.repository.DemasiadosIntentosException
 import com.example.mixtapp.data.repository.ErrorDeInicioSesionException
 import com.example.mixtapp.data.repository.SinConexionException
-import com.example.mixtapp.data.repository.UsuarioNoExisteException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -81,6 +81,8 @@ class LoginViewModel @Inject constructor(
                     it.copy(cargando = false, errorMessageRes = null, navigate = true)
                 }
             } else {
+                Log.d("LoginViewModel", result.exceptionOrNull()?.message.toString())
+
                 _uiState.update {
                     it.copy(
                         cargando = false,
@@ -95,7 +97,6 @@ class LoginViewModel @Inject constructor(
     @StringRes
     private fun mensajeDeError(error: Throwable?): Int = when (error) {
         is CredencialesInvalidasException -> R.string.error_credenciales
-        is UsuarioNoExisteException -> R.string.error_usuario_no_existe
         is SinConexionException -> R.string.error_sin_conexion
         is DemasiadosIntentosException -> R.string.error_demasiados_intentos
         is ErrorDeInicioSesionException -> R.string.error_inicio_sesion

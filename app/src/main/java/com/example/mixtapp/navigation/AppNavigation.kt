@@ -141,8 +141,7 @@ fun AppNavigation(
 
             LaunchedEffect(state.publicada) {
                 if (state.publicada) {
-                    navController.popBackStack()
-                    navController.navigate(Screen.MyReviews.route)
+                    navController.navegarLimpiandoLaPila(Screen.MyReviews.route)
                 }
             }
 

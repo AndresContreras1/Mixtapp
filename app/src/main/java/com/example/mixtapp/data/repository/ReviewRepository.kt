@@ -16,8 +16,18 @@ class ReviewRepository @Inject constructor(
     suspend fun getMyReviews(): Result<List<MyReviewUi>> {
         return try {
             Result.success(reviewLocalDataSource.getMyReviews())
+        } catch (e: NoSuchElementException) {
+            Result.failure(ContenidoNoEncontradoException())
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(ErrorDeDatosLocalesException())
+        }
+    }
+
+    suspend fun getMyReviewByAlbumId(albumId: String): Result<MyReviewUi?> {
+        return try {
+            Result.success(reviewLocalDataSource.getMyReviewByAlbumId(albumId = albumId))
+        } catch (e: Exception) {
+            Result.failure(ErrorDeDatosLocalesException())
         }
     }
 
@@ -25,7 +35,7 @@ class ReviewRepository @Inject constructor(
         return try {
             Result.success(reviewLocalDataSource.getDiscussionByReviewId(reviewId = reviewId))
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(ErrorDeDatosLocalesException())
         }
     }
 
@@ -33,7 +43,7 @@ class ReviewRepository @Inject constructor(
         return try {
             Result.success(reviewLocalDataSource.getMoods())
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(ErrorDeDatosLocalesException())
         }
     }
 
@@ -41,7 +51,7 @@ class ReviewRepository @Inject constructor(
         return try {
             Result.success(reviewLocalDataSource.getFechaEscuchaInicial())
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(ErrorDeDatosLocalesException())
         }
     }
 
@@ -49,7 +59,7 @@ class ReviewRepository @Inject constructor(
         return try {
             Result.success(reviewLocalDataSource.getFechaEscuchaSugerida())
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(ErrorDeDatosLocalesException())
         }
     }
 
@@ -61,74 +71,120 @@ class ReviewRepository @Inject constructor(
         fecha: String,
     ): Result<MyReviewUi> {
         return try {
+            val existente = reviewLocalDataSource.getMyReviewByAlbumId(albumId = album.id)
             val resena = MyReviewUi(
-                id = "resena-propia-" + (reviewLocalDataSource.getMyReviews().size + 1),
+                id = existente?.id ?: siguienteIdDeResena(),
                 album = album,
                 rating = rating,
                 excerpt = texto,
                 tags = moods,
                 date = fecha,
             )
-            reviewLocalDataSource.agregarResena(resena = resena)
-            albumLocalDataSource.calificarSongReview(songId = album.id, rating = rating)
+
+            if (existente == null) {
+                reviewLocalDataSource.agregarResena(resena = resena)
+            } else {
+                reviewLocalDataSource.guardarResena(resena = resena)
+            }
+
+            calificarAlbum(albumId = album.id, rating = rating)
             Result.success(resena)
+        } catch (e: IndexOutOfBoundsException) {
+            Result.failure(ContenidoNoEncontradoException())
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(ErrorDeDatosLocalesException())
         }
     }
 
-    suspend fun publicarComentario(reviewId: String, autor: String, texto: String): Result<DiscussionUi?> {
+    suspend fun publicarComentario(
+        reviewId: String,
+        autor: String,
+        texto: String,
+    ): Result<DiscussionUi> = actualizarDiscusion(reviewId = reviewId) { discusion ->
+        val comentario = DiscussionCommentUi(
+            id = "comentario-propio-" + (discusion.comments.size + 1),
+            author = autor,
+            initials = autor.take(2).lowercase(),
+            timeAgo = "ahora",
+            content = texto,
+            likes = 0,
+            isReply = false,
+            isLiked = false,
+        )
+
+        discusion.copy(
+            review = discusion.review.copy(
+                commentsCount = discusion.review.commentsCount + 1
+            ),
+            comments = discusion.comments + comentario,
+        )
+    }
+
+    suspend fun darQuitarLikeResena(reviewId: String): Result<DiscussionUi> =
+        actualizarDiscusion(reviewId = reviewId) { discusion ->
+            val nuevoLike = !discusion.review.isLiked
+
+            discusion.copy(
+                review = discusion.review.copy(
+                    likes = if (nuevoLike) discusion.review.likes + 1 else discusion.review.likes - 1,
+                    isLiked = nuevoLike,
+                )
+            )
+        }
+
+    suspend fun compartirQuitarResena(reviewId: String): Result<DiscussionUi> =
+        actualizarDiscusion(reviewId = reviewId) { discusion ->
+            discusion.copy(review = discusion.review.copy(isShared = !discusion.review.isShared))
+        }
+
+    suspend fun darQuitarLikeComentario(
+        reviewId: String,
+        commentId: String,
+    ): Result<DiscussionUi> = actualizarDiscusion(reviewId = reviewId) { discusion ->
+        discusion.copy(
+            comments = discusion.comments.map { comentario ->
+                if (comentario.id == commentId) {
+                    conLike(comentario = comentario)
+                } else {
+                    comentario
+                }
+            }
+        )
+    }
+
+    private fun conLike(comentario: DiscussionCommentUi): DiscussionCommentUi {
+        val nuevoLike = !comentario.isLiked
+
+        return comentario.copy(
+            likes = if (nuevoLike) comentario.likes + 1 else comentario.likes - 1,
+            isLiked = nuevoLike,
+        )
+    }
+
+    private suspend fun siguienteIdDeResena(): String =
+        "resena-propia-" + (reviewLocalDataSource.getMyReviews().size + 1)
+
+    private suspend fun calificarAlbum(albumId: String, rating: Int) {
+        val songReview = albumLocalDataSource.getSongReviewById(songId = albumId) ?: return
+
+        albumLocalDataSource.guardarSongReview(songReview = songReview.copy(userRating = rating))
+    }
+
+    private suspend fun actualizarDiscusion(
+        reviewId: String,
+        cambio: (DiscussionUi) -> DiscussionUi,
+    ): Result<DiscussionUi> {
         return try {
             val discusion = reviewLocalDataSource.getDiscussionByReviewId(reviewId = reviewId)
+                ?: return Result.failure(ContenidoNoEncontradoException())
+            val actualizada = cambio(discusion)
 
-            if (discusion == null) {
-                Result.success(null)
-            } else {
-                val comentario = DiscussionCommentUi(
-                    id = "comentario-propio-" + (discusion.comments.size + 1),
-                    author = autor,
-                    initials = autor.take(2).lowercase(),
-                    timeAgo = "ahora",
-                    content = texto,
-                    likes = 0,
-                    isReply = false,
-                    isLiked = false,
-                )
-
-                Result.success(
-                    reviewLocalDataSource.guardarDiscusion(
-                        discusion = discusion.copy(comments = discusion.comments + comentario)
-                    )
-                )
-            }
+            reviewLocalDataSource.guardarDiscusion(discusion = actualizada)
+            Result.success(actualizada)
+        } catch (e: IndexOutOfBoundsException) {
+            Result.failure(ContenidoNoEncontradoException())
         } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    suspend fun darQuitarLikeResena(reviewId: String): Result<DiscussionUi?> {
-        return try {
-            Result.success(reviewLocalDataSource.darQuitarLikeResena(reviewId = reviewId))
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    suspend fun compartirQuitarResena(reviewId: String): Result<DiscussionUi?> {
-        return try {
-            Result.success(reviewLocalDataSource.compartirQuitarResena(reviewId = reviewId))
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    suspend fun darQuitarLikeComentario(reviewId: String, commentId: String): Result<DiscussionUi?> {
-        return try {
-            Result.success(
-                reviewLocalDataSource.darQuitarLikeComentario(reviewId = reviewId, commentId = commentId)
-            )
-        } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(ErrorDeDatosLocalesException())
         }
     }
 }

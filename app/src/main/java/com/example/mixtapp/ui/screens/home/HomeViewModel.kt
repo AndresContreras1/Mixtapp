@@ -1,22 +1,28 @@
 package com.example.mixtapp.ui.screens.home
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
 import com.example.mixtapp.data.model.SongReviewUi
 import com.example.mixtapp.data.repository.AlbumRepository
 import com.example.mixtapp.data.repository.AuthRepository
+import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
 import com.example.mixtapp.data.repository.SocialRepository
 import com.example.mixtapp.ui.screens.home.model.FILTRO_AMIGOS
 import com.example.mixtapp.ui.screens.home.model.FILTRO_TENDENCIAS
 import com.example.mixtapp.ui.screens.home.model.homeFilters
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+// Cuantos albumes caben en la fila de populares del Figma
+const val ALBUMES_EN_LA_FILA = 3
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -35,24 +41,38 @@ class HomeViewModel @Inject constructor(
 
     private fun getAlbums() {
         viewModelScope.launch {
-            val tendencia = albumRepository.getTrendingSongReview()
-            val actividad = socialRepository.getFriendActivity()
             val filtroInicial = homeFilters.first().id
-            val albums = aplicarFiltro(filtroId = filtroInicial)
 
-            if (tendencia.isSuccess && actividad.isSuccess && albums != null) {
+            // Las tres peticiones salen a la vez y se espera la mas lenta
+            val tendencia = async { albumRepository.getTrendingSongReview() }
+            val actividad = async { socialRepository.getFriendActivity() }
+            val albums = async { aplicarFiltro(filtroId = filtroInicial) }
+
+            val resultTendencia = tendencia.await()
+            val resultActividad = actividad.await()
+            val albumesDelFiltro = albums.await()
+
+            if (resultTendencia.isSuccess && resultActividad.isSuccess && albumesDelFiltro != null) {
                 _uiState.update {
                     it.copy(
-                        albums = albums,
-                        trending = tendencia.getOrNull(),
-                        friendActivity = actividad.getOrNull(),
+                        albums = albumesDelFiltro,
+                        trending = resultTendencia.getOrNull(),
+                        friendActivity = resultActividad.getOrNull(),
                         filters = homeFilters,
                         selectedFilterId = filtroInicial,
                         errorMessageRes = null,
                     )
                 }
             } else {
-                _uiState.update { it.copy(errorMessageRes = R.string.error_cargar_contenido) }
+                _uiState.update {
+                    it.copy(
+                        errorMessageRes = mensajeDeError(
+                            error = resultTendencia.exceptionOrNull()
+                                ?: resultActividad.exceptionOrNull(),
+                            generico = R.string.error_cargar_contenido,
+                        )
+                    )
+                }
             }
         }
     }
@@ -77,15 +97,17 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    // Los tres caminos devuelven como maximo los albumes que caben en la fila
     private suspend fun aplicarFiltro(filtroId: String): List<SongReviewUi>? = when (filtroId) {
         FILTRO_TENDENCIAS -> {
             val result = albumRepository.getSongReviews()
-            result.getOrNull()?.sortedByDescending { it.rating }?.take(3)
+
+            result.getOrNull()?.sortedByDescending { it.rating }?.take(ALBUMES_EN_LA_FILA)
         }
 
         FILTRO_AMIGOS -> albumesDeAmigos()
 
-        else -> albumRepository.getPopularSongReviews().getOrNull()
+        else -> albumRepository.getPopularSongReviews().getOrNull()?.take(ALBUMES_EN_LA_FILA)
     }
 
     private suspend fun albumesDeAmigos(): List<SongReviewUi>? {
@@ -93,6 +115,12 @@ class HomeViewModel @Inject constructor(
         val todos = albumRepository.getSongReviews().getOrNull() ?: return null
         val idsDeAmigos = following.reviews.map { it.album.id }
 
-        return todos.filter { it.album.id in idsDeAmigos }
+        return todos.filter { it.album.id in idsDeAmigos }.take(ALBUMES_EN_LA_FILA)
+    }
+
+    @StringRes
+    private fun mensajeDeError(error: Throwable?, @StringRes generico: Int): Int = when (error) {
+        is ContenidoNoEncontradoException -> R.string.contenido_no_encontrado
+        else -> generico
     }
 }

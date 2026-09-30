@@ -24,8 +24,6 @@ import com.example.mixtapp.ui.components.ReviewAuthorRow
 @Composable
 fun FollowingReviewCard(
     review: FollowingReviewUi,
-    isLiked: Boolean,
-    isShared: Boolean,
     onLikeClick: () -> Unit,
     onShareClick: () -> Unit,
     onCommentsClick: () -> Unit,
@@ -87,11 +85,11 @@ fun FollowingReviewCard(
 
             ReviewActionsRow(
                 likes = review.likes,
-                isLiked = isLiked,
+                isLiked = review.isLiked,
                 onLikeClick = onLikeClick,
                 commentsLabel = review.comments.toString(),
                 onCommentsClick = onCommentsClick,
-                isShared = isShared,
+                isShared = review.isShared,
                 onShareClick = onShareClick,
                 modifier = Modifier.padding(top = 10.dp),
             )

@@ -46,7 +46,7 @@ fun CommentActionsRow(
             )
         }
         Text(
-            text = (likes + if (isLiked) 1 else 0).toString(),
+            text = likes.toString(),
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.62f),
             fontSize = 10.sp,
         )

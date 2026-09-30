@@ -59,7 +59,7 @@ fun DecorativeCircles(modifier: Modifier = Modifier) {
 @Composable
 @Preview(showBackground = true)
 fun AppBackgroundPreview() {
-    MixtappTheme(darkTheme = true, dynamicColor = false) {
+    MixtappTheme(darkTheme = true) {
         AppBackground()
     }
 }

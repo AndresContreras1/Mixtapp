@@ -1,10 +1,12 @@
 package com.example.mixtapp.ui.screens.following
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
 import com.example.mixtapp.data.model.FollowingReviewUi
 import com.example.mixtapp.data.model.FollowingUi
+import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
 import com.example.mixtapp.data.repository.SocialRepository
 import com.example.mixtapp.ui.screens.following.model.FILTRO_CALIFICACIONES
 import com.example.mixtapp.ui.screens.following.model.FILTRO_LISTAS
@@ -38,49 +40,61 @@ class FollowingViewModel @Inject constructor(
             if (result.isSuccess) {
                 val following = result.getOrNull() ?: return@launch
                 val filtroInicial = followingFilters.first().id
+                val query = _uiState.value.friendQuery
 
                 _uiState.update {
                     it.copy(
                         following = following,
                         reviews = aplicarFiltros(
-                            friendQuery = it.friendQuery,
+                            friendQuery = query,
                             filtroId = filtroInicial,
                             todas = following.reviews,
                         ),
                         filters = followingFilters,
                         selectedFilterId = filtroInicial,
-                        likedReviewIds = following.reviews.filter { r -> r.isLiked }.map { r -> r.id }.toSet(),
-                        sharedReviewIds = following.reviews.filter { r -> r.isShared }.map { r -> r.id }.toSet(),
                         errorMessageRes = null,
                     )
                 }
             } else {
-                _uiState.update { it.copy(errorMessageRes = R.string.error_cargar_contenido) }
+                _uiState.update {
+                    it.copy(
+                        errorMessageRes = mensajeDeError(
+                            error = result.exceptionOrNull(),
+                            generico = R.string.error_cargar_contenido,
+                        )
+                    )
+                }
             }
         }
     }
 
     fun updateFriendQuery(friendQuery: String) {
+        val filtroId = _uiState.value.selectedFilterId
+        val todas = _uiState.value.following?.reviews ?: emptyList()
+
         _uiState.update {
             it.copy(
                 friendQuery = friendQuery,
                 reviews = aplicarFiltros(
                     friendQuery = friendQuery,
-                    filtroId = it.selectedFilterId,
-                    todas = it.following?.reviews ?: emptyList(),
+                    filtroId = filtroId,
+                    todas = todas,
                 ),
             )
         }
     }
 
     fun updateSelectedFilter(filtroId: String) {
+        val query = _uiState.value.friendQuery
+        val todas = _uiState.value.following?.reviews ?: emptyList()
+
         _uiState.update {
             it.copy(
                 selectedFilterId = filtroId,
                 reviews = aplicarFiltros(
-                    friendQuery = it.friendQuery,
+                    friendQuery = query,
                     filtroId = filtroId,
-                    todas = it.following?.reviews ?: emptyList(),
+                    todas = todas,
                 ),
             )
         }
@@ -94,11 +108,7 @@ class FollowingViewModel @Inject constructor(
         viewModelScope.launch {
             val result = socialRepository.darQuitarLikeFollowingReview(reviewId = reviewId)
 
-            if (result.isSuccess) {
-                actualizarFollowing(following = result.getOrNull())
-            } else {
-                _uiState.update { it.copy(errorMessageRes = R.string.error_me_gusta) }
-            }
+            actualizarDesde(result = result, generico = R.string.error_me_gusta)
         }
     }
 
@@ -106,27 +116,35 @@ class FollowingViewModel @Inject constructor(
         viewModelScope.launch {
             val result = socialRepository.compartirQuitarFollowingReview(reviewId = reviewId)
 
-            if (result.isSuccess) {
-                actualizarFollowing(following = result.getOrNull())
-            } else {
-                _uiState.update { it.copy(errorMessageRes = R.string.error_compartir) }
-            }
+            actualizarDesde(result = result, generico = R.string.error_compartir)
         }
     }
 
-    private fun actualizarFollowing(following: FollowingUi?) {
-        if (following == null) return
+    private fun actualizarDesde(result: Result<FollowingUi>, @StringRes generico: Int) {
+        if (result.isFailure) {
+            _uiState.update {
+                it.copy(
+                    errorMessageRes = mensajeDeError(
+                        error = result.exceptionOrNull(),
+                        generico = generico,
+                    )
+                )
+            }
+            return
+        }
+
+        val following = result.getOrNull() ?: return
+        val query = _uiState.value.friendQuery
+        val filtroId = _uiState.value.selectedFilterId
 
         _uiState.update {
             it.copy(
                 following = following,
                 reviews = aplicarFiltros(
-                    friendQuery = it.friendQuery,
-                    filtroId = it.selectedFilterId,
+                    friendQuery = query,
+                    filtroId = filtroId,
                     todas = following.reviews,
                 ),
-                likedReviewIds = following.reviews.filter { r -> r.isLiked }.map { r -> r.id }.toSet(),
-                sharedReviewIds = following.reviews.filter { r -> r.isShared }.map { r -> r.id }.toSet(),
                 errorMessageRes = null,
             )
         }
@@ -145,5 +163,11 @@ class FollowingViewModel @Inject constructor(
             FILTRO_LISTAS -> emptyList()
             else -> porAmigo
         }
+    }
+
+    @StringRes
+    private fun mensajeDeError(error: Throwable?, @StringRes generico: Int): Int = when (error) {
+        is ContenidoNoEncontradoException -> R.string.contenido_no_encontrado
+        else -> generico
     }
 }

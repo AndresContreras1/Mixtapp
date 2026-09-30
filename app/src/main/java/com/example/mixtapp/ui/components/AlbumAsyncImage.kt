@@ -37,9 +37,9 @@ fun AlbumAsyncImage(
 
 
 @Composable
-@Preview
+@Preview(showBackground = true)
 fun AlbumAsyncImagePreview() {
-    MixtappTheme(darkTheme = true, dynamicColor = false) {
+    MixtappTheme(darkTheme = true) {
         AlbumAsyncImage(
             cover = AlbumCovers.TEATRO_DIRA,
             contentDescription = "",

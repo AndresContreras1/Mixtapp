@@ -86,9 +86,9 @@ fun ReviewAlbumRow(
 
 
 @Composable
-@Preview
+@Preview(showBackground = true)
 fun ReviewAlbumRowPreview() {
-    MixtappTheme(darkTheme = true, dynamicColor = false) {
+    MixtappTheme(darkTheme = true) {
         ReviewAlbumRow(
             cover = AlbumCovers.FROM_ZERO,
             albumTitle = "From Zero",

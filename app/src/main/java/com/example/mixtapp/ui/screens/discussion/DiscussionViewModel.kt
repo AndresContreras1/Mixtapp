@@ -1,10 +1,12 @@
 package com.example.mixtapp.ui.screens.discussion
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
 import com.example.mixtapp.data.model.DiscussionUi
 import com.example.mixtapp.data.repository.AuthRepository
+import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
 import com.example.mixtapp.data.repository.ReviewRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,38 +33,34 @@ class DiscussionViewModel @Inject constructor(
             val result = reviewRepository.getDiscussionByReviewId(reviewId = reviewId)
 
             if (result.isSuccess) {
-                val discussion = result.getOrNull()
-
                 _uiState.update {
-                    it.copy(
-                        discussion = discussion,
-                        comentarios = discussion?.comments ?: emptyList(),
-                        isReviewLiked = discussion?.review?.isLiked ?: false,
-                        isReviewShared = discussion?.review?.isShared ?: false,
-                        likedCommentIds = discussion?.comments
-                            ?.filter { comentario -> comentario.isLiked }
-                            ?.map { comentario -> comentario.id }
-                            ?.toSet()
-                            ?: emptySet(),
-                        errorMessageRes = null,
-                    )
+                    it.copy(discussion = result.getOrNull(), errorMessageRes = null)
                 }
             } else {
-                _uiState.update { it.copy(errorMessageRes = R.string.error_cargar_contenido) }
+                _uiState.update {
+                    it.copy(
+                        errorMessageRes = mensajeDeError(
+                            error = result.exceptionOrNull(),
+                            generico = R.string.error_cargar_contenido,
+                        )
+                    )
+                }
             }
         }
     }
 
     fun updateNuevoComentario(texto: String) {
-        _uiState.update { it.copy(nuevoComentario = texto) }
+        _uiState.update { it.copy(nuevoComentario = texto, errorMessageRes = null) }
     }
 
     fun publicarComentario() {
-        val estado = _uiState.value
-        val reviewId = estado.discussion?.id ?: return
-        val texto = estado.nuevoComentario.trim()
+        val reviewId = _uiState.value.discussion?.id ?: return
+        val texto = _uiState.value.nuevoComentario.trim()
 
-        if (texto.isEmpty()) return
+        if (texto.isEmpty()) {
+            _uiState.update { it.copy(errorMessageRes = R.string.error_comentario_vacio) }
+            return
+        }
 
         val autor = authRepository.currentUser?.email?.substringBefore("@") ?: ""
 
@@ -74,10 +72,22 @@ class DiscussionViewModel @Inject constructor(
             )
 
             if (result.isSuccess) {
-                actualizarDiscusion(discussion = result.getOrNull())
-                _uiState.update { it.copy(nuevoComentario = "") }
+                _uiState.update {
+                    it.copy(
+                        discussion = result.getOrNull(),
+                        nuevoComentario = "",
+                        errorMessageRes = null,
+                    )
+                }
             } else {
-                _uiState.update { it.copy(errorMessageRes = R.string.error_publicar_comentario) }
+                _uiState.update {
+                    it.copy(
+                        errorMessageRes = mensajeDeError(
+                            error = result.exceptionOrNull(),
+                            generico = R.string.error_publicar_comentario,
+                        )
+                    )
+                }
             }
         }
     }
@@ -88,11 +98,7 @@ class DiscussionViewModel @Inject constructor(
         viewModelScope.launch {
             val result = reviewRepository.darQuitarLikeResena(reviewId = reviewId)
 
-            if (result.isSuccess) {
-                actualizarDiscusion(discussion = result.getOrNull())
-            } else {
-                _uiState.update { it.copy(errorMessageRes = R.string.error_me_gusta) }
-            }
+            actualizarDesde(result = result, generico = R.string.error_me_gusta)
         }
     }
 
@@ -102,11 +108,7 @@ class DiscussionViewModel @Inject constructor(
         viewModelScope.launch {
             val result = reviewRepository.compartirQuitarResena(reviewId = reviewId)
 
-            if (result.isSuccess) {
-                actualizarDiscusion(discussion = result.getOrNull())
-            } else {
-                _uiState.update { it.copy(errorMessageRes = R.string.error_compartir) }
-            }
+            actualizarDesde(result = result, generico = R.string.error_compartir)
         }
     }
 
@@ -114,35 +116,37 @@ class DiscussionViewModel @Inject constructor(
         val reviewId = _uiState.value.discussion?.id ?: return
 
         viewModelScope.launch {
-            val result = reviewRepository.darQuitarLikeComentario(reviewId = reviewId, commentId = commentId)
-
-            if (result.isSuccess) {
-                actualizarDiscusion(discussion = result.getOrNull())
-            } else {
-                _uiState.update { it.copy(errorMessageRes = R.string.error_me_gusta) }
-            }
-        }
-    }
-
-    private fun actualizarDiscusion(discussion: DiscussionUi?) {
-        if (discussion == null) return
-
-        _uiState.update {
-            it.copy(
-                discussion = discussion,
-                comentarios = discussion.comments,
-                isReviewLiked = discussion.review.isLiked,
-                isReviewShared = discussion.review.isShared,
-                likedCommentIds = discussion.comments
-                    .filter { comentario -> comentario.isLiked }
-                    .map { comentario -> comentario.id }
-                    .toSet(),
-                errorMessageRes = null,
+            val result = reviewRepository.darQuitarLikeComentario(
+                reviewId = reviewId,
+                commentId = commentId,
             )
+
+            actualizarDesde(result = result, generico = R.string.error_me_gusta)
         }
     }
 
     fun responderComentario(commentId: String) {
         _uiState.update { it.copy(replyingToCommentId = commentId) }
+    }
+
+    private fun actualizarDesde(result: Result<DiscussionUi>, @StringRes generico: Int) {
+        if (result.isSuccess) {
+            _uiState.update { it.copy(discussion = result.getOrNull(), errorMessageRes = null) }
+        } else {
+            _uiState.update {
+                it.copy(
+                    errorMessageRes = mensajeDeError(
+                        error = result.exceptionOrNull(),
+                        generico = generico,
+                    )
+                )
+            }
+        }
+    }
+
+    @StringRes
+    private fun mensajeDeError(error: Throwable?, @StringRes generico: Int): Int = when (error) {
+        is ContenidoNoEncontradoException -> R.string.contenido_no_encontrado
+        else -> generico
     }
 }

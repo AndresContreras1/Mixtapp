@@ -94,6 +94,16 @@ no hay un solo color quemado fuera de `Color.kt`.
 **Hilt construye la cadena.** El módulo solo declara `FirebaseAuth` y `FirebaseStorage`; el
 resto se resuelve por `@Inject constructor`.
 
+**Una sola calificación por álbum.** Al publicar, el repositorio busca la reseña que ya existe
+para ese álbum: si la encuentra la actualiza y si no la crea. Al abrir *Escribir reseña* de un
+álbum ya calificado, el formulario llega con la calificación y el texto anteriores.
+
+**El conteo de me gusta lo lleva la capa de datos.** La UI pinta `likes` tal como viene; no
+suma ni resta según el estado del botón.
+
+**La app es solo oscura.** No hay pantallas claras diseñadas, así que no hay *dynamic color*
+ni un segundo esquema con colores propios.
+
 ---
 
 ## Pantallas
@@ -124,20 +134,21 @@ app/src/main/java/com/example/mixtapp/
 │   ├── injection/       FirebaseHiltModule
 │   ├── local/           proveedores de datos de prueba
 │   ├── model/           las entidades del dominio
-│   └── repository/      Auth · Storage · Album · Review · Social · AuthExceptions
+│   └── repository/      Auth · Storage · Album · Review · Social · AppExceptions
 ├── navigation/
 │   ├── AppNavigation.kt NavHost con las 12 rutas
 │   ├── NavigationLogic.kt
 │   └── Screen.kt        sealed class con las rutas
 ├── ui/
 │   ├── components/      compartidos por dos o más pantallas, cada uno con su preview
+│   │                    incluye AppButton, AppTextField, AppBackground y ErrorMessage
 │   ├── screens/<pantalla>/
 │   │   ├── <X>Screen.kt
 │   │   ├── <X>State.kt
 │   │   ├── <X>ViewModel.kt
 │   │   ├── components/
-│   │   └── model/       solo filtros y pestañas
-│   └── theme/           Color.kt · Theme.kt
+│   │   └── model/       filtros, pestañas, secciones y resultados de la pantalla
+│   └── theme/           Color.kt · Theme.kt · Type.kt
 ├── BaseApplication.kt   @HiltAndroidApp
 ├── MainActivity.kt      @AndroidEntryPoint
 ├── Mixtapp.kt           Scaffold + barra + botón flotante + AppNavigation

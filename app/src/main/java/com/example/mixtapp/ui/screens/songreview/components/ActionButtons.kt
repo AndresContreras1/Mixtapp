@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
@@ -37,40 +38,59 @@ fun ActionButtons(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Button(
+        AccionDelAlbum(
+            texto = stringResource(if (isSaved) R.string.saved else R.string.save),
+            icono = Icons.Default.Check,
+            contentColor = MaterialTheme.colorScheme.primary,
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
+            borde = null,
             onClick = onSaveClick,
-            modifier = Modifier.weight(1f),
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
-            shape = RoundedCornerShape(8.dp),
-            contentPadding = PaddingValues(vertical = 12.dp)
-        ) {
-            Icon(Icons.Default.Check, null, modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.primary)
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = stringResource(if (isSaved) R.string.saved else R.string.save),
-                color = MaterialTheme.colorScheme.primary
-            )
-        }
+            modifier = Modifier.weight(1f)
+        )
 
-        Button(
+        AccionDelAlbum(
+            texto = stringResource(if (isLiked) R.string.liked else R.string.like),
+            icono = if (isLiked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+            contentColor = if (isLiked) {
+                MaterialTheme.colorScheme.primary
+            } else {
+                MaterialTheme.colorScheme.onSurface
+            },
+            containerColor = Color.Transparent,
+            borde = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)),
             onClick = onLikeClick,
-            modifier = Modifier.weight(1f),
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-            shape = RoundedCornerShape(8.dp),
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)),
-            contentPadding = PaddingValues(vertical = 12.dp)
-        ) {
-            Icon(
-                if (isLiked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-                null,
-                modifier = Modifier.size(18.dp),
-                tint = if (isLiked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = stringResource(if (isLiked) R.string.liked else R.string.like),
-                color = MaterialTheme.colorScheme.onSurface
-            )
-        }
+            modifier = Modifier.weight(1f)
+        )
+    }
+}
+
+@Composable
+private fun AccionDelAlbum(
+    texto: String,
+    icono: ImageVector,
+    contentColor: Color,
+    containerColor: Color,
+    borde: BorderStroke?,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Button(
+        onClick = onClick,
+        modifier = modifier,
+        shape = RoundedCornerShape(8.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = containerColor,
+            contentColor = contentColor
+        ),
+        border = borde,
+        contentPadding = PaddingValues(vertical = 12.dp)
+    ) {
+        Icon(
+            imageVector = icono,
+            contentDescription = null,
+            modifier = Modifier.size(18.dp)
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(text = texto)
     }
 }

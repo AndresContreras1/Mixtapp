@@ -38,9 +38,9 @@ fun PickImageButton(
 
 
 @Composable
-@Preview
+@Preview(showBackground = true)
 fun PickImageButtonPreview() {
-    MixtappTheme(darkTheme = true, dynamicColor = false) {
+    MixtappTheme(darkTheme = true) {
         PickImageButton(
             action = {},
             cargando = false

@@ -20,6 +20,7 @@ fun SearchTextField(
         value = value,
         onValueChange = onValueChange,
         modifier = modifier,
+        label = { Text(text = stringResource(R.string.label_buscar)) },
         placeholder = { Text(text = stringResource(R.string.search_placeholder)) },
         leadingIcon = {
             Icon(

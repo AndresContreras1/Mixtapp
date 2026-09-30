@@ -11,6 +11,9 @@ class ReviewLocalDataSource @Inject constructor() {
 
     suspend fun getMyReviews(): List<MyReviewUi> = LocalMyReviewsProvider.reviews
 
+    suspend fun getMyReviewByAlbumId(albumId: String): MyReviewUi? =
+        LocalMyReviewsProvider.reviews.find { it.album.id == albumId }
+
     suspend fun getDiscussionByReviewId(reviewId: String): DiscussionUi? =
         LocalDiscussionProvider.discussions.find { it.id == reviewId }
 
@@ -20,45 +23,19 @@ class ReviewLocalDataSource @Inject constructor() {
 
     suspend fun getFechaEscuchaSugerida(): String = LocalReviewAlbumProvider.fechaEscuchaSugerida
 
-    suspend fun agregarResena(resena: MyReviewUi): Unit {
+    suspend fun agregarResena(resena: MyReviewUi) {
         LocalMyReviewsProvider.reviews.add(0, resena)
     }
 
-    suspend fun guardarDiscusion(discusion: DiscussionUi): DiscussionUi? =
-        actualizarDiscusion(reviewId = discusion.id) { discusion }
+    suspend fun guardarResena(resena: MyReviewUi) {
+        val indice = LocalMyReviewsProvider.reviews.indexOfFirst { it.id == resena.id }
 
-    suspend fun darQuitarLikeResena(reviewId: String): DiscussionUi? =
-        actualizarDiscusion(reviewId = reviewId) { discusion ->
-            discusion.copy(review = discusion.review.copy(isLiked = !discusion.review.isLiked))
-        }
+        LocalMyReviewsProvider.reviews[indice] = resena
+    }
 
-    suspend fun compartirQuitarResena(reviewId: String): DiscussionUi? =
-        actualizarDiscusion(reviewId = reviewId) { discusion ->
-            discusion.copy(review = discusion.review.copy(isShared = !discusion.review.isShared))
-        }
+    suspend fun guardarDiscusion(discusion: DiscussionUi) {
+        val indice = LocalDiscussionProvider.discussions.indexOfFirst { it.id == discusion.id }
 
-    suspend fun darQuitarLikeComentario(reviewId: String, commentId: String): DiscussionUi? =
-        actualizarDiscusion(reviewId = reviewId) { discusion ->
-            discusion.copy(
-                comments = discusion.comments.map { comentario ->
-                    if (comentario.id == commentId) {
-                        comentario.copy(isLiked = !comentario.isLiked)
-                    } else {
-                        comentario
-                    }
-                }
-            )
-        }
-
-    private fun actualizarDiscusion(
-        reviewId: String,
-        cambio: (DiscussionUi) -> DiscussionUi,
-    ): DiscussionUi? {
-        val indice = LocalDiscussionProvider.discussions.indexOfFirst { it.id == reviewId }
-        if (indice == -1) return null
-
-        val actualizada = cambio(LocalDiscussionProvider.discussions[indice])
-        LocalDiscussionProvider.discussions[indice] = actualizada
-        return actualizada
+        LocalDiscussionProvider.discussions[indice] = discusion
     }
 }
