@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.automirrored.outlined.ChatBubbleOutline
+import androidx.compose.material.icons.outlined.ChatBubbleOutline
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.Icon
@@ -59,7 +59,7 @@ fun ReviewActionsRow(
 
         if (onCommentsClick == null) {
             Icon(
-                imageVector = Icons.AutoMirrored.Outlined.ChatBubbleOutline,
+                imageVector = Icons.Outlined.ChatBubbleOutline,
                 contentDescription = stringResource(R.string.comments),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.55f),
                 modifier = Modifier.size(15.dp),
@@ -70,7 +70,7 @@ fun ReviewActionsRow(
                 modifier = Modifier.size(15.dp),
             ) {
                 Icon(
-                    imageVector = Icons.AutoMirrored.Outlined.ChatBubbleOutline,
+                    imageVector = Icons.Outlined.ChatBubbleOutline,
                     contentDescription = stringResource(R.string.open_discussion),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.55f),
                     modifier = Modifier.size(15.dp),
