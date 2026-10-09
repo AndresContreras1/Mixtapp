@@ -1,12 +1,15 @@
 package com.example.mixtapp.ui.screens.profile
 
 import androidx.annotation.StringRes
+import com.example.mixtapp.data.model.MyReviewUi
 import com.example.mixtapp.data.model.ProfileUi
 import com.example.mixtapp.ui.screens.profile.model.ProfileTabUi
 
 // El perfil es nulable porque puede que todavia no se haya cargado
 data class ProfileState(
     val profile: ProfileUi? = null,
+    val misResenas: List<MyReviewUi> = emptyList(),
+    val isLoading: Boolean = false,
     // Las pestanas las provee el ViewModel; el componente solo las pinta
     val tabs: List<ProfileTabUi> = emptyList(),
     val selectedTabId: String = "",

@@ -3,6 +3,7 @@ package com.example.mixtapp.ui.screens.profile
 import android.net.Uri
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -12,14 +13,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
+import com.example.mixtapp.data.local.LocalMyReviewsProvider
 import com.example.mixtapp.data.local.LocalProfileProvider
+import com.example.mixtapp.data.model.MyReviewUi
 import com.example.mixtapp.data.model.ProfileUi
 import com.example.mixtapp.ui.screens.profile.components.FavoriteSection
 import com.example.mixtapp.ui.screens.profile.components.LogoutButton
+import com.example.mixtapp.ui.screens.profile.components.MyReviewsSection
 import com.example.mixtapp.ui.screens.profile.components.ProfileAvatarSection
 import com.example.mixtapp.ui.screens.profile.components.ProfileHeader
 import com.example.mixtapp.ui.screens.profile.components.RatingsSection
-import com.example.mixtapp.ui.screens.profile.components.RecentActivitySection
 import com.example.mixtapp.ui.screens.profile.model.ProfileTabUi
 import com.example.mixtapp.ui.screens.profile.model.profileTabs
 import com.example.mixtapp.ui.theme.*
@@ -30,15 +33,23 @@ fun ProfileScreen(
     onSettingsClick: () -> Unit,
     onMoreClick: () -> Unit,
     logoutButtonPressed: () -> Unit,
+    onReviewClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val state by profileViewModel.uiState.collectAsState()
 
-    if (state.profile == null) {
-        Text(text = stringResource(state.errorMessageRes ?: R.string.perfil_no_encontrado))
-    } else {
-        ProfileScreenContent(
+    when {
+        state.isLoading -> {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+        }
+        state.profile == null -> {
+            Text(text = stringResource(state.errorMessageRes ?: R.string.perfil_no_encontrado))
+        }
+        else -> ProfileScreenContent(
             profile = state.profile!!,
+            misResenas = state.misResenas,
             usuario = state.usuario,
             profileImageUrl = state.profileImageUrl,
             subiendoImagen = state.subiendoImagen,
@@ -53,6 +64,7 @@ fun ProfileScreen(
                 profileViewModel.cerrarSesion()
                 logoutButtonPressed()
             },
+            onReviewClick = onReviewClick,
             modifier = modifier
         )
     }
@@ -61,6 +73,7 @@ fun ProfileScreen(
 @Composable
 fun ProfileScreenContent(
     profile: ProfileUi,
+    misResenas: List<MyReviewUi>,
     usuario: String,
     profileImageUrl: String,
     subiendoImagen: Boolean,
@@ -72,6 +85,7 @@ fun ProfileScreenContent(
     onSettingsClick: () -> Unit,
     onMoreClick: () -> Unit,
     onLogoutClick: () -> Unit,
+    onReviewClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -104,7 +118,7 @@ fun ProfileScreenContent(
                     subiendoImagen = subiendoImagen,
                     errorImagenRes = errorImagenRes,
                     onImagePicked = onImagePicked,
-                    reviewsCount = profile.reviewsCount,
+                    reviewsCount = misResenas.size,
                     albumsCount = profile.albumsCount,
                     listsCount = profile.listsCount,
                     modifier = Modifier.padding(bottom = 32.dp)
@@ -112,7 +126,7 @@ fun ProfileScreenContent(
 
                 FavoriteSection(favoriteAlbums = profile.favoriteAlbums)
 
-                RecentActivitySection(activity = profile.recentActivity)
+                MyReviewsSection(reviews = misResenas, onReviewClick = onReviewClick)
 
                 RatingsSection(
                     ratingBars = profile.ratingBars,
@@ -131,6 +145,7 @@ fun ProfileScreenPreview() {
     MixtappTheme(darkTheme = true) {
         ProfileScreenContent(
             profile = LocalProfileProvider.profile,
+            misResenas = LocalMyReviewsProvider.reviews,
             usuario = "usuario",
             profileImageUrl = "",
             subiendoImagen = false,
@@ -141,7 +156,8 @@ fun ProfileScreenPreview() {
             onTabSelected = {},
             onSettingsClick = {},
             onMoreClick = {},
-            onLogoutClick = {}
+            onLogoutClick = {},
+            onReviewClick = {}
         )
     }
 }

@@ -174,6 +174,9 @@ fun AppNavigation(
                 onMoreClick = {},
                 logoutButtonPressed = {
                     navController.navegarLimpiandoLaPila(Screen.Login.route)
+                },
+                onReviewClick = { songId ->
+                    navController.navigate(Screen.SongDetail.createRoute(songId = songId))
                 }
             )
         }
