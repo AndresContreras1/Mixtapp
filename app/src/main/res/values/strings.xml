@@ -47,7 +47,7 @@
     <string name="label_buscar">Buscar</string>
     <string name="label_buscar_amigos">Amigos</string>
     <string name="label_comentario">Comentario</string>
-    <string name="label_fecha_escucha">Fecha</string>
+    <string name="label_fecha_escucha">Fecha (AAAA-MM-DD)</string>
     <string name="label_resena">Reseña</string>
     <string name="error_campos_obligatorios">Todos los campos son obligatorios</string>
     <string name="error_email_invalido">El correo debe contener una arroba</string>
@@ -149,7 +149,6 @@
     <string name="when_did_you_listen">¿Cuándo lo escuchaste?</string>
     <string name="favorite">Favorito</string>
     <string name="mark_as_favorite">¿Marcar como favorito?</string>
-    <string name="mood_vibe">"Á n i m o  &amp;  v i b r a"</string>
     <string name="review_section_title">R e s e ñ a</string>
     <string name="review_placeholder">¿Qué te hizo sentir este álbum? ¿Alguna canción que destaque?\n¿Lo recomendarías?</string>
     <string name="contador_caracteres">%1$d/%2$d</string>

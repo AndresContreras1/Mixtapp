@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.data.model.MyReviewUi
 
-// Tags + likes/fecha
+// Likes/fecha
 @Composable
 fun ReviewCardFooter(
     review: MyReviewUi,
@@ -26,11 +26,9 @@ fun ReviewCardFooter(
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
+        horizontalArrangement = Arrangement.End,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        ReviewTags(tags = review.tags)
-
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(
                 imageVector = Icons.Default.FavoriteBorder,

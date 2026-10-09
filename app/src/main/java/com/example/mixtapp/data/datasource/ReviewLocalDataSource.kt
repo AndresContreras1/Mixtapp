@@ -10,8 +10,6 @@ class ReviewLocalDataSource @Inject constructor() {
     suspend fun getDiscussionByReviewId(reviewId: String): DiscussionUi? =
         LocalDiscussionProvider.discussions.find { it.id == reviewId }
 
-    suspend fun getMoods(): List<String> = LocalReviewAlbumProvider.moods
-
     suspend fun getFechaEscuchaInicial(): String = LocalReviewAlbumProvider.fechaEscuchaInicial
 
     suspend fun getFechaEscuchaSugerida(): String = LocalReviewAlbumProvider.fechaEscuchaSugerida

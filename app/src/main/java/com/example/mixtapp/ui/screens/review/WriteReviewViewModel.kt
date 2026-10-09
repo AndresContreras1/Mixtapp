@@ -38,25 +38,15 @@ class WriteReviewViewModel @Inject constructor(
 
     private fun getDatosIniciales() {
         viewModelScope.launch {
-            // Las dos peticiones salen a la vez y se espera la mas lenta
-            val moodsPendientes = async { reviewRepository.getMoods() }
-            val fechaPendiente = async { reviewRepository.getFechaEscuchaInicial() }
+            val fecha = reviewRepository.getFechaEscuchaInicial()
 
-            val moods = moodsPendientes.await()
-            val fecha = fechaPendiente.await()
-
-            if (moods.isSuccess && fecha.isSuccess) {
-                _uiState.update {
-                    it.copy(
-                        moods = moods.getOrNull() ?: emptyList(),
-                        listenedDate = fecha.getOrNull() ?: "",
-                    )
-                }
+            if (fecha.isSuccess) {
+                _uiState.update { it.copy(listenedDate = fecha.getOrNull() ?: "") }
             } else {
                 _uiState.update {
                     it.copy(
                         errorMessageRes = mensajeDeError(
-                            error = moods.exceptionOrNull() ?: fecha.exceptionOrNull(),
+                            error = fecha.exceptionOrNull(),
                             generico = R.string.error_cargar_contenido,
                         )
                     )
@@ -88,7 +78,6 @@ class WriteReviewViewModel @Inject constructor(
                         album = album.getOrNull(),
                         rating = yaCalificado?.rating ?: estado.rating,
                         reviewText = yaCalificado?.excerpt ?: estado.reviewText,
-                        selectedMoods = yaCalificado?.tags ?: estado.selectedMoods,
                         listenedDate = yaCalificado?.date ?: estado.listenedDate,
                         isLoading = false,
                         errorMessageRes = null,
@@ -119,13 +108,6 @@ class WriteReviewViewModel @Inject constructor(
         _uiState.update {
             it.copy(reviewText = reviewText.take(MAX_REVIEW_LENGTH), errorMessageRes = null)
         }
-    }
-
-    fun seleccionarQuitarMood(mood: String) {
-        val actuales = _uiState.value.selectedMoods
-        val nuevos = if (mood in actuales) actuales - mood else actuales + mood
-
-        _uiState.update { it.copy(selectedMoods = nuevos) }
     }
 
     fun updateListenedDate(listenedDate: String) {
@@ -179,7 +161,6 @@ class WriteReviewViewModel @Inject constructor(
                 album = album,
                 rating = estado.rating,
                 texto = texto,
-                moods = estado.selectedMoods,
                 fecha = estado.listenedDate,
             )
 

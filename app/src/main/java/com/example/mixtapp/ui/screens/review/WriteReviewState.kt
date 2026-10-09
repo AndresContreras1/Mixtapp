@@ -8,8 +8,6 @@ data class WriteReviewState(
     val album: Album? = null,
     val rating: Int = 0,
     val reviewText: String = "",
-    val selectedMoods: List<String> = emptyList(),
-    val moods: List<String> = emptyList(),
     val listenedDate: String = "",
     val isFavorite: Boolean = false,
     val publicada: Boolean = false,

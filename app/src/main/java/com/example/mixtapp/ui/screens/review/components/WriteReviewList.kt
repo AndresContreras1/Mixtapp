@@ -15,14 +15,11 @@ fun WriteReviewList(
     album: Album,
     rating: Int,
     reviewText: String,
-    selectedMoods: List<String>,
     listenedDate: String,
     isFavorite: Boolean,
-    moods: List<String>,
     errorMessageRes: Int?,
     onRatingChange: (Int) -> Unit,
     onReviewChange: (String) -> Unit,
-    onMoodClick: (String) -> Unit,
     onDateChange: (String) -> Unit,
     onDatePickerClick: () -> Unit,
     onFavoriteClick: () -> Unit,
@@ -55,15 +52,6 @@ fun WriteReviewList(
                 reviewText = reviewText,
                 maxLength = MAX_REVIEW_LENGTH,
                 onReviewChange = onReviewChange,
-                modifier = Modifier.padding(top = 22.dp)
-            )
-        }
-
-        item {
-            MoodVibeSection(
-                moods = moods,
-                selectedMoods = selectedMoods,
-                onMoodClick = onMoodClick,
                 modifier = Modifier.padding(top = 22.dp)
             )
         }

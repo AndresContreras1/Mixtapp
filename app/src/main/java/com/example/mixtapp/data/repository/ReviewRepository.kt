@@ -54,14 +54,6 @@ class ReviewRepository @Inject constructor(
         }
     }
 
-    suspend fun getMoods(): Result<List<String>> {
-        return try {
-            Result.success(reviewLocalDataSource.getMoods())
-        } catch (e: Exception) {
-            Result.failure(ErrorDeDatosLocalesException())
-        }
-    }
-
     suspend fun getFechaEscuchaInicial(): Result<String> {
         return try {
             Result.success(reviewLocalDataSource.getFechaEscuchaInicial())
@@ -82,7 +74,6 @@ class ReviewRepository @Inject constructor(
         album: Album,
         rating: Int,
         texto: String,
-        moods: List<String>,
         fecha: String,
     ): Result<Unit> {
         return try {

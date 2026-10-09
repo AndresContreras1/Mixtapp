@@ -47,7 +47,6 @@ fun ReviewConAlbumDto.toMyReviewUi(): MyReviewUi {
         album = album.toAlbum(),
         rating = calificacion,
         excerpt = comentario ?: "",
-        tags = emptyList(),
         date = fechaEscucha ?: "",
     )
 }
