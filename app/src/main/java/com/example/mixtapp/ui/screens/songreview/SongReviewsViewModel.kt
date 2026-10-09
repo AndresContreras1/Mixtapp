@@ -7,6 +7,8 @@ import com.example.mixtapp.R
 import com.example.mixtapp.data.model.SongReviewUi
 import com.example.mixtapp.data.repository.AlbumRepository
 import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
+import com.example.mixtapp.data.repository.ErrorDelServidorException
+import com.example.mixtapp.data.repository.SinConexionException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -46,48 +48,45 @@ class SongReviewsViewModel @Inject constructor(
     }
 
     fun updateUserRating(rating: Int) {
-        val songId = _uiState.value.song?.id ?: return
-        val calificacionActual = _uiState.value.song?.userRating ?: 0
-        val nueva = if (rating == calificacionActual) 0 else rating
+        val song = _uiState.value.song ?: return
+        val nueva = if (rating == song.userRating) 0 else rating
 
         viewModelScope.launch {
-            val result = albumRepository.calificarSongReview(songId = songId, rating = nueva)
+            val result = albumRepository.calificarSongReview(songReview = song, rating = nueva)
 
             actualizarDesde(result = result, generico = R.string.error_calificar)
         }
     }
 
     fun guardarQuitarGuardado() {
-        val songId = _uiState.value.song?.id ?: return
+        val song = _uiState.value.song ?: return
 
         viewModelScope.launch {
-            val result = albumRepository.guardarQuitarSongReview(songId = songId)
+            val result = albumRepository.guardarQuitarSongReview(songReview = song)
 
             actualizarDesde(result = result, generico = R.string.error_guardar_album)
         }
     }
 
     fun darQuitarLike() {
-        val songId = _uiState.value.song?.id ?: return
+        val song = _uiState.value.song ?: return
 
         viewModelScope.launch {
-            val result = albumRepository.darQuitarLikeSongReview(songId = songId)
+            val result = albumRepository.darQuitarLikeSongReview(songReview = song)
 
             actualizarDesde(result = result, generico = R.string.error_me_gusta)
         }
     }
 
     fun darQuitarLikeResena(reviewId: String) {
-        val songId = _uiState.value.song?.id ?: return
+        val song = _uiState.value.song ?: return
 
-        viewModelScope.launch {
-            val result = albumRepository.darQuitarLikeResenaDeAlbum(
-                songId = songId,
-                reviewId = reviewId,
-            )
+        val result = albumRepository.darQuitarLikeResenaDeAlbum(
+            songReview = song,
+            reviewId = reviewId,
+        )
 
-            actualizarDesde(result = result, generico = R.string.error_me_gusta)
-        }
+        actualizarDesde(result = result, generico = R.string.error_me_gusta)
     }
 
     private fun actualizarDesde(
@@ -111,6 +110,8 @@ class SongReviewsViewModel @Inject constructor(
     @StringRes
     private fun mensajeDeError(error: Throwable?, @StringRes generico: Int): Int = when (error) {
         is ContenidoNoEncontradoException -> R.string.contenido_no_encontrado
+        is ErrorDelServidorException -> R.string.error_servidor
+        is SinConexionException -> R.string.error_sin_conexion
         else -> generico
     }
 }

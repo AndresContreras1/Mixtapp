@@ -69,6 +69,7 @@
     <string name="error_correo_ya_registrado">Ese correo ya está registrado</string>
     <string name="error_contrasena_debil">La contraseña debe tener una mayúscula y un número</string>
     <string name="error_sin_conexion">No hay conexión. Revisa tu internet</string>
+    <string name="error_servidor">El servidor no pudo responder. Inténtalo de nuevo</string>
     <string name="error_demasiados_intentos">Demasiados intentos. Espera un momento e inténtalo de nuevo</string>
     <string name="error_subir_imagen">No se pudo subir la imagen. Inténtalo de nuevo</string>
     <string name="error_sin_sesion">No hay una sesión iniciada</string>

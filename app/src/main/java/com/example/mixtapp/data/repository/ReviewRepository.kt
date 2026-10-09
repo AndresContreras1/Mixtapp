@@ -2,32 +2,47 @@ package com.example.mixtapp.data.repository
 
 import com.example.mixtapp.data.datasource.AlbumLocalDataSource
 import com.example.mixtapp.data.datasource.ReviewLocalDataSource
+import com.example.mixtapp.data.datasource.impl.ReviewRetrofitDataSourceImpl
+import com.example.mixtapp.data.datasource.impl.UsuarioRetrofitDataSourceImpl
+import com.example.mixtapp.data.dtos.CreateReviewDto
+import com.example.mixtapp.data.dtos.toMyReviewUi
 import com.example.mixtapp.data.model.Album
 import com.example.mixtapp.data.model.DiscussionCommentUi
 import com.example.mixtapp.data.model.DiscussionUi
 import com.example.mixtapp.data.model.MyReviewUi
+import retrofit2.HttpException
 import javax.inject.Inject
 
 class ReviewRepository @Inject constructor(
     private val reviewLocalDataSource: ReviewLocalDataSource,
-    private val albumLocalDataSource: AlbumLocalDataSource
+    private val albumLocalDataSource: AlbumLocalDataSource,
+    private val reviewRemoteDataSource: ReviewRetrofitDataSourceImpl,
+    private val usuarioRemoteDataSource: UsuarioRetrofitDataSourceImpl
 ) {
+
+    private val usuarioActualId = "1"
 
     suspend fun getMyReviews(): Result<List<MyReviewUi>> {
         return try {
-            Result.success(reviewLocalDataSource.getMyReviews())
-        } catch (e: NoSuchElementException) {
-            Result.failure(ContenidoNoEncontradoException())
+            val reviews = usuarioRemoteDataSource.getReviewsDeUsuario(usuarioActualId)
+            val misResenas = reviews.map { it.toMyReviewUi() }
+            Result.success(misResenas)
+        } catch (e: HttpException) {
+            Result.failure(ErrorDelServidorException())
         } catch (e: Exception) {
-            Result.failure(ErrorDeDatosLocalesException())
+            Result.failure(SinConexionException())
         }
     }
 
     suspend fun getMyReviewByAlbumId(albumId: String): Result<MyReviewUi?> {
         return try {
-            Result.success(reviewLocalDataSource.getMyReviewByAlbumId(albumId = albumId))
+            val reviews = usuarioRemoteDataSource.getReviewsDeUsuario(usuarioActualId)
+            val resena = reviews.find { it.albumId.toString() == albumId }
+            Result.success(resena?.toMyReviewUi())
+        } catch (e: HttpException) {
+            Result.failure(ErrorDelServidorException())
         } catch (e: Exception) {
-            Result.failure(ErrorDeDatosLocalesException())
+            Result.failure(SinConexionException())
         }
     }
 
@@ -69,30 +84,38 @@ class ReviewRepository @Inject constructor(
         texto: String,
         moods: List<String>,
         fecha: String,
-    ): Result<MyReviewUi> {
+    ): Result<Unit> {
         return try {
-            val existente = reviewLocalDataSource.getMyReviewByAlbumId(albumId = album.id)
-            val resena = MyReviewUi(
-                id = existente?.id ?: siguienteIdDeResena(),
-                album = album,
-                rating = rating,
-                excerpt = texto,
-                tags = moods,
-                date = fecha,
+            val reviews = usuarioRemoteDataSource.getReviewsDeUsuario(usuarioActualId)
+            val existente = reviews.find { it.albumId.toString() == album.id }
+            val createReviewDto = CreateReviewDto(
+                usuarioId = usuarioActualId.toInt(),
+                albumId = album.id.toInt(),
+                calificacion = rating,
+                comentario = texto,
+                fechaEscucha = if (fecha.isNullOrEmpty()) null else fecha,
             )
 
-            if (existente == null) {
-                reviewLocalDataSource.agregarResena(resena = resena)
-            } else {
-                reviewLocalDataSource.guardarResena(resena = resena)
-            }
+            if (existente != null) reviewRemoteDataSource.updateReview(existente.id.toString(), createReviewDto)
+            else reviewRemoteDataSource.createReview(createReviewDto)
 
             calificarAlbum(albumId = album.id, rating = rating)
-            Result.success(resena)
-        } catch (e: IndexOutOfBoundsException) {
-            Result.failure(ContenidoNoEncontradoException())
+            Result.success(Unit)
+        } catch (e: HttpException) {
+            Result.failure(ErrorDelServidorException())
         } catch (e: Exception) {
-            Result.failure(ErrorDeDatosLocalesException())
+            Result.failure(SinConexionException())
+        }
+    }
+
+    suspend fun eliminarResena(reviewId: String): Result<Unit> {
+        return try {
+            reviewRemoteDataSource.deleteReview(reviewId)
+            Result.success(Unit)
+        } catch (e: HttpException) {
+            Result.failure(ErrorDelServidorException())
+        } catch (e: Exception) {
+            Result.failure(SinConexionException())
         }
     }
 
@@ -160,9 +183,6 @@ class ReviewRepository @Inject constructor(
             isLiked = nuevoLike,
         )
     }
-
-    private suspend fun siguienteIdDeResena(): String =
-        "resena-propia-" + (reviewLocalDataSource.getMyReviews().size + 1)
 
     private suspend fun calificarAlbum(albumId: String, rating: Int) {
         val songReview = albumLocalDataSource.getSongReviewById(songId = albumId) ?: return

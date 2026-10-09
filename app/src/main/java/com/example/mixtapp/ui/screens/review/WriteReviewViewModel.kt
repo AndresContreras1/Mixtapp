@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
 import com.example.mixtapp.data.repository.AlbumRepository
 import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
+import com.example.mixtapp.data.repository.ErrorDelServidorException
+import com.example.mixtapp.data.repository.SinConexionException
 import com.example.mixtapp.data.repository.ReviewRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
@@ -196,6 +198,8 @@ class WriteReviewViewModel @Inject constructor(
     @StringRes
     private fun mensajeDeError(error: Throwable?, @StringRes generico: Int): Int = when (error) {
         is ContenidoNoEncontradoException -> R.string.contenido_no_encontrado
+        is ErrorDelServidorException -> R.string.error_servidor
+        is SinConexionException -> R.string.error_sin_conexion
         else -> generico
     }
 }

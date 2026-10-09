@@ -8,6 +8,8 @@ import com.example.mixtapp.data.model.SongReviewUi
 import com.example.mixtapp.data.repository.AlbumRepository
 import com.example.mixtapp.data.repository.AuthRepository
 import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
+import com.example.mixtapp.data.repository.ErrorDelServidorException
+import com.example.mixtapp.data.repository.SinConexionException
 import com.example.mixtapp.data.repository.SocialRepository
 import com.example.mixtapp.ui.screens.home.model.FILTRO_AMIGOS
 import com.example.mixtapp.ui.screens.home.model.FILTRO_TENDENCIAS
@@ -107,7 +109,7 @@ class HomeViewModel @Inject constructor(
 
         FILTRO_AMIGOS -> albumesDeAmigos()
 
-        else -> albumRepository.getPopularSongReviews().getOrNull()?.take(ALBUMES_EN_LA_FILA)
+        else -> albumRepository.getSongReviews().getOrNull()?.take(ALBUMES_EN_LA_FILA)
     }
 
     private suspend fun albumesDeAmigos(): List<SongReviewUi>? {
@@ -121,6 +123,8 @@ class HomeViewModel @Inject constructor(
     @StringRes
     private fun mensajeDeError(error: Throwable?, @StringRes generico: Int): Int = when (error) {
         is ContenidoNoEncontradoException -> R.string.contenido_no_encontrado
+        is ErrorDelServidorException -> R.string.error_servidor
+        is SinConexionException -> R.string.error_sin_conexion
         else -> generico
     }
 }

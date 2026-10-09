@@ -7,6 +7,8 @@ import com.example.mixtapp.R
 import com.example.mixtapp.data.model.MyReviewUi
 import com.example.mixtapp.data.repository.AuthRepository
 import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
+import com.example.mixtapp.data.repository.ErrorDelServidorException
+import com.example.mixtapp.data.repository.SinConexionException
 import com.example.mixtapp.data.repository.ReviewRepository
 import com.example.mixtapp.data.repository.SocialRepository
 import com.example.mixtapp.ui.screens.myreviews.model.FILTRO_A_Z
@@ -120,6 +122,8 @@ class MyReviewsViewModel @Inject constructor(
     @StringRes
     private fun mensajeDeError(error: Throwable?, @StringRes generico: Int): Int = when (error) {
         is ContenidoNoEncontradoException -> R.string.contenido_no_encontrado
+        is ErrorDelServidorException -> R.string.error_servidor
+        is SinConexionException -> R.string.error_sin_conexion
         else -> generico
     }
 }
