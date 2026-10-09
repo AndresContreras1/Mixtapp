@@ -70,6 +70,7 @@ class WriteReviewViewModel @Inject constructor(
         if (_uiState.value.album != null) return
 
         viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
             // El album y la resena que ya existe salen a la vez
             val albumPendiente = async { albumRepository.getAlbumById(albumId = albumId) }
             val resenaPendiente = async { reviewRepository.getMyReviewByAlbumId(albumId = albumId) }
@@ -89,12 +90,14 @@ class WriteReviewViewModel @Inject constructor(
                         reviewText = yaCalificado?.excerpt ?: estado.reviewText,
                         selectedMoods = yaCalificado?.tags ?: estado.selectedMoods,
                         listenedDate = yaCalificado?.date ?: estado.listenedDate,
+                        isLoading = false,
                         errorMessageRes = null,
                     )
                 }
             } else {
                 _uiState.update {
                     it.copy(
+                        isLoading = false,
                         errorMessageRes = mensajeDeError(
                             error = album.exceptionOrNull() ?: resena.exceptionOrNull(),
                             generico = R.string.error_cargar_contenido,

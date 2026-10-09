@@ -30,13 +30,17 @@ class SongReviewsViewModel @Inject constructor(
         if (_uiState.value.song != null) return
 
         viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
             val result = albumRepository.getSongReviewById(songId = songId)
 
             if (result.isSuccess) {
-                _uiState.update { it.copy(song = result.getOrNull(), errorMessageRes = null) }
+                _uiState.update {
+                    it.copy(song = result.getOrNull(), isLoading = false, errorMessageRes = null)
+                }
             } else {
                 _uiState.update {
                     it.copy(
+                        isLoading = false,
                         errorMessageRes = mensajeDeError(
                             error = result.exceptionOrNull(),
                             generico = R.string.error_cargar_contenido,

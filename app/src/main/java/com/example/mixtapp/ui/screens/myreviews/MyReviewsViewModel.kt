@@ -45,6 +45,7 @@ class MyReviewsViewModel @Inject constructor(
         val filtroInicial = myReviewFilters.first().id
 
         viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
             // Las dos peticiones salen a la vez y se espera la mas lenta
             val perfilPendiente = async { socialRepository.getProfile() }
             val resenasPendientes = async { reviewRepository.getMyReviews() }
@@ -64,12 +65,14 @@ class MyReviewsViewModel @Inject constructor(
                             filtroId = filtroInicial,
                             todas = resenas.getOrNull() ?: emptyList(),
                         ),
+                        isLoading = false,
                         errorMessageRes = null,
                     )
                 }
             } else {
                 _uiState.update {
                     it.copy(
+                        isLoading = false,
                         errorMessageRes = mensajeDeError(
                             error = perfil.exceptionOrNull() ?: resenas.exceptionOrNull(),
                             generico = R.string.error_cargar_contenido,

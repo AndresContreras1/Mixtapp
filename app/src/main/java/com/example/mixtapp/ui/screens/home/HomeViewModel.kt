@@ -43,6 +43,7 @@ class HomeViewModel @Inject constructor(
 
     private fun getAlbums() {
         viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
             val filtroInicial = homeFilters.first().id
 
             // Las tres peticiones salen a la vez y se espera la mas lenta
@@ -62,12 +63,14 @@ class HomeViewModel @Inject constructor(
                         friendActivity = resultActividad.getOrNull(),
                         filters = homeFilters,
                         selectedFilterId = filtroInicial,
+                        isLoading = false,
                         errorMessageRes = null,
                     )
                 }
             } else {
                 _uiState.update {
                     it.copy(
+                        isLoading = false,
                         errorMessageRes = mensajeDeError(
                             error = resultTendencia.exceptionOrNull()
                                 ?: resultActividad.exceptionOrNull(),

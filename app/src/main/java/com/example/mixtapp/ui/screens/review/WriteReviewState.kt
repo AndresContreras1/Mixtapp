@@ -13,5 +13,6 @@ data class WriteReviewState(
     val listenedDate: String = "",
     val isFavorite: Boolean = false,
     val publicada: Boolean = false,
+    val isLoading: Boolean = false,
     @StringRes val errorMessageRes: Int? = null,
 )
