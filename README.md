@@ -146,16 +146,11 @@ app/src/main/java/com/example/mixtapp/
 
 Los diagramas de clases y de entidad-relación están en `Docs/`.
 
-## Equipo
+
 
 Proyecto de **Computación Móvil**, Pontificia Universidad Javeriana, sede Bogotá.
 Profesor: Juan Sebastián Angarita Torres.
 
-| Integrante | GitHub |
-|---|---|
-| Andrés Contreras | [@AndresContreras1](https://github.com/AndresContreras1) |
-| Andrés Loreto Quiros | |
-| Laura Aponte | |
 
 Ramas cortas desde `master` actualizado, una por bloque de trabajo, y un pull request por rama.
 Los mensajes de commit van en español, sin tildes, con prefijo `feat:`, `fix:`, `refactor:`,
