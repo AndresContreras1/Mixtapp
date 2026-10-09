@@ -7,6 +7,8 @@ import com.example.mixtapp.R
 import com.example.mixtapp.data.model.MyReviewUi
 import com.example.mixtapp.data.repository.AuthRepository
 import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
+import com.example.mixtapp.data.repository.ErrorDelServidorException
+import com.example.mixtapp.data.repository.SinConexionException
 import com.example.mixtapp.data.repository.ReviewRepository
 import com.example.mixtapp.data.repository.SocialRepository
 import com.example.mixtapp.ui.screens.myreviews.model.FILTRO_A_Z
@@ -43,6 +45,7 @@ class MyReviewsViewModel @Inject constructor(
         val filtroInicial = myReviewFilters.first().id
 
         viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
             // Las dos peticiones salen a la vez y se espera la mas lenta
             val perfilPendiente = async { socialRepository.getProfile() }
             val resenasPendientes = async { reviewRepository.getMyReviews() }
@@ -62,12 +65,14 @@ class MyReviewsViewModel @Inject constructor(
                             filtroId = filtroInicial,
                             todas = resenas.getOrNull() ?: emptyList(),
                         ),
+                        isLoading = false,
                         errorMessageRes = null,
                     )
                 }
             } else {
                 _uiState.update {
                     it.copy(
+                        isLoading = false,
                         errorMessageRes = mensajeDeError(
                             error = perfil.exceptionOrNull() ?: resenas.exceptionOrNull(),
                             generico = R.string.error_cargar_contenido,
@@ -106,6 +111,27 @@ class MyReviewsViewModel @Inject constructor(
         }
     }
 
+    fun eliminarResena(reviewId: String) {
+        viewModelScope.launch {
+            val result = reviewRepository.eliminarResena(reviewId = reviewId)
+
+            if (result.isSuccess) {
+                val restantes = _uiState.value.reviews.filter { it.id != reviewId }
+
+                _uiState.update { it.copy(reviews = restantes, errorMessageRes = null) }
+            } else {
+                _uiState.update {
+                    it.copy(
+                        errorMessageRes = mensajeDeError(
+                            error = result.exceptionOrNull(),
+                            generico = R.string.error_eliminar_resena,
+                        )
+                    )
+                }
+            }
+        }
+    }
+
     // Ordenar y filtrar es logica de negocio, no de la pantalla
     private fun aplicarFiltro(filtroId: String, todas: List<MyReviewUi>): List<MyReviewUi> {
         return when (filtroId) {
@@ -120,6 +146,8 @@ class MyReviewsViewModel @Inject constructor(
     @StringRes
     private fun mensajeDeError(error: Throwable?, @StringRes generico: Int): Int = when (error) {
         is ContenidoNoEncontradoException -> R.string.contenido_no_encontrado
+        is ErrorDelServidorException -> R.string.error_servidor
+        is SinConexionException -> R.string.error_sin_conexion
         else -> generico
     }
 }

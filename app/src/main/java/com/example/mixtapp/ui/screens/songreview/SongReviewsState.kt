@@ -6,5 +6,6 @@ import com.example.mixtapp.data.model.SongReviewUi
 // La cancion es nulable porque puede que el id no exista
 data class SongReviewsState(
     val song: SongReviewUi? = null,
+    val isLoading: Boolean = false,
     @StringRes val errorMessageRes: Int? = null,
 )

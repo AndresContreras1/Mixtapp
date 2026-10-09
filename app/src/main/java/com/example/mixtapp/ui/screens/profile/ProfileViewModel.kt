@@ -9,13 +9,16 @@ import com.example.mixtapp.R
 import com.example.mixtapp.data.repository.AuthRepository
 import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
 import com.example.mixtapp.data.repository.CuotaExcedidaException
+import com.example.mixtapp.data.repository.ErrorDelServidorException
 import com.example.mixtapp.data.repository.PermisoDenegadoException
+import com.example.mixtapp.data.repository.ReviewRepository
 import com.example.mixtapp.data.repository.SinConexionException
 import com.example.mixtapp.data.repository.SinSesionException
 import com.example.mixtapp.data.repository.SocialRepository
 import com.example.mixtapp.data.repository.StorageRepository
 import com.example.mixtapp.ui.screens.profile.model.profileTabs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,7 +30,8 @@ import javax.inject.Inject
 class ProfileViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val storageRepository: StorageRepository,
-    private val socialRepository: SocialRepository
+    private val socialRepository: SocialRepository,
+    private val reviewRepository: ReviewRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfileState())
@@ -44,12 +48,20 @@ class ProfileViewModel @Inject constructor(
         val foto = authRepository.currentUser?.photoUrl?.toString() ?: ""
 
         viewModelScope.launch {
-            val result = socialRepository.getProfile()
+            _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
 
-            if (result.isSuccess) {
+            val perfilPendiente = async { socialRepository.getProfile() }
+            val resenasPendientes = async { reviewRepository.getMyReviews() }
+
+            val result = perfilPendiente.await()
+            val resenas = resenasPendientes.await()
+
+            if (result.isSuccess && resenas.isSuccess) {
                 _uiState.update {
                     it.copy(
                         profile = result.getOrNull(),
+                        misResenas = resenas.getOrNull() ?: emptyList(),
+                        isLoading = false,
                         tabs = profileTabs,
                         selectedTabId = profileTabs.first().id,
                         usuario = usuario,
@@ -59,7 +71,12 @@ class ProfileViewModel @Inject constructor(
                 }
             } else {
                 _uiState.update {
-                    it.copy(errorMessageRes = mensajeDeCarga(result.exceptionOrNull()))
+                    it.copy(
+                        isLoading = false,
+                        errorMessageRes = mensajeDeCarga(
+                            result.exceptionOrNull() ?: resenas.exceptionOrNull()
+                        ),
+                    )
                 }
             }
         }
@@ -97,6 +114,8 @@ class ProfileViewModel @Inject constructor(
     @StringRes
     private fun mensajeDeCarga(error: Throwable?): Int = when (error) {
         is ContenidoNoEncontradoException -> R.string.contenido_no_encontrado
+        is ErrorDelServidorException -> R.string.error_servidor
+        is SinConexionException -> R.string.error_sin_conexion
         else -> R.string.error_cargar_contenido
     }
 

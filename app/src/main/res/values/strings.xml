@@ -47,7 +47,7 @@
     <string name="label_buscar">Buscar</string>
     <string name="label_buscar_amigos">Amigos</string>
     <string name="label_comentario">Comentario</string>
-    <string name="label_fecha_escucha">Fecha</string>
+    <string name="label_fecha_escucha">Fecha (AAAA-MM-DD)</string>
     <string name="label_resena">Reseña</string>
     <string name="error_campos_obligatorios">Todos los campos son obligatorios</string>
     <string name="error_email_invalido">El correo debe contener una arroba</string>
@@ -69,6 +69,7 @@
     <string name="error_correo_ya_registrado">Ese correo ya está registrado</string>
     <string name="error_contrasena_debil">La contraseña debe tener una mayúscula y un número</string>
     <string name="error_sin_conexion">No hay conexión. Revisa tu internet</string>
+    <string name="error_servidor">El servidor no pudo responder. Inténtalo de nuevo</string>
     <string name="error_demasiados_intentos">Demasiados intentos. Espera un momento e inténtalo de nuevo</string>
     <string name="error_subir_imagen">No se pudo subir la imagen. Inténtalo de nuevo</string>
     <string name="error_sin_sesion">No hay una sesión iniciada</string>
@@ -82,6 +83,7 @@
     <string name="error_me_gusta">No se pudo registrar tu me gusta</string>
     <string name="error_compartir">No se pudo compartir la reseña</string>
     <string name="error_publicar_resena">No se pudo publicar la reseña</string>
+    <string name="error_eliminar_resena">No se pudo eliminar la reseña</string>
     <string name="error_publicar_comentario">No se pudo publicar el comentario</string>
     <string name="error_resena_vacia">Escribe tu reseña antes de publicar</string>
     <string name="error_comentario_vacio">Escribe tu comentario antes de publicar</string>
@@ -122,6 +124,9 @@
     <!-- My reviews -->
     <string name="join_date">Se unió en %1$s</string>
     <string name="my_reviews">Mis reseñas</string>
+    <string name="resenas_label">reseñas</string>
+    <string name="editar_resena">Editar reseña</string>
+    <string name="eliminar_resena">Eliminar reseña</string>
     <string name="filtro_recientes">Recientes</string>
     <string name="filtro_mejor_calificadas">Mejor calificadas</string>
     <string name="filtro_a_z">A-Z</string>
@@ -144,7 +149,6 @@
     <string name="when_did_you_listen">¿Cuándo lo escuchaste?</string>
     <string name="favorite">Favorito</string>
     <string name="mark_as_favorite">¿Marcar como favorito?</string>
-    <string name="mood_vibe">"Á n i m o  &amp;  v i b r a"</string>
     <string name="review_section_title">R e s e ñ a</string>
     <string name="review_placeholder">¿Qué te hizo sentir este álbum? ¿Alguna canción que destaque?\n¿Lo recomendarías?</string>
     <string name="contador_caracteres">%1$d/%2$d</string>

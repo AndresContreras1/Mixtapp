@@ -1,59 +1,69 @@
 package com.example.mixtapp.data.repository
 
 import com.example.mixtapp.data.datasource.AlbumLocalDataSource
+import com.example.mixtapp.data.datasource.impl.AlbumRetrofitDataSourceImpl
+import com.example.mixtapp.data.dtos.toAlbum
+import com.example.mixtapp.data.dtos.toSongReviewItemUi
 import com.example.mixtapp.data.model.Album
 import com.example.mixtapp.data.model.SearchCategoryUi
 import com.example.mixtapp.data.model.SongReviewItemUi
 import com.example.mixtapp.data.model.SongReviewUi
+import retrofit2.HttpException
 import javax.inject.Inject
 
 class AlbumRepository @Inject constructor(
-    private val albumLocalDataSource: AlbumLocalDataSource
+    private val albumLocalDataSource: AlbumLocalDataSource,
+    private val albumRemoteDataSource: AlbumRetrofitDataSourceImpl
 ) {
 
     suspend fun getSongReviews(): Result<List<SongReviewUi>> {
         return try {
-            Result.success(albumLocalDataSource.getSongReviews())
-        } catch (e: NoSuchElementException) {
-            Result.failure(ContenidoNoEncontradoException())
+            val albumes = albumRemoteDataSource.getAlbumes()
+            val songReviews = albumes.map { conDatosLocales(album = it.toAlbum()) }
+            Result.success(songReviews)
+        } catch (e: HttpException) {
+            Result.failure(ErrorDelServidorException())
         } catch (e: Exception) {
-            Result.failure(ErrorDeDatosLocalesException())
-        }
-    }
-
-    suspend fun getPopularSongReviews(): Result<List<SongReviewUi>> {
-        return try {
-            Result.success(albumLocalDataSource.getPopularSongReviews())
-        } catch (e: NoSuchElementException) {
-            Result.failure(ContenidoNoEncontradoException())
-        } catch (e: Exception) {
-            Result.failure(ErrorDeDatosLocalesException())
+            Result.failure(SinConexionException())
         }
     }
 
     suspend fun getTrendingSongReview(): Result<SongReviewUi> {
         return try {
-            Result.success(albumLocalDataSource.getTrendingSongReview())
+            val tendencia = albumLocalDataSource.getTrendingSongReview()
+            val album = albumRemoteDataSource.getAlbumById(tendencia.id)
+            Result.success(tendencia.copy(album = album.toAlbum()))
+        } catch (e: HttpException) {
+            Result.failure(ErrorDelServidorException())
         } catch (e: IndexOutOfBoundsException) {
             Result.failure(ContenidoNoEncontradoException())
         } catch (e: Exception) {
-            Result.failure(ErrorDeDatosLocalesException())
+            Result.failure(SinConexionException())
         }
     }
 
-    suspend fun getSongReviewById(songId: String): Result<SongReviewUi?> {
+    suspend fun getSongReviewById(songId: String): Result<SongReviewUi> {
         return try {
-            Result.success(albumLocalDataSource.getSongReviewById(songId = songId))
+            val album = albumRemoteDataSource.getAlbumById(songId)
+            val reviews = albumRemoteDataSource.getReviewsDeAlbum(songId)
+            val reviewsInfo = reviews.map { it.toSongReviewItemUi() }
+            val songReview = conDatosLocales(album = album.toAlbum()).copy(reviews = reviewsInfo)
+            Result.success(songReview)
+        } catch (e: HttpException) {
+            Result.failure(ErrorDelServidorException())
         } catch (e: Exception) {
-            Result.failure(ErrorDeDatosLocalesException())
+            Result.failure(SinConexionException())
         }
     }
 
-    suspend fun getAlbumById(albumId: String): Result<Album?> {
+    suspend fun getAlbumById(albumId: String): Result<Album> {
         return try {
-            Result.success(albumLocalDataSource.getAlbumById(albumId = albumId))
+            val album = albumRemoteDataSource.getAlbumById(albumId)
+            Result.success(album.toAlbum())
+        } catch (e: HttpException) {
+            Result.failure(ErrorDelServidorException())
         } catch (e: Exception) {
-            Result.failure(ErrorDeDatosLocalesException())
+            Result.failure(SinConexionException())
         }
     }
 
@@ -73,23 +83,41 @@ class AlbumRepository @Inject constructor(
         }
     }
 
-    suspend fun calificarSongReview(songId: String, rating: Int): Result<SongReviewUi> =
-        actualizarSongReview(songId = songId) { it.copy(userRating = rating) }
+    suspend fun calificarSongReview(songReview: SongReviewUi, rating: Int): Result<SongReviewUi> =
+        actualizarSongReview(songReview = songReview) { it.copy(userRating = rating) }
 
-    suspend fun guardarQuitarSongReview(songId: String): Result<SongReviewUi> =
-        actualizarSongReview(songId = songId) { it.copy(isSaved = !it.isSaved) }
+    suspend fun guardarQuitarSongReview(songReview: SongReviewUi): Result<SongReviewUi> =
+        actualizarSongReview(songReview = songReview) { it.copy(isSaved = !it.isSaved) }
 
-    suspend fun darQuitarLikeSongReview(songId: String): Result<SongReviewUi> =
-        actualizarSongReview(songId = songId) { it.copy(isLiked = !it.isLiked) }
+    suspend fun darQuitarLikeSongReview(songReview: SongReviewUi): Result<SongReviewUi> =
+        actualizarSongReview(songReview = songReview) { it.copy(isLiked = !it.isLiked) }
 
-    suspend fun darQuitarLikeResenaDeAlbum(
-        songId: String,
+    fun darQuitarLikeResenaDeAlbum(
+        songReview: SongReviewUi,
         reviewId: String,
-    ): Result<SongReviewUi> = actualizarSongReview(songId = songId) { songReview ->
-        songReview.copy(
+    ): Result<SongReviewUi> {
+        val actualizado = songReview.copy(
             reviews = songReview.reviews.map { resena ->
                 if (resena.id == reviewId) conLike(resena) else resena
             }
+        )
+
+        return Result.success(actualizado)
+    }
+
+    private suspend fun conDatosLocales(album: Album): SongReviewUi {
+        val local = albumLocalDataSource.getSongReviewById(songId = album.id)
+
+        return local?.copy(album = album) ?: SongReviewUi(
+            id = album.id,
+            album = album,
+            rating = 0.0,
+            ratingCount = "0",
+            recommendRate = 0,
+            userRating = 0,
+            isSaved = false,
+            isLiked = false,
+            reviews = emptyList(),
         )
     }
 
@@ -103,16 +131,15 @@ class AlbumRepository @Inject constructor(
     }
 
     private suspend fun actualizarSongReview(
-        songId: String,
+        songReview: SongReviewUi,
         cambio: (SongReviewUi) -> SongReviewUi,
     ): Result<SongReviewUi> {
         return try {
-            val songReview = albumLocalDataSource.getSongReviewById(songId = songId)
+            val local = albumLocalDataSource.getSongReviewById(songId = songReview.id)
                 ?: return Result.failure(ContenidoNoEncontradoException())
-            val actualizado = cambio(songReview)
 
-            albumLocalDataSource.guardarSongReview(songReview = actualizado)
-            Result.success(actualizado)
+            albumLocalDataSource.guardarSongReview(songReview = cambio(local))
+            Result.success(cambio(songReview))
         } catch (e: IndexOutOfBoundsException) {
             Result.failure(ContenidoNoEncontradoException())
         } catch (e: Exception) {

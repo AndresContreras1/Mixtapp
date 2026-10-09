@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
 import com.example.mixtapp.data.repository.AlbumRepository
 import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
+import com.example.mixtapp.data.repository.ErrorDelServidorException
+import com.example.mixtapp.data.repository.SinConexionException
 import com.example.mixtapp.data.repository.ReviewRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
@@ -36,25 +38,15 @@ class WriteReviewViewModel @Inject constructor(
 
     private fun getDatosIniciales() {
         viewModelScope.launch {
-            // Las dos peticiones salen a la vez y se espera la mas lenta
-            val moodsPendientes = async { reviewRepository.getMoods() }
-            val fechaPendiente = async { reviewRepository.getFechaEscuchaInicial() }
+            val fecha = reviewRepository.getFechaEscuchaInicial()
 
-            val moods = moodsPendientes.await()
-            val fecha = fechaPendiente.await()
-
-            if (moods.isSuccess && fecha.isSuccess) {
-                _uiState.update {
-                    it.copy(
-                        moods = moods.getOrNull() ?: emptyList(),
-                        listenedDate = fecha.getOrNull() ?: "",
-                    )
-                }
+            if (fecha.isSuccess) {
+                _uiState.update { it.copy(listenedDate = fecha.getOrNull() ?: "") }
             } else {
                 _uiState.update {
                     it.copy(
                         errorMessageRes = mensajeDeError(
-                            error = moods.exceptionOrNull() ?: fecha.exceptionOrNull(),
+                            error = fecha.exceptionOrNull(),
                             generico = R.string.error_cargar_contenido,
                         )
                     )
@@ -68,6 +60,7 @@ class WriteReviewViewModel @Inject constructor(
         if (_uiState.value.album != null) return
 
         viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
             // El album y la resena que ya existe salen a la vez
             val albumPendiente = async { albumRepository.getAlbumById(albumId = albumId) }
             val resenaPendiente = async { reviewRepository.getMyReviewByAlbumId(albumId = albumId) }
@@ -85,14 +78,15 @@ class WriteReviewViewModel @Inject constructor(
                         album = album.getOrNull(),
                         rating = yaCalificado?.rating ?: estado.rating,
                         reviewText = yaCalificado?.excerpt ?: estado.reviewText,
-                        selectedMoods = yaCalificado?.tags ?: estado.selectedMoods,
                         listenedDate = yaCalificado?.date ?: estado.listenedDate,
+                        isLoading = false,
                         errorMessageRes = null,
                     )
                 }
             } else {
                 _uiState.update {
                     it.copy(
+                        isLoading = false,
                         errorMessageRes = mensajeDeError(
                             error = album.exceptionOrNull() ?: resena.exceptionOrNull(),
                             generico = R.string.error_cargar_contenido,
@@ -114,13 +108,6 @@ class WriteReviewViewModel @Inject constructor(
         _uiState.update {
             it.copy(reviewText = reviewText.take(MAX_REVIEW_LENGTH), errorMessageRes = null)
         }
-    }
-
-    fun seleccionarQuitarMood(mood: String) {
-        val actuales = _uiState.value.selectedMoods
-        val nuevos = if (mood in actuales) actuales - mood else actuales + mood
-
-        _uiState.update { it.copy(selectedMoods = nuevos) }
     }
 
     fun updateListenedDate(listenedDate: String) {
@@ -174,7 +161,6 @@ class WriteReviewViewModel @Inject constructor(
                 album = album,
                 rating = estado.rating,
                 texto = texto,
-                moods = estado.selectedMoods,
                 fecha = estado.listenedDate,
             )
 
@@ -196,6 +182,8 @@ class WriteReviewViewModel @Inject constructor(
     @StringRes
     private fun mensajeDeError(error: Throwable?, @StringRes generico: Int): Int = when (error) {
         is ContenidoNoEncontradoException -> R.string.contenido_no_encontrado
+        is ErrorDelServidorException -> R.string.error_servidor
+        is SinConexionException -> R.string.error_sin_conexion
         else -> generico
     }
 }

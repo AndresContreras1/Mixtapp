@@ -28,3 +28,5 @@ class ErrorAlSubirImagenException : Exception("Fallo la subida de la imagen")
 class ContenidoNoEncontradoException : Exception("No se encontro el contenido")
 
 class ErrorDeDatosLocalesException : Exception("Fallo la lectura de los datos locales")
+
+class ErrorDelServidorException : Exception("El backend respondio con un codigo de error")

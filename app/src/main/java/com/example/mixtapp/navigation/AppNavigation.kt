@@ -35,6 +35,8 @@ import com.example.mixtapp.ui.screens.songreview.SongReviewsScreen
 import com.example.mixtapp.ui.screens.songreview.SongReviewsViewModel
 import com.example.mixtapp.ui.screens.splash.SplashScreen
 import com.example.mixtapp.ui.screens.splash.SplashViewModel
+import com.example.mixtapp.ui.screens.userprofile.UserProfileScreen
+import com.example.mixtapp.ui.screens.userprofile.UserProfileViewModel
 
 private fun NavHostController.navegarLimpiandoLaPila(ruta: String) {
     navigate(ruta) {
@@ -159,6 +161,9 @@ fun AppNavigation(
                 myReviewsViewModel = myReviewsViewModel,
                 onReviewClick = { songId ->
                     navController.navigate(Screen.SongDetail.createRoute(songId = songId))
+                },
+                onEditClick = { albumId ->
+                    navController.navigate(Screen.WriteReview.createRoute(albumId = albumId))
                 }
             )
         }
@@ -172,6 +177,9 @@ fun AppNavigation(
                 onMoreClick = {},
                 logoutButtonPressed = {
                     navController.navegarLimpiandoLaPila(Screen.Login.route)
+                },
+                onReviewClick = { songId ->
+                    navController.navigate(Screen.SongDetail.createRoute(songId = songId))
                 }
             )
         }
@@ -191,7 +199,27 @@ fun AppNavigation(
                     navController.navigate(Screen.WriteReview.createRoute(albumId = songId))
                 },
                 onBackClick = { navController.popBackStack() },
-                onReviewReplyClick = {}
+                onReviewReplyClick = {},
+                onAuthorClick = { userId ->
+                    navController.navigate(Screen.UserProfile.createRoute(userId = userId))
+                }
+            )
+        }
+
+        composable(
+            route = Screen.UserProfile.route,
+            arguments = listOf(navArgument(name = "userId") { type = NavType.StringType })
+        ) {
+            val userId = it.arguments?.getString("userId") ?: ""
+            val userProfileViewModel: UserProfileViewModel = hiltViewModel()
+
+            UserProfileScreen(
+                userId = userId,
+                userProfileViewModel = userProfileViewModel,
+                onReviewClick = { songId ->
+                    navController.navigate(Screen.SongDetail.createRoute(songId = songId))
+                },
+                onBackClick = { navController.popBackStack() }
             )
         }
 

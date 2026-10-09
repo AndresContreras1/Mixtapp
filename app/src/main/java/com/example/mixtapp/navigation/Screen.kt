@@ -24,4 +24,8 @@ sealed class Screen(val route: String) {
     data object WriteReview : Screen(route = "writeReview/{albumId}") {
         fun createRoute(albumId: String) = "writeReview/$albumId"
     }
+
+    data object UserProfile : Screen(route = "userProfile/{userId}") {
+        fun createRoute(userId: String) = "userProfile/$userId"
+    }
 }

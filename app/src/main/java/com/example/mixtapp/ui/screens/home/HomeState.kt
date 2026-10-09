@@ -12,5 +12,6 @@ data class HomeState(
     val filters: List<HomeFilterUi> = emptyList(),
     val selectedFilterId: String = "",
     val profileImageUrl: String = "",
+    val isLoading: Boolean = false,
     @StringRes val errorMessageRes: Int? = null,
 )

@@ -1,11 +1,13 @@
 package com.example.mixtapp.ui.screens.songreview
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -24,6 +26,7 @@ fun SongReviewsScreen(
     onWriteReviewClick: () -> Unit,
     onBackClick: () -> Unit,
     onReviewReplyClick: (String) -> Unit,
+    onAuthorClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val state by songReviewsViewModel.uiState.collectAsState()
@@ -32,10 +35,16 @@ fun SongReviewsScreen(
         songReviewsViewModel.getSongById(songId = songId)
     }
 
-    if (state.song == null) {
-        Text(text = stringResource(state.errorMessageRes ?: R.string.cancion_no_encontrada))
-    } else {
-        SongReviewsScreenContent(
+    when {
+        state.isLoading -> {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+        }
+        state.song == null -> {
+            Text(text = stringResource(state.errorMessageRes ?: R.string.cancion_no_encontrada))
+        }
+        else -> SongReviewsScreenContent(
             songReview = state.song!!,
             onRatingChange = { songReviewsViewModel.updateUserRating(rating = it) },
             onSaveClick = { songReviewsViewModel.guardarQuitarGuardado() },
@@ -45,6 +54,7 @@ fun SongReviewsScreen(
             errorMessageRes = state.errorMessageRes,
             onReviewLikeClick = { songReviewsViewModel.darQuitarLikeResena(reviewId = it) },
             onReviewReplyClick = onReviewReplyClick,
+            onAuthorClick = onAuthorClick,
             modifier = modifier
         )
     }
@@ -61,6 +71,7 @@ fun SongReviewsScreenContent(
     errorMessageRes: Int?,
     onReviewLikeClick: (String) -> Unit,
     onReviewReplyClick: (String) -> Unit,
+    onAuthorClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -76,6 +87,7 @@ fun SongReviewsScreenContent(
             errorMessageRes = errorMessageRes,
             onReviewLikeClick = onReviewLikeClick,
             onReviewReplyClick = onReviewReplyClick,
+            onAuthorClick = onAuthorClick,
             modifier = Modifier.fillMaxSize()
         )
     }
@@ -96,7 +108,8 @@ fun SongReviewsScreenPreview() {
             onBackClick = {},
             errorMessageRes = null,
             onReviewLikeClick = {},
-            onReviewReplyClick = {}
+            onReviewReplyClick = {},
+            onAuthorClick = {}
         )
     }
 }
