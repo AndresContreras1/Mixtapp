@@ -1,9 +1,7 @@
 package com.example.mixtapp.ui.screens.songreview.components
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -35,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.data.model.SongReviewItemUi
+import com.example.mixtapp.ui.components.ProfileAsyncImage
 import com.example.mixtapp.ui.components.StarRating
 
 @Composable
@@ -57,15 +56,13 @@ fun ReviewItem(
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Box(
+                ProfileAsyncImage(
+                    profileImage = review.authorImage,
+                    contentDescription = stringResource(R.string.foto_perfil),
                     modifier = Modifier
                         .size(40.dp)
                         .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.surfaceContainer),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(review.initials, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
-                }
+                )
                 Spacer(modifier = Modifier.width(12.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(review.author, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold)

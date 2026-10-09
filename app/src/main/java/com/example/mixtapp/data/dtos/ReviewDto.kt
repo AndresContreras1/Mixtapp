@@ -30,8 +30,9 @@ data class ReviewConAlbumDto(
 fun ReviewConUsuarioDto.toSongReviewItemUi(): SongReviewItemUi {
     return SongReviewItemUi(
         id = id.toString(),
+        authorId = usuarioId.toString(),
         author = usuario.nombre,
-        initials = "",
+        authorImage = usuario.fotoUrl ?: "",
         daysAgo = fechaEscucha ?: "",
         rating = calificacion,
         content = comentario ?: "",
