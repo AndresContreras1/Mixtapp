@@ -26,6 +26,7 @@ fun SongReviewsScreen(
     onWriteReviewClick: () -> Unit,
     onBackClick: () -> Unit,
     onReviewReplyClick: (String) -> Unit,
+    onAuthorClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val state by songReviewsViewModel.uiState.collectAsState()
@@ -53,6 +54,7 @@ fun SongReviewsScreen(
             errorMessageRes = state.errorMessageRes,
             onReviewLikeClick = { songReviewsViewModel.darQuitarLikeResena(reviewId = it) },
             onReviewReplyClick = onReviewReplyClick,
+            onAuthorClick = onAuthorClick,
             modifier = modifier
         )
     }
@@ -69,6 +71,7 @@ fun SongReviewsScreenContent(
     errorMessageRes: Int?,
     onReviewLikeClick: (String) -> Unit,
     onReviewReplyClick: (String) -> Unit,
+    onAuthorClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -84,6 +87,7 @@ fun SongReviewsScreenContent(
             errorMessageRes = errorMessageRes,
             onReviewLikeClick = onReviewLikeClick,
             onReviewReplyClick = onReviewReplyClick,
+            onAuthorClick = onAuthorClick,
             modifier = Modifier.fillMaxSize()
         )
     }
@@ -104,7 +108,8 @@ fun SongReviewsScreenPreview() {
             onBackClick = {},
             errorMessageRes = null,
             onReviewLikeClick = {},
-            onReviewReplyClick = {}
+            onReviewReplyClick = {},
+            onAuthorClick = {}
         )
     }
 }

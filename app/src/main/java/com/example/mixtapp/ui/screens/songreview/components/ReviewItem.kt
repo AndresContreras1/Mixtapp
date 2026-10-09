@@ -41,6 +41,7 @@ fun ReviewItem(
     review: SongReviewItemUi,
     onLikeClick: () -> Unit,
     onReplyClick: () -> Unit,
+    onAuthorClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -56,13 +57,18 @@ fun ReviewItem(
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                ProfileAsyncImage(
-                    profileImage = review.authorImage,
-                    contentDescription = stringResource(R.string.foto_perfil),
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(CircleShape)
-                )
+                IconButton(
+                    onClick = onAuthorClick,
+                    modifier = Modifier.size(40.dp)
+                ) {
+                    ProfileAsyncImage(
+                        profileImage = review.authorImage,
+                        contentDescription = stringResource(R.string.foto_perfil),
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clip(CircleShape)
+                    )
+                }
                 Spacer(modifier = Modifier.width(12.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(review.author, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold)

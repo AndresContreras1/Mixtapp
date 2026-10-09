@@ -123,6 +123,7 @@
     <!-- My reviews -->
     <string name="join_date">Se unió en %1$s</string>
     <string name="my_reviews">Mis reseñas</string>
+    <string name="resenas_label">reseñas</string>
     <string name="filtro_recientes">Recientes</string>
     <string name="filtro_mejor_calificadas">Mejor calificadas</string>
     <string name="filtro_a_z">A-Z</string>
