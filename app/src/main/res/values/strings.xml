@@ -83,6 +83,7 @@
     <string name="error_me_gusta">No se pudo registrar tu me gusta</string>
     <string name="error_compartir">No se pudo compartir la reseña</string>
     <string name="error_publicar_resena">No se pudo publicar la reseña</string>
+    <string name="error_eliminar_resena">No se pudo eliminar la reseña</string>
     <string name="error_publicar_comentario">No se pudo publicar el comentario</string>
     <string name="error_resena_vacia">Escribe tu reseña antes de publicar</string>
     <string name="error_comentario_vacio">Escribe tu comentario antes de publicar</string>
@@ -124,6 +125,8 @@
     <string name="join_date">Se unió en %1$s</string>
     <string name="my_reviews">Mis reseñas</string>
     <string name="resenas_label">reseñas</string>
+    <string name="editar_resena">Editar reseña</string>
+    <string name="eliminar_resena">Eliminar reseña</string>
     <string name="filtro_recientes">Recientes</string>
     <string name="filtro_mejor_calificadas">Mejor calificadas</string>
     <string name="filtro_a_z">A-Z</string>

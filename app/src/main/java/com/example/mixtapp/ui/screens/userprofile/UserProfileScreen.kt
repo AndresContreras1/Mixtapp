@@ -97,6 +97,9 @@ fun UserProfileScreenContent(
                 MyReviewCard(
                     review = reviews[index],
                     onReviewClick = onReviewClick,
+                    showEditButton = false,
+                    onEditClick = {},
+                    onDeleteClick = {},
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
             }

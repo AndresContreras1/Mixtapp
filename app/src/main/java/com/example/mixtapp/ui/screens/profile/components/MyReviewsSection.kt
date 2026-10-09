@@ -38,6 +38,9 @@ fun MyReviewsSection(
             MyReviewCard(
                 review = review,
                 onReviewClick = onReviewClick,
+                showEditButton = false,
+                onEditClick = {},
+                onDeleteClick = {},
                 modifier = Modifier.padding(bottom = 16.dp)
             )
         }

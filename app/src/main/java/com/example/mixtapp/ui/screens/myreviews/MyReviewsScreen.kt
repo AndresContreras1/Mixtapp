@@ -32,6 +32,7 @@ import com.example.mixtapp.ui.theme.MixtappTheme
 fun MyReviewsScreen(
     myReviewsViewModel: MyReviewsViewModel,
     onReviewClick: (String) -> Unit,
+    onEditClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val state by myReviewsViewModel.uiState.collectAsState()
@@ -52,6 +53,8 @@ fun MyReviewsScreen(
             errorMessageRes = state.errorMessageRes,
             onFilterSelected = { myReviewsViewModel.updateSelectedFilter(filtroId = it) },
             onReviewClick = onReviewClick,
+            onEditClick = onEditClick,
+            onDeleteClick = { myReviewsViewModel.eliminarResena(reviewId = it) },
             modifier = modifier
         )
     }
@@ -68,6 +71,8 @@ fun MyReviewsScreenContent(
     errorMessageRes: Int?,
     onFilterSelected: (String) -> Unit,
     onReviewClick: (String) -> Unit,
+    onEditClick: (String) -> Unit,
+    onDeleteClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -102,6 +107,9 @@ fun MyReviewsScreenContent(
                     MyReviewCard(
                         review = review,
                         onReviewClick = onReviewClick,
+                        showEditButton = true,
+                        onEditClick = onEditClick,
+                        onDeleteClick = onDeleteClick,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
                 }
@@ -123,7 +131,9 @@ fun MyReviewsScreenPreview() {
             selectedFilterId = myReviewFilters.first().id,
             errorMessageRes = null,
             onFilterSelected = {},
-            onReviewClick = {}
+            onReviewClick = {},
+            onEditClick = {},
+            onDeleteClick = {}
         )
     }
 }

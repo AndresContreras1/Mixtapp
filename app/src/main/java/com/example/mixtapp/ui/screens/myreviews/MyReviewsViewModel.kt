@@ -111,6 +111,27 @@ class MyReviewsViewModel @Inject constructor(
         }
     }
 
+    fun eliminarResena(reviewId: String) {
+        viewModelScope.launch {
+            val result = reviewRepository.eliminarResena(reviewId = reviewId)
+
+            if (result.isSuccess) {
+                val restantes = _uiState.value.reviews.filter { it.id != reviewId }
+
+                _uiState.update { it.copy(reviews = restantes, errorMessageRes = null) }
+            } else {
+                _uiState.update {
+                    it.copy(
+                        errorMessageRes = mensajeDeError(
+                            error = result.exceptionOrNull(),
+                            generico = R.string.error_eliminar_resena,
+                        )
+                    )
+                }
+            }
+        }
+    }
+
     // Ordenar y filtrar es logica de negocio, no de la pantalla
     private fun aplicarFiltro(filtroId: String, todas: List<MyReviewUi>): List<MyReviewUi> {
         return when (filtroId) {

@@ -161,6 +161,9 @@ fun AppNavigation(
                 myReviewsViewModel = myReviewsViewModel,
                 onReviewClick = { songId ->
                     navController.navigate(Screen.SongDetail.createRoute(songId = songId))
+                },
+                onEditClick = { albumId ->
+                    navController.navigate(Screen.WriteReview.createRoute(albumId = albumId))
                 }
             )
         }
