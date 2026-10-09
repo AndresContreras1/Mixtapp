@@ -60,7 +60,7 @@ fun ReviewActionsRow(
         if (onCommentsClick == null) {
             Icon(
                 imageVector = Icons.AutoMirrored.Outlined.ChatBubbleOutline,
-                contentDescription = null,
+                contentDescription = stringResource(R.string.comments),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.55f),
                 modifier = Modifier.size(15.dp),
             )

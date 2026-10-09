@@ -1,25 +1,30 @@
 package com.example.mixtapp.data.repository
 
-class CredencialesInvalidasException : Exception()
+// El mensaje de la excepcion es para el log del programador. El texto que ve el
+// usuario lo elige el ViewModel desde strings.xml
 
-class CorreoYaRegistradoException : Exception()
+class CredencialesInvalidasException : Exception("Correo o contrasena incorrectos")
 
-class SinConexionException : Exception()
+class CorreoNoRegistradoException : Exception("No existe una cuenta con ese correo")
 
-class DemasiadosIntentosException : Exception()
+class CorreoYaRegistradoException : Exception("Ese correo ya tiene una cuenta")
 
-class SinSesionException : Exception()
+class SinConexionException : Exception("No hay conexion con la red")
 
-class ErrorDeInicioSesionException : Exception()
+class DemasiadosIntentosException : Exception("Demasiados intentos seguidos")
 
-class ErrorDeRegistroException : Exception()
+class SinSesionException : Exception("No hay una sesion iniciada")
 
-class CuotaExcedidaException : Exception()
+class ErrorDeInicioSesionException : Exception("Fallo el inicio de sesion")
 
-class PermisoDenegadoException : Exception()
+class ErrorDeRegistroException : Exception("Fallo el registro")
 
-class ErrorAlSubirImagenException : Exception()
+class CuotaExcedidaException : Exception("Se agoto la cuota de Storage")
 
-class ContenidoNoEncontradoException : Exception()
+class PermisoDenegadoException : Exception("Las reglas de Storage no permiten la operacion")
 
-class ErrorDeDatosLocalesException : Exception()
+class ErrorAlSubirImagenException : Exception("Fallo la subida de la imagen")
+
+class ContenidoNoEncontradoException : Exception("No se encontro el contenido")
+
+class ErrorDeDatosLocalesException : Exception("Fallo la lectura de los datos locales")

@@ -56,7 +56,7 @@ fun NotificationRow(notification: NotificationUi, modifier: Modifier = Modifier)
 
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = buildNotificationMessage(notification),
+                text = NotificationMessage(notification),
                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = alpha),
                 fontSize = 14.sp,
                 lineHeight = 19.sp,
@@ -85,7 +85,7 @@ fun NotificationRow(notification: NotificationUi, modifier: Modifier = Modifier)
 
 // El nombre del actor y la palabra resaltada van en negrita; el resto en texto normal
 @Composable
-private fun buildNotificationMessage(notification: NotificationUi) = buildAnnotatedString {
+private fun NotificationMessage(notification: NotificationUi) = buildAnnotatedString {
     withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)) {
         append(notification.actorName)
     }

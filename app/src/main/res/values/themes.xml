@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- Fondo de la ventana mientras Compose todavia no dibuja. El valor se repite
+         a mano porque los colores de la app viven en ui/theme/Color.kt: debe
+         coincidir con DeepBackground -->
     <style name="Theme.Mixtapp" parent="android:Theme.Material.NoActionBar">
-        <item name="android:windowBackground">@color/deep_background</item>
+        <item name="android:windowBackground">#FF1B020D</item>
     </style>
 </resources>

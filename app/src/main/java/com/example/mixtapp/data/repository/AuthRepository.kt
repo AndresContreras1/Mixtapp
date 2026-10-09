@@ -4,6 +4,7 @@ import com.example.mixtapp.data.datasource.AuthRemoteDataSource
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseUser
 import javax.inject.Inject
@@ -22,6 +23,8 @@ class AuthRepository @Inject constructor(
             Result.success(Unit)
         } catch (e: FirebaseAuthInvalidCredentialsException) {
             Result.failure(CredencialesInvalidasException())
+        } catch (e: FirebaseAuthInvalidUserException) {
+            Result.failure(CorreoNoRegistradoException())
         } catch (e: FirebaseNetworkException) {
             Result.failure(SinConexionException())
         } catch (e: FirebaseTooManyRequestsException) {
