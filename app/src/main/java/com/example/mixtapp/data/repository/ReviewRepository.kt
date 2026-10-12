@@ -96,6 +96,9 @@ class ReviewRepository @Inject constructor(
         } catch (e: FirebaseFirestoreException) {
             Log.d("ReviewRepository", "guardarResena: ${e.message}")
             Result.failure(errorDeFirestore(e))
+        } catch (e: NoSuchElementException) {
+            Log.d("ReviewRepository", "guardarResena: ${e.message}")
+            Result.failure(ContenidoNoEncontradoException())
         } catch (e: Exception) {
             Log.d("ReviewRepository", "guardarResena: ${e.message}")
             Result.failure(e)
@@ -216,7 +219,9 @@ class ReviewRepository @Inject constructor(
     private suspend fun nombreDelUsuario(usuarioId: String): String {
         return try {
             usuarioRemoteDataSource.getUsuarioById(usuarioId).toUsuarioUi().nombre
-        } catch (e: Exception) {
+        } catch (e: NoSuchElementException) {
+            // Solo una cuenta sin documento usa el correo; si Firestore falla por otra razon,
+            // falla todo el guardado, como en clase
             Log.d("ReviewRepository", "nombreDelUsuario: ${e.message}")
             authRemoteDataSource.currentUser?.email?.substringBefore("@") ?: ""
         }
