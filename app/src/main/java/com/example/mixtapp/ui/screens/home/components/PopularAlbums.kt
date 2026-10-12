@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.data.model.SongReviewUi
 
-// Todos los albumes del backend en una fila que se desliza
+// Todos los albumes en una fila que se desliza
 @Composable
 fun PopularAlbums(
     albums: List<SongReviewUi>,

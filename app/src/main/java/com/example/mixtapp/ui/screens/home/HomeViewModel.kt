@@ -102,7 +102,7 @@ class HomeViewModel @Inject constructor(
         _uiState.update { it.copy(profileImageUrl = foto) }
     }
 
-    // Los albumes ya estan cargados: cambiar de filtro no vuelve a pedirlos al backend
+    // Los albumes ya estan cargados: cambiar de filtro no vuelve a pedirlos
     fun updateSelectedFilter(filtroId: String) {
         val estado = _uiState.value
 
@@ -153,6 +153,7 @@ class HomeViewModel @Inject constructor(
                             album = songReview.album,
                             rating = review.rating,
                             quote = review.content,
+                            authorId = review.authorId,
                             author = review.author,
                             date = review.fecha,
                         )

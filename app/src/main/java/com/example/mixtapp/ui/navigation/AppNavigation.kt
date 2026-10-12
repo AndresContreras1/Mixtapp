@@ -108,6 +108,9 @@ fun AppNavigation(
                 onAlbumClick = { songId ->
                     navController.navigate(Screen.SongDetail.createRoute(songId = songId))
                 },
+                onAuthorClick = { userId ->
+                    navController.navigate(Screen.UserProfile.createRoute(userId = userId))
+                },
                 onSearchClick = { navController.navigate(Screen.Search.route) },
                 onProfileClick = { navController.navigate(Screen.Profile.route) },
                 onFollowingClick = { navController.navigate(Screen.Following.route) },

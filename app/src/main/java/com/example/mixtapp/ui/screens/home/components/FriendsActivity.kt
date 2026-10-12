@@ -1,6 +1,7 @@
 package com.example.mixtapp.ui.screens.home.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,6 +28,7 @@ import com.example.mixtapp.ui.utils.StarRating
 fun FriendsActivity(
     activity: FriendActivityUi,
     onClick: (String) -> Unit,
+    onAuthorClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Card(
@@ -71,11 +73,13 @@ fun FriendsActivity(
 
             Spacer(modifier = Modifier.height(8.dp))
 
+            // Tocar el autor abre su perfil
             Text(
                 text = stringResource(R.string.titulo_guion_subtitulo, activity.author, activity.date),
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                color = MaterialTheme.colorScheme.primary,
                 fontSize = 11.sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.clickable { onAuthorClick(activity.authorId) }
             )
         }
     }

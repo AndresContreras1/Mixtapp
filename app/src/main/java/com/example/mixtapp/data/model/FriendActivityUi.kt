@@ -5,6 +5,8 @@ data class FriendActivityUi(
     val album: Album,
     val rating: Int,
     val quote: String,
+    // Para saber a cual perfil llevar al tocar el autor
+    val authorId: String,
     val author: String,
     val date: String,
 )
