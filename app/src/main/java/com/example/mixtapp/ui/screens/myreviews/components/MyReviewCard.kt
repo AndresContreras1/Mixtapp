@@ -32,7 +32,8 @@ fun MyReviewCard(
     review: MyReviewUi,
     onReviewClick: (String) -> Unit,
     showEditButton: Boolean,
-    onEditClick: (String) -> Unit,
+    // Recibe la resena completa: el perfil la edita ahi mismo y Mis resenas abre su album
+    onEditClick: (MyReviewUi) -> Unit,
     onDeleteClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -71,7 +72,7 @@ fun MyReviewCard(
 
                 if (showEditButton) {
                     Row {
-                        IconButton(onClick = { onEditClick(review.album.id) }) {
+                        IconButton(onClick = { onEditClick(review) }) {
                             Icon(
                                 imageVector = Icons.Default.Edit,
                                 contentDescription = stringResource(R.string.editar_resena),

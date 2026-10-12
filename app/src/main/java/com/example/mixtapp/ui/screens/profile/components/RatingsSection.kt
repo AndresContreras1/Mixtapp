@@ -1,6 +1,7 @@
 package com.example.mixtapp.ui.screens.profile.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,7 +28,9 @@ import com.example.mixtapp.ui.components.StarRating
 
 @Composable
 fun RatingsSection(
+    // Una barra por calificacion, de 0 a 5 estrellas, segun cuantas resenas tienen cada una
     ratingBars: List<Float>,
+    onMasActividadClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
@@ -42,7 +45,10 @@ fun RatingsSection(
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold
             )
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                modifier = Modifier.clickable { onMasActividadClick() },
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Text(
                     text = stringResource(R.string.more_activity),
                     color = MaterialTheme.colorScheme.primary,

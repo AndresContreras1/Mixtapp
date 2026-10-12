@@ -30,8 +30,7 @@ fun ProfileAvatarSection(
     errorImagenRes: Int?,
     onImagePicked: (Uri) -> Unit,
     reviewsCount: Int,
-    albumsCount: Int,
-    listsCount: Int,
+    favoritosCount: Int,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -59,7 +58,7 @@ fun ProfileAvatarSection(
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = stringResource(R.string.user_stats, reviewsCount, albumsCount, listsCount),
+            text = stringResource(R.string.user_stats, reviewsCount, favoritosCount),
             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
             fontSize = 14.sp
         )

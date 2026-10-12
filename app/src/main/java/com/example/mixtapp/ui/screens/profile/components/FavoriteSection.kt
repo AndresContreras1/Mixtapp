@@ -22,6 +22,9 @@ import com.example.mixtapp.R
 import com.example.mixtapp.data.model.Album
 import com.example.mixtapp.ui.components.AlbumAsyncImage
 
+// Cuantas portadas caben en la fila de favoritos
+const val FAVORITOS_EN_PERFIL = 4
+
 @Composable
 fun FavoriteSection(
     favoriteAlbums: List<Album>,
@@ -35,22 +38,37 @@ fun FavoriteSection(
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            favoriteAlbums.forEach { album ->
-                AlbumAsyncImage(
-                    cover = album.cover,
-                    contentDescription = stringResource(R.string.album_cover, album.title),
-                    alpha = 1f,
-                    modifier = Modifier
-                        .weight(1f)
-                        .aspectRatio(1f)
-                        .clip(RoundedCornerShape(8.dp))
-                )
+
+        if (favoriteAlbums.isEmpty()) {
+            Text(
+                text = stringResource(R.string.sin_favoritos),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                fontSize = 14.sp
+            )
+        } else {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                favoriteAlbums.forEach { album ->
+                    AlbumAsyncImage(
+                        cover = album.cover,
+                        contentDescription = stringResource(R.string.album_cover, album.title),
+                        alpha = 1f,
+                        modifier = Modifier
+                            .weight(1f)
+                            .aspectRatio(1f)
+                            .clip(RoundedCornerShape(8.dp))
+                    )
+                }
+
+                // Los espacios vacios mantienen el tamano de las portadas aunque haya menos de cuatro
+                repeat(FAVORITOS_EN_PERFIL - favoriteAlbums.size) {
+                    Spacer(modifier = Modifier.weight(1f))
+                }
             }
         }
+
         Spacer(modifier = Modifier.height(56.dp))
         HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f))
     }
