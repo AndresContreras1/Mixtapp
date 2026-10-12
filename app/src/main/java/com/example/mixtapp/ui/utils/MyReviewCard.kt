@@ -22,10 +22,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.data.local.LocalMyReviewsProvider
 import com.example.mixtapp.data.model.MyReviewUi
+import com.example.mixtapp.ui.theme.MixtappTheme
 
 @Composable
 fun MyReviewCard(
@@ -90,5 +93,19 @@ fun MyReviewCard(
                 }
             }
         }
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun MyReviewCardPreview() {
+    MixtappTheme(darkTheme = true) {
+        MyReviewCard(
+            review = LocalMyReviewsProvider.reviews.first(),
+            onReviewClick = {},
+            showEditButton = true,
+            onEditClick = {},
+            onDeleteClick = {}
+        )
     }
 }

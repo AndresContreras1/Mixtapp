@@ -17,10 +17,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.data.local.LocalMyReviewsProvider
 import com.example.mixtapp.data.model.MyReviewUi
+import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.theme.displayFontFamily
 
 // Portada + titulo/artista/estrellas
@@ -73,5 +76,13 @@ fun ReviewCardHeader(
                 onRatingChange = null
             )
         }
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun ReviewCardHeaderPreview() {
+    MixtappTheme(darkTheme = true) {
+        ReviewCardHeader(review = LocalMyReviewsProvider.reviews.first())
     }
 }

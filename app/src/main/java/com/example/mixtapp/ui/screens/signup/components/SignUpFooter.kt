@@ -1,6 +1,5 @@
 package com.example.mixtapp.ui.screens.signup.components
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,6 +7,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -37,24 +37,25 @@ fun SignUpFooter(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        Text(
-            text = buildAnnotatedString {
-                withStyle(SpanStyle(color = MaterialTheme.colorScheme.onSurface)) {
-                    append(stringResource(R.string.already_have_account))
-                }
-                append(" ")
-                withStyle(
-                    SpanStyle(
-                        color = MaterialTheme.colorScheme.inversePrimary,
-                        fontWeight = FontWeight.Black
-                    )
-                ) {
-                    append(stringResource(R.string.log_in))
-                }
-            },
-            fontSize = 16.sp,
-            lineHeight = 20.sp,
-            modifier = Modifier.clickable { onLoginClick() }
-        )
+        TextButton(onClick = onLoginClick) {
+            Text(
+                text = buildAnnotatedString {
+                    withStyle(SpanStyle(color = MaterialTheme.colorScheme.onSurface)) {
+                        append(stringResource(R.string.already_have_account))
+                    }
+                    append(" ")
+                    withStyle(
+                        SpanStyle(
+                            color = MaterialTheme.colorScheme.inversePrimary,
+                            fontWeight = FontWeight.Black
+                        )
+                    ) {
+                        append(stringResource(R.string.log_in))
+                    }
+                },
+                fontSize = 16.sp,
+                lineHeight = 20.sp
+            )
+        }
     }
 }

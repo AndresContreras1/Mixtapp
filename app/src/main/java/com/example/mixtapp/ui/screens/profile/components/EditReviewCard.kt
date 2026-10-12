@@ -16,7 +16,6 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -36,6 +35,7 @@ import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.theme.displayFontFamily
 import com.example.mixtapp.ui.utils.AlbumAsyncImage
 import com.example.mixtapp.ui.utils.AppButton
+import com.example.mixtapp.ui.utils.AppTextArea
 import com.example.mixtapp.ui.utils.ErrorMessage
 import com.example.mixtapp.ui.utils.StarRating
 
@@ -109,23 +109,12 @@ fun EditReviewCard(
 
             Spacer(modifier = Modifier.height(14.dp))
 
-            OutlinedTextField(
+            AppTextArea(
                 value = texto,
                 onValueChange = onTextoChange,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(126.dp),
-                label = { Text(text = stringResource(R.string.label_resena)) }
-            )
-
-            Text(
-                text = stringResource(R.string.contador_caracteres, texto.length, MAX_REVIEW_LENGTH),
-                modifier = Modifier
-                    .align(Alignment.End)
-                    .padding(top = 6.dp),
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
-                fontSize = 11.sp,
-                fontWeight = FontWeight.Bold
+                label = stringResource(R.string.label_resena),
+                placeholder = stringResource(R.string.review_placeholder),
+                maxLength = MAX_REVIEW_LENGTH
             )
 
             ErrorMessage(

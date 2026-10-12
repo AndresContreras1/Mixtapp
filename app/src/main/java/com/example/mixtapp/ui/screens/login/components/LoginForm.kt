@@ -53,7 +53,7 @@ fun LoginForm(
 
         AppTextField(
             label = stringResource(R.string.contrasena),
-            placeholder = stringResource(R.string.contrasena),
+            placeholder = stringResource(R.string.enter_your_password),
             value = contrasena,
             onValueChange = onContrasenaChange,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),

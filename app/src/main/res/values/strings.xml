@@ -6,6 +6,7 @@
     <string name="email">Correo</string>
     <string name="enter_your_email">Ingresa tu correo</string>
     <string name="contrasena">Contraseña</string>
+    <string name="enter_your_password">Ingresa tu contraseña</string>
     <string name="o">O</string>
     <string name="profile_tab_diary">Diario</string>
     <string name="profile_tab_lists">Listas</string>
@@ -101,6 +102,7 @@
     <string name="comments">Comentarios</string>
     <string name="discussion">Discusión</string>
     <string name="comments_count">%1$d comentarios</string>
+    <string name="un_comentario">1 comentario</string>
     <string name="replying">Respondiendo</string>
     <string name="comentario_placeholder">Escribe un comentario...</string>
     <string name="publicar_comentario">Publicar</string>
@@ -176,6 +178,7 @@
     <string name="marca_propia">(tú)</string>
     <string name="sin_resenas_album">Todavía nadie reseña este álbum. ¡Escribe la primera!</string>
     <string name="ratings_label">calificaciones</string>
+    <string name="calificacion_label">calificación</string>
     <string name="recommend_label">recomiendan</string>
     <string name="rating_promedio">%1$.1f</string>
     <string name="recomendacion_porcentaje">%1$d%%</string>
@@ -188,6 +191,8 @@
     <!-- Accesibilidad -->
     <string name="album_cover">Carátula de %1$s</string>
     <string name="mostrar_contrasena">Mostrar contraseña</string>
+    <string name="aceptar_terminos">Aceptar los términos</string>
+    <string name="terminos_aceptados">Términos aceptados</string>
     <string name="ocultar_contrasena">Ocultar contraseña</string>
     <string name="nav_home">Inicio</string>
     <string name="nav_profile">Perfil</string>

@@ -11,11 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,6 +29,7 @@ import com.example.mixtapp.data.local.LocalSongReviewProvider
 import com.example.mixtapp.data.model.SongReviewUi
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.theme.displayFontFamily
+import com.example.mixtapp.ui.utils.BackButton
 import com.example.mixtapp.ui.utils.ReviewAlbumRow
 
 // El boton + abre esta pantalla para elegir el album antes de escribir la resena
@@ -83,17 +80,7 @@ fun SelectAlbumScreenContent(
             contentPadding = PaddingValues(horizontal = 24.dp, vertical = 28.dp)
         ) {
             item {
-                IconButton(
-                    onClick = onBackClick,
-                    modifier = Modifier.size(30.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                        contentDescription = stringResource(R.string.back),
-                        tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.72f),
-                        modifier = Modifier.size(30.dp)
-                    )
-                }
+                BackButton(onBackClick = onBackClick)
 
                 Spacer(modifier = Modifier.height(16.dp))
 

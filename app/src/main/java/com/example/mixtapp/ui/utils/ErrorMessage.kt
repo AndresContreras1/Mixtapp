@@ -26,7 +26,8 @@ fun ErrorMessage(
         exit = fadeOut()
     ) {
         Text(
-            text = stringResource(messageRes ?: R.string.error_generico),
+            // Mientras se desvanece ya es null: se queda vacio en vez de mostrar otro texto
+            text = if (messageRes != null) stringResource(messageRes) else "",
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontSize = 14.sp
         )
