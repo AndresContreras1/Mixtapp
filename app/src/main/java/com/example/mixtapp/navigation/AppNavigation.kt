@@ -1,9 +1,6 @@
 package com.example.mixtapp.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -29,6 +26,8 @@ import com.example.mixtapp.ui.screens.review.WriteReviewScreen
 import com.example.mixtapp.ui.screens.review.WriteReviewViewModel
 import com.example.mixtapp.ui.screens.search.SearchScreen
 import com.example.mixtapp.ui.screens.search.SearchViewModel
+import com.example.mixtapp.ui.screens.selectalbum.SelectAlbumScreen
+import com.example.mixtapp.ui.screens.selectalbum.SelectAlbumViewModel
 import com.example.mixtapp.ui.screens.signup.SignUpScreen
 import com.example.mixtapp.ui.screens.signup.SignUpViewModel
 import com.example.mixtapp.ui.screens.songreview.SongReviewsScreen
@@ -70,17 +69,12 @@ fun AppNavigation(
 
         composable(route = Screen.Login.route) {
             val loginViewModel: LoginViewModel = hiltViewModel()
-            val state by loginViewModel.uiState.collectAsState()
-
-            // El ViewModel valida el formulario y autoriza; la navegacion solo ejecuta
-            LaunchedEffect(state.navigate) {
-                if (state.navigate) {
-                    navController.navegarLimpiandoLaPila(Screen.Home.route)
-                }
-            }
 
             LoginScreen(
                 loginViewModel = loginViewModel,
+                onLoginSuccess = {
+                    navController.navegarLimpiandoLaPila(Screen.Home.route)
+                },
                 onSignUpClick = {
                     navController.navigate(Screen.SignUp.route)
                 }
@@ -89,19 +83,17 @@ fun AppNavigation(
 
         composable(route = Screen.SignUp.route) {
             val signUpViewModel: SignUpViewModel = hiltViewModel()
-            val state by signUpViewModel.uiState.collectAsState()
-
-            // El ViewModel valida el formulario y autoriza; la navegacion solo ejecuta
-            LaunchedEffect(state.navigate) {
-                if (state.navigate) {
-                    navController.navegarLimpiandoLaPila(Screen.Home.route)
-                }
-            }
 
             SignUpScreen(
                 signUpViewModel = signUpViewModel,
+                onSignUpSuccess = {
+                    navController.navegarLimpiandoLaPila(Screen.Home.route)
+                },
+                // Vuelve al login que ya estaba en la pila, para que atras no repita pantallas
                 onLoginClick = {
-                    navController.navigate(Screen.Login.route)
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(Screen.Login.route) { inclusive = true }
+                    }
                 }
             )
         }
@@ -132,6 +124,21 @@ fun AppNavigation(
             )
         }
 
+        composable(route = Screen.SelectAlbum.route) {
+            val selectAlbumViewModel: SelectAlbumViewModel = hiltViewModel()
+
+            SelectAlbumScreen(
+                selectAlbumViewModel = selectAlbumViewModel,
+                // Esta pantalla sale de la pila: al publicar se vuelve a donde se toco el +
+                onAlbumClick = { albumId ->
+                    navController.navigate(Screen.WriteReview.createRoute(albumId = albumId)) {
+                        popUpTo(Screen.SelectAlbum.route) { inclusive = true }
+                    }
+                },
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
         composable(
             route = Screen.WriteReview.route,
             arguments = listOf(navArgument(name = "albumId") { type = NavType.StringType })
@@ -139,17 +146,12 @@ fun AppNavigation(
             // Solo se obtiene el id; buscar el album es tarea del ViewModel
             val albumId = it.arguments?.getString("albumId") ?: ""
             val writeReviewViewModel: WriteReviewViewModel = hiltViewModel()
-            val state by writeReviewViewModel.uiState.collectAsState()
-
-            LaunchedEffect(state.publicada) {
-                if (state.publicada) {
-                    navController.navegarLimpiandoLaPila(Screen.MyReviews.route)
-                }
-            }
 
             WriteReviewScreen(
                 albumId = albumId,
                 writeReviewViewModel = writeReviewViewModel,
+                // La pantalla anterior vuelve a pedir sus datos, asi que la resena ya aparece
+                onPublicada = { navController.popBackStack() },
                 onCancel = { navController.popBackStack() }
             )
         }
@@ -164,7 +166,8 @@ fun AppNavigation(
                 },
                 onEditClick = { albumId ->
                     navController.navigate(Screen.WriteReview.createRoute(albumId = albumId))
-                }
+                },
+                onBackClick = { navController.popBackStack() }
             )
         }
 
@@ -180,7 +183,8 @@ fun AppNavigation(
                 },
                 onReviewClick = { songId ->
                     navController.navigate(Screen.SongDetail.createRoute(songId = songId))
-                }
+                },
+                onSeeAllReviewsClick = { navController.navigate(Screen.MyReviews.route) }
             )
         }
 
@@ -188,7 +192,7 @@ fun AppNavigation(
             route = Screen.SongDetail.route,
             arguments = listOf(navArgument(name = "songId") { type = NavType.StringType })
         ) {
-            // Solo se obtiene el id; buscar la cancion es tarea del ViewModel
+            // Solo se obtiene el id; buscar el album es tarea del ViewModel
             val songId = it.arguments?.getString("songId") ?: ""
             val songReviewsViewModel: SongReviewsViewModel = hiltViewModel()
 
@@ -199,7 +203,6 @@ fun AppNavigation(
                     navController.navigate(Screen.WriteReview.createRoute(albumId = songId))
                 },
                 onBackClick = { navController.popBackStack() },
-                onReviewReplyClick = {},
                 onAuthorClick = { userId ->
                     navController.navigate(Screen.UserProfile.createRoute(userId = userId))
                 }
