@@ -68,6 +68,8 @@ fun ProfileScreen(
             favoritos = state.favoritos,
             barrasDeCalificacion = state.barrasDeCalificacion,
             usuario = state.usuario,
+            nombre = state.nombre,
+            bio = state.bio,
             profileImageUrl = state.profileImageUrl,
             subiendoImagen = state.subiendoImagen,
             errorImagenRes = state.errorImagenRes,
@@ -106,6 +108,8 @@ fun ProfileScreenContent(
     favoritos: List<Album>,
     barrasDeCalificacion: List<Float>,
     usuario: String,
+    nombre: String,
+    bio: String,
     profileImageUrl: String,
     subiendoImagen: Boolean,
     errorImagenRes: Int?,
@@ -159,6 +163,8 @@ fun ProfileScreenContent(
             ) {
                 item {
                     ProfileAvatarSection(
+                        nombre = nombre,
+                        bio = bio,
                         profileImageUrl = profileImageUrl,
                         subiendoImagen = subiendoImagen,
                         errorImagenRes = errorImagenRes,
@@ -236,6 +242,8 @@ fun ProfileScreenPreview() {
             favoritos = LocalAlbumProvider.albums.take(2),
             barrasDeCalificacion = listOf(0f, 0f, 0f, 0f, 1f, 0.5f),
             usuario = "usuario",
+            nombre = "Usuario de Mixtapp",
+            bio = "Escucho rock y metal todo el dia",
             profileImageUrl = "",
             subiendoImagen = false,
             errorImagenRes = null,

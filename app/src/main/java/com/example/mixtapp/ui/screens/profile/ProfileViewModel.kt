@@ -17,10 +17,12 @@ import com.example.mixtapp.data.repository.ReviewRepository
 import com.example.mixtapp.data.repository.SinConexionException
 import com.example.mixtapp.data.repository.SinSesionException
 import com.example.mixtapp.data.repository.StorageRepository
+import com.example.mixtapp.data.repository.UsuarioRepository
 import com.example.mixtapp.ui.screens.profile.components.FAVORITOS_EN_PERFIL
 import com.example.mixtapp.ui.screens.profile.model.profileTabs
 import com.example.mixtapp.ui.screens.review.MAX_REVIEW_LENGTH
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -35,7 +37,8 @@ private const val CALIFICACION_MAXIMA = 5
 class ProfileViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val storageRepository: StorageRepository,
-    private val reviewRepository: ReviewRepository
+    private val reviewRepository: ReviewRepository,
+    private val usuarioRepository: UsuarioRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfileState())
@@ -44,42 +47,41 @@ class ProfileViewModel @Inject constructor(
     // La pantalla la llama cada vez que se muestra, para ver las resenas nuevas al volver
     fun getProfile() {
         // Recortar el correo es logica, asi que se hace aqui y no en el componente
-        val usuario = authRepository.currentUser?.email?.substringBefore("@") ?: ""
+        val usuarioDelCorreo = authRepository.currentUser?.email?.substringBefore("@") ?: ""
         val foto = authRepository.currentUser?.photoUrl?.toString() ?: ""
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
 
-            val result = reviewRepository.getMyReviews()
+            // Mis datos de Firestore y mis resenas salen a la vez y se espera la mas lenta
+            val perfilPendiente = async { usuarioRepository.getMiPerfil() }
+            val resenasPendientes = async { reviewRepository.getMyReviews() }
 
-            if (result.isSuccess) {
-                val misResenas = result.getOrNull() ?: emptyList()
+            val perfil = perfilPendiente.await()
+            val resenas = resenasPendientes.await()
+            val miPerfil = perfil.getOrNull()
+            val misResenas = resenas.getOrNull() ?: emptyList()
 
-                _uiState.update {
-                    it.copy(
-                        misResenas = misResenas,
-                        favoritos = favoritosDe(resenas = misResenas),
-                        barrasDeCalificacion = barrasDe(resenas = misResenas),
-                        isLoading = false,
-                        tabs = profileTabs,
-                        selectedTabId = profileTabs.first().id,
-                        usuario = usuario,
-                        profileImageUrl = foto,
-                        resenaEnEdicionId = null,
-                        errorMessageRes = null,
-                    )
-                }
-            } else {
-                _uiState.update {
-                    it.copy(
-                        isLoading = false,
-                        tabs = profileTabs,
-                        selectedTabId = profileTabs.first().id,
-                        usuario = usuario,
-                        profileImageUrl = foto,
-                        errorMessageRes = mensajeDeCarga(result.exceptionOrNull()),
-                    )
-                }
+            _uiState.update {
+                it.copy(
+                    misResenas = misResenas,
+                    favoritos = favoritosDe(resenas = misResenas),
+                    barrasDeCalificacion = barrasDe(resenas = misResenas),
+                    isLoading = false,
+                    tabs = profileTabs,
+                    selectedTabId = profileTabs.first().id,
+                    // Una cuenta sin datos en Firestore muestra la parte del correo
+                    usuario = miPerfil?.username ?: usuarioDelCorreo,
+                    nombre = miPerfil?.nombre ?: "",
+                    bio = miPerfil?.bio ?: "",
+                    profileImageUrl = foto,
+                    resenaEnEdicionId = null,
+                    errorMessageRes = when {
+                        !resenas.isSuccess -> mensajeDeCarga(resenas.exceptionOrNull())
+                        miPerfil == null -> R.string.completa_tu_perfil
+                        else -> null
+                    },
+                )
             }
         }
     }
@@ -198,10 +200,15 @@ class ProfileViewModel @Inject constructor(
             val result = storageRepository.uploadProfileImage(uri = uri)
 
             if (result.isSuccess) {
+                val url = result.getOrNull() ?: ""
+
+                // El documento de Firestore tambien guarda la foto para que otros la vean en mi perfil
+                usuarioRepository.actualizarFotoDePerfil(fotoUrl = url)
+
                 _uiState.update {
                     it.copy(
                         subiendoImagen = false,
-                        profileImageUrl = result.getOrNull() ?: "",
+                        profileImageUrl = url,
                         errorImagenRes = null,
                     )
                 }
