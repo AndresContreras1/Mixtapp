@@ -122,7 +122,14 @@ número, y `whereEqualTo` no encuentra reseñas si `albumId` o `usuarioId` se gu
   así el inicio, el detalle y la pantalla de escribir saben cuál es la mía sin otra petición.
 - **Inicio, Buscar, perfil, Mis reseñas y el detalle se vuelven a pedir al mostrarse**, así una
   reseña nueva aparece al volver.
-- **El color sale del `MaterialTheme`.** No hay colores quemados fuera de `Color.kt`.
+- **El color sale del `MaterialTheme`.** No hay colores quemados fuera de `Color.kt`, salvo el
+  fondo de la ventana en `themes.xml`, que se pinta antes de que arranque Compose.
+- **Hilt se compila con KSP.** El proyecto está en AGP 9.3.3, que trae Kotlin integrado (por eso no
+  se aplica `kotlin.android`) y deja `kapt` solo como transición. El plugin de KSP ya estaba en el
+  build de clase. `firebase-storage` reemplaza a `firebase-storage-ktx`: desde el BoM 32.5 son el
+  mismo módulo.
+- **Los errores de Firestore los traduce el repositorio**, igual que el `HttpException` del
+  backend: sin conexión, documento que no existe o error del servidor.
 - **La app es solo oscura.** El esquema claro existe como plantilla, pero no se aplica hasta que
   estén diseñadas las pantallas en modo claro.
 - **Hay callbacks vacíos a propósito**: más opciones y las pestañas Diario, Listas y Biblioteca del
