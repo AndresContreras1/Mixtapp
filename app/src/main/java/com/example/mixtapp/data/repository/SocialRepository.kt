@@ -15,9 +15,6 @@ class SocialRepository @Inject constructor(
     suspend fun getFollowing(): Result<FollowingUi> {
         return try {
             Result.success(socialLocalDataSource.getFollowing())
-        } catch (e: NoSuchElementException) {
-            Log.d("SocialRepository", "getFollowing: ${e.message}")
-            Result.failure(ContenidoNoEncontradoException())
         } catch (e: Exception) {
             Log.d("SocialRepository", "getFollowing: ${e.message}")
             Result.failure(ErrorDeDatosLocalesException())
@@ -27,9 +24,6 @@ class SocialRepository @Inject constructor(
     suspend fun getNotifications(): Result<List<NotificationUi>> {
         return try {
             Result.success(socialLocalDataSource.getNotifications())
-        } catch (e: NoSuchElementException) {
-            Log.d("SocialRepository", "getNotifications: ${e.message}")
-            Result.failure(ContenidoNoEncontradoException())
         } catch (e: Exception) {
             Log.d("SocialRepository", "getNotifications: ${e.message}")
             Result.failure(ErrorDeDatosLocalesException())

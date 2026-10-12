@@ -38,8 +38,13 @@ class SongReviewsViewModel @Inject constructor(
             if (result.isSuccess && song != null) {
                 _uiState.update {
                     it.copy(
-                        // Mi resena va primero para que se vea apenas entro al album
-                        song = song.copy(reviews = song.reviews.sortedByDescending { review -> review.esMia }),
+                        // De la escuchada mas reciente a la mas antigua, y mi resena primero
+                        // para que se vea apenas entro al album
+                        song = song.copy(
+                            reviews = song.reviews
+                                .sortedByDescending { review -> review.fecha }
+                                .sortedByDescending { review -> review.esMia }
+                        ),
                         miResenaId = song.reviews.find { review -> review.esMia }?.id,
                         isLoading = false,
                         errorMessageRes = null,
@@ -64,22 +69,29 @@ class SongReviewsViewModel @Inject constructor(
         val song = _uiState.value.song ?: return
         val miResenaId = _uiState.value.miResenaId ?: return
 
+        if (_uiState.value.eliminando) return
+
         viewModelScope.launch {
+            _uiState.update { it.copy(eliminando = true, errorMessageRes = null) }
+
             val result = reviewRepository.eliminarResena(reviewId = miResenaId)
 
             if (result.isSuccess) {
-                val restantes = song.reviews.filter { it.id != miResenaId }
+                // Se filtra la lista que hay ahora en el estado
+                val restantes = (_uiState.value.song?.reviews ?: emptyList()).filter { it.id != miResenaId }
 
                 _uiState.update {
                     it.copy(
                         song = albumRepository.conEstadisticas(album = song.album, reviews = restantes),
                         miResenaId = null,
+                        eliminando = false,
                         errorMessageRes = null,
                     )
                 }
             } else {
                 _uiState.update {
                     it.copy(
+                        eliminando = false,
                         errorMessageRes = mensajeDeError(
                             error = result.exceptionOrNull(),
                             generico = R.string.error_eliminar_resena,

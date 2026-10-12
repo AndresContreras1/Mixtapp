@@ -52,11 +52,12 @@ fun StarRating(
 
             Icon(
                 imageVector = if (isFilled) Icons.Filled.Star else emptyIcon,
-                // Si se puede tocar dice cuantas estrellas pone; si solo se muestra, si esta llena
+                // Si solo se muestra dice si esta llena; si se puede tocar, cuantas estrellas pone
                 contentDescription = when {
-                    onRatingChange != null -> stringResource(R.string.star_rating_format, starValue)
-                    isFilled -> stringResource(R.string.estrella_llena)
-                    else -> stringResource(R.string.estrella_vacia)
+                    onRatingChange == null && isFilled -> stringResource(R.string.estrella_llena)
+                    onRatingChange == null -> stringResource(R.string.estrella_vacia)
+                    starValue == 1 -> stringResource(R.string.una_estrella)
+                    else -> stringResource(R.string.star_rating_format, starValue)
                 },
                 tint = if (isFilled) filledTint else emptyTint,
                 modifier = Modifier

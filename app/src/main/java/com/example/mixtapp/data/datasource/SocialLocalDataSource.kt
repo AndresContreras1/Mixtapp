@@ -7,14 +7,14 @@ import com.example.mixtapp.data.model.NotificationUi
 import javax.inject.Inject
 
 // Seguidos y notificaciones siguen locales. Las funciones son suspend como las remotas: si estos
-// datos pasan a la base remota, el repositorio no cambia
+// datos pasan a la base remota, el ViewModel no cambia
 class SocialLocalDataSource @Inject constructor() {
 
     suspend fun getFollowing(): FollowingUi = LocalFollowingProvider.following
 
     suspend fun getNotifications(): List<NotificationUi> = LocalNotificationsProvider.notifications
 
-    suspend fun guardarFollowing(following: FollowingUi) {
+    suspend fun guardarFollowing(following: FollowingUi): Unit {
         LocalFollowingProvider.following = following
     }
 }

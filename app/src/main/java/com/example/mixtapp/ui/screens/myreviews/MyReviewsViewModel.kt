@@ -98,7 +98,11 @@ class MyReviewsViewModel @Inject constructor(
 
     // Eliminar filtra la lista en vez de volver a pedir todas las resenas
     fun eliminarResena(reviewId: String) {
+        if (_uiState.value.eliminando) return
+
         viewModelScope.launch {
+            _uiState.update { it.copy(eliminando = true, errorMessageRes = null) }
+
             val result = reviewRepository.eliminarResena(reviewId = reviewId)
 
             if (result.isSuccess) {
@@ -108,12 +112,14 @@ class MyReviewsViewModel @Inject constructor(
                     it.copy(
                         todas = restantes,
                         reviews = aplicarFiltro(filtroId = it.selectedFilterId, todas = restantes),
+                        eliminando = false,
                         errorMessageRes = null,
                     )
                 }
             } else {
                 _uiState.update {
                     it.copy(
+                        eliminando = false,
                         errorMessageRes = mensajeDeError(
                             error = result.exceptionOrNull(),
                             generico = R.string.error_eliminar_resena,

@@ -34,11 +34,12 @@ class DiscussionViewModel @Inject constructor(
 
             if (result.isSuccess) {
                 _uiState.update {
-                    it.copy(discussion = result.getOrNull(), errorMessageRes = null)
+                    it.copy(discussion = result.getOrNull(), isLoading = false, errorMessageRes = null)
                 }
             } else {
                 _uiState.update {
                     it.copy(
+                        isLoading = false,
                         errorMessageRes = mensajeDeError(
                             error = result.exceptionOrNull(),
                             generico = R.string.error_cargar_contenido,

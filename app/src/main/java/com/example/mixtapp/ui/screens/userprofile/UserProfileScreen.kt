@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.CircularProgressIndicator
@@ -20,6 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalMyReviewsProvider
+import com.example.mixtapp.data.local.LocalUsuarioProvider
 import com.example.mixtapp.data.model.MyReviewUi
 import com.example.mixtapp.data.model.UsuarioUi
 import com.example.mixtapp.ui.screens.userprofile.components.UserProfileHeader
@@ -56,6 +58,7 @@ fun UserProfileScreen(
         else -> UserProfileScreenContent(
             usuario = state.usuario!!,
             reviews = state.reviews,
+            cargandoResenas = state.cargandoResenas,
             errorMessageRes = state.errorMessageRes,
             onReviewClick = onReviewClick,
             onBackClick = onBackClick,
@@ -68,6 +71,7 @@ fun UserProfileScreen(
 fun UserProfileScreenContent(
     usuario: UsuarioUi,
     reviews: List<MyReviewUi>,
+    cargandoResenas: Boolean,
     errorMessageRes: Int?,
     onReviewClick: (String) -> Unit,
     onBackClick: () -> Unit,
@@ -95,6 +99,20 @@ fun UserProfileScreenContent(
                 )
             }
 
+            // Mientras llegan sus resenas, la carga va donde estara la lista
+            if (cargandoResenas) {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 24.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                }
+            }
+
             items(reviews.size) { index ->
                 MyReviewCard(
                     review = reviews[index],
@@ -114,14 +132,9 @@ fun UserProfileScreenContent(
 fun UserProfileScreenPreview() {
     MixtappTheme(darkTheme = true) {
         UserProfileScreenContent(
-            usuario = UsuarioUi(
-                id = "2",
-                nombre = "Mateo Gómez",
-                username = "mateo",
-                bio = "Rock alternativo y conciertos en vivo",
-                fotoUrl = "",
-            ),
+            usuario = LocalUsuarioProvider.usuario,
             reviews = LocalMyReviewsProvider.reviews,
+            cargandoResenas = false,
             errorMessageRes = null,
             onReviewClick = {},
             onBackClick = {}

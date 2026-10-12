@@ -40,12 +40,18 @@ class UserProfileViewModel @Inject constructor(
 
     fun getUserReviews(userId: String) {
         viewModelScope.launch {
+            _uiState.update { it.copy(cargandoResenas = true, errorMessageRes = null) }
             val result = usuarioRepository.getReviewsDeUsuario(id = userId)
 
             if (result.isSuccess) {
-                _uiState.update { it.copy(reviews = result.getOrNull() ?: emptyList()) }
+                // La fecha va como AAAA-MM-DD: la escuchada mas reciente queda arriba
+                val reviews = (result.getOrNull() ?: emptyList()).sortedByDescending { it.date }
+
+                _uiState.update { it.copy(reviews = reviews, cargandoResenas = false) }
             } else {
-                _uiState.update { it.copy(errorMessageRes = mensajeDeError(result.exceptionOrNull())) }
+                _uiState.update {
+                    it.copy(cargandoResenas = false, errorMessageRes = mensajeDeError(result.exceptionOrNull()))
+                }
             }
         }
     }

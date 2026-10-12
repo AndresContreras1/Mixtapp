@@ -72,7 +72,8 @@ class ProfileViewModel @Inject constructor(
             val result = reviewRepository.getMyReviews()
 
             if (result.isSuccess) {
-                val misResenas = result.getOrNull() ?: emptyList()
+                // La fecha va como AAAA-MM-DD: la escuchada mas reciente queda arriba
+                val misResenas = (result.getOrNull() ?: emptyList()).sortedByDescending { it.date }
 
                 _uiState.update {
                     it.copy(
@@ -81,8 +82,14 @@ class ProfileViewModel @Inject constructor(
                         barrasDeCalificacion = barrasDe(resenas = misResenas),
                         isLoading = false,
                         tabs = profileTabs,
-                        selectedTabId = profileTabs.first().id,
-                        resenaEnEdicionId = null,
+                        // Al volver se conserva la pestana elegida
+                        selectedTabId = it.selectedTabId.ifEmpty { profileTabs.first().id },
+                        // Si estaba editando una resena que sigue existiendo, la edicion no se pierde
+                        resenaEnEdicionId = if (misResenas.any { r -> r.id == it.resenaEnEdicionId }) {
+                            it.resenaEnEdicionId
+                        } else {
+                            null
+                        },
                         errorMessageRes = null,
                     )
                 }
@@ -91,7 +98,8 @@ class ProfileViewModel @Inject constructor(
                     it.copy(
                         isLoading = false,
                         tabs = profileTabs,
-                        selectedTabId = profileTabs.first().id,
+                        // Al volver se conserva la pestana elegida
+                        selectedTabId = it.selectedTabId.ifEmpty { profileTabs.first().id },
                         errorMessageRes = mensajeDelBackend(
                             error = result.exceptionOrNull(),
                             generico = R.string.error_cargar_contenido,
@@ -104,7 +112,11 @@ class ProfileViewModel @Inject constructor(
 
     // Eliminar filtra la lista en vez de volver a pedir todas las resenas
     fun eliminarResena(reviewId: String) {
+        if (_uiState.value.eliminando) return
+
         viewModelScope.launch {
+            _uiState.update { it.copy(eliminando = true, errorMessageRes = null) }
+
             val result = reviewRepository.eliminarResena(reviewId = reviewId)
 
             if (result.isSuccess) {
@@ -115,12 +127,14 @@ class ProfileViewModel @Inject constructor(
                         misResenas = restantes,
                         favoritos = favoritosDe(resenas = restantes),
                         barrasDeCalificacion = barrasDe(resenas = restantes),
+                        eliminando = false,
                         errorMessageRes = null,
                     )
                 }
             } else {
                 _uiState.update {
                     it.copy(
+                        eliminando = false,
                         errorMessageRes = mensajeDelBackend(
                             error = result.exceptionOrNull(),
                             generico = R.string.error_eliminar_resena,

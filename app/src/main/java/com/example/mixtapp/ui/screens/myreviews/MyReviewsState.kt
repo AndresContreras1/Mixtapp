@@ -16,5 +16,7 @@ data class MyReviewsState(
     val selectedFilterId: String = "",
     // Arranca cargando porque lo primero que hace la pantalla es pedir mis resenas
     val isLoading: Boolean = true,
+    // Mientras se borra no se manda otro DELETE
+    val eliminando: Boolean = false,
     @StringRes val errorMessageRes: Int? = null,
 )

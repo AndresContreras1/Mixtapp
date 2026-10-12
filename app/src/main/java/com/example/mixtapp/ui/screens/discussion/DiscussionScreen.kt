@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -46,12 +47,18 @@ fun DiscussionScreen(
         discussionViewModel.getDiscussionByReviewId(reviewId = reviewId)
     }
 
-    if (state.discussion == null) {
-        Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text(text = stringResource(state.errorMessageRes ?: R.string.discusion_no_encontrada))
+    when {
+        state.isLoading -> {
+            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
         }
-    } else {
-        DiscussionScreenContent(
+        state.discussion == null -> {
+            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(text = stringResource(state.errorMessageRes ?: R.string.discusion_no_encontrada))
+            }
+        }
+        else -> DiscussionScreenContent(
             discussion = state.discussion!!,
             nuevoComentario = state.nuevoComentario,
             replyingToCommentId = state.replyingToCommentId,

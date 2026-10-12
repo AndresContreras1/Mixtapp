@@ -35,11 +35,10 @@ import com.example.mixtapp.data.model.SongReviewItemUi
 import com.example.mixtapp.ui.utils.ProfileAsyncImage
 import com.example.mixtapp.ui.utils.StarRating
 
+// La resena del usuario de la app (esMia) se marca y trae los botones de editar y eliminar
 @Composable
 fun ReviewItem(
     review: SongReviewItemUi,
-    // La resena del usuario de la app se marca y trae los botones de editar y eliminar
-    esMia: Boolean,
     onEditClick: () -> Unit,
     onDeleteClick: () -> Unit,
     onAuthorClick: () -> Unit,
@@ -51,7 +50,7 @@ fun ReviewItem(
         colors = CardDefaults.outlinedCardColors(containerColor = Color.Transparent),
         border = BorderStroke(
             1.dp,
-            if (esMia) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
+            if (review.esMia) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
         )
     ) {
         Column(
@@ -75,7 +74,7 @@ fun ReviewItem(
                 Spacer(modifier = Modifier.width(12.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = if (esMia) "${review.author} ${stringResource(R.string.marca_propia)}" else review.author,
+                        text = if (review.esMia) "${review.author} ${stringResource(R.string.marca_propia)}" else review.author,
                         color = MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight.Bold
                     )
@@ -103,7 +102,7 @@ fun ReviewItem(
                 lineHeight = 18.sp
             )
 
-            if (esMia) {
+            if (review.esMia) {
                 Row {
                     IconButton(onClick = onEditClick) {
                         Icon(

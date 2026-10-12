@@ -6,7 +6,7 @@ import com.example.mixtapp.data.model.SongReviewUi
 // Solo para las previews y las pruebas: la app lee los albumes y sus resenas de la base remota
 object LocalSongReviewProvider {
 
-    val songs = mutableListOf(
+    val songs = listOf(
         SongReviewUi(
             id = "1",
             album = LocalAlbumProvider.teatroDira,

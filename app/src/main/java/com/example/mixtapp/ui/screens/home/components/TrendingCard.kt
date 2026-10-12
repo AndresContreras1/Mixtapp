@@ -73,7 +73,7 @@ fun TrendingCard(
                     modifier = Modifier.align(Alignment.BottomStart)
                 ) {
                     Text(
-                        text = stringResource(R.string.titulo_guion_subtitulo, songReview.album.artist, songReview.album.title),
+                        text = stringResource(R.string.titulo_guion_subtitulo, songReview.album.title, songReview.album.artist),
                         color = MaterialTheme.colorScheme.onSurface,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold

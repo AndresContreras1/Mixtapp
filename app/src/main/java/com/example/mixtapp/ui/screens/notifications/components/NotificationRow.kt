@@ -69,10 +69,10 @@ fun NotificationRow(notification: NotificationUi, modifier: Modifier = Modifier)
             )
         }
 
-        notification.thumbnail?.let { url ->
+        if (notification.thumbnail.isNotEmpty()) {
             Spacer(modifier = Modifier.width(10.dp))
             AlbumAsyncImage(
-                cover = url,
+                cover = notification.thumbnail,
                 contentDescription = stringResource(R.string.notification_thumbnail),
                 alpha = 1f,
                 modifier = Modifier
@@ -92,7 +92,7 @@ private fun notificationMessage(notification: NotificationUi) = buildAnnotatedSt
     append(" ")
 
     val word = notification.highlightedWord
-    if (word != null && notification.message.contains(word)) {
+    if (word.isNotEmpty() && notification.message.contains(word)) {
         val index = notification.message.indexOf(word)
         append(notification.message.substring(0, index))
         withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)) {

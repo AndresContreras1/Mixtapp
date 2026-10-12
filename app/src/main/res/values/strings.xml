@@ -47,6 +47,7 @@
     <string name="n_favoritos">%1$s favoritos</string>
     <string name="more_activity">Más actividad</string>
     <string name="star_rating_format">%d estrellas</string>
+    <string name="una_estrella">1 estrella</string>
     <string name="estrella_llena">Estrella llena</string>
     <string name="estrella_vacia">Estrella vacía</string>
 
