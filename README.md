@@ -100,8 +100,10 @@ número, y `whereEqualTo` no encuentra reseñas si `albumId` o `usuarioId` se gu
 - El correo y la contraseña se quedan en Authentication; en Firestore no se guardan.
 - Firestore no tiene joins, así que cada reseña guarda una copia de lo que se muestra con ella:
   `usuario` (`nombre`, `fotoUrl`) y `album` (`titulo`, `artista`, `portadaUrl`).
-- Si alguien cambia su nombre o sube su foto después de reseñar, sus reseñas viejas conservan
-  los datos de antes hasta que las edite. Es el costo de desnormalizar y se acepta.
+- Si alguien cambia su nombre, sus reseñas viejas conservan el anterior hasta que las edite. La
+  foto siempre se sube a la misma ruta (`profileImages/<uid>.jpg`), así que las reseñas que ya
+  tenían foto muestran la nueva y las que se escribieron sin foto se quedan sin ella. Es el costo
+  de desnormalizar y se acepta.
 
 ## Decisiones
 
@@ -159,6 +161,10 @@ terminal, `./gradlew assembleDebug` (en Windows `gradlew.bat assembleDebug`).
    - `reviews`: sus reseñas, cada una con `usuarioId`, `albumId` y las copias `usuario`
      (`nombre`, `fotoUrl`) y `album` (`titulo`, `artista`, `portadaUrl`).
 3. Crear una cuenta en la app: el registro guarda tus datos en `usuarios` con tu uid.
+
+Las reglas del modo de prueba vencen unos 30 días después de crear la base, igual que las de
+Storage. Antes de la sustentación hay que revisarlas en la consola (**Firestore Database → Reglas**
+y **Storage → Reglas**); si vencieron, las lecturas y la subida de la foto fallan por permisos.
 
 </details>
 
