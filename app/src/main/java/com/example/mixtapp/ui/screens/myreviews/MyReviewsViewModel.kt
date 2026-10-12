@@ -85,7 +85,7 @@ class MyReviewsViewModel @Inject constructor(
         }
     }
 
-    // Las resenas ya estan cargadas: filtrar no vuelve a pedirlas al backend
+    // Las resenas ya estan cargadas: filtrar no vuelve a pedirlas
     fun updateSelectedFilter(filtroId: String) {
         val todas = _uiState.value.todas
 

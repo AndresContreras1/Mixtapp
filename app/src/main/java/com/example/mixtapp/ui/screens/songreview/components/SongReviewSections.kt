@@ -121,7 +121,7 @@ fun SongReviewSections(
             }
         }
 
-        // Los comentarios del album son sus resenas del backend
+        // Los comentarios del album son sus resenas guardadas
         items(songReview.reviews.size) { index ->
             val review = songReview.reviews[index]
 

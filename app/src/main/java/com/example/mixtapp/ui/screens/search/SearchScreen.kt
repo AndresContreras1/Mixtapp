@@ -92,7 +92,7 @@ fun SearchScreenContent(
                 )
             }
 
-            // Mientras llegan los albumes del backend
+            // Mientras llegan los albumes
             if (isLoading) {
                 item {
                     Box(

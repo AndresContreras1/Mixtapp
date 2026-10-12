@@ -9,7 +9,7 @@ data class SearchState(
     val query: String = "",
     val categories: List<SearchCategoryUi> = emptyList(),
     val selectedCategoryId: String? = null,
-    // Todos los albumes del backend: buscar y ordenar no los vuelve a pedir
+    // Todos los albumes guardados: buscar y ordenar no los vuelve a pedir
     val todos: List<SongReviewUi> = emptyList(),
     val resultados: List<SearchResultUi> = emptyList(),
     val isLoading: Boolean = false,
