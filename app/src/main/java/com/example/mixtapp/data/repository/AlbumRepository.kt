@@ -1,5 +1,6 @@
 package com.example.mixtapp.data.repository
 
+import android.util.Log
 import com.example.mixtapp.data.datasource.AlbumLocalDataSource
 import com.example.mixtapp.data.datasource.impl.AlbumRetrofitDataSourceImpl
 import com.example.mixtapp.data.dtos.toAlbum
@@ -8,51 +9,82 @@ import com.example.mixtapp.data.model.Album
 import com.example.mixtapp.data.model.SearchCategoryUi
 import com.example.mixtapp.data.model.SongReviewItemUi
 import com.example.mixtapp.data.model.SongReviewUi
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import retrofit2.HttpException
 import javax.inject.Inject
+
+// Desde esta calificacion se cuenta que la resena recomienda el album
+private const val CALIFICACION_PARA_RECOMENDAR = 4
 
 class AlbumRepository @Inject constructor(
     private val albumLocalDataSource: AlbumLocalDataSource,
     private val albumRemoteDataSource: AlbumRetrofitDataSourceImpl
 ) {
 
-    suspend fun getSongReviews(): Result<List<SongReviewUi>> {
+    suspend fun getAlbumes(): Result<List<Album>> {
         return try {
             val albumes = albumRemoteDataSource.getAlbumes()
-            val songReviews = albumes.map { conDatosLocales(album = it.toAlbum()) }
-            Result.success(songReviews)
+            Result.success(albumes.map { it.toAlbum() })
         } catch (e: HttpException) {
-            Result.failure(ErrorDelServidorException())
+            Log.d("AlbumRepository", "getAlbumes: ${e.message}")
+            Result.failure(errorDelBackend(e))
         } catch (e: Exception) {
-            Result.failure(SinConexionException())
+            Log.d("AlbumRepository", "getAlbumes: ${e.message}")
+            Result.failure(e)
         }
     }
 
-    suspend fun getTrendingSongReview(): Result<SongReviewUi> {
+    // Cada album llega con sus resenas para calcular el promedio y cuantos lo recomiendan
+    suspend fun getSongReviews(): Result<List<SongReviewUi>> {
         return try {
-            val tendencia = albumLocalDataSource.getTrendingSongReview()
-            val album = albumRemoteDataSource.getAlbumById(tendencia.id)
-            Result.success(tendencia.copy(album = album.toAlbum()))
+            val albumes = albumRemoteDataSource.getAlbumes()
+
+            // Las resenas de todos los albumes se piden a la vez y se espera la mas lenta
+            val songReviews = coroutineScope {
+                val pendientes = albumes.map { album ->
+                    async {
+                        val reviews = albumRemoteDataSource.getReviewsDeAlbum(album.id.toString())
+                        conEstadisticas(
+                            album = album.toAlbum(),
+                            reviews = reviews.map { it.toSongReviewItemUi() }
+                        )
+                    }
+                }
+
+                pendientes.map { it.await() }
+            }
+
+            Result.success(songReviews)
         } catch (e: HttpException) {
-            Result.failure(ErrorDelServidorException())
-        } catch (e: IndexOutOfBoundsException) {
-            Result.failure(ContenidoNoEncontradoException())
+            Log.d("AlbumRepository", "getSongReviews: ${e.message}")
+            Result.failure(errorDelBackend(e))
         } catch (e: Exception) {
-            Result.failure(SinConexionException())
+            Log.d("AlbumRepository", "getSongReviews: ${e.message}")
+            Result.failure(e)
         }
     }
 
     suspend fun getSongReviewById(songId: String): Result<SongReviewUi> {
         return try {
-            val album = albumRemoteDataSource.getAlbumById(songId)
-            val reviews = albumRemoteDataSource.getReviewsDeAlbum(songId)
-            val reviewsInfo = reviews.map { it.toSongReviewItemUi() }
-            val songReview = conDatosLocales(album = album.toAlbum()).copy(reviews = reviewsInfo)
+            // El album y sus resenas salen a la vez
+            val songReview = coroutineScope {
+                val album = async { albumRemoteDataSource.getAlbumById(songId) }
+                val reviews = async { albumRemoteDataSource.getReviewsDeAlbum(songId) }
+
+                conEstadisticas(
+                    album = album.await().toAlbum(),
+                    reviews = reviews.await().map { it.toSongReviewItemUi() }
+                )
+            }
+
             Result.success(songReview)
         } catch (e: HttpException) {
-            Result.failure(ErrorDelServidorException())
+            Log.d("AlbumRepository", "getSongReviewById: ${e.message}")
+            Result.failure(errorDelBackend(e))
         } catch (e: Exception) {
-            Result.failure(SinConexionException())
+            Log.d("AlbumRepository", "getSongReviewById: ${e.message}")
+            Result.failure(e)
         }
     }
 
@@ -61,17 +93,11 @@ class AlbumRepository @Inject constructor(
             val album = albumRemoteDataSource.getAlbumById(albumId)
             Result.success(album.toAlbum())
         } catch (e: HttpException) {
-            Result.failure(ErrorDelServidorException())
+            Log.d("AlbumRepository", "getAlbumById: ${e.message}")
+            Result.failure(errorDelBackend(e))
         } catch (e: Exception) {
-            Result.failure(SinConexionException())
-        }
-    }
-
-    suspend fun getAlbumPorDefecto(): Result<Album> {
-        return try {
-            Result.success(albumLocalDataSource.getAlbumPorDefecto())
-        } catch (e: Exception) {
-            Result.failure(ErrorDeDatosLocalesException())
+            Log.d("AlbumRepository", "getAlbumById: ${e.message}")
+            Result.failure(e)
         }
     }
 
@@ -83,67 +109,27 @@ class AlbumRepository @Inject constructor(
         }
     }
 
-    suspend fun calificarSongReview(songReview: SongReviewUi, rating: Int): Result<SongReviewUi> =
-        actualizarSongReview(songReview = songReview) { it.copy(userRating = rating) }
+    // El promedio, el total y el porcentaje que recomienda salen de las resenas del backend
+    private fun conEstadisticas(album: Album, reviews: List<SongReviewItemUi>): SongReviewUi {
+        var suma = 0
+        var recomiendan = 0
 
-    suspend fun guardarQuitarSongReview(songReview: SongReviewUi): Result<SongReviewUi> =
-        actualizarSongReview(songReview = songReview) { it.copy(isSaved = !it.isSaved) }
+        reviews.forEach { review ->
+            suma += review.rating
+            if (review.rating >= CALIFICACION_PARA_RECOMENDAR) recomiendan++
+        }
 
-    suspend fun darQuitarLikeSongReview(songReview: SongReviewUi): Result<SongReviewUi> =
-        actualizarSongReview(songReview = songReview) { it.copy(isLiked = !it.isLiked) }
+        val promedio = if (reviews.isEmpty()) 0.0 else suma.toDouble() / reviews.size
+        val porcentaje = if (reviews.isEmpty()) 0 else recomiendan * 100 / reviews.size
 
-    fun darQuitarLikeResenaDeAlbum(
-        songReview: SongReviewUi,
-        reviewId: String,
-    ): Result<SongReviewUi> {
-        val actualizado = songReview.copy(
-            reviews = songReview.reviews.map { resena ->
-                if (resena.id == reviewId) conLike(resena) else resena
-            }
-        )
-
-        return Result.success(actualizado)
-    }
-
-    private suspend fun conDatosLocales(album: Album): SongReviewUi {
-        val local = albumLocalDataSource.getSongReviewById(songId = album.id)
-
-        return local?.copy(album = album) ?: SongReviewUi(
+        return SongReviewUi(
             id = album.id,
             album = album,
-            rating = 0.0,
-            ratingCount = "0",
-            recommendRate = 0,
+            rating = promedio,
+            ratingCount = reviews.size.toString(),
+            recommendRate = porcentaje,
             userRating = 0,
-            isSaved = false,
-            isLiked = false,
-            reviews = emptyList(),
+            reviews = reviews,
         )
-    }
-
-    private fun conLike(resena: SongReviewItemUi): SongReviewItemUi {
-        val nuevoLike = !resena.isLiked
-
-        return resena.copy(
-            likes = if (nuevoLike) resena.likes + 1 else resena.likes - 1,
-            isLiked = nuevoLike,
-        )
-    }
-
-    private suspend fun actualizarSongReview(
-        songReview: SongReviewUi,
-        cambio: (SongReviewUi) -> SongReviewUi,
-    ): Result<SongReviewUi> {
-        return try {
-            val local = albumLocalDataSource.getSongReviewById(songId = songReview.id)
-                ?: return Result.failure(ContenidoNoEncontradoException())
-
-            albumLocalDataSource.guardarSongReview(songReview = cambio(local))
-            Result.success(cambio(songReview))
-        } catch (e: IndexOutOfBoundsException) {
-            Result.failure(ContenidoNoEncontradoException())
-        } catch (e: Exception) {
-            Result.failure(ErrorDeDatosLocalesException())
-        }
     }
 }

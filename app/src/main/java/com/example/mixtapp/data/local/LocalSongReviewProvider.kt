@@ -3,164 +3,139 @@ package com.example.mixtapp.data.local
 import com.example.mixtapp.data.model.SongReviewItemUi
 import com.example.mixtapp.data.model.SongReviewUi
 
+// Solo para las previews y las pruebas: la app lee los albumes y sus resenas del backend
 object LocalSongReviewProvider {
 
     val songs = mutableListOf(
         SongReviewUi(
             id = "1",
             album = LocalAlbumProvider.teatroDira,
-            rating = 4.8,
-            ratingCount = "41.2k",
-            recommendRate = 97,
+            rating = 5.0,
+            ratingCount = "1",
+            recommendRate = 100,
             userRating = 0,
-            isSaved = false,
-            isLiked = false,
             reviews = listOf(
                 SongReviewItemUi(
                     id = "review-1",
-                    author = "Priya",
-                    authorId = "",
+                    author = "Mateo Gómez",
+                    authorId = "2",
                     authorImage = "",
-                    daysAgo = "hace 2 días",
+                    fecha = "2026-08-15",
                     rating = 5,
                     content = "Teatro d'ira: Vol. I captures Maneskin at their absolute peak. Razor-sharp riffs, explosive live energy and Damiano's theatrical vocals turn pure attitude into a tight, unforgettable record.",
-                    likes = 31,
-                    isLiked = false,
                 )
             ),
         ),
         SongReviewUi(
             id = "2",
             album = LocalAlbumProvider.rush,
-            rating = 4.2,
-            ratingCount = "33.7k",
-            recommendRate = 89,
+            rating = 4.0,
+            ratingCount = "1",
+            recommendRate = 100,
             userRating = 0,
-            isSaved = false,
-            isLiked = false,
             reviews = listOf(
                 SongReviewItemUi(
                     id = "review-2",
-                    author = "Leo",
-                    authorId = "",
+                    author = "Valentina Torres",
+                    authorId = "3",
                     authorImage = "",
-                    daysAgo = "hace 5 días",
+                    fecha = "2026-08-12",
                     rating = 4,
                     content = "An infectious, high-octane pop-rock spectacle built for global arenas. It trades some of the raw Italian grit for polished dance-punk grooves, but the attitude never drops.",
-                    likes = 18,
-                    isLiked = false,
                 )
             ),
         ),
         SongReviewUi(
             id = "3",
             album = LocalAlbumProvider.finisterra,
-            rating = 4.7,
-            ratingCount = "22.9k",
-            recommendRate = 95,
+            rating = 5.0,
+            ratingCount = "1",
+            recommendRate = 100,
             userRating = 0,
-            isSaved = false,
-            isLiked = false,
             reviews = listOf(
                 SongReviewItemUi(
                     id = "review-3",
-                    author = "Alex",
-                    authorId = "",
+                    author = "Santiago López",
+                    authorId = "4",
                     authorImage = "",
-                    daysAgo = "hace 1 semana",
+                    fecha = "2026-08-09",
                     rating = 5,
                     content = "Mago de Oz's ambitious folk metal masterpiece. Power metal riffs blended with Celtic flutes and violins turn an epic medieval concept into a legendary album.",
-                    likes = 27,
-                    isLiked = false,
                 )
             ),
         ),
         SongReviewUi(
             id = "4",
             album = LocalAlbumProvider.fromZero,
-            rating = 4.4,
-            ratingCount = "58.1k",
-            recommendRate = 92,
+            rating = 4.0,
+            ratingCount = "1",
+            recommendRate = 100,
             userRating = 0,
-            isSaved = false,
-            isLiked = false,
             reviews = listOf(
                 SongReviewItemUi(
                     id = "review-4",
-                    author = "Soph",
-                    authorId = "",
+                    author = "Camila Herrera",
+                    authorId = "5",
                     authorImage = "",
-                    daysAgo = "hace 4 días",
+                    fecha = "2026-08-14",
                     rating = 4,
                     content = "From Zero strikes a balance between heavy nostalgia and genuine reinvention. Emily Armstrong commands every track with raw power, signaling a confident new chapter.",
-                    likes = 42,
-                    isLiked = false,
                 )
             ),
         ),
         SongReviewUi(
             id = "5",
             album = LocalAlbumProvider.theSharpestLives,
-            rating = 4.5,
-            ratingCount = "28.4k",
-            recommendRate = 94,
+            rating = 5.0,
+            ratingCount = "1",
+            recommendRate = 100,
             userRating = 0,
-            isSaved = false,
-            isLiked = false,
             reviews = listOf(
                 SongReviewItemUi(
                     id = "review-5",
-                    author = "Priya",
-                    authorId = "",
+                    author = "Mateo Gómez",
+                    authorId = "2",
                     authorImage = "",
-                    daysAgo = "hace 3 días",
+                    fecha = "2026-08-14",
                     rating = 5,
                     content = "\"The Sharpest Lives\" is an absolute rush on The Black Parade, blending dark, frantic energy with an insanely catchy hook. Gerard Way's theatrical vocals and the sharp guitar work turn chaotic self-destruction into one of My Chemical Romance's most addictive anthems.",
-                    likes = 24,
-                    isLiked = false,
                 )
             ),
         ),
         SongReviewUi(
             id = "6",
             album = LocalAlbumProvider.toxicity,
-            rating = 4.6,
-            ratingCount = "39.8k",
-            recommendRate = 94,
+            rating = 0.0,
+            ratingCount = "0",
+            recommendRate = 0,
             userRating = 0,
-            isSaved = false,
-            isLiked = false,
             reviews = emptyList(),
         ),
         SongReviewUi(
             id = "7",
             album = LocalAlbumProvider.randomAccessMemories,
-            rating = 4.5,
-            ratingCount = "36.1k",
-            recommendRate = 93,
+            rating = 0.0,
+            ratingCount = "0",
+            recommendRate = 0,
             userRating = 0,
-            isSaved = false,
-            isLiked = false,
             reviews = emptyList(),
         ),
         SongReviewUi(
             id = "8",
             album = LocalAlbumProvider.theBlackParade,
-            rating = 4.7,
-            ratingCount = "47.5k",
-            recommendRate = 96,
+            rating = 0.0,
+            ratingCount = "0",
+            recommendRate = 0,
             userRating = 0,
-            isSaved = false,
-            isLiked = false,
             reviews = emptyList(),
         ),
     )
 
-    // Los tres albumes que se muestran en la pantalla principal
+    // Los tres albumes que se muestran en la preview de la pantalla principal
     val popularSongs: List<SongReviewUi>
         get() = songs.take(3)
 
-    // El album destacado de la pantalla principal
+    // El album destacado de la preview de la pantalla principal
     val trendingSong: SongReviewUi
         get() = songs[2]
 }
