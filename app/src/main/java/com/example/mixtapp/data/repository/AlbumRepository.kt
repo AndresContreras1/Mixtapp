@@ -83,6 +83,9 @@ class AlbumRepository @Inject constructor(
         } catch (e: HttpException) {
             Log.d("AlbumRepository", "getSongReviewById: ${e.message}")
             Result.failure(errorDelBackend(e))
+        } catch (e: NoSuchElementException) {
+            Log.d("AlbumRepository", "getSongReviewById: ${e.message}")
+            Result.failure(ContenidoNoEncontradoException())
         } catch (e: Exception) {
             Log.d("AlbumRepository", "getSongReviewById: ${e.message}")
             Result.failure(e)

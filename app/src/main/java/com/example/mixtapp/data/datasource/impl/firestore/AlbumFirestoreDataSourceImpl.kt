@@ -25,7 +25,8 @@ class AlbumFirestoreDataSourceImpl @Inject constructor(
         val respuesta = db.collection("albumes").document(id).get().await()
         val album = respuesta.toObject(AlbumDto::class.java)
 
-        return album?.copy(id = respuesta.id) ?: throw Exception("No se pudo obtener el album")
+        // Si el documento no existe, toObject da null: el repositorio lo muestra como no encontrado
+        return album?.copy(id = respuesta.id) ?: throw NoSuchElementException("No existe el album $id")
     }
 
     override suspend fun getReviewsDeAlbum(id: String): List<ReviewConUsuarioDto> {

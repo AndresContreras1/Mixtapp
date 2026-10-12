@@ -23,6 +23,9 @@ class UsuarioRepository @Inject constructor(
         } catch (e: HttpException) {
             Log.d("UsuarioRepository", "getUsuarioById: ${e.message}")
             Result.failure(errorDelBackend(e))
+        } catch (e: NoSuchElementException) {
+            Log.d("UsuarioRepository", "getUsuarioById: ${e.message}")
+            Result.failure(ContenidoNoEncontradoException())
         } catch (e: Exception) {
             Log.d("UsuarioRepository", "getUsuarioById: ${e.message}")
             Result.failure(e)

@@ -17,7 +17,8 @@ class UsuarioFirestoreDataSourceImpl @Inject constructor(
         val respuesta = docRef.get().await()
         val usuario = respuesta.toObject(UsuarioPerfilFirestoreDto::class.java)
 
-        return usuario?.copy(id = respuesta.id) ?: throw Exception("No se pudo obtener el usuario")
+        // Si el documento no existe, toObject da null: el repositorio lo muestra como no encontrado
+        return usuario?.copy(id = respuesta.id) ?: throw NoSuchElementException("No existe el usuario $id")
     }
 
     override suspend fun getReviewsDeUsuario(id: String): List<ReviewConAlbumDto> {

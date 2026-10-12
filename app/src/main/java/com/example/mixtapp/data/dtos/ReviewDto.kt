@@ -14,9 +14,12 @@ data class ReviewConUsuarioDto(
     val createdAt: String?,
     val updatedAt: String?,
     val usuario: UsuarioDto?,
+    // El documento de Firestore tambien guarda la copia del album; se declara aunque esta lista
+    // no la use, para que toObject no avise en el Logcat "No setter/field for album"
+    val album: AlbumDeResenaDto?,
 ) {
     // Firestore necesita un constructor vacio para convertir el documento en el DTO
-    constructor() : this("", 0, null, null, "", "", null, null, null)
+    constructor() : this("", 0, null, null, "", "", null, null, null, null)
 }
 
 // Resena de un usuario, con el album que resena
@@ -29,9 +32,11 @@ data class ReviewConAlbumDto(
     val albumId: String,
     val createdAt: String?,
     val updatedAt: String?,
+    // Igual que arriba: la copia del usuario tambien esta en el documento
+    val usuario: UsuarioDto?,
     val album: AlbumDeResenaDto?,
 ) {
-    constructor() : this("", 0, null, null, "", "", null, null, null)
+    constructor() : this("", 0, null, null, "", "", null, null, null, null)
 }
 
 // El repositorio pasa el id del usuario de la app para marcar su resena
