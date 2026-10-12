@@ -13,6 +13,8 @@ import com.example.mixtapp.data.dtos.toMyReviewUi
 import com.example.mixtapp.data.model.DiscussionCommentUi
 import com.example.mixtapp.data.model.DiscussionUi
 import com.example.mixtapp.data.model.MyReviewUi
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import retrofit2.HttpException
 import javax.inject.Inject
 
@@ -55,30 +57,30 @@ class ReviewRepository @Inject constructor(
             val usuarioId = authRemoteDataSource.currentUser?.uid
                 ?: return Result.failure(SinSesionException())
 
-            val album = albumRemoteDataSource.getAlbumById(albumId)
             val photoUrl = authRemoteDataSource.currentUser?.photoUrl?.toString()
 
             // La resena guarda una copia de lo que se muestra del usuario y del album, porque
-            // en Firestore no hay joins. Solo se copia lo que se ve, no todo el usuario
-            val createReviewUsuarioDto = CreateReviewUsuarioDto(
-                nombre = nombreDelUsuario(usuarioId = usuarioId),
-                fotoUrl = photoUrl,
-            )
-            val createReviewAlbumDto = CreateReviewAlbumDto(
-                titulo = album.titulo,
-                artista = album.artista,
-                portadaUrl = album.portadaUrl,
-            )
+            // en Firestore no hay joins. Solo se copia lo que se ve, no todo el usuario.
+            // El album y mi nombre salen a la vez y se espera el mas lento
+            val createReviewDto = coroutineScope {
+                val album = async { albumRemoteDataSource.getAlbumById(albumId) }
+                val nombre = async { nombreDelUsuario(usuarioId = usuarioId) }
+                val albumDto = album.await()
 
-            val createReviewDto = CreateReviewDto(
-                usuarioId = usuarioId,
-                albumId = albumId,
-                calificacion = rating,
-                comentario = texto,
-                fechaEscucha = if (fecha.isEmpty()) null else fecha,
-                usuario = createReviewUsuarioDto,
-                album = createReviewAlbumDto,
-            )
+                CreateReviewDto(
+                    usuarioId = usuarioId,
+                    albumId = albumId,
+                    calificacion = rating,
+                    comentario = texto,
+                    fechaEscucha = if (fecha.isEmpty()) null else fecha,
+                    usuario = CreateReviewUsuarioDto(nombre = nombre.await(), fotoUrl = photoUrl),
+                    album = CreateReviewAlbumDto(
+                        titulo = albumDto.titulo,
+                        artista = albumDto.artista,
+                        portadaUrl = albumDto.portadaUrl,
+                    ),
+                )
+            }
 
             if (reviewId != null) reviewRemoteDataSource.updateReview(reviewId, createReviewDto)
             else reviewRemoteDataSource.createReview(createReviewDto)
