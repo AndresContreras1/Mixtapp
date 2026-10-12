@@ -5,5 +5,5 @@ data class MyReviewUi(
     val album: Album,
     val rating: Int,          // 0..5
     val excerpt: String,
-    val date: String,         // "Aug 18, 2026"
+    val date: String,         // AAAA-MM-DD, como la guarda el backend
 )

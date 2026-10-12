@@ -1,5 +1,6 @@
 package com.example.mixtapp.data.repository
 
+import android.util.Log
 import com.example.mixtapp.data.datasource.SocialLocalDataSource
 import com.example.mixtapp.data.model.FollowingReviewUi
 import com.example.mixtapp.data.model.FollowingUi
@@ -15,8 +16,10 @@ class SocialRepository @Inject constructor(
         return try {
             Result.success(socialLocalDataSource.getFollowing())
         } catch (e: NoSuchElementException) {
+            Log.d("SocialRepository", "getFollowing: ${e.message}")
             Result.failure(ContenidoNoEncontradoException())
         } catch (e: Exception) {
+            Log.d("SocialRepository", "getFollowing: ${e.message}")
             Result.failure(ErrorDeDatosLocalesException())
         }
     }
@@ -25,8 +28,10 @@ class SocialRepository @Inject constructor(
         return try {
             Result.success(socialLocalDataSource.getNotifications())
         } catch (e: NoSuchElementException) {
+            Log.d("SocialRepository", "getNotifications: ${e.message}")
             Result.failure(ContenidoNoEncontradoException())
         } catch (e: Exception) {
+            Log.d("SocialRepository", "getNotifications: ${e.message}")
             Result.failure(ErrorDeDatosLocalesException())
         }
     }
@@ -64,6 +69,7 @@ class SocialRepository @Inject constructor(
             socialLocalDataSource.guardarFollowing(following = actualizado)
             Result.success(actualizado)
         } catch (e: Exception) {
+            Log.d("SocialRepository", "actualizarFollowingReview: ${e.message}")
             Result.failure(ErrorDeDatosLocalesException())
         }
     }
