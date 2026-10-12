@@ -130,37 +130,31 @@ fun SignUpScreenContent(
     }
 }
 
-// Las dos previews solo cambian el tema, asi que el formulario vacio se arma una sola vez
-@Composable
-private fun SignUpScreenContentPreview() {
-    SignUpScreenContent(
-        nombre = "",
-        onNombreChange = {},
-        usuario = "",
-        onUsuarioChange = {},
-        email = "",
-        onEmailChange = {},
-        contrasena = "",
-        onContrasenaChange = {},
-        confirmarContrasena = "",
-        onConfirmarContrasenaChange = {},
-        contrasenaVisible = false,
-        onContrasenaVisibleChange = {},
-        confirmarVisible = false,
-        onConfirmarVisibleChange = {},
-        terminos = false,
-        onTerminosClick = {},
-        errorMessageRes = null,
-        cargando = false,
-        onSignUpClick = {},
-        onLoginClick = {}
-    )
-}
-
 @Preview(showBackground = true, widthDp = 393, heightDp = 852, name = "SignUp Dark")
 @Composable
 fun SignUpScreenDarkPreview() {
     MixtappTheme(darkTheme = true) {
-        SignUpScreenContentPreview()
+        SignUpScreenContent(
+            nombre = "",
+            onNombreChange = {},
+            usuario = "",
+            onUsuarioChange = {},
+            email = "",
+            onEmailChange = {},
+            contrasena = "",
+            onContrasenaChange = {},
+            confirmarContrasena = "",
+            onConfirmarContrasenaChange = {},
+            contrasenaVisible = false,
+            onContrasenaVisibleChange = {},
+            confirmarVisible = false,
+            onConfirmarVisibleChange = {},
+            terminos = false,
+            onTerminosClick = {},
+            errorMessageRes = null,
+            cargando = false,
+            onSignUpClick = {},
+            onLoginClick = {}
+        )
     }
 }

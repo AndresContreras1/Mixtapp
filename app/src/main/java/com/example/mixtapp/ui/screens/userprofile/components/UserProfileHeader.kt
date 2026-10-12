@@ -57,7 +57,7 @@ fun UserProfileHeader(
         )
 
         Text(
-            text = "@${usuario.username}",
+            text = stringResource(R.string.arroba_usuario, usuario.username),
             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
             fontSize = 13.sp
         )

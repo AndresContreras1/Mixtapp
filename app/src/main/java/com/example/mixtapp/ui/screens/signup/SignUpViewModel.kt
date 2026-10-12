@@ -84,6 +84,9 @@ class SignUpViewModel @Inject constructor(
                     estado.confirmarContrasena.isBlank() ->
                 R.string.error_campos_obligatorios
 
+            estado.usuario.trim().contains(" ") ->
+                R.string.error_username_espacios
+
             !estado.email.contains("@") ->
                 R.string.error_email_invalido
 

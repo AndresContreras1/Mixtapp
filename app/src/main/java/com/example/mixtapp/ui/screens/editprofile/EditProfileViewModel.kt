@@ -8,6 +8,8 @@ import com.example.mixtapp.data.model.MAX_BIO_LENGTH
 import com.example.mixtapp.data.model.MAX_NOMBRE_LENGTH
 import com.example.mixtapp.data.model.MAX_USERNAME_LENGTH
 import com.example.mixtapp.data.repository.AuthRepository
+import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
+import com.example.mixtapp.data.repository.ErrorDelServidorException
 import com.example.mixtapp.data.repository.SinConexionException
 import com.example.mixtapp.data.repository.SinSesionException
 import com.example.mixtapp.data.repository.UsuarioRepository
@@ -33,10 +35,10 @@ class EditProfileViewModel @Inject constructor(
     }
 
     private fun getMiPerfil() {
-        val usuarioDelCorreo = authRepository.currentUser?.email?.substringBefore("@") ?: ""
+        val usuarioDelCorreo = authRepository.usuarioDelCorreo
 
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
+            _uiState.update { it.copy(isLoading = true, errorCargaRes = null) }
 
             val result = usuarioRepository.getMiPerfil()
 
@@ -51,9 +53,13 @@ class EditProfileViewModel @Inject constructor(
                         isLoading = false,
                     )
                 }
-            } else {
+            } else if (result.exceptionOrNull() is ContenidoNoEncontradoException) {
                 // Una cuenta sin datos en Firestore empieza con la parte del correo como usuario
                 _uiState.update { it.copy(username = usuarioDelCorreo, isLoading = false) }
+            } else {
+                _uiState.update {
+                    it.copy(isLoading = false, errorCargaRes = mensajeDeCarga(result.exceptionOrNull()))
+                }
             }
         }
     }
@@ -107,6 +113,13 @@ class EditProfileViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    @StringRes
+    private fun mensajeDeCarga(error: Throwable?): Int = when (error) {
+        is SinConexionException -> R.string.error_sin_conexion
+        is ErrorDelServidorException -> R.string.error_servidor
+        else -> R.string.error_cargar_contenido
     }
 
     @StringRes

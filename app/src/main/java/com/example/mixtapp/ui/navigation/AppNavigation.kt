@@ -45,6 +45,15 @@ private fun NavHostController.navegarLimpiandoLaPila(ruta: String) {
     }
 }
 
+// Abrir un album y el perfil de un usuario se repite en varias pantallas
+private fun NavHostController.abrirAlbum(songId: String) {
+    navigate(Screen.SongDetail.createRoute(songId = songId))
+}
+
+private fun NavHostController.abrirPerfil(userId: String) {
+    navigate(Screen.UserProfile.createRoute(userId = userId))
+}
+
 @Composable
 fun AppNavigation(
     navController: NavHostController,
@@ -106,10 +115,10 @@ fun AppNavigation(
             HomeScreen(
                 homeViewModel = homeViewModel,
                 onAlbumClick = { songId ->
-                    navController.navigate(Screen.SongDetail.createRoute(songId = songId))
+                    navController.abrirAlbum(songId = songId)
                 },
                 onAuthorClick = { userId ->
-                    navController.navigate(Screen.UserProfile.createRoute(userId = userId))
+                    navController.abrirPerfil(userId = userId)
                 },
                 onSearchClick = { navController.navigate(Screen.Search.route) },
                 onProfileClick = { navController.navigate(Screen.Profile.route) },
@@ -124,7 +133,7 @@ fun AppNavigation(
             SearchScreen(
                 searchViewModel = searchViewModel,
                 onAlbumClick = { songId ->
-                    navController.navigate(Screen.SongDetail.createRoute(songId = songId))
+                    navController.abrirAlbum(songId = songId)
                 }
             )
         }
@@ -167,7 +176,7 @@ fun AppNavigation(
             MyReviewsScreen(
                 myReviewsViewModel = myReviewsViewModel,
                 onReviewClick = { songId ->
-                    navController.navigate(Screen.SongDetail.createRoute(songId = songId))
+                    navController.abrirAlbum(songId = songId)
                 },
                 onEditClick = { albumId ->
                     navController.navigate(Screen.WriteReview.createRoute(albumId = albumId))
@@ -187,7 +196,7 @@ fun AppNavigation(
                     navController.navegarLimpiandoLaPila(Screen.Login.route)
                 },
                 onReviewClick = { songId ->
-                    navController.navigate(Screen.SongDetail.createRoute(songId = songId))
+                    navController.abrirAlbum(songId = songId)
                 },
                 onSeeAllReviewsClick = { navController.navigate(Screen.MyReviews.route) }
             )
@@ -220,7 +229,7 @@ fun AppNavigation(
                 },
                 onBackClick = { navController.popBackStack() },
                 onAuthorClick = { userId ->
-                    navController.navigate(Screen.UserProfile.createRoute(userId = userId))
+                    navController.abrirPerfil(userId = userId)
                 }
             )
         }
@@ -236,7 +245,7 @@ fun AppNavigation(
                 userId = userId,
                 userProfileViewModel = userProfileViewModel,
                 onReviewClick = { songId ->
-                    navController.navigate(Screen.SongDetail.createRoute(songId = songId))
+                    navController.abrirAlbum(songId = songId)
                 },
                 onBackClick = { navController.popBackStack() }
             )

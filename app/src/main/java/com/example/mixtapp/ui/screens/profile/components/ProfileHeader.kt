@@ -34,7 +34,7 @@ import com.example.mixtapp.ui.screens.profile.model.ProfileTabUi
 
 @Composable
 fun ProfileHeader(
-    // El usuario sale del correo de Firebase, ya recortado por el ViewModel
+    // Mi usuario de Firestore; sin documento, la parte del correo antes de la arroba
     usuario: String,
     // Las pestanas llegan del ViewModel, no se declaran aqui
     tabs: List<ProfileTabUi>,

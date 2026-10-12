@@ -60,7 +60,12 @@ class ProfileViewModel @Inject constructor(
                     nombre = miPerfil?.nombre ?: "",
                     bio = miPerfil?.bio ?: "",
                     profileImageUrl = foto,
-                    avisoPerfilRes = if (perfil.isSuccess) null else R.string.completa_tu_perfil,
+                    // El aviso solo sale si de verdad no existe mi documento en Firestore
+                    avisoPerfilRes = if (perfil.exceptionOrNull() is ContenidoNoEncontradoException) {
+                        R.string.completa_tu_perfil
+                    } else {
+                        null
+                    },
                 )
             }
         }
@@ -99,7 +104,7 @@ class ProfileViewModel @Inject constructor(
                         tabs = profileTabs,
                         // Al volver se conserva la pestana elegida
                         selectedTabId = it.selectedTabId.ifEmpty { profileTabs.first().id },
-                        errorMessageRes = mensajeDelBackend(
+                        errorMessageRes = mensajeDeError(
                             error = result.exceptionOrNull(),
                             generico = R.string.error_cargar_contenido,
                         ),
@@ -134,7 +139,7 @@ class ProfileViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         eliminando = false,
-                        errorMessageRes = mensajeDelBackend(
+                        errorMessageRes = mensajeDeError(
                             error = result.exceptionOrNull(),
                             generico = R.string.error_eliminar_resena,
                         )
@@ -220,7 +225,7 @@ class ProfileViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         guardandoEdicion = false,
-                        errorEdicionRes = mensajeDelBackend(
+                        errorEdicionRes = mensajeDeError(
                             error = result.exceptionOrNull(),
                             generico = R.string.error_publicar_resena,
                         ),
@@ -282,7 +287,7 @@ class ProfileViewModel @Inject constructor(
     }
 
     @StringRes
-    private fun mensajeDelBackend(error: Throwable?, @StringRes generico: Int): Int = when (error) {
+    private fun mensajeDeError(error: Throwable?, @StringRes generico: Int): Int = when (error) {
         is ContenidoNoEncontradoException -> R.string.contenido_no_encontrado
         is ErrorDelServidorException -> R.string.error_servidor
         is SinConexionException -> R.string.error_sin_conexion

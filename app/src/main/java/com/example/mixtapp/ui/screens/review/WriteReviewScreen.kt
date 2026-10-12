@@ -35,7 +35,7 @@ fun WriteReviewScreen(
 ) {
     val state by writeReviewViewModel.uiState.collectAsState()
 
-    // Se vuelve atras solo cuando el backend confirma que la resena quedo guardada
+    // Se vuelve atras solo cuando la base confirma que la resena quedo guardada
     LaunchedEffect(state.publicada) {
         if (state.publicada) {
             onPublicada()

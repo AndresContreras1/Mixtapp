@@ -126,6 +126,7 @@
 
     <!-- Home -->
     <string name="titulo_guion_subtitulo">%1$s - %2$s</string>
+    <string name="arroba_usuario">@%1$s</string>
     <string name="cita_entre_comillas">\"%1$s\"</string>
 
     <!-- My reviews -->
