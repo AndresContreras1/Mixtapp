@@ -18,42 +18,41 @@ import com.example.mixtapp.ui.components.AppBackground
 import com.example.mixtapp.ui.screens.songreview.components.SongReviewSections
 import com.example.mixtapp.ui.theme.MixtappTheme
 
-// Recibe solo el id; el ViewModel se encarga de buscar la cancion
+// Recibe solo el id; el ViewModel se encarga de buscar el album
 @Composable
 fun SongReviewsScreen(
     songId: String,
     songReviewsViewModel: SongReviewsViewModel,
     onWriteReviewClick: () -> Unit,
     onBackClick: () -> Unit,
-    onReviewReplyClick: (String) -> Unit,
     onAuthorClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val state by songReviewsViewModel.uiState.collectAsState()
 
+    // Se pide cada vez que se muestra la pantalla: al volver de escribir, la resena ya aparece
     LaunchedEffect(Unit) {
         songReviewsViewModel.getSongById(songId = songId)
     }
 
     when {
         state.isLoading -> {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()
             }
         }
         state.song == null -> {
-            Text(text = stringResource(state.errorMessageRes ?: R.string.cancion_no_encontrada))
+            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(text = stringResource(state.errorMessageRes ?: R.string.album_no_encontrado))
+            }
         }
         else -> SongReviewsScreenContent(
             songReview = state.song!!,
-            onRatingChange = { songReviewsViewModel.updateUserRating(rating = it) },
-            onSaveClick = { songReviewsViewModel.guardarQuitarGuardado() },
-            onLikeClick = { songReviewsViewModel.darQuitarLike() },
-            onWriteReviewClick = onWriteReviewClick,
-            onBackClick = onBackClick,
+            miResenaId = state.miResenaId,
             errorMessageRes = state.errorMessageRes,
-            onReviewLikeClick = { songReviewsViewModel.darQuitarLikeResena(reviewId = it) },
-            onReviewReplyClick = onReviewReplyClick,
+            onWriteReviewClick = onWriteReviewClick,
+            onDeleteMyReviewClick = { songReviewsViewModel.eliminarMiResena() },
+            onBackClick = onBackClick,
             onAuthorClick = onAuthorClick,
             modifier = modifier
         )
@@ -63,14 +62,11 @@ fun SongReviewsScreen(
 @Composable
 fun SongReviewsScreenContent(
     songReview: SongReviewUi,
-    onRatingChange: (Int) -> Unit,
-    onSaveClick: () -> Unit,
-    onLikeClick: () -> Unit,
-    onWriteReviewClick: () -> Unit,
-    onBackClick: () -> Unit,
+    miResenaId: String?,
     errorMessageRes: Int?,
-    onReviewLikeClick: (String) -> Unit,
-    onReviewReplyClick: (String) -> Unit,
+    onWriteReviewClick: () -> Unit,
+    onDeleteMyReviewClick: () -> Unit,
+    onBackClick: () -> Unit,
     onAuthorClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -79,14 +75,11 @@ fun SongReviewsScreenContent(
 
         SongReviewSections(
             songReview = songReview,
-            onRatingChange = onRatingChange,
-            onSaveClick = onSaveClick,
-            onLikeClick = onLikeClick,
-            onWriteReviewClick = onWriteReviewClick,
-            onBackClick = onBackClick,
+            miResenaId = miResenaId,
             errorMessageRes = errorMessageRes,
-            onReviewLikeClick = onReviewLikeClick,
-            onReviewReplyClick = onReviewReplyClick,
+            onWriteReviewClick = onWriteReviewClick,
+            onDeleteMyReviewClick = onDeleteMyReviewClick,
+            onBackClick = onBackClick,
             onAuthorClick = onAuthorClick,
             modifier = Modifier.fillMaxSize()
         )
@@ -101,14 +94,11 @@ fun SongReviewsScreenPreview() {
     MixtappTheme(darkTheme = true) {
         SongReviewsScreenContent(
             songReview = song,
-            onRatingChange = {},
-            onSaveClick = {},
-            onLikeClick = {},
-            onWriteReviewClick = {},
-            onBackClick = {},
+            miResenaId = null,
             errorMessageRes = null,
-            onReviewLikeClick = {},
-            onReviewReplyClick = {},
+            onWriteReviewClick = {},
+            onDeleteMyReviewClick = {},
+            onBackClick = {},
             onAuthorClick = {}
         )
     }

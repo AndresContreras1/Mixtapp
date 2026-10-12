@@ -18,6 +18,8 @@ import com.example.mixtapp.ui.theme.displayFontFamily
 
 @Composable
 fun ReviewsHeader(
+    // Solo hay una resena por album: si ya existe, el enlace la edita
+    tieneResena: Boolean,
     onWriteReviewClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -35,7 +37,7 @@ fun ReviewsHeader(
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = stringResource(R.string.write_one),
+                text = stringResource(if (tieneResena) R.string.editar_la_tuya else R.string.write_one),
                 color = MaterialTheme.colorScheme.primary,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
