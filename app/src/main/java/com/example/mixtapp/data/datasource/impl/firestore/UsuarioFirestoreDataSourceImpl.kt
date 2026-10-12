@@ -35,4 +35,7 @@ class UsuarioFirestoreDataSourceImpl @Inject constructor(
         val docRef = db.collection("usuarios").document(usuarioId)
         docRef.set(registrarUsuarioDto).await()
     }
+
+    // En Firestore el documento del usuario tiene el mismo uid de Authentication
+    override fun idDelUsuarioEnLaBase(uid: String): String = uid
 }

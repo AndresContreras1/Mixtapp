@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.mixtapp.data.datasource.AlbumLocalDataSource
 import com.example.mixtapp.data.datasource.AuthRemoteDataSource
 import com.example.mixtapp.data.datasource.impl.firestore.AlbumFirestoreDataSourceImpl
+import com.example.mixtapp.data.datasource.impl.firestore.UsuarioFirestoreDataSourceImpl
 import com.example.mixtapp.data.dtos.toAlbum
 import com.example.mixtapp.data.dtos.toSongReviewItemUi
 import com.example.mixtapp.data.model.Album
@@ -19,11 +20,13 @@ import kotlin.math.roundToInt
 // Desde esta calificacion se cuenta que la resena recomienda el album
 private const val CALIFICACION_PARA_RECOMENDAR = 4
 
-// Para volver al backend de Express basta con cambiar la implementacion a AlbumRetrofitDataSourceImpl.
-// Authentication dice quien es el usuario de la app, para marcar su resena
+// Para volver al backend de Express basta con cambiar las implementaciones a las de Retrofit.
+// Authentication dice quien es el usuario de la app y el data source de usuarios con que id lo
+// guarda la base; con eso se marca mi resena
 class AlbumRepository @Inject constructor(
     private val albumLocalDataSource: AlbumLocalDataSource,
     private val albumRemoteDataSource: AlbumFirestoreDataSourceImpl,
+    private val usuarioRemoteDataSource: UsuarioFirestoreDataSourceImpl,
     private val authRemoteDataSource: AuthRemoteDataSource
 ) {
 
@@ -31,8 +34,7 @@ class AlbumRepository @Inject constructor(
     suspend fun getSongReviews(): Result<List<SongReviewUi>> {
         return try {
             val albumes = albumRemoteDataSource.getAlbumes()
-            // Sin sesion ninguna resena es mia
-            val usuarioActualId = authRemoteDataSource.currentUser?.uid ?: ""
+            val usuarioActualId = idDeMiUsuario()
 
             // Las resenas de todos los albumes se piden a la vez y se espera la mas lenta
             val songReviews = coroutineScope {
@@ -64,7 +66,7 @@ class AlbumRepository @Inject constructor(
     // El album con todas sus resenas; entre ellas va la mia si ya lo califique
     suspend fun getSongReviewById(songId: String): Result<SongReviewUi> {
         return try {
-            val usuarioActualId = authRemoteDataSource.currentUser?.uid ?: ""
+            val usuarioActualId = idDeMiUsuario()
 
             // El album y sus resenas salen a la vez
             val songReview = coroutineScope {
@@ -100,6 +102,10 @@ class AlbumRepository @Inject constructor(
             Result.failure(ErrorDeDatosLocalesException())
         }
     }
+
+    // El id con el que la base guarda mis resenas; sin sesion ninguna resena es mia
+    private fun idDeMiUsuario(): String =
+        usuarioRemoteDataSource.idDelUsuarioEnLaBase(uid = authRemoteDataSource.currentUser?.uid ?: "")
 
     // El promedio, el total, el porcentaje que recomienda y mi calificacion salen de las resenas.
     // Es publica para que el ViewModel recalcule al quitar una resena, sin volver a pedir el album

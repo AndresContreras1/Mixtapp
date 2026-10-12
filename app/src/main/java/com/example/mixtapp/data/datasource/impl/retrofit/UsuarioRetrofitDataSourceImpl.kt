@@ -26,6 +26,9 @@ class UsuarioRetrofitDataSourceImpl @Inject constructor(
         // to-do: el backend no tiene una ruta para crear ni modificar usuarios
     }
 
+    // En el backend el usuario de la app es el 1
+    override fun idDelUsuarioEnLaBase(uid: String): String = idEnElBackend(uid)
+
     // Los ids del backend son numeros; el uid de Firebase no, asi que ese se cambia por el 1
     private fun idEnElBackend(id: String): String =
         if (id.toIntOrNull() != null) id else USUARIO_DE_LA_APP_EN_EL_BACKEND

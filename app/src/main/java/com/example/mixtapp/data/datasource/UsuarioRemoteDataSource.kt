@@ -10,4 +10,6 @@ interface UsuarioRemoteDataSource {
     suspend fun getReviewsDeUsuario(id: String): List<ReviewConAlbumDto>
     // Crea o reemplaza los datos del usuario que tiene ese id
     suspend fun registrarUsuario(registrarUsuarioDto: RegistrarUsuarioDto, usuarioId: String): Unit
+    // Con que id guarda esta base al usuario de la app. No va a la red, asi que no es suspend
+    fun idDelUsuarioEnLaBase(uid: String): String
 }
