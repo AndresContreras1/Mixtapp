@@ -45,8 +45,7 @@ class ProfileViewModel @Inject constructor(
 
     // La pantalla la llama cada vez que se muestra, para ver las resenas nuevas al volver
     fun getProfile() {
-        // Recortar el correo es logica, asi que se hace aqui y no en el componente
-        val usuarioDelCorreo = authRepository.currentUser?.email?.substringBefore("@") ?: ""
+        val usuarioDelCorreo = authRepository.usuarioDelCorreo
         val foto = authRepository.currentUser?.photoUrl?.toString() ?: ""
 
         // Mis datos y mis resenas se usan por su lado, asi que cada uno va en su propio launch

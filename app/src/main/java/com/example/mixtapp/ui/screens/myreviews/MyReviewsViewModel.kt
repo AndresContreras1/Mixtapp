@@ -36,7 +36,7 @@ class MyReviewsViewModel @Inject constructor(
 
     // La pantalla la llama cada vez que se muestra, para ver los cambios al volver de editar
     fun getReviews() {
-        val usuarioDelCorreo = authRepository.currentUser?.email?.substringBefore("@") ?: ""
+        val usuarioDelCorreo = authRepository.usuarioDelCorreo
         // Al volver se conserva el filtro que estaba elegido
         val filtro = _uiState.value.selectedFilterId.ifEmpty { myReviewFilters.first().id }
 

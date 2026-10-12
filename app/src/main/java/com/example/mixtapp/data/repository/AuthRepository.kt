@@ -18,6 +18,10 @@ class AuthRepository @Inject constructor(
     val currentUser: FirebaseUser?
         get() = authRemoteDataSource.currentUser
 
+    // Para una cuenta sin datos en Firestore, el usuario es la parte del correo antes de la arroba
+    val usuarioDelCorreo: String
+        get() = authRemoteDataSource.currentUser?.email?.substringBefore("@") ?: ""
+
     suspend fun signIn(email: String, password: String): Result<Unit> {
         return try {
             authRemoteDataSource.signIn(email = email, password = password)

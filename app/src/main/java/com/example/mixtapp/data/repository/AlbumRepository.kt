@@ -11,6 +11,7 @@ import com.example.mixtapp.data.model.Album
 import com.example.mixtapp.data.model.SearchCategoryUi
 import com.example.mixtapp.data.model.SongReviewItemUi
 import com.example.mixtapp.data.model.SongReviewUi
+import com.google.firebase.firestore.FirebaseFirestoreException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import retrofit2.HttpException
@@ -57,6 +58,9 @@ class AlbumRepository @Inject constructor(
         } catch (e: HttpException) {
             Log.d("AlbumRepository", "getSongReviews: ${e.message}")
             Result.failure(errorDelBackend(e))
+        } catch (e: FirebaseFirestoreException) {
+            Log.d("AlbumRepository", "getSongReviews: ${e.message}")
+            Result.failure(errorDeFirestore(e))
         } catch (e: Exception) {
             Log.d("AlbumRepository", "getSongReviews: ${e.message}")
             Result.failure(e)
@@ -85,6 +89,9 @@ class AlbumRepository @Inject constructor(
         } catch (e: HttpException) {
             Log.d("AlbumRepository", "getSongReviewById: ${e.message}")
             Result.failure(errorDelBackend(e))
+        } catch (e: FirebaseFirestoreException) {
+            Log.d("AlbumRepository", "getSongReviewById: ${e.message}")
+            Result.failure(errorDeFirestore(e))
         } catch (e: NoSuchElementException) {
             Log.d("AlbumRepository", "getSongReviewById: ${e.message}")
             Result.failure(ContenidoNoEncontradoException())

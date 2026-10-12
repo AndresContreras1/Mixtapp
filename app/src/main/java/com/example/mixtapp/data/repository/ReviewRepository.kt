@@ -13,6 +13,7 @@ import com.example.mixtapp.data.dtos.toMyReviewUi
 import com.example.mixtapp.data.model.DiscussionCommentUi
 import com.example.mixtapp.data.model.DiscussionUi
 import com.example.mixtapp.data.model.MyReviewUi
+import com.google.firebase.firestore.FirebaseFirestoreException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import retrofit2.HttpException
@@ -39,6 +40,9 @@ class ReviewRepository @Inject constructor(
         } catch (e: HttpException) {
             Log.d("ReviewRepository", "getMyReviews: ${e.message}")
             Result.failure(errorDelBackend(e))
+        } catch (e: FirebaseFirestoreException) {
+            Log.d("ReviewRepository", "getMyReviews: ${e.message}")
+            Result.failure(errorDeFirestore(e))
         } catch (e: Exception) {
             Log.d("ReviewRepository", "getMyReviews: ${e.message}")
             Result.failure(e)
@@ -89,6 +93,9 @@ class ReviewRepository @Inject constructor(
         } catch (e: HttpException) {
             Log.d("ReviewRepository", "guardarResena: ${e.message}")
             Result.failure(errorDelBackend(e))
+        } catch (e: FirebaseFirestoreException) {
+            Log.d("ReviewRepository", "guardarResena: ${e.message}")
+            Result.failure(errorDeFirestore(e))
         } catch (e: Exception) {
             Log.d("ReviewRepository", "guardarResena: ${e.message}")
             Result.failure(e)
@@ -102,6 +109,9 @@ class ReviewRepository @Inject constructor(
         } catch (e: HttpException) {
             Log.d("ReviewRepository", "eliminarResena: ${e.message}")
             Result.failure(errorDelBackend(e))
+        } catch (e: FirebaseFirestoreException) {
+            Log.d("ReviewRepository", "eliminarResena: ${e.message}")
+            Result.failure(errorDeFirestore(e))
         } catch (e: Exception) {
             Log.d("ReviewRepository", "eliminarResena: ${e.message}")
             Result.failure(e)
@@ -205,7 +215,7 @@ class ReviewRepository @Inject constructor(
     // Una cuenta creada antes del sprint 10 no tiene documento en usuarios: se usa su correo
     private suspend fun nombreDelUsuario(usuarioId: String): String {
         return try {
-            usuarioRemoteDataSource.getUsuarioById(usuarioId).nombre
+            usuarioRemoteDataSource.getUsuarioById(usuarioId).toUsuarioUi().nombre
         } catch (e: Exception) {
             Log.d("ReviewRepository", "nombreDelUsuario: ${e.message}")
             authRemoteDataSource.currentUser?.email?.substringBefore("@") ?: ""

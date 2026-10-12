@@ -1,5 +1,6 @@
 package com.example.mixtapp.data.repository
 
+import com.google.firebase.firestore.FirebaseFirestoreException
 import retrofit2.HttpException
 
 // El mensaje de la excepcion es para el log del programador. El texto que ve el
@@ -31,8 +32,13 @@ class ContenidoNoEncontradoException : Exception("No se encontro el contenido")
 
 class ErrorDeDatosLocalesException : Exception("Fallo la lectura de los datos locales")
 
-class ErrorDelServidorException : Exception("El backend respondio con un codigo de error")
+class ErrorDelServidorException : Exception("La base remota respondio con un error")
 
 // El backend responde 404 cuando el album, el usuario o la resena no existen
 fun errorDelBackend(e: HttpException): Exception =
     if (e.code() == 404) ContenidoNoEncontradoException() else ErrorDelServidorException()
+
+// Firestore dice por que fallo con un codigo: UNAVAILABLE es que no hay conexion; lo demas, como
+// los permisos de las reglas, se muestra como un error del servidor
+fun errorDeFirestore(e: FirebaseFirestoreException): Exception =
+    if (e.code == FirebaseFirestoreException.Code.UNAVAILABLE) SinConexionException() else ErrorDelServidorException()

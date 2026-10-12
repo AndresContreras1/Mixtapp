@@ -7,6 +7,7 @@ import com.example.mixtapp.data.dtos.RegistrarUsuarioDto
 import com.example.mixtapp.data.dtos.toMyReviewUi
 import com.example.mixtapp.data.model.MyReviewUi
 import com.example.mixtapp.data.model.UsuarioUi
+import com.google.firebase.firestore.FirebaseFirestoreException
 import retrofit2.HttpException
 import javax.inject.Inject
 
@@ -23,6 +24,9 @@ class UsuarioRepository @Inject constructor(
         } catch (e: HttpException) {
             Log.d("UsuarioRepository", "getUsuarioById: ${e.message}")
             Result.failure(errorDelBackend(e))
+        } catch (e: FirebaseFirestoreException) {
+            Log.d("UsuarioRepository", "getUsuarioById: ${e.message}")
+            Result.failure(errorDeFirestore(e))
         } catch (e: NoSuchElementException) {
             Log.d("UsuarioRepository", "getUsuarioById: ${e.message}")
             Result.failure(ContenidoNoEncontradoException())
@@ -43,6 +47,12 @@ class UsuarioRepository @Inject constructor(
         } catch (e: HttpException) {
             Log.d("UsuarioRepository", "getMiPerfil: ${e.message}")
             Result.failure(errorDelBackend(e))
+        } catch (e: FirebaseFirestoreException) {
+            Log.d("UsuarioRepository", "getMiPerfil: ${e.message}")
+            Result.failure(errorDeFirestore(e))
+        } catch (e: NoSuchElementException) {
+            Log.d("UsuarioRepository", "getMiPerfil: ${e.message}")
+            Result.failure(ContenidoNoEncontradoException())
         } catch (e: Exception) {
             Log.d("UsuarioRepository", "getMiPerfil: ${e.message}")
             Result.failure(e)
@@ -57,6 +67,9 @@ class UsuarioRepository @Inject constructor(
         } catch (e: HttpException) {
             Log.d("UsuarioRepository", "getReviewsDeUsuario: ${e.message}")
             Result.failure(errorDelBackend(e))
+        } catch (e: FirebaseFirestoreException) {
+            Log.d("UsuarioRepository", "getReviewsDeUsuario: ${e.message}")
+            Result.failure(errorDeFirestore(e))
         } catch (e: Exception) {
             Log.d("UsuarioRepository", "getReviewsDeUsuario: ${e.message}")
             Result.failure(e)
@@ -80,6 +93,9 @@ class UsuarioRepository @Inject constructor(
         } catch (e: HttpException) {
             Log.d("UsuarioRepository", "registrarUsuario: ${e.message}")
             Result.failure(errorDelBackend(e))
+        } catch (e: FirebaseFirestoreException) {
+            Log.d("UsuarioRepository", "registrarUsuario: ${e.message}")
+            Result.failure(errorDeFirestore(e))
         } catch (e: Exception) {
             Log.d("UsuarioRepository", "registrarUsuario: ${e.message}")
             Result.failure(e)
@@ -105,6 +121,9 @@ class UsuarioRepository @Inject constructor(
         } catch (e: HttpException) {
             Log.d("UsuarioRepository", "actualizarPerfil: ${e.message}")
             Result.failure(errorDelBackend(e))
+        } catch (e: FirebaseFirestoreException) {
+            Log.d("UsuarioRepository", "actualizarPerfil: ${e.message}")
+            Result.failure(errorDeFirestore(e))
         } catch (e: Exception) {
             Log.d("UsuarioRepository", "actualizarPerfil: ${e.message}")
             Result.failure(e)
@@ -129,6 +148,13 @@ class UsuarioRepository @Inject constructor(
         } catch (e: HttpException) {
             Log.d("UsuarioRepository", "actualizarFotoDePerfil: ${e.message}")
             Result.failure(errorDelBackend(e))
+        } catch (e: FirebaseFirestoreException) {
+            Log.d("UsuarioRepository", "actualizarFotoDePerfil: ${e.message}")
+            Result.failure(errorDeFirestore(e))
+        } catch (e: NoSuchElementException) {
+            // Sin documento todavia: la foto se copia cuando complete su perfil en Editar perfil
+            Log.d("UsuarioRepository", "actualizarFotoDePerfil: ${e.message}")
+            Result.success(Unit)
         } catch (e: Exception) {
             Log.d("UsuarioRepository", "actualizarFotoDePerfil: ${e.message}")
             Result.failure(e)
