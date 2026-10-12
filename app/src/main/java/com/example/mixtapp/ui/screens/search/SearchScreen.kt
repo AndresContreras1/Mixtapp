@@ -26,13 +26,13 @@ import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalSearchCategoriesProvider
 import com.example.mixtapp.data.model.SearchCategoryUi
-import com.example.mixtapp.ui.screens.search.model.SearchResultUi
-import com.example.mixtapp.ui.components.ErrorMessage
-import com.example.mixtapp.ui.components.ReviewAlbumRow
 import com.example.mixtapp.ui.screens.search.components.BrowseByHeader
 import com.example.mixtapp.ui.screens.search.components.SearchCategoryRow
 import com.example.mixtapp.ui.screens.search.components.SearchHeader
+import com.example.mixtapp.ui.screens.search.model.SearchResultUi
 import com.example.mixtapp.ui.theme.MixtappTheme
+import com.example.mixtapp.ui.utils.ErrorMessage
+import com.example.mixtapp.ui.utils.ReviewAlbumRow
 
 @Composable
 fun SearchScreen(

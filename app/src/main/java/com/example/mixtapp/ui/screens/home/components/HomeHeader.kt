@@ -24,8 +24,8 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
-import com.example.mixtapp.ui.components.LogoText
-import com.example.mixtapp.ui.components.ProfileAsyncImage
+import com.example.mixtapp.ui.utils.LogoText
+import com.example.mixtapp.ui.utils.ProfileAsyncImage
 
 @Composable
 fun HomeHeader(

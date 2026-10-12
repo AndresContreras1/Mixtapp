@@ -9,7 +9,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
-import com.example.mixtapp.ui.components.AlbumAsyncImage
+import com.example.mixtapp.ui.utils.AlbumAsyncImage
 
 @Composable
 fun ReleaseImage(

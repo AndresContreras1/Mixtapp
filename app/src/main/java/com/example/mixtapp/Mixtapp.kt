@@ -6,11 +6,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.mixtapp.navigation.AppNavigation
-import com.example.mixtapp.navigation.NavigationLogic
-import com.example.mixtapp.navigation.Screen
-import com.example.mixtapp.ui.components.BottomNav
-import com.example.mixtapp.ui.components.WriteReviewFab
+import com.example.mixtapp.ui.navigation.AppNavigation
+import com.example.mixtapp.ui.navigation.BottomNav
+import com.example.mixtapp.ui.navigation.NavigationLogic
+import com.example.mixtapp.ui.navigation.Screen
+import com.example.mixtapp.ui.utils.WriteReviewFab
 
 @Composable
 fun Mixtapp(modifier: Modifier = Modifier) {

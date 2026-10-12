@@ -22,10 +22,10 @@ import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalMyReviewsProvider
 import com.example.mixtapp.data.model.MyReviewUi
 import com.example.mixtapp.data.model.UsuarioUi
-import com.example.mixtapp.ui.components.ErrorMessage
 import com.example.mixtapp.ui.screens.myreviews.components.MyReviewCard
 import com.example.mixtapp.ui.screens.userprofile.components.UserProfileHeader
 import com.example.mixtapp.ui.theme.MixtappTheme
+import com.example.mixtapp.ui.utils.ErrorMessage
 
 @Composable
 fun UserProfileScreen(

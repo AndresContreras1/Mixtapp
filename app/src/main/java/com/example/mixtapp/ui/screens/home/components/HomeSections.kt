@@ -14,9 +14,9 @@ import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
 import com.example.mixtapp.data.model.FriendActivityUi
 import com.example.mixtapp.data.model.SongReviewUi
-import com.example.mixtapp.ui.components.ErrorMessage
-import com.example.mixtapp.ui.components.ReviewAlbumRow
 import com.example.mixtapp.ui.screens.home.model.HomeFilterUi
+import com.example.mixtapp.ui.utils.ErrorMessage
+import com.example.mixtapp.ui.utils.ReviewAlbumRow
 import kotlin.math.roundToInt
 
 @Composable

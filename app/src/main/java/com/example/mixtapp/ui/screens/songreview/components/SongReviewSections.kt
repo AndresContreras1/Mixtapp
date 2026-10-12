@@ -21,8 +21,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.data.model.SongReviewUi
-import com.example.mixtapp.ui.components.ErrorMessage
 import com.example.mixtapp.ui.theme.displayFontFamily
+import com.example.mixtapp.ui.utils.ErrorMessage
 
 @Composable
 fun SongReviewSections(

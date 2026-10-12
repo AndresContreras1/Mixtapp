@@ -1,4 +1,4 @@
-package com.example.mixtapp.ui.components
+package com.example.mixtapp.ui.utils
 
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility

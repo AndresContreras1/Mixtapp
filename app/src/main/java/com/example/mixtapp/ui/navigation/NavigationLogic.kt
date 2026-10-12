@@ -1,4 +1,4 @@
-package com.example.mixtapp.navigation
+package com.example.mixtapp.ui.navigation
 
 object NavigationLogic {
 

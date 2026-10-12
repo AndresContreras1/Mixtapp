@@ -12,8 +12,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
-import com.example.mixtapp.ui.components.AppButton
 import com.example.mixtapp.ui.theme.MixtappTheme
+import com.example.mixtapp.ui.utils.AppButton
 
 @Composable
 fun SignUpForm(

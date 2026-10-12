@@ -10,8 +10,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
-import com.example.mixtapp.ui.components.AppTextField
-import com.example.mixtapp.ui.components.FieldIcon
+import com.example.mixtapp.ui.utils.AppTextField
+import com.example.mixtapp.ui.utils.FieldIcon
 
 @Composable
 fun SignUpFields(

@@ -1,4 +1,4 @@
-package com.example.mixtapp.ui.components
+package com.example.mixtapp.ui.navigation
 
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
@@ -10,7 +10,6 @@ import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.mixtapp.R
-import com.example.mixtapp.navigation.Screen
 
 data class BottomNavItem(
     val filledIcon: ImageVector,

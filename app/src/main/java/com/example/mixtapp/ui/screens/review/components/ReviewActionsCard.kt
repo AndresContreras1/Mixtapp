@@ -13,7 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.mixtapp.ui.components.ErrorMessage
+import com.example.mixtapp.ui.utils.ErrorMessage
 
 @Composable
 fun ReviewActionsCard(

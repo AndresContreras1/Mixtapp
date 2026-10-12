@@ -1,4 +1,4 @@
-package com.example.mixtapp.ui.components
+package com.example.mixtapp.ui.utils
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text

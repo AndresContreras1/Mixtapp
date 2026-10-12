@@ -23,8 +23,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
-import com.example.mixtapp.ui.components.StarRating
 import com.example.mixtapp.ui.theme.displayFontFamily
+import com.example.mixtapp.ui.utils.StarRating
 import kotlin.math.roundToInt
 
 @Composable

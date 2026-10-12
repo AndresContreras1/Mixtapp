@@ -31,13 +31,13 @@ import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalMyReviewsProvider
 import com.example.mixtapp.data.model.MyReviewUi
-import com.example.mixtapp.ui.components.AlbumAsyncImage
-import com.example.mixtapp.ui.components.AppButton
-import com.example.mixtapp.ui.components.ErrorMessage
-import com.example.mixtapp.ui.components.StarRating
 import com.example.mixtapp.ui.screens.review.MAX_REVIEW_LENGTH
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.theme.displayFontFamily
+import com.example.mixtapp.ui.utils.AlbumAsyncImage
+import com.example.mixtapp.ui.utils.AppButton
+import com.example.mixtapp.ui.utils.ErrorMessage
+import com.example.mixtapp.ui.utils.StarRating
 
 // Formulario para editar una resena dentro del mismo perfil
 @Composable

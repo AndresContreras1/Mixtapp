@@ -11,8 +11,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mixtapp.ui.components.AppChip
 import com.example.mixtapp.ui.screens.following.model.FollowingFilterUi
+import com.example.mixtapp.ui.utils.AppChip
 
 @Composable
 fun FollowingFilters(

@@ -1,4 +1,4 @@
-package com.example.mixtapp.ui.components
+package com.example.mixtapp.ui.utils
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult

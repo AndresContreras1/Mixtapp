@@ -1,4 +1,4 @@
-package com.example.mixtapp.ui.components
+package com.example.mixtapp.ui.navigation
 
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar

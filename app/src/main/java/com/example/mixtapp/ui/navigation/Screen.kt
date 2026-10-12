@@ -1,4 +1,4 @@
-package com.example.mixtapp.navigation
+package com.example.mixtapp.ui.navigation
 
 // Definicion de las rutas de la aplicacion
 sealed class Screen(val route: String) {

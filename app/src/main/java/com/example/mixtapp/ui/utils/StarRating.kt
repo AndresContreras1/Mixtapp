@@ -1,4 +1,4 @@
-package com.example.mixtapp.ui.components
+package com.example.mixtapp.ui.utils
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

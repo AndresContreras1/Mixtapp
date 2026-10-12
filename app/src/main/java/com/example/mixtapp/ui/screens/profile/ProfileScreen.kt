@@ -26,7 +26,6 @@ import com.example.mixtapp.data.local.LocalAlbumProvider
 import com.example.mixtapp.data.local.LocalMyReviewsProvider
 import com.example.mixtapp.data.model.Album
 import com.example.mixtapp.data.model.MyReviewUi
-import com.example.mixtapp.ui.components.ErrorMessage
 import com.example.mixtapp.ui.screens.myreviews.components.MyReviewCard
 import com.example.mixtapp.ui.screens.profile.components.EditReviewCard
 import com.example.mixtapp.ui.screens.profile.components.FavoriteSection
@@ -38,6 +37,7 @@ import com.example.mixtapp.ui.screens.profile.components.RatingsSection
 import com.example.mixtapp.ui.screens.profile.model.ProfileTabUi
 import com.example.mixtapp.ui.screens.profile.model.profileTabs
 import com.example.mixtapp.ui.theme.MixtappTheme
+import com.example.mixtapp.ui.utils.ErrorMessage
 
 @Composable
 fun ProfileScreen(

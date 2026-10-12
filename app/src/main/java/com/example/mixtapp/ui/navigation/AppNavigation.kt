@@ -1,4 +1,4 @@
-package com.example.mixtapp.navigation
+package com.example.mixtapp.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier

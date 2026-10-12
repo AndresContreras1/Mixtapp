@@ -1,4 +1,4 @@
-package com.example.mixtapp.ui.components
+package com.example.mixtapp.ui.utils
 
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons

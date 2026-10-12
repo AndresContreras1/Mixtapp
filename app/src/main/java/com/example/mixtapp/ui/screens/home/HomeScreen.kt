@@ -16,11 +16,11 @@ import com.example.mixtapp.data.local.LocalFriendActivityProvider
 import com.example.mixtapp.data.local.LocalSongReviewProvider
 import com.example.mixtapp.data.model.FriendActivityUi
 import com.example.mixtapp.data.model.SongReviewUi
-import com.example.mixtapp.ui.components.AppBackground
 import com.example.mixtapp.ui.screens.home.components.HomeSections
 import com.example.mixtapp.ui.screens.home.model.HomeFilterUi
 import com.example.mixtapp.ui.screens.home.model.homeFilters
 import com.example.mixtapp.ui.theme.*
+import com.example.mixtapp.ui.utils.AppBackground
 
 @Composable
 fun HomeScreen(

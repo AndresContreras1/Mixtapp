@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.data.model.UsuarioUi
-import com.example.mixtapp.ui.components.ProfileAsyncImage
+import com.example.mixtapp.ui.utils.ProfileAsyncImage
 
 @Composable
 fun UserProfileHeader(

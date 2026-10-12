@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.data.model.Album
-import com.example.mixtapp.ui.components.AlbumAsyncImage
+import com.example.mixtapp.ui.utils.AlbumAsyncImage
 
 // Cuantas portadas caben en la fila de favoritos
 const val FAVORITOS_EN_PERFIL = 4

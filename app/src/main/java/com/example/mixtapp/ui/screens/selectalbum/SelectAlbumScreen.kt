@@ -31,10 +31,10 @@ import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalSongReviewProvider
 import com.example.mixtapp.data.model.SongReviewUi
-import com.example.mixtapp.ui.components.ErrorMessage
-import com.example.mixtapp.ui.components.ReviewAlbumRow
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.theme.displayFontFamily
+import com.example.mixtapp.ui.utils.ErrorMessage
+import com.example.mixtapp.ui.utils.ReviewAlbumRow
 import kotlin.math.roundToInt
 
 // El boton + abre esta pantalla para elegir el album antes de escribir la resena

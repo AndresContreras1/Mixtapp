@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.data.model.NotificationUi
-import com.example.mixtapp.ui.components.AlbumAsyncImage
+import com.example.mixtapp.ui.utils.AlbumAsyncImage
 
 @Composable
 fun NotificationRow(notification: NotificationUi, modifier: Modifier = Modifier) {
