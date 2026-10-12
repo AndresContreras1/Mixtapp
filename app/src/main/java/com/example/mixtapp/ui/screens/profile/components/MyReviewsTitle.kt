@@ -2,6 +2,7 @@ package com.example.mixtapp.ui.screens.profile.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -38,7 +39,7 @@ fun MyReviewsTitle(
                 fontWeight = FontWeight.Bold
             )
 
-            TextButton(onClick = onSeeAllClick) {
+            TextButton(onClick = onSeeAllClick, contentPadding = PaddingValues(0.dp)) {
                 Text(
                     text = stringResource(R.string.ver_todas),
                     color = MaterialTheme.colorScheme.primary,

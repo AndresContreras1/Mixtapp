@@ -26,6 +26,8 @@ import com.example.mixtapp.ui.utils.ProfileAsyncImage
 fun UserProfileHeader(
     usuario: UsuarioUi,
     reviewsCount: Int,
+    // Mientras llegan las resenas no se muestra el total
+    cargandoResenas: Boolean,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -62,15 +64,17 @@ fun UserProfileHeader(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(
-            text = if (reviewsCount == 1) {
-                stringResource(R.string.una_resena)
-            } else {
-                stringResource(R.string.n_resenas, reviewsCount)
-            },
-            color = MaterialTheme.colorScheme.onSurface,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Bold
-        )
+        if (!cargandoResenas) {
+            Text(
+                text = if (reviewsCount == 1) {
+                    stringResource(R.string.una_resena)
+                } else {
+                    stringResource(R.string.n_resenas, reviewsCount)
+                },
+                color = MaterialTheme.colorScheme.onSurface,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
     }
 }

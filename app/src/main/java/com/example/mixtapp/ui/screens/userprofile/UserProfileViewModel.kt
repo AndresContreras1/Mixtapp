@@ -40,7 +40,7 @@ class UserProfileViewModel @Inject constructor(
 
     fun getUserReviews(userId: String) {
         viewModelScope.launch {
-            _uiState.update { it.copy(cargandoResenas = true, errorMessageRes = null) }
+            _uiState.update { it.copy(cargandoResenas = true, errorResenasRes = null) }
             val result = usuarioRepository.getReviewsDeUsuario(id = userId)
 
             if (result.isSuccess) {
@@ -50,7 +50,7 @@ class UserProfileViewModel @Inject constructor(
                 _uiState.update { it.copy(reviews = reviews, cargandoResenas = false) }
             } else {
                 _uiState.update {
-                    it.copy(cargandoResenas = false, errorMessageRes = mensajeDeError(result.exceptionOrNull()))
+                    it.copy(cargandoResenas = false, errorResenasRes = mensajeDeError(result.exceptionOrNull()))
                 }
             }
         }

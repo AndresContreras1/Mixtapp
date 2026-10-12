@@ -1,6 +1,7 @@
 package com.example.mixtapp.ui.screens.signup.components
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -37,7 +38,7 @@ fun SignUpFooter(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        TextButton(onClick = onLoginClick) {
+        TextButton(onClick = onLoginClick, contentPadding = PaddingValues(0.dp)) {
             Text(
                 text = buildAnnotatedString {
                     withStyle(SpanStyle(color = MaterialTheme.colorScheme.onSurface)) {
