@@ -34,15 +34,14 @@ class HomeViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(HomeState())
     val uiState: StateFlow<HomeState> = _uiState.asStateFlow()
 
-    // No recibe parametros, asi que los datos se cargan al crear el ViewModel
-    init {
-        getAlbums()
-    }
+    // La pantalla la llama cada vez que se muestra: el init solo corre una vez al crear el
+    // ViewModel, y al volver atras se seguirian viendo los datos viejos
+    fun getAlbums() {
+        // Al volver se conserva el filtro que estaba elegido
+        val filtroInicial = _uiState.value.selectedFilterId.ifEmpty { homeFilters.first().id }
 
-    private fun getAlbums() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
-            val filtroInicial = homeFilters.first().id
 
             // Los albumes y mis resenas salen a la vez y se espera la mas lenta
             val albumesPendientes = async { albumRepository.getSongReviews() }

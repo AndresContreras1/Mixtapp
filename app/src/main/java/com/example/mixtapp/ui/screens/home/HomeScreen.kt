@@ -34,7 +34,9 @@ fun HomeScreen(
 ) {
     val state by homeViewModel.uiState.collectAsState()
 
+    // Se pide cada vez que se muestra: al volver de escribir o borrar una resena ya sale al dia
     LaunchedEffect(Unit) {
+        homeViewModel.getAlbums()
         homeViewModel.refrescarFotoDePerfil()
     }
 
