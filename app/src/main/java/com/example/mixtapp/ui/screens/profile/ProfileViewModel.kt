@@ -51,22 +51,35 @@ class ProfileViewModel @Inject constructor(
         // Mis datos y mis resenas se usan por su lado, asi que cada uno va en su propio launch
         viewModelScope.launch {
             val perfil = usuarioRepository.getMiPerfil()
-            val miPerfil = perfil.getOrNull()
 
-            _uiState.update {
-                it.copy(
-                    // Una cuenta sin datos en Firestore muestra la parte del correo
-                    usuario = miPerfil?.username ?: usuarioDelCorreo,
-                    nombre = miPerfil?.nombre ?: "",
-                    bio = miPerfil?.bio ?: "",
-                    profileImageUrl = foto,
-                    // El aviso solo sale si de verdad no existe mi documento en Firestore
-                    avisoPerfilRes = if (perfil.exceptionOrNull() is ContenidoNoEncontradoException) {
-                        R.string.completa_tu_perfil
-                    } else {
-                        null
-                    },
-                )
+            if (perfil.isSuccess) {
+                val miPerfil = perfil.getOrNull()
+
+                _uiState.update {
+                    it.copy(
+                        usuario = miPerfil?.username ?: usuarioDelCorreo,
+                        nombre = miPerfil?.nombre ?: "",
+                        bio = miPerfil?.bio ?: "",
+                        profileImageUrl = foto,
+                        avisoPerfilRes = null,
+                    )
+                }
+            } else {
+                val error = perfil.exceptionOrNull()
+
+                _uiState.update {
+                    it.copy(
+                        // Si mis datos ya estaban cargados se conservan; si no, sale la parte del correo
+                        usuario = it.usuario.ifEmpty { usuarioDelCorreo },
+                        profileImageUrl = foto,
+                        // Sin mi documento en Firestore se pide completar el perfil; otro error se avisa
+                        avisoPerfilRes = if (error is ContenidoNoEncontradoException) {
+                            R.string.completa_tu_perfil
+                        } else {
+                            mensajeDeError(error = error, generico = R.string.error_cargar_contenido)
+                        },
+                    )
+                }
             }
         }
 
@@ -291,6 +304,7 @@ class ProfileViewModel @Inject constructor(
         is ContenidoNoEncontradoException -> R.string.contenido_no_encontrado
         is ErrorDelServidorException -> R.string.error_servidor
         is SinConexionException -> R.string.error_sin_conexion
+        is SinSesionException -> R.string.error_sin_sesion
         else -> generico
     }
 

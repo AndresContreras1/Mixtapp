@@ -43,10 +43,13 @@ class MyReviewsViewModel @Inject constructor(
         // Mis datos y mis resenas se usan por su lado, asi que cada uno va en su propio launch
         viewModelScope.launch {
             val perfil = usuarioRepository.getMiPerfil()
-            // Una cuenta sin datos en Firestore muestra la parte del correo
-            val usuario = perfil.getOrNull()?.username ?: usuarioDelCorreo
 
-            _uiState.update { it.copy(username = usuario, iniciales = usuario.take(2).uppercase()) }
+            _uiState.update {
+                // Sin mis datos en Firestore se queda el usuario que ya tenia, o la parte del correo
+                val usuario = perfil.getOrNull()?.username ?: it.username.ifEmpty { usuarioDelCorreo }
+
+                it.copy(username = usuario, iniciales = usuario.take(2).uppercase())
+            }
         }
 
         viewModelScope.launch {

@@ -45,13 +45,17 @@ private fun NavHostController.navegarLimpiandoLaPila(ruta: String) {
     }
 }
 
-// Abrir un album y el perfil de un usuario se repite en varias pantallas
+// Abrir un album, el perfil de un usuario y escribir una resena se repite en varias pantallas
 private fun NavHostController.abrirAlbum(songId: String) {
     navigate(Screen.SongDetail.createRoute(songId = songId))
 }
 
 private fun NavHostController.abrirPerfil(userId: String) {
     navigate(Screen.UserProfile.createRoute(userId = userId))
+}
+
+private fun NavHostController.abrirEscribirResena(albumId: String) {
+    navigate(Screen.WriteReview.createRoute(albumId = albumId))
 }
 
 @Composable
@@ -175,7 +179,7 @@ fun AppNavigation(
                     navController.abrirAlbum(songId = songId)
                 },
                 onEditClick = { albumId ->
-                    navController.navigate(Screen.WriteReview.createRoute(albumId = albumId))
+                    navController.abrirEscribirResena(albumId = albumId)
                 },
                 onBackClick = { navController.popBackStack() }
             )
@@ -221,7 +225,7 @@ fun AppNavigation(
                 songId = songId,
                 songReviewsViewModel = songReviewsViewModel,
                 onWriteReviewClick = {
-                    navController.navigate(Screen.WriteReview.createRoute(albumId = songId))
+                    navController.abrirEscribirResena(albumId = songId)
                 },
                 onBackClick = { navController.popBackStack() },
                 onAuthorClick = { userId ->

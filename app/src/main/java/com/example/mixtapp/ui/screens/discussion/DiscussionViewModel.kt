@@ -65,7 +65,7 @@ class DiscussionViewModel @Inject constructor(
             return
         }
 
-        val autor = authRepository.currentUser?.email?.substringBefore("@") ?: ""
+        val autor = authRepository.usuarioDelCorreo
 
         viewModelScope.launch {
             val result = reviewRepository.publicarComentario(

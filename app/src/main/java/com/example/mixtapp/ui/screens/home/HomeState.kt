@@ -15,6 +15,7 @@ data class HomeState(
     val filters: List<HomeFilterUi> = emptyList(),
     val selectedFilterId: String = "",
     val profileImageUrl: String = "",
-    val isLoading: Boolean = false,
+    // Arranca cargando porque lo primero que hace la pantalla es pedir los albumes
+    val isLoading: Boolean = true,
     @StringRes val errorMessageRes: Int? = null,
 )
