@@ -20,7 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
-import com.example.mixtapp.ui.screens.editprofile.MAX_BIO_LENGTH
+import com.example.mixtapp.data.model.MAX_BIO_LENGTH
 import com.example.mixtapp.ui.utils.AppTextField
 
 @Composable

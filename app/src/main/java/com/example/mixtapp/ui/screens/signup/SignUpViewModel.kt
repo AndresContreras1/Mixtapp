@@ -5,6 +5,8 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
+import com.example.mixtapp.data.model.MAX_NOMBRE_LENGTH
+import com.example.mixtapp.data.model.MAX_USERNAME_LENGTH
 import com.example.mixtapp.data.model.MIN_PASSWORD_LENGTH
 import com.example.mixtapp.data.repository.AuthRepository
 import com.example.mixtapp.data.repository.CorreoYaRegistradoException
@@ -31,11 +33,11 @@ class SignUpViewModel @Inject constructor(
     val uiState: StateFlow<SignUpState> = _uiState.asStateFlow()
 
     fun updateNombre(nombre: String) {
-        _uiState.update { it.copy(nombre = nombre, errorMessageRes = null) }
+        _uiState.update { it.copy(nombre = nombre.take(MAX_NOMBRE_LENGTH), errorMessageRes = null) }
     }
 
     fun updateUsuario(usuario: String) {
-        _uiState.update { it.copy(usuario = usuario, errorMessageRes = null) }
+        _uiState.update { it.copy(usuario = usuario.take(MAX_USERNAME_LENGTH), errorMessageRes = null) }
     }
 
     fun updateEmail(email: String) {

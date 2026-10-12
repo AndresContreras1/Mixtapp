@@ -4,6 +4,9 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
+import com.example.mixtapp.data.model.MAX_BIO_LENGTH
+import com.example.mixtapp.data.model.MAX_NOMBRE_LENGTH
+import com.example.mixtapp.data.model.MAX_USERNAME_LENGTH
 import com.example.mixtapp.data.repository.AuthRepository
 import com.example.mixtapp.data.repository.SinConexionException
 import com.example.mixtapp.data.repository.SinSesionException
@@ -14,11 +17,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
-// Limites de caracteres de cada campo del perfil
-const val MAX_NOMBRE_LENGTH = 40
-const val MAX_USERNAME_LENGTH = 20
-const val MAX_BIO_LENGTH = 150
 
 @HiltViewModel
 class EditProfileViewModel @Inject constructor(

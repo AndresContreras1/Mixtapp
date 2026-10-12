@@ -229,13 +229,14 @@ class ProfileViewModel @Inject constructor(
                 val url = result.getOrNull() ?: ""
 
                 // El documento de Firestore tambien guarda la foto para que otros la vean en mi perfil
-                usuarioRepository.actualizarFotoDePerfil(fotoUrl = url)
+                val guardada = usuarioRepository.actualizarFotoDePerfil(fotoUrl = url)
 
                 _uiState.update {
                     it.copy(
                         subiendoImagen = false,
                         profileImageUrl = url,
-                        errorImagenRes = null,
+                        // La foto ya quedo en Storage; si el documento no se actualiza, se avisa
+                        errorImagenRes = if (guardada.isSuccess) null else R.string.error_guardar_perfil,
                     )
                 }
             } else {
