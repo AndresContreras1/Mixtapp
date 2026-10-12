@@ -117,7 +117,8 @@ fun UserProfileScreenPreview() {
             usuario = UsuarioUi(
                 id = "2",
                 nombre = "Mateo Gómez",
-                email = "mateo@example.com",
+                username = "mateo",
+                bio = "Rock alternativo y conciertos en vivo",
                 fotoUrl = "",
             ),
             reviews = LocalMyReviewsProvider.reviews,
