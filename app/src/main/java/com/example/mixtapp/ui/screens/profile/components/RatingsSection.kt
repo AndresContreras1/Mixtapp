@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -46,7 +47,7 @@ fun RatingsSection(
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold
             )
-            TextButton(onClick = onMasActividadClick) {
+            TextButton(onClick = onMasActividadClick, contentPadding = PaddingValues(0.dp)) {
                 Text(
                     text = stringResource(R.string.more_activity),
                     color = MaterialTheme.colorScheme.primary,

@@ -59,7 +59,7 @@ fun UserProfileScreen(
             usuario = state.usuario!!,
             reviews = state.reviews,
             cargandoResenas = state.cargandoResenas,
-            errorMessageRes = state.errorMessageRes,
+            errorMessageRes = state.errorResenasRes,
             onReviewClick = onReviewClick,
             onBackClick = onBackClick,
             modifier = modifier
@@ -90,6 +90,7 @@ fun UserProfileScreenContent(
                 UserProfileHeader(
                     usuario = usuario,
                     reviewsCount = reviews.size,
+                    cargandoResenas = cargandoResenas,
                     onBackClick = onBackClick,
                     modifier = Modifier.padding(bottom = 24.dp)
                 )

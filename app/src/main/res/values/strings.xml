@@ -108,6 +108,7 @@
     <string name="replying">Respondiendo</string>
     <string name="comentario_placeholder">Escribe un comentario...</string>
     <string name="publicar_comentario">Publicar</string>
+    <string name="ahora">ahora</string>
     <string name="reviewed">" reseñó"</string>
 
     <!-- Descripciones de los iconos, para lectores de pantalla -->
@@ -156,7 +157,6 @@
     <string name="album_meta">%1$s · %2$s · %3$s</string>
     <string name="date_listened">Fecha de escucha</string>
     <string name="when_did_you_listen">¿Cuándo lo escuchaste?</string>
-    <string name="review_section_title">R e s e ñ a</string>
     <string name="review_placeholder">¿Qué te hizo sentir este álbum? ¿Alguna canción que destaque?\n¿Lo recomendarías?</string>
     <string name="contador_caracteres">%1$d/%2$d</string>
     <string name="cancel">Cancelar</string>

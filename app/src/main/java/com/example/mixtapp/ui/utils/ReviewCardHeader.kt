@@ -26,10 +26,12 @@ import com.example.mixtapp.data.model.MyReviewUi
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.theme.displayFontFamily
 
-// Portada + titulo/artista/estrellas
+// Portada + titulo/artista y, si se piden, las estrellas
 @Composable
 fun ReviewCardHeader(
     review: MyReviewUi,
+    // Al editar la resena las estrellas van aparte, porque se pueden cambiar
+    mostrarEstrellas: Boolean,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -64,17 +66,19 @@ fun ReviewCardHeader(
                 fontWeight = FontWeight.Bold,
                 maxLines = 1
             )
-            Spacer(modifier = Modifier.height(6.dp))
-            StarRating(
-                rating = review.rating,
-                starCount = 5,
-                starSize = 15.dp,
-                spacing = 0.dp,
-                filledTint = MaterialTheme.colorScheme.onBackground,
-                emptyTint = MaterialTheme.colorScheme.onBackground,
-                emptyIcon = Icons.Default.StarBorder,
-                onRatingChange = null
-            )
+            if (mostrarEstrellas) {
+                Spacer(modifier = Modifier.height(6.dp))
+                StarRating(
+                    rating = review.rating,
+                    starCount = 5,
+                    starSize = 15.dp,
+                    spacing = 0.dp,
+                    filledTint = MaterialTheme.colorScheme.onBackground,
+                    emptyTint = MaterialTheme.colorScheme.onBackground,
+                    emptyIcon = Icons.Default.StarBorder,
+                    onRatingChange = null
+                )
+            }
         }
     }
 }
@@ -83,6 +87,6 @@ fun ReviewCardHeader(
 @Preview(showBackground = true)
 fun ReviewCardHeaderPreview() {
     MixtappTheme(darkTheme = true) {
-        ReviewCardHeader(review = LocalMyReviewsProvider.reviews.first())
+        ReviewCardHeader(review = LocalMyReviewsProvider.reviews.first(), mostrarEstrellas = true)
     }
 }

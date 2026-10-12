@@ -125,7 +125,8 @@ número, y `whereEqualTo` no encuentra reseñas si `albumId` o `usuarioId` se gu
 - **Inicio, Buscar, perfil, Mis reseñas y el detalle se vuelven a pedir al mostrarse**, así una
   reseña nueva aparece al volver.
 - **El color sale del `MaterialTheme`.** No hay colores quemados fuera de `Color.kt`, salvo el
-  fondo de la ventana en `themes.xml`, que se pinta antes de que arranque Compose.
+  fondo de la ventana en `themes.xml` y los drawables XML (icono y marcadores de imagen), que se
+  pintan sin Compose y repiten a mano los colores de la paleta.
 - **Hilt se compila con KSP.** El proyecto está en AGP 9.3.3, que trae Kotlin integrado (por eso no
   se aplica `kotlin.android`) y deja `kapt` solo como transición. El plugin de KSP ya estaba en el
   build de clase. `firebase-storage` reemplaza a `firebase-storage-ktx`: desde el BoM 32.5 son el
@@ -214,6 +215,7 @@ app/src/main/java/com/example/mixtapp/
 │   ├── screens/<x>/     XScreen · XState · XViewModel · components/ · model/
 │   ├── theme/           Color · Theme · Type
 │   └── utils/           los componentes que comparten dos o más pantallas
+├── BaseApplication.kt   @HiltAndroidApp
 ├── MainActivity.kt      @AndroidEntryPoint
 └── Mixtapp.kt           Scaffold + barra + botón flotante + AppNavigation
 ```

@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -21,7 +20,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,11 +30,10 @@ import com.example.mixtapp.data.local.LocalMyReviewsProvider
 import com.example.mixtapp.data.model.MAX_REVIEW_LENGTH
 import com.example.mixtapp.data.model.MyReviewUi
 import com.example.mixtapp.ui.theme.MixtappTheme
-import com.example.mixtapp.ui.theme.displayFontFamily
-import com.example.mixtapp.ui.utils.AlbumAsyncImage
 import com.example.mixtapp.ui.utils.AppButton
 import com.example.mixtapp.ui.utils.AppTextArea
 import com.example.mixtapp.ui.utils.ErrorMessage
+import com.example.mixtapp.ui.utils.ReviewCardHeader
 import com.example.mixtapp.ui.utils.StarRating
 
 // Formulario para editar una resena dentro del mismo perfil
@@ -63,36 +60,7 @@ fun EditReviewCard(
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                AlbumAsyncImage(
-                    cover = review.album.cover,
-                    contentDescription = stringResource(R.string.album_cover, review.album.title),
-                    alpha = 1f,
-                    modifier = Modifier
-                        .size(56.dp)
-                        .clip(RoundedCornerShape(10.dp))
-                )
-
-                Spacer(modifier = Modifier.width(14.dp))
-
-                Column {
-                    Text(
-                        text = review.album.title,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        fontSize = 17.sp,
-                        fontWeight = FontWeight.Black,
-                        fontFamily = displayFontFamily,
-                        maxLines = 1
-                    )
-                    Text(
-                        text = review.album.artist,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.72f),
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.Bold,
-                        maxLines = 1
-                    )
-                }
-            }
+            ReviewCardHeader(review = review, mostrarEstrellas = false)
 
             Spacer(modifier = Modifier.height(14.dp))
 

@@ -2,6 +2,7 @@ package com.example.mixtapp.ui.screens.songreview.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
@@ -12,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.theme.displayFontFamily
@@ -36,7 +38,7 @@ fun ReviewsHeader(
                 fontFamily = displayFontFamily,
                 fontWeight = FontWeight.Bold
             )
-            TextButton(onClick = onWriteReviewClick) {
+            TextButton(onClick = onWriteReviewClick, contentPadding = PaddingValues(0.dp)) {
                 Text(
                     text = stringResource(if (tieneResena) R.string.editar_la_tuya else R.string.write_one),
                     color = MaterialTheme.colorScheme.primary,

@@ -101,11 +101,7 @@ fun AppNavigation(
                     navController.navegarLimpiandoLaPila(Screen.Home.route)
                 },
                 // Vuelve al login que ya estaba en la pila, para que atras no repita pantallas
-                onLoginClick = {
-                    navController.navigate(Screen.Login.route) {
-                        popUpTo(Screen.Login.route) { inclusive = true }
-                    }
-                }
+                onLoginClick = { navController.popBackStack() }
             )
         }
 

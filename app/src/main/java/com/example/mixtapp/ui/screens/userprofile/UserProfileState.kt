@@ -12,4 +12,6 @@ data class UserProfileState(
     // Arranca cargando porque lo primero que hace la pantalla es pedir el perfil
     val isLoading: Boolean = true,
     @StringRes val errorMessageRes: Int? = null,
+    // El error de las resenas va aparte, porque se piden en otro launch
+    @StringRes val errorResenasRes: Int? = null,
 )

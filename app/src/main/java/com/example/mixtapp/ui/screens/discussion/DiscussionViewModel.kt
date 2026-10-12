@@ -30,6 +30,8 @@ class DiscussionViewModel @Inject constructor(
         if (_uiState.value.discussion != null) return
 
         viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
+
             val result = reviewRepository.getDiscussionByReviewId(reviewId = reviewId)
 
             if (result.isSuccess) {
@@ -70,6 +72,7 @@ class DiscussionViewModel @Inject constructor(
                 reviewId = reviewId,
                 autor = autor,
                 texto = texto,
+                esRespuesta = _uiState.value.replyingToCommentId != null,
             )
 
             if (result.isSuccess) {
@@ -77,6 +80,7 @@ class DiscussionViewModel @Inject constructor(
                     it.copy(
                         discussion = result.getOrNull(),
                         nuevoComentario = "",
+                        replyingToCommentId = null,
                         errorMessageRes = null,
                     )
                 }
@@ -147,7 +151,7 @@ class DiscussionViewModel @Inject constructor(
 
     @StringRes
     private fun mensajeDeError(error: Throwable?, @StringRes generico: Int): Int = when (error) {
-        is ContenidoNoEncontradoException -> R.string.contenido_no_encontrado
+        is ContenidoNoEncontradoException -> R.string.discusion_no_encontrada
         else -> generico
     }
 }

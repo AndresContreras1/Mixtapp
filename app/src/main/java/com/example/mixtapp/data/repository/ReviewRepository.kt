@@ -121,9 +121,12 @@ class ReviewRepository @Inject constructor(
         }
     }
 
-    suspend fun getDiscussionByReviewId(reviewId: String): Result<DiscussionUi?> {
+    suspend fun getDiscussionByReviewId(reviewId: String): Result<DiscussionUi> {
         return try {
-            Result.success(reviewLocalDataSource.getDiscussionByReviewId(reviewId = reviewId))
+            val discusion = reviewLocalDataSource.getDiscussionByReviewId(reviewId = reviewId)
+                ?: return Result.failure(ContenidoNoEncontradoException())
+
+            Result.success(discusion)
         } catch (e: Exception) {
             Log.d("ReviewRepository", "getDiscussionByReviewId: ${e.message}")
             Result.failure(ErrorDeDatosLocalesException())
@@ -134,15 +137,17 @@ class ReviewRepository @Inject constructor(
         reviewId: String,
         autor: String,
         texto: String,
+        esRespuesta: Boolean,
     ): Result<DiscussionUi> = actualizarDiscusion(reviewId = reviewId) { discusion ->
         val comentario = DiscussionCommentUi(
             id = "comentario-propio-" + (discusion.comments.size + 1),
             author = autor,
             initials = autor.take(2).lowercase(),
-            timeAgo = "ahora",
+            // Vacio: la pantalla muestra "ahora" desde strings.xml
+            timeAgo = "",
             content = texto,
             likes = 0,
-            isReply = false,
+            isReply = esRespuesta,
             isLiked = false,
         )
 
