@@ -5,16 +5,15 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.ui.utils.AppTextArea
 
 @Composable
 fun ReviewFormSection(
@@ -33,24 +32,12 @@ fun ReviewFormSection(
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        OutlinedTextField(
+        AppTextArea(
             value = reviewText,
             onValueChange = onReviewChange,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(126.dp),
-            label = { Text(text = stringResource(R.string.label_resena)) },
-            placeholder = { Text(text = stringResource(R.string.review_placeholder)) }
-        )
-
-        Spacer(modifier = Modifier.height(6.dp))
-
-        Text(
-            text = stringResource(R.string.contador_caracteres, reviewText.length, maxLength),
-            modifier = Modifier.align(Alignment.End),
-            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
-            fontSize = 11.sp,
-            fontWeight = FontWeight.Bold
+            label = stringResource(R.string.label_resena),
+            placeholder = stringResource(R.string.review_placeholder),
+            maxLength = maxLength
         )
     }
 }

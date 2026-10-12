@@ -1,11 +1,11 @@
 package com.example.mixtapp.ui.screens.home.components
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,12 +34,13 @@ fun SectionTitle(
             fontFamily = displayFontFamily
         )
 
-        Text(
-            text = stringResource(R.string.see_all),
-            color = MaterialTheme.colorScheme.onBackground,
-            fontSize = 13.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.clickable { onSeeAllClick() }
-        )
+        TextButton(onClick = onSeeAllClick) {
+            Text(
+                text = stringResource(R.string.see_all),
+                color = MaterialTheme.colorScheme.onBackground,
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
     }
 }

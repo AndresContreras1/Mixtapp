@@ -1,23 +1,18 @@
 package com.example.mixtapp.ui.screens.signup.components
 
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckBox
+import androidx.compose.material.icons.outlined.CheckBoxOutlineBlank
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -37,40 +32,17 @@ fun TermsRow(
         modifier = modifier,
         verticalAlignment = Alignment.Top
     ) {
-        val colorCheck = MaterialTheme.colorScheme.onSurfaceVariant
-
-        Box(
-            modifier = Modifier
-                .padding(top = 2.dp)
-                .size(29.dp)
-                .clip(RoundedCornerShape(5.dp))
-                .border(
-                    width = 2.2.dp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    shape = RoundedCornerShape(5.dp)
-                )
-                .clickable(onClick = onCheckedChange),
-            contentAlignment = Alignment.Center
+        // La casilla es un IconButton con el icono lleno o vacio, como la barra inferior
+        IconButton(
+            onClick = onCheckedChange,
+            modifier = Modifier.size(29.dp)
         ) {
-            if (checked) {
-                Canvas(modifier = Modifier.size(17.dp)) {
-                    val stroke = Stroke(width = 3.4f, cap = StrokeCap.Round)
-                    drawLine(
-                        color = colorCheck,
-                        start = Offset(size.width * 0.08f, size.height * 0.55f),
-                        end = Offset(size.width * 0.40f, size.height * 0.86f),
-                        strokeWidth = stroke.width,
-                        cap = StrokeCap.Round
-                    )
-                    drawLine(
-                        color = colorCheck,
-                        start = Offset(size.width * 0.40f, size.height * 0.86f),
-                        end = Offset(size.width * 0.94f, size.height * 0.16f),
-                        strokeWidth = stroke.width,
-                        cap = StrokeCap.Round
-                    )
-                }
-            }
+            Icon(
+                imageVector = if (checked) Icons.Filled.CheckBox else Icons.Outlined.CheckBoxOutlineBlank,
+                contentDescription = stringResource(if (checked) R.string.terminos_aceptados else R.string.aceptar_terminos),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(29.dp)
+            )
         }
 
         Spacer(modifier = Modifier.size(12.dp))

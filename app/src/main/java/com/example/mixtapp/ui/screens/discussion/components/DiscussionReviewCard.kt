@@ -88,7 +88,11 @@ fun DiscussionReviewCard(
                 likes = review.likes,
                 isLiked = review.isLiked,
                 onLikeClick = onLikeClick,
-                commentsLabel = stringResource(R.string.comments_count, review.commentsCount),
+                commentsLabel = if (review.commentsCount == 1) {
+                    stringResource(R.string.un_comentario)
+                } else {
+                    stringResource(R.string.comments_count, review.commentsCount)
+                },
                 onCommentsClick = null,
                 isShared = review.isShared,
                 onShareClick = onShareClick,

@@ -53,7 +53,16 @@ fun ReleaseStats(
                 modifier = Modifier.weight(1f)
             )
             VerticalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f), modifier = Modifier.height(30.dp))
-            StatItem(value = ratingCount, label = stringResource(R.string.ratings_label), estrellas = null, modifier = Modifier.weight(1f))
+            StatItem(
+                value = ratingCount,
+                label = if (ratingCount == "1") {
+                    stringResource(R.string.calificacion_label)
+                } else {
+                    stringResource(R.string.ratings_label)
+                },
+                estrellas = null,
+                modifier = Modifier.weight(1f)
+            )
             VerticalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f), modifier = Modifier.height(30.dp))
             StatItem(
                 value = stringResource(R.string.recomendacion_porcentaje, recommendRate),
