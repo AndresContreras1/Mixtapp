@@ -44,12 +44,14 @@ fun UserProfileScreen(
 
     when {
         state.isLoading -> {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()
             }
         }
         state.usuario == null -> {
-            Text(text = stringResource(state.errorMessageRes ?: R.string.perfil_no_encontrado))
+            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(text = stringResource(state.errorMessageRes ?: R.string.perfil_no_encontrado))
+            }
         }
         else -> UserProfileScreenContent(
             usuario = state.usuario!!,

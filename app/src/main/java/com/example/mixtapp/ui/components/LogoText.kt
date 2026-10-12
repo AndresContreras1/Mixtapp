@@ -20,7 +20,7 @@ import com.example.mixtapp.ui.theme.displayFontFamily
 fun LogoText(
     fontSize: TextUnit,
     fontWeight: FontWeight,
-    lineHeight: TextUnit = TextUnit.Unspecified,
+    lineHeight: TextUnit,
     modifier: Modifier = Modifier
 ) {
     val nombreClaro = stringResource(R.string.logo_mixt)
@@ -50,7 +50,8 @@ fun LogoTextPreview() {
     MixtappTheme(darkTheme = true) {
         LogoText(
             fontSize = 36.sp,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            lineHeight = 40.sp
         )
     }
 }

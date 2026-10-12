@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,7 +47,9 @@ fun DiscussionScreen(
     }
 
     if (state.discussion == null) {
-        Text(text = stringResource(state.errorMessageRes ?: R.string.discusion_no_encontrada))
+        Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Text(text = stringResource(state.errorMessageRes ?: R.string.discusion_no_encontrada))
+        }
     } else {
         DiscussionScreenContent(
             discussion = state.discussion!!,

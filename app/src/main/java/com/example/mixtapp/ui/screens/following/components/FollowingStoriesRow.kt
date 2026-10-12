@@ -21,9 +21,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mixtapp.R
 import com.example.mixtapp.data.model.FollowingStoryUi
 
 @Composable
@@ -94,7 +96,8 @@ private fun FollowingStoryBubble(
         }
 
         Text(
-            text = story.label,
+            // El boton de agregar tiene un texto fijo de la app; las demas historias muestran su nombre
+            text = if (story.isAddAction) stringResource(R.string.tu_historia) else story.label,
             modifier = Modifier.padding(top = 7.dp),
             color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.76f),
             fontSize = 13.sp,
