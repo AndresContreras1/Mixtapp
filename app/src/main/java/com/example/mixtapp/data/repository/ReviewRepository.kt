@@ -80,7 +80,8 @@ class ReviewRepository @Inject constructor(
             id = "comentario-propio-" + (discusion.comments.size + 1),
             author = autor,
             initials = autor.take(2).lowercase(),
-            timeAgo = "ahora",
+            // Vacio: la pantalla muestra "ahora" desde strings.xml
+            timeAgo = "",
             content = texto,
             likes = 0,
             isReply = esRespuesta,

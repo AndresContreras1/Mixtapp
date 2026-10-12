@@ -24,9 +24,10 @@ fun ReviewFormSection(
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         Text(
-            text = stringResource(R.string.review_section_title),
+            text = stringResource(R.string.label_resena),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontSize = 18.sp,
+            letterSpacing = 6.sp,
             fontWeight = FontWeight.Normal
         )
 

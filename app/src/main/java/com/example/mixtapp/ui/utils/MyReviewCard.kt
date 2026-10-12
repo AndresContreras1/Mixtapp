@@ -57,7 +57,7 @@ fun MyReviewCard(
             )
 
             Column(modifier = Modifier.padding(end = 44.dp)) {
-                ReviewCardHeader(review = review)
+                ReviewCardHeader(review = review, mostrarEstrellas = true)
 
                 Spacer(modifier = Modifier.height(12.dp))
 

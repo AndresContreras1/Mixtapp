@@ -103,7 +103,9 @@ lógica: filtrar, ordenar y decidir qué se muestra. **La pantalla** pinta y avi
   cada álbum que devuelve el backend; las de todos los álbumes se piden a la vez con `async`.
 - **Mi reseña la marca el repositorio.** Cada reseña llega con `esMia`, así el inicio, el detalle
   y la pantalla de escribir saben cuál es la mía sin hacer otra petición.
-- **El color sale del `MaterialTheme`.** No hay colores quemados fuera de `Color.kt`.
+- **El color sale del `MaterialTheme`.** No hay colores quemados fuera de `Color.kt`, salvo el
+  fondo de la ventana en `themes.xml` y los drawables XML (icono y marcadores de imagen), que se
+  pintan sin Compose y repiten a mano los colores de la paleta.
 - **La app es solo oscura.** El esquema claro existe como plantilla, pero no se aplica hasta que
   estén diseñadas las pantallas en modo claro.
 - **Hay callbacks vacíos a propósito**: ajustes, más opciones y las pestañas Diario, Listas y
@@ -156,6 +158,7 @@ app/src/main/java/com/example/mixtapp/
 │   ├── screens/<x>/     XScreen · XState · XViewModel · components/ · model/
 │   ├── theme/           Color · Theme · Type
 │   └── utils/           los componentes que comparten dos o más pantallas
+├── BaseApplication.kt   @HiltAndroidApp
 ├── MainActivity.kt      @AndroidEntryPoint
 └── Mixtapp.kt           Scaffold + barra + botón flotante + AppNavigation
 ```

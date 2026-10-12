@@ -1,6 +1,6 @@
 package com.example.mixtapp.ui.screens.discussion.components
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,12 +40,13 @@ fun NewCommentField(
 
         Spacer(modifier = Modifier.size(12.dp))
 
-        Text(
-            text = stringResource(R.string.publicar_comentario),
-            modifier = Modifier.clickable { onPublicarClick() },
-            color = MaterialTheme.colorScheme.primary,
-            fontSize = 13.sp,
-            fontWeight = FontWeight.Bold,
-        )
+        TextButton(onClick = onPublicarClick, contentPadding = PaddingValues(0.dp)) {
+            Text(
+                text = stringResource(R.string.publicar_comentario),
+                color = MaterialTheme.colorScheme.primary,
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Bold,
+            )
+        }
     }
 }
