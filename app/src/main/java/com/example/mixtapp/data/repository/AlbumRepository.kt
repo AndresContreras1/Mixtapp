@@ -2,7 +2,7 @@ package com.example.mixtapp.data.repository
 
 import android.util.Log
 import com.example.mixtapp.data.datasource.AlbumLocalDataSource
-import com.example.mixtapp.data.datasource.impl.AlbumRetrofitDataSourceImpl
+import com.example.mixtapp.data.datasource.impl.firestore.AlbumFirestoreDataSourceImpl
 import com.example.mixtapp.data.dtos.toAlbum
 import com.example.mixtapp.data.dtos.toSongReviewItemUi
 import com.example.mixtapp.data.model.Album
@@ -17,9 +17,10 @@ import javax.inject.Inject
 // Desde esta calificacion se cuenta que la resena recomienda el album
 private const val CALIFICACION_PARA_RECOMENDAR = 4
 
+// Para volver al backend de Express basta con cambiar la implementacion a AlbumRetrofitDataSourceImpl
 class AlbumRepository @Inject constructor(
     private val albumLocalDataSource: AlbumLocalDataSource,
-    private val albumRemoteDataSource: AlbumRetrofitDataSourceImpl
+    private val albumRemoteDataSource: AlbumFirestoreDataSourceImpl
 ) {
 
     suspend fun getAlbumes(): Result<List<Album>> {
@@ -44,7 +45,7 @@ class AlbumRepository @Inject constructor(
             val songReviews = coroutineScope {
                 val pendientes = albumes.map { album ->
                     async {
-                        val reviews = albumRemoteDataSource.getReviewsDeAlbum(album.id.toString())
+                        val reviews = albumRemoteDataSource.getReviewsDeAlbum(album.id)
                         conEstadisticas(
                             album = album.toAlbum(),
                             reviews = reviews.map { it.toSongReviewItemUi() }
@@ -109,7 +110,7 @@ class AlbumRepository @Inject constructor(
         }
     }
 
-    // El promedio, el total y el porcentaje que recomienda salen de las resenas del backend
+    // El promedio, el total y el porcentaje que recomienda salen de las resenas guardadas
     private fun conEstadisticas(album: Album, reviews: List<SongReviewItemUi>): SongReviewUi {
         var suma = 0
         var recomiendan = 0

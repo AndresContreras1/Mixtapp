@@ -1,10 +1,14 @@
 package com.example.mixtapp.data.repository
 
 import android.util.Log
+import com.example.mixtapp.data.datasource.AuthRemoteDataSource
 import com.example.mixtapp.data.datasource.ReviewLocalDataSource
-import com.example.mixtapp.data.datasource.impl.ReviewRetrofitDataSourceImpl
-import com.example.mixtapp.data.datasource.impl.UsuarioRetrofitDataSourceImpl
+import com.example.mixtapp.data.datasource.impl.firestore.AlbumFirestoreDataSourceImpl
+import com.example.mixtapp.data.datasource.impl.firestore.ReviewFirestoreDataSourceImpl
+import com.example.mixtapp.data.datasource.impl.firestore.UsuarioFirestoreDataSourceImpl
+import com.example.mixtapp.data.dtos.CreateReviewAlbumDto
 import com.example.mixtapp.data.dtos.CreateReviewDto
+import com.example.mixtapp.data.dtos.CreateReviewUsuarioDto
 import com.example.mixtapp.data.dtos.toMyReviewUi
 import com.example.mixtapp.data.model.DiscussionCommentUi
 import com.example.mixtapp.data.model.DiscussionUi
@@ -12,18 +16,22 @@ import com.example.mixtapp.data.model.MyReviewUi
 import retrofit2.HttpException
 import javax.inject.Inject
 
+// Organiza varios data sources: las resenas, el usuario y el album que se copian en cada una,
+// y Authentication para saber quien es el usuario de la app
 class ReviewRepository @Inject constructor(
     private val reviewLocalDataSource: ReviewLocalDataSource,
-    private val reviewRemoteDataSource: ReviewRetrofitDataSourceImpl,
-    private val usuarioRemoteDataSource: UsuarioRetrofitDataSourceImpl
+    private val reviewRemoteDataSource: ReviewFirestoreDataSourceImpl,
+    private val usuarioRemoteDataSource: UsuarioFirestoreDataSourceImpl,
+    private val albumRemoteDataSource: AlbumFirestoreDataSourceImpl,
+    private val authRemoteDataSource: AuthRemoteDataSource
 ) {
-
-    // Los usuarios del backend no son los de Firebase, asi que el usuario de la app se quema
-    private val usuarioActualId = "1"
 
     suspend fun getMyReviews(): Result<List<MyReviewUi>> {
         return try {
-            val reviews = usuarioRemoteDataSource.getReviewsDeUsuario(usuarioActualId)
+            val usuarioId = authRemoteDataSource.currentUser?.uid
+                ?: return Result.failure(SinSesionException())
+
+            val reviews = usuarioRemoteDataSource.getReviewsDeUsuario(usuarioId)
             val misResenas = reviews.map { it.toMyReviewUi() }
             Result.success(misResenas)
         } catch (e: HttpException) {
@@ -38,8 +46,11 @@ class ReviewRepository @Inject constructor(
     // Solo hay una resena por album: si existe, la pantalla de escribir la edita
     suspend fun getMyReviewByAlbumId(albumId: String): Result<MyReviewUi?> {
         return try {
-            val reviews = usuarioRemoteDataSource.getReviewsDeUsuario(usuarioActualId)
-            val resena = reviews.find { it.albumId.toString() == albumId }
+            val usuarioId = authRemoteDataSource.currentUser?.uid
+                ?: return Result.failure(SinSesionException())
+
+            val reviews = usuarioRemoteDataSource.getReviewsDeUsuario(usuarioId)
+            val resena = reviews.find { it.albumId == albumId }
             Result.success(resena?.toMyReviewUi())
         } catch (e: HttpException) {
             Log.d("ReviewRepository", "getMyReviewByAlbumId: ${e.message}")
@@ -59,12 +70,32 @@ class ReviewRepository @Inject constructor(
         reviewId: String?,
     ): Result<Unit> {
         return try {
+            val usuarioId = authRemoteDataSource.currentUser?.uid
+                ?: return Result.failure(SinSesionException())
+
+            val album = albumRemoteDataSource.getAlbumById(albumId)
+            val photoUrl = authRemoteDataSource.currentUser?.photoUrl?.toString()
+
+            // La resena guarda una copia de lo que se muestra del usuario y del album, porque
+            // en Firestore no hay joins. Solo se copia lo que se ve, no todo el usuario
+            val createReviewUsuarioDto = CreateReviewUsuarioDto(
+                nombre = nombreDelUsuario(usuarioId = usuarioId),
+                fotoUrl = photoUrl,
+            )
+            val createReviewAlbumDto = CreateReviewAlbumDto(
+                titulo = album.titulo,
+                artista = album.artista,
+                portadaUrl = album.portadaUrl,
+            )
+
             val createReviewDto = CreateReviewDto(
-                usuarioId = usuarioActualId.toInt(),
-                albumId = albumId.toInt(),
+                usuarioId = usuarioId,
+                albumId = albumId,
                 calificacion = rating,
                 comentario = texto,
                 fechaEscucha = if (fecha.isEmpty()) null else fecha,
+                usuario = createReviewUsuarioDto,
+                album = createReviewAlbumDto,
             )
 
             if (reviewId != null) reviewRemoteDataSource.updateReview(reviewId, createReviewDto)
@@ -181,6 +212,16 @@ class ReviewRepository @Inject constructor(
             Result.failure(ContenidoNoEncontradoException())
         } catch (e: Exception) {
             Result.failure(ErrorDeDatosLocalesException())
+        }
+    }
+
+    // Una cuenta creada antes del sprint 10 no tiene documento en usuarios: se usa su correo
+    private suspend fun nombreDelUsuario(usuarioId: String): String {
+        return try {
+            usuarioRemoteDataSource.getUsuarioById(usuarioId).nombre
+        } catch (e: Exception) {
+            Log.d("ReviewRepository", "nombreDelUsuario: ${e.message}")
+            authRemoteDataSource.currentUser?.email?.substringBefore("@") ?: ""
         }
     }
 }
