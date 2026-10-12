@@ -31,6 +31,8 @@ fun SignUpScreen(
     }
 
     SignUpScreenContent(
+        nombre = state.nombre,
+        onNombreChange = { signUpViewModel.updateNombre(nombre = it) },
         usuario = state.usuario,
         onUsuarioChange = { signUpViewModel.updateUsuario(usuario = it) },
         email = state.email,
@@ -57,6 +59,8 @@ fun SignUpScreen(
 
 @Composable
 fun SignUpScreenContent(
+    nombre: String,
+    onNombreChange: (String) -> Unit,
     usuario: String,
     onUsuarioChange: (String) -> Unit,
     email: String,
@@ -95,6 +99,8 @@ fun SignUpScreenContent(
             SignUpHeader(modifier = Modifier.padding(bottom = 16.dp))
 
             SignUpForm(
+                nombre = nombre,
+                onNombreChange = onNombreChange,
                 usuario = usuario,
                 onUsuarioChange = onUsuarioChange,
                 email = email,
@@ -128,6 +134,8 @@ fun SignUpScreenContent(
 @Composable
 private fun SignUpScreenContentPreview() {
     SignUpScreenContent(
+        nombre = "",
+        onNombreChange = {},
         usuario = "",
         onUsuarioChange = {},
         email = "",

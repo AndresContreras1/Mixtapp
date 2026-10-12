@@ -15,6 +15,8 @@ import com.example.mixtapp.ui.utils.FieldIcon
 
 @Composable
 fun SignUpFields(
+    nombre: String,
+    onNombreChange: (String) -> Unit,
     usuario: String,
     onUsuarioChange: (String) -> Unit,
     email: String,
@@ -30,6 +32,20 @@ fun SignUpFields(
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
+        AppTextField(
+            label = stringResource(R.string.nombre),
+            placeholder = stringResource(R.string.ingresa_tu_nombre),
+            value = nombre,
+            onValueChange = onNombreChange,
+            keyboardOptions = KeyboardOptions.Default,
+            icon = FieldIcon.User,
+            esContrasena = false,
+            contrasenaVisible = false,
+            onContrasenaVisibleChange = {}
+        )
+
+        Spacer(modifier = Modifier.height(14.dp))
+
         AppTextField(
             label = stringResource(R.string.username),
             placeholder = stringResource(R.string.choose_username),
