@@ -11,11 +11,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -47,6 +49,7 @@ fun SearchScreen(
         selectedCategoryId = state.selectedCategoryId,
         onCategoryClick = { searchViewModel.updateSelectedCategory(categoryId = it) },
         resultados = state.resultados,
+        isLoading = state.isLoading,
         errorMessageRes = state.errorMessageRes,
         onAlbumClick = onAlbumClick,
         modifier = modifier,
@@ -61,6 +64,7 @@ fun SearchScreenContent(
     selectedCategoryId: String?,
     onCategoryClick: (String) -> Unit,
     resultados: List<SearchResultUi>,
+    isLoading: Boolean,
     errorMessageRes: Int?,
     onAlbumClick: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -88,6 +92,20 @@ fun SearchScreenContent(
                 )
             }
 
+            // Mientras llegan los albumes del backend
+            if (isLoading) {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                }
+            }
+
             if (query.isBlank() && selectedCategoryId == null) {
                 item {
                     BrowseByHeader(modifier = Modifier.padding(horizontal = 24.dp))
@@ -101,7 +119,19 @@ fun SearchScreenContent(
                         modifier = Modifier.padding(horizontal = 24.dp),
                     )
                 }
-            } else if (resultados.isEmpty()) {
+
+                // Sin buscar nada se ven todos los albumes debajo de las categorias
+                item {
+                    Text(
+                        text = stringResource(R.string.todos_los_albumes),
+                        modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 28.dp, bottom = 8.dp),
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontSize = 20.sp,
+                    )
+                }
+            }
+
+            if (resultados.isEmpty() && !isLoading && (query.isNotBlank() || selectedCategoryId != null)) {
                 item {
                     Text(
                         text = stringResource(R.string.sin_resultados),
@@ -110,7 +140,9 @@ fun SearchScreenContent(
                         fontSize = 16.sp,
                     )
                 }
-            } else {
+            }
+
+            if (resultados.isNotEmpty()) {
                 items(resultados, key = { it.songReview.id }) { resultado ->
                     ReviewAlbumRow(
                         cover = resultado.songReview.album.cover,
@@ -146,6 +178,7 @@ fun SearchScreenPreview() {
             selectedCategoryId = null,
             onCategoryClick = {},
             resultados = emptyList(),
+            isLoading = false,
             errorMessageRes = null,
             onAlbumClick = {},
         )
