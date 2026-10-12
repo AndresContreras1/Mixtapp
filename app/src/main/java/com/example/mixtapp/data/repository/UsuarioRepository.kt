@@ -11,7 +11,9 @@ import com.google.firebase.firestore.FirebaseFirestoreException
 import retrofit2.HttpException
 import javax.inject.Inject
 
-// Para volver al backend de Express basta con cambiar la implementacion a UsuarioRetrofitDataSourceImpl
+// Para volver al backend de Express basta con cambiar la implementacion a UsuarioRetrofitDataSourceImpl.
+// El backend todavia no tiene rutas para guardar usuarios, asi que registrar y editar el perfil
+// quedan como to-do en esa implementacion, como en clase
 class UsuarioRepository @Inject constructor(
     private val usuarioRemoteDataSource: UsuarioFirestoreDataSourceImpl,
     private val authRemoteDataSource: AuthRemoteDataSource

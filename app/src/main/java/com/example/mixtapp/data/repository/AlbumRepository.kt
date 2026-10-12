@@ -110,7 +110,8 @@ class AlbumRepository @Inject constructor(
         }
     }
 
-    // El id con el que la base guarda mis resenas; sin sesion ninguna resena es mia
+    // El id con el que la base guarda mis resenas. Con Firestore, sin sesion ninguna resena es mia;
+    // con Retrofit el usuario de la app siempre es el 1 del backend
     private fun idDeMiUsuario(): String =
         usuarioRemoteDataSource.idDelUsuarioEnLaBase(uid = authRemoteDataSource.currentUser?.uid ?: "")
 

@@ -176,7 +176,9 @@ reciben (`...FirestoreDataSourceImpl`) por la de Retrofit (`...RetrofitDataSourc
 `npm run dev` en `mixtapp-backend`. El emulador lo encuentra en `http://10.0.2.2:3000/`. Los usuarios
 de Firebase no existen en el backend, así que la implementación de Retrofit trata al usuario `1` como
 el usuario de la app: guarda mis reseñas a su nombre, y `idDelUsuarioEnLaBase` le dice al
-repositorio que las del usuario `1` son las mías.
+repositorio que las del usuario `1` son las mías. El backend no tiene rutas para crear ni modificar
+usuarios, así que con Retrofit el registro y Editar perfil no guardan nada en la base: quedan como
+*to-do* en `UsuarioRetrofitDataSourceImpl`, igual que en clase.
 
 </details>
 
