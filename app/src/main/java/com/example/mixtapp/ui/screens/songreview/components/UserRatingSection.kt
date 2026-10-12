@@ -22,13 +22,15 @@ import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.utils.StarRating
 
+// Mi calificacion del album: las estrellas solo se muestran y la tarjeta entera es el boton
 @Composable
 fun UserRatingSection(
     rating: Int,
-    onRatingChange: (Int) -> Unit,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     OutlinedCard(
+        onClick = onClick,
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.outlinedCardColors(containerColor = Color.Transparent),
@@ -51,7 +53,7 @@ fun UserRatingSection(
                 filledTint = MaterialTheme.colorScheme.primary,
                 emptyTint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
                 emptyIcon = Icons.Filled.Star,
-                onRatingChange = onRatingChange
+                onRatingChange = null
             )
         }
     }

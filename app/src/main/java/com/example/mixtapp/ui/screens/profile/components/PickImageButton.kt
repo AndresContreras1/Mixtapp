@@ -1,4 +1,4 @@
-package com.example.mixtapp.ui.utils
+package com.example.mixtapp.ui.screens.profile.components
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult

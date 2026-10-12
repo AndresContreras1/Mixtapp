@@ -4,6 +4,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Email
+import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -11,7 +15,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.utils.AppTextField
-import com.example.mixtapp.ui.utils.FieldIcon
 
 @Composable
 fun SignUpFields(
@@ -36,7 +39,7 @@ fun SignUpFields(
             value = usuario,
             onValueChange = onUsuarioChange,
             keyboardOptions = KeyboardOptions.Default,
-            icon = FieldIcon.User,
+            icon = Icons.Outlined.Person,
             esContrasena = false,
             contrasenaVisible = false,
             onContrasenaVisibleChange = {}
@@ -50,7 +53,7 @@ fun SignUpFields(
             value = email,
             onValueChange = onEmailChange,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            icon = FieldIcon.Email,
+            icon = Icons.Outlined.Email,
             esContrasena = false,
             contrasenaVisible = false,
             onContrasenaVisibleChange = {}
@@ -64,7 +67,7 @@ fun SignUpFields(
             value = contrasena,
             onValueChange = onContrasenaChange,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            icon = FieldIcon.Lock,
+            icon = Icons.Outlined.Lock,
             esContrasena = true,
             contrasenaVisible = contrasenaVisible,
             onContrasenaVisibleChange = onContrasenaVisibleChange
@@ -78,7 +81,7 @@ fun SignUpFields(
             value = confirmarContrasena,
             onValueChange = onConfirmarContrasenaChange,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            icon = FieldIcon.Lock,
+            icon = Icons.Outlined.Lock,
             esContrasena = true,
             contrasenaVisible = confirmarVisible,
             onContrasenaVisibleChange = onConfirmarVisibleChange

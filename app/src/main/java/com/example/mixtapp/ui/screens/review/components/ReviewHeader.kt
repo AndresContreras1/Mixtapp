@@ -1,6 +1,5 @@
 package com.example.mixtapp.ui.screens.review.components
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -10,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,14 +36,16 @@ fun ReviewHeader(
                 .padding(horizontal = 30.dp),
             contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = stringResource(R.string.cancel),
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.64f),
-                fontSize = 14.sp,
-                modifier = Modifier
-                    .align(Alignment.CenterStart)
-                    .clickable { onCancel() }
-            )
+            TextButton(
+                onClick = onCancel,
+                modifier = Modifier.align(Alignment.CenterStart)
+            ) {
+                Text(
+                    text = stringResource(R.string.cancel),
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.64f),
+                    fontSize = 14.sp
+                )
+            }
 
             Text(
                 text = stringResource(if (editando) R.string.editar_resena else R.string.write_review),

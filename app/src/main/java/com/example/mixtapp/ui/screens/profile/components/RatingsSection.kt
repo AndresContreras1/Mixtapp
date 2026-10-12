@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -86,9 +87,10 @@ fun RatingsSection(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
+            // La primera barra es la de 0 estrellas, asi que va la estrella vacia
             Icon(
-                imageVector = Icons.Default.Star,
-                contentDescription = stringResource(R.string.una_estrella),
+                imageVector = Icons.Outlined.StarOutline,
+                contentDescription = stringResource(R.string.cero_estrellas),
                 tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
                 modifier = Modifier.size(12.dp)
             )

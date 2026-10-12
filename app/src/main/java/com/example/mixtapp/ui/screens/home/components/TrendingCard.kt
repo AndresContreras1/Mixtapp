@@ -30,7 +30,6 @@ import com.example.mixtapp.R
 import com.example.mixtapp.data.model.SongReviewUi
 import com.example.mixtapp.ui.utils.AlbumAsyncImage
 import com.example.mixtapp.ui.utils.StarRating
-import kotlin.math.roundToInt
 
 @Composable
 fun TrendingCard(
@@ -82,7 +81,7 @@ fun TrendingCard(
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         StarRating(
-                            rating = songReview.rating.roundToInt(),
+                            rating = songReview.estrellas,
                             starCount = 5,
                             starSize = 14.dp,
                             spacing = 0.dp,
@@ -95,7 +94,11 @@ fun TrendingCard(
                         Spacer(modifier = Modifier.width(10.dp))
 
                         Text(
-                            text = "${songReview.ratingCount} ${stringResource(R.string.resenas_label)}",
+                            text = if (songReview.ratingCount == "1") {
+                                stringResource(R.string.una_resena)
+                            } else {
+                                stringResource(R.string.n_resenas, songReview.ratingCount)
+                            },
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 12.sp
                         )

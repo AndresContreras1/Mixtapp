@@ -1,4 +1,4 @@
-package com.example.mixtapp.ui.screens.myreviews.components
+package com.example.mixtapp.ui.utils
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,8 +22,6 @@ import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.data.model.MyReviewUi
 import com.example.mixtapp.ui.theme.displayFontFamily
-import com.example.mixtapp.ui.utils.AlbumAsyncImage
-import com.example.mixtapp.ui.utils.StarRating
 
 // Portada + titulo/artista/estrellas
 @Composable

@@ -78,7 +78,11 @@ fun MyReviewsHeader(
                     fontFamily = displayFontFamily
                 )
                 Text(
-                    text = "$reviewsCount ${stringResource(R.string.resenas_label)}",
+                    text = if (reviewsCount == 1) {
+                        stringResource(R.string.una_resena)
+                    } else {
+                        stringResource(R.string.n_resenas, reviewsCount)
+                    },
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
                     fontSize = 13.sp
                 )

@@ -38,9 +38,15 @@
     <string name="todos_los_albumes">Todos los álbumes</string>
 
     <!-- Profile Extra -->
-    <string name="user_stats">%1$d reseñas • %2$d favoritos</string>
+    <string name="user_stats">%1$s • %2$s</string>
+    <string name="una_resena">1 reseña</string>
+    <string name="n_resenas">%1$s reseñas</string>
+    <string name="un_favorito">1 favorito</string>
+    <string name="n_favoritos">%1$s favoritos</string>
     <string name="more_activity">Más actividad</string>
     <string name="star_rating_format">%d estrellas</string>
+    <string name="estrella_llena">Estrella llena</string>
+    <string name="estrella_vacia">Estrella vacía</string>
 
     <!-- Validacion -->
     <string name="label_buscar">Buscar</string>
@@ -86,7 +92,7 @@
     <string name="error_comentario_vacio">Escribe tu comentario antes de publicar</string>
     <string name="ajustes">Ajustes</string>
     <string name="mas_opciones">Más opciones</string>
-    <string name="una_estrella">Una estrella</string>
+    <string name="cero_estrellas">Cero estrellas</string>
     <string name="cambiar_foto">Cambiar foto</string>
     <string name="foto_perfil">Foto de perfil</string>
 
@@ -121,7 +127,6 @@
     <string name="my_reviews">Mis reseñas</string>
     <string name="ver_todas">Ver todas</string>
     <string name="sin_mis_resenas">Todavía no has escrito reseñas</string>
-    <string name="resenas_label">reseñas</string>
     <string name="editar_resena">Editar reseña</string>
     <string name="eliminar_resena">Eliminar reseña</string>
     <string name="filtro_recientes">Recientes</string>
