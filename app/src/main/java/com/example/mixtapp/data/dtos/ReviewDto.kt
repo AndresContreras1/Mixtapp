@@ -5,36 +5,41 @@ import com.example.mixtapp.data.model.SongReviewItemUi
 
 // Resena de un album, con el usuario que la escribio
 data class ReviewConUsuarioDto(
-    val id: Int,
+    val id: String,
     val calificacion: Int,
     val comentario: String?,
     val fechaEscucha: String?,
-    val usuarioId: Int,
-    val albumId: Int,
-    val createdAt: String,
-    val updatedAt: String,
-    val usuario: UsuarioDto,
-)
+    val usuarioId: String,
+    val albumId: String,
+    val createdAt: String?,
+    val updatedAt: String?,
+    val usuario: UsuarioDto?,
+) {
+    // Firestore necesita un constructor vacio para convertir el documento en el DTO
+    constructor() : this("", 0, null, null, "", "", null, null, null)
+}
 
 // Resena de un usuario, con el album que resena
 data class ReviewConAlbumDto(
-    val id: Int,
+    val id: String,
     val calificacion: Int,
     val comentario: String?,
     val fechaEscucha: String?,
-    val usuarioId: Int,
-    val albumId: Int,
-    val createdAt: String,
-    val updatedAt: String,
-    val album: AlbumDeResenaDto,
-)
+    val usuarioId: String,
+    val albumId: String,
+    val createdAt: String?,
+    val updatedAt: String?,
+    val album: AlbumDeResenaDto?,
+) {
+    constructor() : this("", 0, null, null, "", "", null, null, null)
+}
 
 fun ReviewConUsuarioDto.toSongReviewItemUi(): SongReviewItemUi {
     return SongReviewItemUi(
-        id = id.toString(),
-        authorId = usuarioId.toString(),
-        author = usuario.nombre,
-        authorImage = usuario.fotoUrl ?: "",
+        id = id,
+        authorId = usuarioId,
+        author = usuario?.nombre ?: "",
+        authorImage = usuario?.fotoUrl ?: "",
         fecha = fechaEscucha ?: "",
         rating = calificacion,
         content = comentario ?: "",
@@ -43,8 +48,8 @@ fun ReviewConUsuarioDto.toSongReviewItemUi(): SongReviewItemUi {
 
 fun ReviewConAlbumDto.toMyReviewUi(): MyReviewUi {
     return MyReviewUi(
-        id = id.toString(),
-        album = album.toAlbum(),
+        id = id,
+        album = (album ?: AlbumDeResenaDto()).toAlbum(albumId = albumId),
         rating = calificacion,
         excerpt = comentario ?: "",
         date = fechaEscucha ?: "",

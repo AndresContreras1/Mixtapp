@@ -2,29 +2,34 @@ package com.example.mixtapp.data.dtos
 
 import com.example.mixtapp.data.model.Album
 
-// Igual a la tabla albumes del backend
+// Los mismos campos sirven para la tabla albumes del backend y la coleccion albumes de Firestore
 data class AlbumDto(
-    val id: Int,
+    val id: String,
     val titulo: String,
     val artista: String,
     val portadaUrl: String,
     val anio: Int,
     val genero: String,
-    val createdAt: String,
-    val updatedAt: String,
-)
+    val createdAt: String?,
+    val updatedAt: String?,
+) {
+    // Firestore necesita un constructor vacio para convertir el documento en el DTO
+    constructor() : this("", "", "", "", 0, "", null, null)
+}
 
-// Lo que trae el include del album dentro de las resenas de un usuario
+// Lo que se muestra del album dentro de una resena (el include del backend o la copia en Firestore)
 data class AlbumDeResenaDto(
-    val id: Int,
+    val id: String,
     val titulo: String,
     val artista: String,
     val portadaUrl: String,
-)
+) {
+    constructor() : this("", "", "", "")
+}
 
 fun AlbumDto.toAlbum(): Album {
     return Album(
-        id = id.toString(),
+        id = id,
         title = titulo,
         artist = artista,
         cover = portadaUrl,
@@ -34,9 +39,10 @@ fun AlbumDto.toAlbum(): Album {
     )
 }
 
-fun AlbumDeResenaDto.toAlbum(): Album {
+// El id llega aparte porque en Firestore la copia del album no lo guarda
+fun AlbumDeResenaDto.toAlbum(albumId: String): Album {
     return Album(
-        id = id.toString(),
+        id = albumId,
         title = titulo,
         artist = artista,
         cover = portadaUrl,
