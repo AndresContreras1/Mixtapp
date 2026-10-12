@@ -95,7 +95,7 @@ fun TrendingCard(
                         Spacer(modifier = Modifier.width(10.dp))
 
                         Text(
-                            text = stringResource(R.string.plays_this_week),
+                            text = "${songReview.ratingCount} ${stringResource(R.string.resenas_label)}",
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 12.sp
                         )

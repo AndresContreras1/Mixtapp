@@ -5,4 +5,6 @@ data class FriendActivityUi(
     val album: Album,
     val rating: Int,
     val quote: String,
+    val author: String,
+    val date: String,
 )

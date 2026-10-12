@@ -26,9 +26,11 @@ import com.example.mixtapp.ui.components.StarRating
 @Composable
 fun FriendsActivity(
     activity: FriendActivityUi,
+    onClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Card(
+        onClick = { onClick(activity.album.id) },
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(
@@ -63,7 +65,17 @@ fun FriendsActivity(
             Text(
                 text = stringResource(R.string.cita_entre_comillas, activity.quote),
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.9f),
-                fontSize = 12.sp
+                fontSize = 12.sp,
+                maxLines = 4
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = stringResource(R.string.titulo_guion_subtitulo, activity.author, activity.date),
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                fontSize = 11.sp,
+                fontWeight = FontWeight.Bold
             )
         }
     }

@@ -3,11 +3,10 @@ package com.example.mixtapp.data.repository
 import com.example.mixtapp.data.datasource.SocialLocalDataSource
 import com.example.mixtapp.data.model.FollowingReviewUi
 import com.example.mixtapp.data.model.FollowingUi
-import com.example.mixtapp.data.model.FriendActivityUi
 import com.example.mixtapp.data.model.NotificationUi
-import com.example.mixtapp.data.model.ProfileUi
 import javax.inject.Inject
 
+// Seguidos y notificaciones siguen locales: el backend y Firestore todavia no los tienen
 class SocialRepository @Inject constructor(
     private val socialLocalDataSource: SocialLocalDataSource
 ) {
@@ -22,29 +21,9 @@ class SocialRepository @Inject constructor(
         }
     }
 
-    suspend fun getFriendActivity(): Result<FriendActivityUi> {
-        return try {
-            Result.success(socialLocalDataSource.getFriendActivity())
-        } catch (e: NoSuchElementException) {
-            Result.failure(ContenidoNoEncontradoException())
-        } catch (e: Exception) {
-            Result.failure(ErrorDeDatosLocalesException())
-        }
-    }
-
     suspend fun getNotifications(): Result<List<NotificationUi>> {
         return try {
             Result.success(socialLocalDataSource.getNotifications())
-        } catch (e: NoSuchElementException) {
-            Result.failure(ContenidoNoEncontradoException())
-        } catch (e: Exception) {
-            Result.failure(ErrorDeDatosLocalesException())
-        }
-    }
-
-    suspend fun getProfile(): Result<ProfileUi> {
-        return try {
-            Result.success(socialLocalDataSource.getProfile())
         } catch (e: NoSuchElementException) {
             Result.failure(ContenidoNoEncontradoException())
         } catch (e: Exception) {

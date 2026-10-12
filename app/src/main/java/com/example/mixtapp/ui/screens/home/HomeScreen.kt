@@ -40,17 +40,21 @@ fun HomeScreen(
 
     when {
         state.isLoading -> {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()
             }
         }
-        state.trending == null || state.friendActivity == null -> {
-            Text(text = stringResource(state.errorMessageRes ?: R.string.contenido_no_encontrado))
+        // Sin albumes no hay nada que mostrar: solo el motivo del error
+        state.errorMessageRes != null && state.todos.isEmpty() -> {
+            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(text = stringResource(state.errorMessageRes ?: R.string.error_cargar_contenido))
+            }
         }
         else -> HomeScreenContent(
             albums = state.albums,
-            trending = state.trending!!,
-            friendActivity = state.friendActivity!!,
+            todos = state.todos,
+            trending = state.trending,
+            friendActivity = state.friendActivity,
             filters = state.filters,
             selectedFilterId = state.selectedFilterId,
             profileImageUrl = state.profileImageUrl,
@@ -69,8 +73,9 @@ fun HomeScreen(
 @Composable
 fun HomeScreenContent(
     albums: List<SongReviewUi>,
-    trending: SongReviewUi,
-    friendActivity: FriendActivityUi,
+    todos: List<SongReviewUi>,
+    trending: SongReviewUi?,
+    friendActivity: FriendActivityUi?,
     filters: List<HomeFilterUi>,
     selectedFilterId: String,
     profileImageUrl: String,
@@ -88,6 +93,7 @@ fun HomeScreenContent(
 
         HomeSections(
             albums = albums,
+            todos = todos,
             trending = trending,
             friendActivity = friendActivity,
             filters = filters,
@@ -111,6 +117,7 @@ fun HomeScreenPreview() {
     MixtappTheme(darkTheme = true) {
         HomeScreenContent(
             albums = LocalSongReviewProvider.popularSongs,
+            todos = LocalSongReviewProvider.songs,
             trending = LocalSongReviewProvider.trendingSong,
             friendActivity = LocalFriendActivityProvider.friendActivity,
             filters = homeFilters,
