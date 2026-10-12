@@ -10,6 +10,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.mixtapp.ui.screens.discussion.DiscussionScreen
 import com.example.mixtapp.ui.screens.discussion.DiscussionViewModel
+import com.example.mixtapp.ui.screens.editprofile.EditProfileScreen
+import com.example.mixtapp.ui.screens.editprofile.EditProfileViewModel
 import com.example.mixtapp.ui.screens.following.FollowingScreen
 import com.example.mixtapp.ui.screens.following.FollowingViewModel
 import com.example.mixtapp.ui.screens.home.HomeScreen
@@ -176,7 +178,7 @@ fun AppNavigation(
 
             ProfileScreen(
                 profileViewModel = profileViewModel,
-                onSettingsClick = {},
+                onSettingsClick = { navController.navigate(Screen.EditProfile.route) },
                 onMoreClick = {},
                 logoutButtonPressed = {
                     navController.navegarLimpiandoLaPila(Screen.Login.route)
@@ -185,6 +187,17 @@ fun AppNavigation(
                     navController.navigate(Screen.SongDetail.createRoute(songId = songId))
                 },
                 onSeeAllReviewsClick = { navController.navigate(Screen.MyReviews.route) }
+            )
+        }
+
+        composable(route = Screen.EditProfile.route) {
+            val editProfileViewModel: EditProfileViewModel = hiltViewModel()
+
+            EditProfileScreen(
+                editProfileViewModel = editProfileViewModel,
+                // El perfil vuelve a pedir sus datos al mostrarse, asi que ya sale con los cambios
+                onGuardado = { navController.popBackStack() },
+                onBackClick = { navController.popBackStack() }
             )
         }
 

@@ -12,6 +12,7 @@ sealed class Screen(val route: String) {
     data object Following : Screen(route = "following")
     data object Notifications : Screen(route = "notifications")
     data object SelectAlbum : Screen(route = "selectAlbum")
+    data object EditProfile : Screen(route = "editProfile")
 
     // Las pantallas de detalle reciben un id por la ruta
     data object SongDetail : Screen(route = "songDetail/{songId}") {
