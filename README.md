@@ -90,15 +90,18 @@ qué se muestra. **La pantalla** pinta y avisa.
 
 | Colección | Documento | Campos |
 |---|---|---|
-| `usuarios` | el uid de Authentication | `username`, `nombre`, `bio`, `fotoUrl` |
-| `albumes` | `1` a `8` | `titulo`, `artista`, `portadaUrl`, `anio`, `genero` |
-| `reviews` | id aleatorio | `usuarioId`, `albumId`, `calificacion`, `comentario`, `fechaEscucha`, `usuario`, `album` |
+| `usuarios` | el uid de Authentication | `username`, `nombre` (texto) · `bio`, `fotoUrl` (texto o null) |
+| `albumes` | `1` a `8` | `titulo`, `artista`, `portadaUrl`, `genero` (texto) · `anio` (número) |
+| `reviews` | id aleatorio | `usuarioId`, `albumId` (texto) · `calificacion` (número) · `comentario` (texto) · `fechaEscucha` (texto `AAAA-MM-DD` o null) · `usuario` y `album` (mapas) |
+
+Los tipos tienen que coincidir con los DTO: `toObject` falla si `anio` o `calificacion` no son
+número, y `whereEqualTo` no encuentra reseñas si `albumId` o `usuarioId` se guardan como número.
 
 - El correo y la contraseña se quedan en Authentication; en Firestore no se guardan.
 - Firestore no tiene joins, así que cada reseña guarda una copia de lo que se muestra con ella:
   `usuario` (`nombre`, `fotoUrl`) y `album` (`titulo`, `artista`, `portadaUrl`).
-- Si alguien cambia su nombre, sus reseñas viejas conservan el anterior. Es el costo de
-  desnormalizar y se acepta.
+- Si alguien cambia su nombre o sube su foto después de reseñar, sus reseñas viejas conservan
+  los datos de antes hasta que las edite. Es el costo de desnormalizar y se acepta.
 
 ## Decisiones
 
@@ -141,8 +144,13 @@ terminal, `./gradlew assembleDebug` (en Windows `gradlew.bat assembleDebug`).
 <summary>Firestore: crear la base y los datos iniciales</summary>
 
 1. Consola de Firebase → **Firestore Database → Crear base de datos**, en **modo de prueba**.
-2. Cargar los datos iniciales: los 8 álbumes en `albumes` (ids `1` a `8`), cuatro usuarios de
-   prueba en `usuarios` y sus reseñas en `reviews`, con los campos de la tabla de arriba.
+2. Cargar los datos iniciales con **Iniciar colección** y **Agregar documento**, con los ids y
+   los tipos de la tabla de arriba:
+   - `albumes`: los 8 álbumes de `data/local/LocalAlbumProvider.kt`, con las portadas de
+     `data/local/AlbumCovers.kt` (ids `1` a `8`).
+   - `usuarios`: cuatro usuarios de prueba (ids `2` a `5`) con `username`, `nombre` y `bio`.
+   - `reviews`: sus reseñas, cada una con `usuarioId`, `albumId` y las copias `usuario`
+     (`nombre`, `fotoUrl`) y `album` (`titulo`, `artista`, `portadaUrl`).
 3. Crear una cuenta en la app: el registro guarda tus datos en `usuarios` con tu uid.
 
 </details>
@@ -154,7 +162,8 @@ En `AlbumRepository`, `ReviewRepository` y `UsuarioRepository` cambia la impleme
 reciben (`...FirestoreDataSourceImpl`) por la de Retrofit (`...RetrofitDataSourceImpl`) y corre
 `npm run dev` en `mixtapp-backend`. El emulador lo encuentra en `http://10.0.2.2:3000/`. Los usuarios
 de Firebase no existen en el backend, así que la implementación de Retrofit trata al usuario `1` como
-el usuario de la app: guarda mis reseñas a su nombre y, al leerlas, las devuelve con mi uid.
+el usuario de la app: guarda mis reseñas a su nombre, y `idDelUsuarioEnLaBase` le dice al
+repositorio que las del usuario `1` son las mías.
 
 </details>
 
