@@ -9,5 +9,5 @@ data class NotificationUi(
     val timeAgo: String,
     val thumbnail: String?,
     val isRead: Boolean,
-    val section: String,            // "Today" / "Earlier", para agrupar en la lista
+    val section: String,            // "Hoy" / "Antes", para agrupar en la lista
 )

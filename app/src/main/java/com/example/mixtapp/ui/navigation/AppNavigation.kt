@@ -8,7 +8,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.mixtapp.data.repository.USUARIO_ACTUAL_ID
+import com.example.mixtapp.data.model.USUARIO_ACTUAL_ID
 import com.example.mixtapp.ui.screens.discussion.DiscussionScreen
 import com.example.mixtapp.ui.screens.discussion.DiscussionViewModel
 import com.example.mixtapp.ui.screens.following.FollowingScreen
@@ -151,7 +151,7 @@ fun AppNavigation(
             WriteReviewScreen(
                 albumId = albumId,
                 writeReviewViewModel = writeReviewViewModel,
-                // Al volver, el detalle del album, mi perfil y mis resenas piden sus datos de nuevo
+                // Se vuelve a la pantalla desde donde se abrio
                 onPublicada = { navController.popBackStack() },
                 onCancel = { navController.popBackStack() }
             )
