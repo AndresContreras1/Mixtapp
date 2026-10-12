@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -19,11 +18,8 @@ import com.example.mixtapp.ui.components.ErrorMessage
 @Composable
 fun ReviewActionsCard(
     listenedDate: String,
-    isFavorite: Boolean,
     errorMessageRes: Int?,
     onDateChange: (String) -> Unit,
-    onDatePickerClick: () -> Unit,
-    onFavoriteClick: () -> Unit,
     onPostClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -44,17 +40,7 @@ fun ReviewActionsCard(
             ) {
                 DateListenedRow(
                     listenedDate = listenedDate,
-                    onDateChange = onDateChange,
-                    onDatePickerClick = onDatePickerClick
-                )
-
-                Spacer(modifier = Modifier.height(14.dp))
-                HorizontalDivider(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.42f))
-                Spacer(modifier = Modifier.height(12.dp))
-
-                FavoriteRow(
-                    isFavorite = isFavorite,
-                    onFavoriteClick = onFavoriteClick
+                    onDateChange = onDateChange
                 )
             }
         }

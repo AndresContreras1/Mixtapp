@@ -22,6 +22,8 @@ import com.example.mixtapp.ui.theme.displayFontFamily
 
 @Composable
 fun ReviewHeader(
+    // La misma pantalla crea y edita: solo cambia el titulo
+    editando: Boolean,
     onCancel: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -44,7 +46,7 @@ fun ReviewHeader(
             )
 
             Text(
-                text = stringResource(R.string.write_review),
+                text = stringResource(if (editando) R.string.editar_resena else R.string.write_review),
                 color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Black,

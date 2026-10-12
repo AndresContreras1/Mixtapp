@@ -6,11 +6,13 @@ import com.example.mixtapp.data.model.Album
 // El album es nulable porque puede que el id no exista
 data class WriteReviewState(
     val album: Album? = null,
+    // Id de mi resena de este album: si existe, publicar la modifica en vez de crear otra
+    val reviewId: String? = null,
     val rating: Int = 0,
     val reviewText: String = "",
     val listenedDate: String = "",
-    val isFavorite: Boolean = false,
     val publicada: Boolean = false,
+    val publicando: Boolean = false,
     val isLoading: Boolean = false,
     @StringRes val errorMessageRes: Int? = null,
 )

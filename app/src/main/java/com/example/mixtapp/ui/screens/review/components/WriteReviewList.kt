@@ -16,13 +16,10 @@ fun WriteReviewList(
     rating: Int,
     reviewText: String,
     listenedDate: String,
-    isFavorite: Boolean,
     errorMessageRes: Int?,
     onRatingChange: (Int) -> Unit,
     onReviewChange: (String) -> Unit,
     onDateChange: (String) -> Unit,
-    onDatePickerClick: () -> Unit,
-    onFavoriteClick: () -> Unit,
     onPostClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -59,11 +56,8 @@ fun WriteReviewList(
         item {
             ReviewActionsCard(
                 listenedDate = listenedDate,
-                isFavorite = isFavorite,
                 errorMessageRes = errorMessageRes,
                 onDateChange = onDateChange,
-                onDatePickerClick = onDatePickerClick,
-                onFavoriteClick = onFavoriteClick,
                 onPostClick = onPostClick,
                 modifier = Modifier.padding(top = 22.dp)
             )

@@ -5,10 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -17,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
@@ -25,7 +23,6 @@ import com.example.mixtapp.R
 fun DateListenedRow(
     listenedDate: String,
     onDateChange: (String) -> Unit,
-    onDatePickerClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -33,7 +30,7 @@ fun DateListenedRow(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Column {
+        Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = stringResource(R.string.date_listened),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -53,15 +50,7 @@ fun DateListenedRow(
             modifier = Modifier.width(190.dp),
             label = { Text(text = stringResource(R.string.label_fecha_escucha)) },
             singleLine = true,
-            trailingIcon = {
-                IconButton(onClick = onDatePickerClick) {
-                    Icon(
-                        imageVector = Icons.Default.DateRange,
-                        contentDescription = stringResource(R.string.elegir_fecha_escucha),
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
-            }
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
     }
 }
