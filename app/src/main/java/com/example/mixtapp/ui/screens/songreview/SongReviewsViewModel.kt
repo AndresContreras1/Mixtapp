@@ -10,7 +10,6 @@ import com.example.mixtapp.data.repository.ErrorDelServidorException
 import com.example.mixtapp.data.repository.ReviewRepository
 import com.example.mixtapp.data.repository.SinConexionException
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -32,25 +31,16 @@ class SongReviewsViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
 
-            // El album con sus resenas y mi resena salen a la vez
-            val albumPendiente = async { albumRepository.getSongReviewById(songId = songId) }
-            val miResenaPendiente = async { reviewRepository.getMyReviewByAlbumId(albumId = songId) }
-
-            val result = albumPendiente.await()
-            val miResena = miResenaPendiente.await()
+            // El album llega con todas sus resenas, y la mia ya viene marcada
+            val result = albumRepository.getSongReviewById(songId = songId)
             val song = result.getOrNull()
 
-            if (result.isSuccess && miResena.isSuccess && song != null) {
-                val resena = miResena.getOrNull()
-
+            if (result.isSuccess && song != null) {
                 _uiState.update {
                     it.copy(
-                        song = song.copy(
-                            userRating = resena?.rating ?: 0,
-                            // Mi resena va primero para que se vea apenas entro al album
-                            reviews = song.reviews.sortedByDescending { review -> review.id == resena?.id },
-                        ),
-                        miResenaId = resena?.id,
+                        // Mi resena va primero para que se vea apenas entro al album
+                        song = song.copy(reviews = song.reviews.sortedByDescending { review -> review.esMia }),
+                        miResenaId = song.reviews.find { review -> review.esMia }?.id,
                         isLoading = false,
                         errorMessageRes = null,
                     )
@@ -60,7 +50,7 @@ class SongReviewsViewModel @Inject constructor(
                     it.copy(
                         isLoading = false,
                         errorMessageRes = mensajeDeError(
-                            error = result.exceptionOrNull() ?: miResena.exceptionOrNull(),
+                            error = result.exceptionOrNull(),
                             generico = R.string.error_cargar_contenido,
                         )
                     )
@@ -69,7 +59,7 @@ class SongReviewsViewModel @Inject constructor(
         }
     }
 
-    // Quitar la resena cambia el promedio y el total, asi que el detalle se vuelve a pedir
+    // Quitar mi resena filtra la lista y recalcula el promedio, sin volver a pedir el album
     fun eliminarMiResena() {
         val song = _uiState.value.song ?: return
         val miResenaId = _uiState.value.miResenaId ?: return
@@ -78,7 +68,15 @@ class SongReviewsViewModel @Inject constructor(
             val result = reviewRepository.eliminarResena(reviewId = miResenaId)
 
             if (result.isSuccess) {
-                getSongById(songId = song.id)
+                val restantes = song.reviews.filter { it.id != miResenaId }
+
+                _uiState.update {
+                    it.copy(
+                        song = albumRepository.conEstadisticas(album = song.album, reviews = restantes),
+                        miResenaId = null,
+                        errorMessageRes = null,
+                    )
+                }
             } else {
                 _uiState.update {
                     it.copy(

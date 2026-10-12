@@ -12,12 +12,18 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.mixtapp.R
+import com.example.mixtapp.ui.utils.AppButton
 import com.example.mixtapp.ui.utils.ErrorMessage
 
 @Composable
 fun ReviewActionsCard(
     listenedDate: String,
+    publicando: Boolean,
     errorMessageRes: Int?,
     onDateChange: (String) -> Unit,
     onPostClick: () -> Unit,
@@ -47,8 +53,16 @@ fun ReviewActionsCard(
 
         Spacer(modifier = Modifier.height(26.dp))
 
-        PostButton(
-            onClick = onPostClick
+        // El mismo boton de la app: mientras se guarda muestra que esta cargando
+        AppButton(
+            texto = stringResource(R.string.post),
+            onClick = onPostClick,
+            cargando = publicando,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Black,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp)
         )
 
         ErrorMessage(

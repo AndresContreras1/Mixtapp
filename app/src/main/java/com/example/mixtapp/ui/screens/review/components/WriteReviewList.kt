@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.data.model.Album
-import com.example.mixtapp.ui.screens.review.MAX_REVIEW_LENGTH
+import com.example.mixtapp.data.model.MAX_REVIEW_LENGTH
 
 @Composable
 fun WriteReviewList(
@@ -16,6 +16,7 @@ fun WriteReviewList(
     rating: Int,
     reviewText: String,
     listenedDate: String,
+    publicando: Boolean,
     errorMessageRes: Int?,
     onRatingChange: (Int) -> Unit,
     onReviewChange: (String) -> Unit,
@@ -56,6 +57,7 @@ fun WriteReviewList(
         item {
             ReviewActionsCard(
                 listenedDate = listenedDate,
+                publicando = publicando,
                 errorMessageRes = errorMessageRes,
                 onDateChange = onDateChange,
                 onPostClick = onPostClick,

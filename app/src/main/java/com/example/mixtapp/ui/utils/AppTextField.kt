@@ -3,11 +3,16 @@ package com.example.mixtapp.ui.utils
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Email
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -20,7 +25,7 @@ fun AppTextField(
     placeholder: String,
     value: String,
     onValueChange: (String) -> Unit,
-    icon: FieldIcon,
+    icon: ImageVector,
     keyboardOptions: KeyboardOptions,
     esContrasena: Boolean,
     contrasenaVisible: Boolean,
@@ -40,9 +45,12 @@ fun AppTextField(
         modifier = modifier.fillMaxWidth(),
         label = { Text(text = label) },
         placeholder = { Text(text = placeholder) },
+        // El icono es decorativo: la etiqueta ya dice que va en el campo
         leadingIcon = {
-            FieldIconView(
-                icon = icon,
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(24.dp)
             )
         },
@@ -71,7 +79,7 @@ fun AppTextFieldPreview() {
             placeholder = "Escribe tu correo",
             value = "",
             onValueChange = {},
-            icon = FieldIcon.Email,
+            icon = Icons.Outlined.Email,
             keyboardOptions = KeyboardOptions.Default,
             esContrasena = false,
             contrasenaVisible = false,

@@ -113,10 +113,12 @@ qué se muestra. **La pantalla** pinta y avisa.
   existe: si llega su id se modifica y si no se crea.
 - **Mis reseñas se editan en el mismo perfil.** El lápiz convierte la tarjeta en un formulario y la
   papelera la elimina sin salir de la pantalla.
-- **El promedio y el porcentaje que recomienda se calculan** con las reseñas guardadas de cada
-  álbum, no se escriben a mano.
-- **Inicio, perfil, Mis reseñas y el detalle se vuelven a pedir al mostrarse**, así una reseña
-  nueva aparece al volver.
+- **El promedio y el porcentaje que recomienda se calculan en el repositorio** con las reseñas
+  guardadas de cada álbum; las de todos los álbumes se piden a la vez con `async`.
+- **Mi reseña la marca el repositorio.** Cada reseña llega con `esMia` (su `usuarioId` es mi uid),
+  así el inicio, el detalle y la pantalla de escribir saben cuál es la mía sin otra petición.
+- **Inicio, Buscar, perfil, Mis reseñas y el detalle se vuelven a pedir al mostrarse**, así una
+  reseña nueva aparece al volver.
 - **El color sale del `MaterialTheme`.** No hay colores quemados fuera de `Color.kt`.
 - **La app es solo oscura.** El esquema claro existe como plantilla, pero no se aplica hasta que
   estén diseñadas las pantallas en modo claro.
@@ -125,8 +127,8 @@ qué se muestra. **La pantalla** pinta y avisa.
 
 ## Cómo ejecutarlo
 
-Necesitas Android Studio, JDK 11 y un emulador o dispositivo con **Android 8.0 o superior**
-(`minSdk 26`). El `google-services.json` ya viene en `app/`.
+Necesitas Android Studio con JDK 21 (el que pide `gradle/gradle-daemon-jvm.properties`) y un
+emulador o dispositivo con **Android 8.0 o superior** (`minSdk 26`). El `google-services.json` ya viene en `app/`.
 
 ```bash
 git clone https://github.com/AndresContreras1/Mixtapp.git
@@ -151,8 +153,8 @@ terminal, `./gradlew assembleDebug` (en Windows `gradlew.bat assembleDebug`).
 En `AlbumRepository`, `ReviewRepository` y `UsuarioRepository` cambia la implementación que
 reciben (`...FirestoreDataSourceImpl`) por la de Retrofit (`...RetrofitDataSourceImpl`) y corre
 `npm run dev` en `mixtapp-backend`. El emulador lo encuentra en `http://10.0.2.2:3000/`. Los usuarios
-de Firebase no existen en el backend, así que la implementación de Retrofit usa siempre el usuario
-`1` para mis reseñas.
+de Firebase no existen en el backend, así que la implementación de Retrofit trata al usuario `1` como
+el usuario de la app: guarda mis reseñas a su nombre y, al leerlas, las devuelve con mi uid.
 
 </details>
 

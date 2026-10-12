@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
 import com.example.mixtapp.data.model.Album
+import com.example.mixtapp.data.model.FAVORITOS_EN_PERFIL
+import com.example.mixtapp.data.model.MAX_REVIEW_LENGTH
 import com.example.mixtapp.data.model.MyReviewUi
 import com.example.mixtapp.data.repository.AuthRepository
 import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
@@ -18,11 +20,8 @@ import com.example.mixtapp.data.repository.SinConexionException
 import com.example.mixtapp.data.repository.SinSesionException
 import com.example.mixtapp.data.repository.StorageRepository
 import com.example.mixtapp.data.repository.UsuarioRepository
-import com.example.mixtapp.ui.screens.profile.components.FAVORITOS_EN_PERFIL
 import com.example.mixtapp.ui.screens.profile.model.profileTabs
-import com.example.mixtapp.ui.screens.review.MAX_REVIEW_LENGTH
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -50,38 +49,55 @@ class ProfileViewModel @Inject constructor(
         val usuarioDelCorreo = authRepository.currentUser?.email?.substringBefore("@") ?: ""
         val foto = authRepository.currentUser?.photoUrl?.toString() ?: ""
 
+        // Mis datos y mis resenas se usan por su lado, asi que cada uno va en su propio launch
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
-
-            // Mis datos de Firestore y mis resenas salen a la vez y se espera la mas lenta
-            val perfilPendiente = async { usuarioRepository.getMiPerfil() }
-            val resenasPendientes = async { reviewRepository.getMyReviews() }
-
-            val perfil = perfilPendiente.await()
-            val resenas = resenasPendientes.await()
+            val perfil = usuarioRepository.getMiPerfil()
             val miPerfil = perfil.getOrNull()
-            val misResenas = resenas.getOrNull() ?: emptyList()
 
             _uiState.update {
                 it.copy(
-                    misResenas = misResenas,
-                    favoritos = favoritosDe(resenas = misResenas),
-                    barrasDeCalificacion = barrasDe(resenas = misResenas),
-                    isLoading = false,
-                    tabs = profileTabs,
-                    selectedTabId = profileTabs.first().id,
                     // Una cuenta sin datos en Firestore muestra la parte del correo
                     usuario = miPerfil?.username ?: usuarioDelCorreo,
                     nombre = miPerfil?.nombre ?: "",
                     bio = miPerfil?.bio ?: "",
                     profileImageUrl = foto,
-                    resenaEnEdicionId = null,
-                    errorMessageRes = when {
-                        !resenas.isSuccess -> mensajeDeCarga(resenas.exceptionOrNull())
-                        miPerfil == null -> R.string.completa_tu_perfil
-                        else -> null
-                    },
+                    avisoPerfilRes = if (perfil.isSuccess) null else R.string.completa_tu_perfil,
                 )
+            }
+        }
+
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
+
+            val result = reviewRepository.getMyReviews()
+
+            if (result.isSuccess) {
+                val misResenas = result.getOrNull() ?: emptyList()
+
+                _uiState.update {
+                    it.copy(
+                        misResenas = misResenas,
+                        favoritos = favoritosDe(resenas = misResenas),
+                        barrasDeCalificacion = barrasDe(resenas = misResenas),
+                        isLoading = false,
+                        tabs = profileTabs,
+                        selectedTabId = profileTabs.first().id,
+                        resenaEnEdicionId = null,
+                        errorMessageRes = null,
+                    )
+                }
+            } else {
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        tabs = profileTabs,
+                        selectedTabId = profileTabs.first().id,
+                        errorMessageRes = mensajeDelBackend(
+                            error = result.exceptionOrNull(),
+                            generico = R.string.error_cargar_contenido,
+                        ),
+                    )
+                }
             }
         }
     }
@@ -103,7 +119,14 @@ class ProfileViewModel @Inject constructor(
                     )
                 }
             } else {
-                _uiState.update { it.copy(errorMessageRes = R.string.error_eliminar_resena) }
+                _uiState.update {
+                    it.copy(
+                        errorMessageRes = mensajeDelBackend(
+                            error = result.exceptionOrNull(),
+                            generico = R.string.error_eliminar_resena,
+                        )
+                    )
+                }
             }
         }
     }
@@ -184,7 +207,10 @@ class ProfileViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         guardandoEdicion = false,
-                        errorEdicionRes = mensajeDeEdicion(result.exceptionOrNull()),
+                        errorEdicionRes = mensajeDelBackend(
+                            error = result.exceptionOrNull(),
+                            generico = R.string.error_publicar_resena,
+                        ),
                     )
                 }
             }
@@ -218,7 +244,7 @@ class ProfileViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         subiendoImagen = false,
-                        errorImagenRes = mensajeDeError(result.exceptionOrNull()),
+                        errorImagenRes = mensajeDeImagen(result.exceptionOrNull()),
                     )
                 }
             }
@@ -242,23 +268,15 @@ class ProfileViewModel @Inject constructor(
     }
 
     @StringRes
-    private fun mensajeDeCarga(error: Throwable?): Int = when (error) {
+    private fun mensajeDelBackend(error: Throwable?, @StringRes generico: Int): Int = when (error) {
         is ContenidoNoEncontradoException -> R.string.contenido_no_encontrado
         is ErrorDelServidorException -> R.string.error_servidor
         is SinConexionException -> R.string.error_sin_conexion
-        else -> R.string.error_cargar_contenido
+        else -> generico
     }
 
     @StringRes
-    private fun mensajeDeEdicion(error: Throwable?): Int = when (error) {
-        is ContenidoNoEncontradoException -> R.string.contenido_no_encontrado
-        is ErrorDelServidorException -> R.string.error_servidor
-        is SinConexionException -> R.string.error_sin_conexion
-        else -> R.string.error_publicar_resena
-    }
-
-    @StringRes
-    private fun mensajeDeError(error: Throwable?): Int = when (error) {
+    private fun mensajeDeImagen(error: Throwable?): Int = when (error) {
         is SinSesionException -> R.string.error_sin_sesion
         is SinConexionException -> R.string.error_sin_conexion
         is CuotaExcedidaException -> R.string.error_cuota_excedida

@@ -22,7 +22,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.utils.ErrorMessage
-import com.example.mixtapp.ui.utils.PickImageButton
 import com.example.mixtapp.ui.utils.ProfileAsyncImage
 
 @Composable
@@ -79,8 +78,19 @@ fun ProfileAvatarSection(
             modifier = Modifier.padding(top = 8.dp)
         )
         Spacer(modifier = Modifier.height(16.dp))
+        val resenas = if (reviewsCount == 1) {
+            stringResource(R.string.una_resena)
+        } else {
+            stringResource(R.string.n_resenas, reviewsCount)
+        }
+        val favoritos = if (favoritosCount == 1) {
+            stringResource(R.string.un_favorito)
+        } else {
+            stringResource(R.string.n_favoritos, favoritosCount)
+        }
+
         Text(
-            text = stringResource(R.string.user_stats, reviewsCount, favoritosCount),
+            text = stringResource(R.string.user_stats, resenas, favoritos),
             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
             fontSize = 14.sp
         )

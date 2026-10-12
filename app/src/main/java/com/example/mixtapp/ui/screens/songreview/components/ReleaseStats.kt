@@ -25,11 +25,11 @@ import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.theme.displayFontFamily
 import com.example.mixtapp.ui.utils.StarRating
-import kotlin.math.roundToInt
 
 @Composable
 fun ReleaseStats(
     rating: Double,
+    estrellas: Int,
     ratingCount: String,
     recommendRate: Int,
     modifier: Modifier = Modifier
@@ -49,7 +49,7 @@ fun ReleaseStats(
             StatItem(
                 value = stringResource(R.string.rating_promedio, rating),
                 label = null,
-                estrellas = rating.roundToInt(),
+                estrellas = estrellas,
                 modifier = Modifier.weight(1f)
             )
             VerticalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f), modifier = Modifier.height(30.dp))

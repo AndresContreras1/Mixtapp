@@ -155,7 +155,7 @@ fun AppNavigation(
             WriteReviewScreen(
                 albumId = albumId,
                 writeReviewViewModel = writeReviewViewModel,
-                // La pantalla anterior vuelve a pedir sus datos, asi que la resena ya aparece
+                // Al volver, la pantalla anterior pide sus datos de nuevo y la resena ya aparece
                 onPublicada = { navController.popBackStack() },
                 onCancel = { navController.popBackStack() }
             )

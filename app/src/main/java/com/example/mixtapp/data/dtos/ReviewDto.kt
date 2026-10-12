@@ -34,7 +34,8 @@ data class ReviewConAlbumDto(
     constructor() : this("", 0, null, null, "", "", null, null, null)
 }
 
-fun ReviewConUsuarioDto.toSongReviewItemUi(): SongReviewItemUi {
+// El repositorio pasa el id del usuario de la app para marcar su resena
+fun ReviewConUsuarioDto.toSongReviewItemUi(usuarioActualId: String): SongReviewItemUi {
     return SongReviewItemUi(
         id = id,
         authorId = usuarioId,
@@ -43,6 +44,7 @@ fun ReviewConUsuarioDto.toSongReviewItemUi(): SongReviewItemUi {
         fecha = fechaEscucha ?: "",
         rating = calificacion,
         content = comentario ?: "",
+        esMia = usuarioId == usuarioActualId,
     )
 }
 

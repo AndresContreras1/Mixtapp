@@ -17,7 +17,6 @@ import com.example.mixtapp.data.model.SongReviewUi
 import com.example.mixtapp.ui.screens.home.model.HomeFilterUi
 import com.example.mixtapp.ui.utils.ErrorMessage
 import com.example.mixtapp.ui.utils.ReviewAlbumRow
-import kotlin.math.roundToInt
 
 @Composable
 fun HomeSections(
@@ -119,7 +118,7 @@ fun HomeSections(
                 cover = todos[index].album.cover,
                 albumTitle = todos[index].album.title,
                 artistName = todos[index].album.artist,
-                rating = todos[index].rating.roundToInt(),
+                rating = todos[index].estrellas,
                 coverSize = 64.dp,
                 coverCorner = 10.dp,
                 starSize = 14.dp,

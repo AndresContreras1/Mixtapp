@@ -8,6 +8,7 @@ data class SongReviewsState(
     val song: SongReviewUi? = null,
     // Mi resena de este album, si ya la escribi
     val miResenaId: String? = null,
-    val isLoading: Boolean = false,
+    // Arranca cargando porque lo primero que hace la pantalla es pedir el album
+    val isLoading: Boolean = true,
     @StringRes val errorMessageRes: Int? = null,
 )

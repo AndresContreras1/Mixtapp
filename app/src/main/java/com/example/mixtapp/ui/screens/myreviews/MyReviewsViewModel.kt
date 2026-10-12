@@ -8,8 +8,8 @@ import com.example.mixtapp.data.model.MyReviewUi
 import com.example.mixtapp.data.repository.AuthRepository
 import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
 import com.example.mixtapp.data.repository.ErrorDelServidorException
-import com.example.mixtapp.data.repository.SinConexionException
 import com.example.mixtapp.data.repository.ReviewRepository
+import com.example.mixtapp.data.repository.SinConexionException
 import com.example.mixtapp.data.repository.UsuarioRepository
 import com.example.mixtapp.ui.screens.myreviews.model.FILTRO_A_Z
 import com.example.mixtapp.ui.screens.myreviews.model.FILTRO_CALIFICACION_4
@@ -17,7 +17,6 @@ import com.example.mixtapp.ui.screens.myreviews.model.FILTRO_CALIFICACION_5
 import com.example.mixtapp.ui.screens.myreviews.model.FILTRO_MEJOR_CALIFICADAS
 import com.example.mixtapp.ui.screens.myreviews.model.myReviewFilters
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -41,24 +40,25 @@ class MyReviewsViewModel @Inject constructor(
         // Al volver se conserva el filtro que estaba elegido
         val filtro = _uiState.value.selectedFilterId.ifEmpty { myReviewFilters.first().id }
 
+        // Mis datos y mis resenas se usan por su lado, asi que cada uno va en su propio launch
+        viewModelScope.launch {
+            val perfil = usuarioRepository.getMiPerfil()
+            // Una cuenta sin datos en Firestore muestra la parte del correo
+            val usuario = perfil.getOrNull()?.username ?: usuarioDelCorreo
+
+            _uiState.update { it.copy(username = usuario, iniciales = usuario.take(2).uppercase()) }
+        }
+
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
 
-            // Mis datos y mis resenas salen a la vez y se espera la mas lenta
-            val perfilPendiente = async { usuarioRepository.getMiPerfil() }
-            val resenasPendientes = async { reviewRepository.getMyReviews() }
-
-            // Una cuenta sin datos en Firestore muestra la parte del correo
-            val usuario = perfilPendiente.await().getOrNull()?.username ?: usuarioDelCorreo
-            val resenas = resenasPendientes.await()
+            val resenas = reviewRepository.getMyReviews()
 
             if (resenas.isSuccess) {
                 val todas = resenas.getOrNull() ?: emptyList()
 
                 _uiState.update {
                     it.copy(
-                        username = usuario,
-                        iniciales = usuario.take(2).uppercase(),
                         todas = todas,
                         filters = myReviewFilters,
                         selectedFilterId = filtro,
@@ -70,8 +70,6 @@ class MyReviewsViewModel @Inject constructor(
             } else {
                 _uiState.update {
                     it.copy(
-                        username = usuario,
-                        iniciales = usuario.take(2).uppercase(),
                         filters = myReviewFilters,
                         selectedFilterId = filtro,
                         isLoading = false,

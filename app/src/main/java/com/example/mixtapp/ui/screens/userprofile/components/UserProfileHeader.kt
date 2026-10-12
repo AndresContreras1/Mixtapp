@@ -84,7 +84,11 @@ fun UserProfileHeader(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "$reviewsCount ${stringResource(R.string.resenas_label)}",
+            text = if (reviewsCount == 1) {
+                stringResource(R.string.una_resena)
+            } else {
+                stringResource(R.string.n_resenas, reviewsCount)
+            },
             color = MaterialTheme.colorScheme.onSurface,
             fontSize = 14.sp,
             fontWeight = FontWeight.Bold

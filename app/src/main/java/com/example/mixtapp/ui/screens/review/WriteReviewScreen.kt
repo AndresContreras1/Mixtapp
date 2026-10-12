@@ -5,8 +5,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -63,6 +63,7 @@ fun WriteReviewScreen(
             rating = state.rating,
             reviewText = state.reviewText,
             listenedDate = state.listenedDate,
+            publicando = state.publicando,
             errorMessageRes = state.errorMessageRes,
             onCancel = onCancel,
             onRatingChange = { writeReviewViewModel.updateRating(rating = it) },
@@ -81,6 +82,7 @@ fun WriteReviewScreenContent(
     rating: Int,
     reviewText: String,
     listenedDate: String,
+    publicando: Boolean,
     errorMessageRes: Int?,
     onCancel: () -> Unit,
     onRatingChange: (Int) -> Unit,
@@ -111,6 +113,7 @@ fun WriteReviewScreenContent(
                 rating = rating,
                 reviewText = reviewText,
                 listenedDate = listenedDate,
+                publicando = publicando,
                 errorMessageRes = errorMessageRes,
                 onRatingChange = onRatingChange,
                 onReviewChange = onReviewChange,
@@ -132,6 +135,7 @@ fun WriteReviewScreenPreview() {
             rating = 0,
             reviewText = "",
             listenedDate = "",
+            publicando = false,
             errorMessageRes = null,
             onCancel = {},
             onRatingChange = {},

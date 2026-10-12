@@ -43,24 +43,6 @@ class ReviewRepository @Inject constructor(
         }
     }
 
-    // Solo hay una resena por album: si existe, la pantalla de escribir la edita
-    suspend fun getMyReviewByAlbumId(albumId: String): Result<MyReviewUi?> {
-        return try {
-            val usuarioId = authRemoteDataSource.currentUser?.uid
-                ?: return Result.failure(SinSesionException())
-
-            val reviews = usuarioRemoteDataSource.getReviewsDeUsuario(usuarioId)
-            val resena = reviews.find { it.albumId == albumId }
-            Result.success(resena?.toMyReviewUi())
-        } catch (e: HttpException) {
-            Log.d("ReviewRepository", "getMyReviewByAlbumId: ${e.message}")
-            Result.failure(errorDelBackend(e))
-        } catch (e: Exception) {
-            Log.d("ReviewRepository", "getMyReviewByAlbumId: ${e.message}")
-            Result.failure(e)
-        }
-    }
-
     // Si llega el id de la resena se modifica; si no, se crea
     suspend fun guardarResena(
         albumId: String,
@@ -128,6 +110,7 @@ class ReviewRepository @Inject constructor(
         return try {
             Result.success(reviewLocalDataSource.getDiscussionByReviewId(reviewId = reviewId))
         } catch (e: Exception) {
+            Log.d("ReviewRepository", "getDiscussionByReviewId: ${e.message}")
             Result.failure(ErrorDeDatosLocalesException())
         }
     }
@@ -209,8 +192,10 @@ class ReviewRepository @Inject constructor(
             reviewLocalDataSource.guardarDiscusion(discusion = actualizada)
             Result.success(actualizada)
         } catch (e: IndexOutOfBoundsException) {
+            Log.d("ReviewRepository", "actualizarDiscusion: ${e.message}")
             Result.failure(ContenidoNoEncontradoException())
         } catch (e: Exception) {
+            Log.d("ReviewRepository", "actualizarDiscusion: ${e.message}")
             Result.failure(ErrorDeDatosLocalesException())
         }
     }

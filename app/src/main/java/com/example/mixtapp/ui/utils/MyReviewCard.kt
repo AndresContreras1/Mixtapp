@@ -1,4 +1,4 @@
-package com.example.mixtapp.ui.screens.myreviews.components
+package com.example.mixtapp.ui.utils
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box

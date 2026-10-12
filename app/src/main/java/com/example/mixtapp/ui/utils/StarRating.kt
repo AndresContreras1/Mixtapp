@@ -52,11 +52,11 @@ fun StarRating(
 
             Icon(
                 imageVector = if (isFilled) Icons.Filled.Star else emptyIcon,
-                // Solo se anuncia cuando se puede tocar; si no, TalkBack leeria cinco veces
-                contentDescription = if (onRatingChange == null) {
-                    null
-                } else {
-                    stringResource(R.string.star_rating_format, starValue)
+                // Si se puede tocar dice cuantas estrellas pone; si solo se muestra, si esta llena
+                contentDescription = when {
+                    onRatingChange != null -> stringResource(R.string.star_rating_format, starValue)
+                    isFilled -> stringResource(R.string.estrella_llena)
+                    else -> stringResource(R.string.estrella_vacia)
                 },
                 tint = if (isFilled) filledTint else emptyTint,
                 modifier = Modifier

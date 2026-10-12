@@ -14,19 +14,21 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalAlbumProvider
 import com.example.mixtapp.data.local.LocalMyReviewsProvider
 import com.example.mixtapp.data.model.Album
 import com.example.mixtapp.data.model.MyReviewUi
-import com.example.mixtapp.ui.screens.myreviews.components.MyReviewCard
 import com.example.mixtapp.ui.screens.profile.components.EditReviewCard
 import com.example.mixtapp.ui.screens.profile.components.FavoriteSection
 import com.example.mixtapp.ui.screens.profile.components.LogoutButton
@@ -38,6 +40,7 @@ import com.example.mixtapp.ui.screens.profile.model.ProfileTabUi
 import com.example.mixtapp.ui.screens.profile.model.profileTabs
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.ErrorMessage
+import com.example.mixtapp.ui.utils.MyReviewCard
 
 @Composable
 fun ProfileScreen(
@@ -56,14 +59,19 @@ fun ProfileScreen(
         profileViewModel.getProfile()
     }
 
-    // Si falla la carga, el perfil se sigue mostrando con el error arriba,
-    // para que la foto y el cierre de sesion sigan disponibles
-    if (state.isLoading) {
-        Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
+    when {
+        state.isLoading -> {
+            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
         }
-    } else {
-        ProfileScreenContent(
+        // Sin resenas cargadas solo se muestra el motivo del error
+        state.errorMessageRes != null && state.misResenas.isEmpty() -> {
+            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(text = stringResource(state.errorMessageRes ?: R.string.error_cargar_contenido))
+            }
+        }
+        else -> ProfileScreenContent(
             misResenas = state.misResenas,
             favoritos = state.favoritos,
             barrasDeCalificacion = state.barrasDeCalificacion,
@@ -74,6 +82,7 @@ fun ProfileScreen(
             subiendoImagen = state.subiendoImagen,
             errorImagenRes = state.errorImagenRes,
             errorMessageRes = state.errorMessageRes,
+            avisoPerfilRes = state.avisoPerfilRes,
             onImagePicked = { profileViewModel.subirFotoDePerfil(uri = it) },
             tabs = state.tabs,
             selectedTabId = state.selectedTabId,
@@ -114,6 +123,7 @@ fun ProfileScreenContent(
     subiendoImagen: Boolean,
     errorImagenRes: Int?,
     errorMessageRes: Int?,
+    avisoPerfilRes: Int?,
     onImagePicked: (Uri) -> Unit,
     tabs: List<ProfileTabUi>,
     selectedTabId: String,
@@ -176,6 +186,11 @@ fun ProfileScreenContent(
 
                     ErrorMessage(
                         messageRes = errorMessageRes,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+
+                    ErrorMessage(
+                        messageRes = avisoPerfilRes,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
 
@@ -248,6 +263,7 @@ fun ProfileScreenPreview() {
             subiendoImagen = false,
             errorImagenRes = null,
             errorMessageRes = null,
+            avisoPerfilRes = null,
             onImagePicked = {},
             tabs = profileTabs,
             selectedTabId = profileTabs.first().id,

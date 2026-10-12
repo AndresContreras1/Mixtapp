@@ -3,7 +3,6 @@ package com.example.mixtapp.ui.screens.search
 import androidx.annotation.StringRes
 import com.example.mixtapp.data.model.SearchCategoryUi
 import com.example.mixtapp.data.model.SongReviewUi
-import com.example.mixtapp.ui.screens.search.model.SearchResultUi
 
 data class SearchState(
     val query: String = "",
@@ -11,7 +10,9 @@ data class SearchState(
     val selectedCategoryId: String? = null,
     // Todos los albumes guardados: buscar y ordenar no los vuelve a pedir
     val todos: List<SongReviewUi> = emptyList(),
-    val resultados: List<SearchResultUi> = emptyList(),
-    val isLoading: Boolean = false,
+    // Ya vienen filtrados u ordenados por el ViewModel
+    val resultados: List<SongReviewUi> = emptyList(),
+    // Arranca cargando porque lo primero que hace la pantalla es pedir los albumes
+    val isLoading: Boolean = true,
     @StringRes val errorMessageRes: Int? = null,
 )

@@ -13,6 +13,7 @@ data class WriteReviewState(
     val listenedDate: String = "",
     val publicada: Boolean = false,
     val publicando: Boolean = false,
-    val isLoading: Boolean = false,
+    // Arranca cargando porque lo primero que hace la pantalla es pedir el album
+    val isLoading: Boolean = true,
     @StringRes val errorMessageRes: Int? = null,
 )

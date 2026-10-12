@@ -82,16 +82,17 @@ fun SongReviewSections(
 
                 ReleaseStats(
                     rating = songReview.rating,
+                    estrellas = songReview.estrellas,
                     ratingCount = songReview.ratingCount,
                     recommendRate = songReview.recommendRate
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Tocar las estrellas abre la pantalla para escribir o editar mi resena
+                // Tocar la tarjeta abre la pantalla para escribir o editar mi resena
                 UserRatingSection(
                     rating = songReview.userRating,
-                    onRatingChange = { onWriteReviewClick() }
+                    onClick = onWriteReviewClick
                 )
 
                 ErrorMessage(
@@ -127,7 +128,7 @@ fun SongReviewSections(
 
             ReviewItem(
                 review = review,
-                esMia = review.id == miResenaId,
+                esMia = review.esMia,
                 onEditClick = onWriteReviewClick,
                 onDeleteClick = onDeleteMyReviewClick,
                 onAuthorClick = { onAuthorClick(review.authorId) },
