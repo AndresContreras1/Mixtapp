@@ -12,7 +12,6 @@ import com.example.mixtapp.data.repository.AlbumRepository
 import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
 import com.example.mixtapp.data.repository.ErrorDelServidorException
 import com.example.mixtapp.data.repository.SinConexionException
-import com.example.mixtapp.ui.screens.search.model.SearchResultUi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,7 +19,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.math.roundToInt
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
@@ -60,7 +58,7 @@ class SearchViewModel @Inject constructor(
     // Los albumes se piden una sola vez; buscar y ordenar trabajan sobre esta lista
     private fun getAlbumes() {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
+            _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
 
             val result = albumRepository.getSongReviews()
 
@@ -123,13 +121,11 @@ class SearchViewModel @Inject constructor(
         query: String,
         categoriaId: String?,
         todos: List<SongReviewUi>,
-    ): List<SearchResultUi> = when {
-        query.isNotBlank() -> aResultados(songReviews = buscarPorNombre(query = query, todos = todos))
-        categoriaId != null -> aResultados(
-            songReviews = ordenarPorCategoria(categoryId = categoriaId, todos = todos)
-        )
+    ): List<SongReviewUi> = when {
+        query.isNotBlank() -> buscarPorNombre(query = query, todos = todos)
+        categoriaId != null -> ordenarPorCategoria(categoryId = categoriaId, todos = todos)
         // Sin busqueda ni categoria se muestran todos los albumes
-        else -> aResultados(songReviews = todos)
+        else -> todos
     }
 
     private fun buscarPorNombre(query: String, todos: List<SongReviewUi>): List<SongReviewUi> =
@@ -148,12 +144,6 @@ class SearchViewModel @Inject constructor(
         CATEGORIA_MAS_POPULARES -> todos.sortedByDescending { it.reviews.size }
         else -> todos
     }
-
-    // Redondear es del ViewModel: la pantalla solo recibe el numero de estrellas
-    private fun aResultados(songReviews: List<SongReviewUi>): List<SearchResultUi> =
-        songReviews.map { songReview ->
-            SearchResultUi(songReview = songReview, estrellas = songReview.rating.roundToInt())
-        }
 
     @StringRes
     private fun mensajeDeError(error: Throwable?, @StringRes generico: Int): Int = when (error) {

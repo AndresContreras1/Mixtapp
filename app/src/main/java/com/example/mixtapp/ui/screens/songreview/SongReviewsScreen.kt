@@ -30,7 +30,8 @@ fun SongReviewsScreen(
 ) {
     val state by songReviewsViewModel.uiState.collectAsState()
 
-    // Se pide cada vez que se muestra la pantalla: al volver de escribir, la resena ya aparece
+    // Necesita el id que llega por la ruta, asi que se pide en un LaunchedEffect.
+    // Corre cada vez que se muestra la pantalla: al volver de escribir, la resena ya aparece
     LaunchedEffect(Unit) {
         songReviewsViewModel.getSongById(songId = songId)
     }

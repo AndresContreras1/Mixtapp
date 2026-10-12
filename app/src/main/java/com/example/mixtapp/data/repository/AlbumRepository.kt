@@ -13,6 +13,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import retrofit2.HttpException
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 // Desde esta calificacion se cuenta que la resena recomienda el album
 private const val CALIFICACION_PARA_RECOMENDAR = 4
@@ -21,19 +22,6 @@ class AlbumRepository @Inject constructor(
     private val albumLocalDataSource: AlbumLocalDataSource,
     private val albumRemoteDataSource: AlbumRetrofitDataSourceImpl
 ) {
-
-    suspend fun getAlbumes(): Result<List<Album>> {
-        return try {
-            val albumes = albumRemoteDataSource.getAlbumes()
-            Result.success(albumes.map { it.toAlbum() })
-        } catch (e: HttpException) {
-            Log.d("AlbumRepository", "getAlbumes: ${e.message}")
-            Result.failure(errorDelBackend(e))
-        } catch (e: Exception) {
-            Log.d("AlbumRepository", "getAlbumes: ${e.message}")
-            Result.failure(e)
-        }
-    }
 
     // Cada album llega con sus resenas para calcular el promedio y cuantos lo recomiendan
     suspend fun getSongReviews(): Result<List<SongReviewUi>> {
@@ -47,7 +35,9 @@ class AlbumRepository @Inject constructor(
                         val reviews = albumRemoteDataSource.getReviewsDeAlbum(album.id.toString())
                         conEstadisticas(
                             album = album.toAlbum(),
-                            reviews = reviews.map { it.toSongReviewItemUi() }
+                            reviews = reviews.map { review ->
+                                review.toSongReviewItemUi(usuarioActualId = USUARIO_ACTUAL_ID)
+                            }
                         )
                     }
                 }
@@ -65,6 +55,7 @@ class AlbumRepository @Inject constructor(
         }
     }
 
+    // El album con todas sus resenas; entre ellas va la mia si ya lo califique
     suspend fun getSongReviewById(songId: String): Result<SongReviewUi> {
         return try {
             // El album y sus resenas salen a la vez
@@ -74,7 +65,9 @@ class AlbumRepository @Inject constructor(
 
                 conEstadisticas(
                     album = album.await().toAlbum(),
-                    reviews = reviews.await().map { it.toSongReviewItemUi() }
+                    reviews = reviews.await().map { review ->
+                        review.toSongReviewItemUi(usuarioActualId = USUARIO_ACTUAL_ID)
+                    }
                 )
             }
 
@@ -88,29 +81,18 @@ class AlbumRepository @Inject constructor(
         }
     }
 
-    suspend fun getAlbumById(albumId: String): Result<Album> {
-        return try {
-            val album = albumRemoteDataSource.getAlbumById(albumId)
-            Result.success(album.toAlbum())
-        } catch (e: HttpException) {
-            Log.d("AlbumRepository", "getAlbumById: ${e.message}")
-            Result.failure(errorDelBackend(e))
-        } catch (e: Exception) {
-            Log.d("AlbumRepository", "getAlbumById: ${e.message}")
-            Result.failure(e)
-        }
-    }
-
     suspend fun getSearchCategories(): Result<List<SearchCategoryUi>> {
         return try {
             Result.success(albumLocalDataSource.getSearchCategories())
         } catch (e: Exception) {
+            Log.d("AlbumRepository", "getSearchCategories: ${e.message}")
             Result.failure(ErrorDeDatosLocalesException())
         }
     }
 
-    // El promedio, el total y el porcentaje que recomienda salen de las resenas del backend
-    private fun conEstadisticas(album: Album, reviews: List<SongReviewItemUi>): SongReviewUi {
+    // El promedio, el total, el porcentaje que recomienda y mi calificacion salen de las resenas.
+    // Es publica para que el ViewModel recalcule al quitar una resena, sin volver a pedir el album
+    fun conEstadisticas(album: Album, reviews: List<SongReviewItemUi>): SongReviewUi {
         var suma = 0
         var recomiendan = 0
 
@@ -121,14 +103,16 @@ class AlbumRepository @Inject constructor(
 
         val promedio = if (reviews.isEmpty()) 0.0 else suma.toDouble() / reviews.size
         val porcentaje = if (reviews.isEmpty()) 0 else recomiendan * 100 / reviews.size
+        val miResena = reviews.find { it.esMia }
 
         return SongReviewUi(
             id = album.id,
             album = album,
             rating = promedio,
+            estrellas = promedio.roundToInt(),
             ratingCount = reviews.size.toString(),
             recommendRate = porcentaje,
-            userRating = 0,
+            userRating = miResena?.rating ?: 0,
             reviews = reviews,
         )
     }

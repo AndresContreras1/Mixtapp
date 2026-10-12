@@ -24,16 +24,17 @@ import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalMyReviewsProvider
 import com.example.mixtapp.data.model.MyReviewUi
-import com.example.mixtapp.ui.screens.myreviews.components.MyReviewCard
 import com.example.mixtapp.ui.screens.myreviews.components.MyReviewsFilter
 import com.example.mixtapp.ui.screens.myreviews.components.MyReviewsHeader
 import com.example.mixtapp.ui.screens.myreviews.model.MyReviewFilterUi
 import com.example.mixtapp.ui.screens.myreviews.model.myReviewFilters
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.ErrorMessage
+import com.example.mixtapp.ui.utils.MyReviewCard
 
 @Composable
 fun MyReviewsScreen(
+    userId: String,
     myReviewsViewModel: MyReviewsViewModel,
     onReviewClick: (String) -> Unit,
     onEditClick: (String) -> Unit,
@@ -42,9 +43,10 @@ fun MyReviewsScreen(
 ) {
     val state by myReviewsViewModel.uiState.collectAsState()
 
-    // Se pide cada vez que se muestra: al volver de editar una resena, ya sale cambiada
+    // Necesita el id del usuario, asi que se pide en un LaunchedEffect.
+    // Corre cada vez que se muestra: al volver de editar una resena, ya sale cambiada
     LaunchedEffect(Unit) {
-        myReviewsViewModel.getReviews()
+        myReviewsViewModel.getReviews(userId = userId)
     }
 
     when {

@@ -25,11 +25,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalSearchCategoriesProvider
+import com.example.mixtapp.data.local.LocalSongReviewProvider
 import com.example.mixtapp.data.model.SearchCategoryUi
+import com.example.mixtapp.data.model.SongReviewUi
 import com.example.mixtapp.ui.screens.search.components.BrowseByHeader
 import com.example.mixtapp.ui.screens.search.components.SearchCategoryRow
 import com.example.mixtapp.ui.screens.search.components.SearchHeader
-import com.example.mixtapp.ui.screens.search.model.SearchResultUi
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.ErrorMessage
 import com.example.mixtapp.ui.utils.ReviewAlbumRow
@@ -42,18 +43,30 @@ fun SearchScreen(
 ) {
     val state by searchViewModel.uiState.collectAsState()
 
-    SearchScreenContent(
-        query = state.query,
-        onQueryChange = { searchViewModel.updateQuery(query = it) },
-        categories = state.categories,
-        selectedCategoryId = state.selectedCategoryId,
-        onCategoryClick = { searchViewModel.updateSelectedCategory(categoryId = it) },
-        resultados = state.resultados,
-        isLoading = state.isLoading,
-        errorMessageRes = state.errorMessageRes,
-        onAlbumClick = onAlbumClick,
-        modifier = modifier,
-    )
+    when {
+        state.isLoading -> {
+            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+        }
+        // Sin albumes cargados solo se muestra el motivo del error
+        state.errorMessageRes != null && state.todos.isEmpty() -> {
+            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(text = stringResource(state.errorMessageRes ?: R.string.error_cargar_contenido))
+            }
+        }
+        else -> SearchScreenContent(
+            query = state.query,
+            onQueryChange = { searchViewModel.updateQuery(query = it) },
+            categories = state.categories,
+            selectedCategoryId = state.selectedCategoryId,
+            onCategoryClick = { searchViewModel.updateSelectedCategory(categoryId = it) },
+            resultados = state.resultados,
+            errorMessageRes = state.errorMessageRes,
+            onAlbumClick = onAlbumClick,
+            modifier = modifier,
+        )
+    }
 }
 
 @Composable
@@ -63,8 +76,7 @@ fun SearchScreenContent(
     categories: List<SearchCategoryUi>,
     selectedCategoryId: String?,
     onCategoryClick: (String) -> Unit,
-    resultados: List<SearchResultUi>,
-    isLoading: Boolean,
+    resultados: List<SongReviewUi>,
     errorMessageRes: Int?,
     onAlbumClick: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -92,21 +104,8 @@ fun SearchScreenContent(
                 )
             }
 
-            // Mientras llegan los albumes del backend
-            if (isLoading) {
-                item {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 16.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                }
-            }
-
-            if (query.isBlank() && selectedCategoryId == null) {
+            // Sin busqueda se ven las categorias; tocar otra vez la elegida la quita
+            if (query.isBlank()) {
                 item {
                     BrowseByHeader(modifier = Modifier.padding(horizontal = 24.dp))
                 }
@@ -120,7 +119,7 @@ fun SearchScreenContent(
                     )
                 }
 
-                // Sin buscar nada se ven todos los albumes debajo de las categorias
+                // Debajo de las categorias van todos los albumes, en el orden de la elegida
                 item {
                     Text(
                         text = stringResource(R.string.todos_los_albumes),
@@ -131,7 +130,7 @@ fun SearchScreenContent(
                 }
             }
 
-            if (resultados.isEmpty() && !isLoading && (query.isNotBlank() || selectedCategoryId != null)) {
+            if (resultados.isEmpty()) {
                 item {
                     Text(
                         text = stringResource(R.string.sin_resultados),
@@ -142,22 +141,20 @@ fun SearchScreenContent(
                 }
             }
 
-            if (resultados.isNotEmpty()) {
-                items(resultados, key = { it.songReview.id }) { resultado ->
-                    ReviewAlbumRow(
-                        cover = resultado.songReview.album.cover,
-                        albumTitle = resultado.songReview.album.title,
-                        artistName = resultado.songReview.album.artist,
-                        rating = resultado.estrellas,
-                        coverSize = 64.dp,
-                        coverCorner = 10.dp,
-                        starSize = 14.dp,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { onAlbumClick(resultado.songReview.id) }
-                            .padding(horizontal = 24.dp, vertical = 12.dp),
-                    )
-                }
+            items(resultados, key = { it.id }) { songReview ->
+                ReviewAlbumRow(
+                    cover = songReview.album.cover,
+                    albumTitle = songReview.album.title,
+                    artistName = songReview.album.artist,
+                    rating = songReview.estrellas,
+                    coverSize = 64.dp,
+                    coverCorner = 10.dp,
+                    starSize = 14.dp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onAlbumClick(songReview.id) }
+                        .padding(horizontal = 24.dp, vertical = 12.dp),
+                )
             }
 
             item {
@@ -177,8 +174,7 @@ fun SearchScreenPreview() {
             categories = LocalSearchCategoriesProvider.categories,
             selectedCategoryId = null,
             onCategoryClick = {},
-            resultados = emptyList(),
-            isLoading = false,
+            resultados = LocalSongReviewProvider.songs,
             errorMessageRes = null,
             onAlbumClick = {},
         )

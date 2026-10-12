@@ -9,6 +9,10 @@ import com.example.mixtapp.data.model.UsuarioUi
 import retrofit2.HttpException
 import javax.inject.Inject
 
+// Los usuarios del backend no son los de Firebase, asi que el usuario de la app se quema,
+// como se hizo en clase
+const val USUARIO_ACTUAL_ID = "1"
+
 class UsuarioRepository @Inject constructor(
     private val usuarioRemoteDataSource: UsuarioRetrofitDataSourceImpl
 ) {

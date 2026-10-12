@@ -14,6 +14,7 @@ data class MyReviewsState(
     // Los filtros los provee el ViewModel; el componente solo los pinta
     val filters: List<MyReviewFilterUi> = emptyList(),
     val selectedFilterId: String = "",
-    val isLoading: Boolean = false,
+    // Arranca cargando porque lo primero que hace la pantalla es pedir mis resenas
+    val isLoading: Boolean = true,
     @StringRes val errorMessageRes: Int? = null,
 )

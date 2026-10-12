@@ -5,6 +5,8 @@ data class SongReviewUi(
     val id: String,
     val album: Album,
     val rating: Double,
+    // El promedio ya redondeado, para pintar las estrellas
+    val estrellas: Int,
     val ratingCount: String,
     val recommendRate: Int,
     val userRating: Int,
@@ -19,4 +21,6 @@ data class SongReviewItemUi(
     val fecha: String,
     val rating: Int,
     val content: String,
+    // Si la escribio el usuario de la app: el repositorio la marca al mapear
+    val esMia: Boolean,
 )

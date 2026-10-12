@@ -33,9 +33,7 @@ import com.example.mixtapp.data.local.LocalSongReviewProvider
 import com.example.mixtapp.data.model.SongReviewUi
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.theme.displayFontFamily
-import com.example.mixtapp.ui.utils.ErrorMessage
 import com.example.mixtapp.ui.utils.ReviewAlbumRow
-import kotlin.math.roundToInt
 
 // El boton + abre esta pantalla para elegir el album antes de escribir la resena
 @Composable
@@ -53,9 +51,14 @@ fun SelectAlbumScreen(
                 CircularProgressIndicator()
             }
         }
+        // Sin albumes cargados solo se muestra el motivo del error
+        state.errorMessageRes != null && state.albums.isEmpty() -> {
+            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(text = stringResource(state.errorMessageRes ?: R.string.error_cargar_contenido))
+            }
+        }
         else -> SelectAlbumScreenContent(
             albums = state.albums,
-            errorMessageRes = state.errorMessageRes,
             onAlbumClick = onAlbumClick,
             onBackClick = onBackClick,
             modifier = modifier
@@ -66,7 +69,6 @@ fun SelectAlbumScreen(
 @Composable
 fun SelectAlbumScreenContent(
     albums: List<SongReviewUi>,
-    errorMessageRes: Int?,
     onAlbumClick: (String) -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -109,11 +111,6 @@ fun SelectAlbumScreenContent(
                     fontSize = 14.sp
                 )
 
-                ErrorMessage(
-                    messageRes = errorMessageRes,
-                    modifier = Modifier.padding(top = 8.dp)
-                )
-
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
@@ -122,7 +119,7 @@ fun SelectAlbumScreenContent(
                     cover = albums[index].album.cover,
                     albumTitle = albums[index].album.title,
                     artistName = albums[index].album.artist,
-                    rating = albums[index].rating.roundToInt(),
+                    rating = albums[index].estrellas,
                     coverSize = 64.dp,
                     coverCorner = 10.dp,
                     starSize = 14.dp,
@@ -142,7 +139,6 @@ fun SelectAlbumScreenPreview() {
     MixtappTheme(darkTheme = true) {
         SelectAlbumScreenContent(
             albums = LocalSongReviewProvider.songs,
-            errorMessageRes = null,
             onAlbumClick = {},
             onBackClick = {}
         )

@@ -14,8 +14,6 @@ data class HomeState(
     val friendActivity: FriendActivityUi? = null,
     val filters: List<HomeFilterUi> = emptyList(),
     val selectedFilterId: String = "",
-    // Para no contar mis propias resenas como actividad de amigos
-    val idsDeMisResenas: List<String> = emptyList(),
     val profileImageUrl: String = "",
     val isLoading: Boolean = false,
     @StringRes val errorMessageRes: Int? = null,

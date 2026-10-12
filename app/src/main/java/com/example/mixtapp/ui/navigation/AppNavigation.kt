@@ -8,6 +8,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.mixtapp.data.repository.USUARIO_ACTUAL_ID
 import com.example.mixtapp.ui.screens.discussion.DiscussionScreen
 import com.example.mixtapp.ui.screens.discussion.DiscussionViewModel
 import com.example.mixtapp.ui.screens.following.FollowingScreen
@@ -150,7 +151,7 @@ fun AppNavigation(
             WriteReviewScreen(
                 albumId = albumId,
                 writeReviewViewModel = writeReviewViewModel,
-                // La pantalla anterior vuelve a pedir sus datos, asi que la resena ya aparece
+                // Al volver, el detalle del album, mi perfil y mis resenas piden sus datos de nuevo
                 onPublicada = { navController.popBackStack() },
                 onCancel = { navController.popBackStack() }
             )
@@ -160,6 +161,7 @@ fun AppNavigation(
             val myReviewsViewModel: MyReviewsViewModel = hiltViewModel()
 
             MyReviewsScreen(
+                userId = USUARIO_ACTUAL_ID,
                 myReviewsViewModel = myReviewsViewModel,
                 onReviewClick = { songId ->
                     navController.navigate(Screen.SongDetail.createRoute(songId = songId))
@@ -174,7 +176,9 @@ fun AppNavigation(
         composable(route = Screen.Profile.route) {
             val profileViewModel: ProfileViewModel = hiltViewModel()
 
+            // Mi perfil es el del usuario quemado del backend, como en clase
             ProfileScreen(
+                userId = USUARIO_ACTUAL_ID,
                 profileViewModel = profileViewModel,
                 onSettingsClick = {},
                 onMoreClick = {},

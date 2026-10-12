@@ -4,25 +4,20 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
+import com.example.mixtapp.data.model.MAX_DATE_LENGTH
+import com.example.mixtapp.data.model.MAX_REVIEW_LENGTH
 import com.example.mixtapp.data.repository.AlbumRepository
 import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
 import com.example.mixtapp.data.repository.ErrorDelServidorException
-import com.example.mixtapp.data.repository.SinConexionException
 import com.example.mixtapp.data.repository.ReviewRepository
+import com.example.mixtapp.data.repository.SinConexionException
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
-// Limite de caracteres de la resena
-const val MAX_REVIEW_LENGTH = 500
-
-// La fecha va como AAAA-MM-DD, igual que la guarda el backend
-const val MAX_DATE_LENGTH = 10
 
 @HiltViewModel
 class WriteReviewViewModel @Inject constructor(
@@ -39,24 +34,22 @@ class WriteReviewViewModel @Inject constructor(
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
-            // El album y la resena que ya existe salen a la vez
-            val albumPendiente = async { albumRepository.getAlbumById(albumId = albumId) }
-            val resenaPendiente = async { reviewRepository.getMyReviewByAlbumId(albumId = albumId) }
 
-            val album = albumPendiente.await()
-            val resena = resenaPendiente.await()
+            // El album llega con sus resenas, y entre ellas la mia si ya lo califique
+            val result = albumRepository.getSongReviewById(songId = albumId)
+            val song = result.getOrNull()
 
-            if (album.isSuccess && resena.isSuccess) {
+            if (result.isSuccess && song != null) {
                 // Solo se permite una calificacion por album: si ya existe se edita
-                val yaCalificado = resena.getOrNull()
+                val yaCalificado = song.reviews.find { it.esMia }
 
                 _uiState.update {
                     it.copy(
-                        album = album.getOrNull(),
+                        album = song.album,
                         reviewId = yaCalificado?.id,
                         rating = yaCalificado?.rating ?: 0,
-                        reviewText = yaCalificado?.excerpt ?: "",
-                        listenedDate = yaCalificado?.date ?: "",
+                        reviewText = yaCalificado?.content ?: "",
+                        listenedDate = yaCalificado?.fecha ?: "",
                         isLoading = false,
                         errorMessageRes = null,
                     )
@@ -66,7 +59,7 @@ class WriteReviewViewModel @Inject constructor(
                     it.copy(
                         isLoading = false,
                         errorMessageRes = mensajeDeError(
-                            error = album.exceptionOrNull() ?: resena.exceptionOrNull(),
+                            error = result.exceptionOrNull(),
                             generico = R.string.error_cargar_contenido,
                         )
                     )

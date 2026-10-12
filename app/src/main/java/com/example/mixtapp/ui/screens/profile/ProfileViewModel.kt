@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
 import com.example.mixtapp.data.model.Album
+import com.example.mixtapp.data.model.FAVORITOS_EN_PERFIL
+import com.example.mixtapp.data.model.MAX_REVIEW_LENGTH
 import com.example.mixtapp.data.model.MyReviewUi
 import com.example.mixtapp.data.repository.AuthRepository
 import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
@@ -17,9 +19,8 @@ import com.example.mixtapp.data.repository.ReviewRepository
 import com.example.mixtapp.data.repository.SinConexionException
 import com.example.mixtapp.data.repository.SinSesionException
 import com.example.mixtapp.data.repository.StorageRepository
-import com.example.mixtapp.ui.screens.profile.components.FAVORITOS_EN_PERFIL
+import com.example.mixtapp.data.repository.UsuarioRepository
 import com.example.mixtapp.ui.screens.profile.model.profileTabs
-import com.example.mixtapp.ui.screens.review.MAX_REVIEW_LENGTH
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -35,14 +36,15 @@ private const val CALIFICACION_MAXIMA = 5
 class ProfileViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val storageRepository: StorageRepository,
-    private val reviewRepository: ReviewRepository
+    private val reviewRepository: ReviewRepository,
+    private val usuarioRepository: UsuarioRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfileState())
     val uiState: StateFlow<ProfileState> = _uiState.asStateFlow()
 
-    // La pantalla la llama cada vez que se muestra, para ver las resenas nuevas al volver
-    fun getProfile() {
+    // Recibe el id del usuario, asi que la pantalla la llama desde un LaunchedEffect
+    fun getProfile(userId: String) {
         // Recortar el correo es logica, asi que se hace aqui y no en el componente
         val usuario = authRepository.currentUser?.email?.substringBefore("@") ?: ""
         val foto = authRepository.currentUser?.photoUrl?.toString() ?: ""
@@ -50,7 +52,7 @@ class ProfileViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
 
-            val result = reviewRepository.getMyReviews()
+            val result = usuarioRepository.getReviewsDeUsuario(id = userId)
 
             if (result.isSuccess) {
                 val misResenas = result.getOrNull() ?: emptyList()
@@ -77,7 +79,10 @@ class ProfileViewModel @Inject constructor(
                         selectedTabId = profileTabs.first().id,
                         usuario = usuario,
                         profileImageUrl = foto,
-                        errorMessageRes = mensajeDeCarga(result.exceptionOrNull()),
+                        errorMessageRes = mensajeDelBackend(
+                            error = result.exceptionOrNull(),
+                            generico = R.string.error_cargar_contenido,
+                        ),
                     )
                 }
             }
@@ -101,7 +106,14 @@ class ProfileViewModel @Inject constructor(
                     )
                 }
             } else {
-                _uiState.update { it.copy(errorMessageRes = R.string.error_eliminar_resena) }
+                _uiState.update {
+                    it.copy(
+                        errorMessageRes = mensajeDelBackend(
+                            error = result.exceptionOrNull(),
+                            generico = R.string.error_eliminar_resena,
+                        )
+                    )
+                }
             }
         }
     }
@@ -182,7 +194,10 @@ class ProfileViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         guardandoEdicion = false,
-                        errorEdicionRes = mensajeDeEdicion(result.exceptionOrNull()),
+                        errorEdicionRes = mensajeDelBackend(
+                            error = result.exceptionOrNull(),
+                            generico = R.string.error_publicar_resena,
+                        ),
                     )
                 }
             }
@@ -211,7 +226,7 @@ class ProfileViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         subiendoImagen = false,
-                        errorImagenRes = mensajeDeError(result.exceptionOrNull()),
+                        errorImagenRes = mensajeDeImagen(result.exceptionOrNull()),
                     )
                 }
             }
@@ -235,23 +250,15 @@ class ProfileViewModel @Inject constructor(
     }
 
     @StringRes
-    private fun mensajeDeCarga(error: Throwable?): Int = when (error) {
+    private fun mensajeDelBackend(error: Throwable?, @StringRes generico: Int): Int = when (error) {
         is ContenidoNoEncontradoException -> R.string.contenido_no_encontrado
         is ErrorDelServidorException -> R.string.error_servidor
         is SinConexionException -> R.string.error_sin_conexion
-        else -> R.string.error_cargar_contenido
+        else -> generico
     }
 
     @StringRes
-    private fun mensajeDeEdicion(error: Throwable?): Int = when (error) {
-        is ContenidoNoEncontradoException -> R.string.contenido_no_encontrado
-        is ErrorDelServidorException -> R.string.error_servidor
-        is SinConexionException -> R.string.error_sin_conexion
-        else -> R.string.error_publicar_resena
-    }
-
-    @StringRes
-    private fun mensajeDeError(error: Throwable?): Int = when (error) {
+    private fun mensajeDeImagen(error: Throwable?): Int = when (error) {
         is SinSesionException -> R.string.error_sin_sesion
         is SinConexionException -> R.string.error_sin_conexion
         is CuotaExcedidaException -> R.string.error_cuota_excedida

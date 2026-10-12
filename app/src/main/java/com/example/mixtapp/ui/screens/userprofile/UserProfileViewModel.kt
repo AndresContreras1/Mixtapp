@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
+import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
 import com.example.mixtapp.data.repository.ErrorDelServidorException
 import com.example.mixtapp.data.repository.SinConexionException
 import com.example.mixtapp.data.repository.UsuarioRepository
@@ -51,6 +52,7 @@ class UserProfileViewModel @Inject constructor(
 
     @StringRes
     private fun mensajeDeError(error: Throwable?): Int = when (error) {
+        is ContenidoNoEncontradoException -> R.string.perfil_no_encontrado
         is ErrorDelServidorException -> R.string.error_servidor
         is SinConexionException -> R.string.error_sin_conexion
         else -> R.string.error_cargar_contenido

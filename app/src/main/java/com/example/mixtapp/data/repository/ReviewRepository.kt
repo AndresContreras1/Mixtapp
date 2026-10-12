@@ -3,52 +3,16 @@ package com.example.mixtapp.data.repository
 import android.util.Log
 import com.example.mixtapp.data.datasource.ReviewLocalDataSource
 import com.example.mixtapp.data.datasource.impl.ReviewRetrofitDataSourceImpl
-import com.example.mixtapp.data.datasource.impl.UsuarioRetrofitDataSourceImpl
 import com.example.mixtapp.data.dtos.CreateReviewDto
-import com.example.mixtapp.data.dtos.toMyReviewUi
 import com.example.mixtapp.data.model.DiscussionCommentUi
 import com.example.mixtapp.data.model.DiscussionUi
-import com.example.mixtapp.data.model.MyReviewUi
 import retrofit2.HttpException
 import javax.inject.Inject
 
 class ReviewRepository @Inject constructor(
     private val reviewLocalDataSource: ReviewLocalDataSource,
-    private val reviewRemoteDataSource: ReviewRetrofitDataSourceImpl,
-    private val usuarioRemoteDataSource: UsuarioRetrofitDataSourceImpl
+    private val reviewRemoteDataSource: ReviewRetrofitDataSourceImpl
 ) {
-
-    // Los usuarios del backend no son los de Firebase, asi que el usuario de la app se quema
-    private val usuarioActualId = "1"
-
-    suspend fun getMyReviews(): Result<List<MyReviewUi>> {
-        return try {
-            val reviews = usuarioRemoteDataSource.getReviewsDeUsuario(usuarioActualId)
-            val misResenas = reviews.map { it.toMyReviewUi() }
-            Result.success(misResenas)
-        } catch (e: HttpException) {
-            Log.d("ReviewRepository", "getMyReviews: ${e.message}")
-            Result.failure(errorDelBackend(e))
-        } catch (e: Exception) {
-            Log.d("ReviewRepository", "getMyReviews: ${e.message}")
-            Result.failure(e)
-        }
-    }
-
-    // Solo hay una resena por album: si existe, la pantalla de escribir la edita
-    suspend fun getMyReviewByAlbumId(albumId: String): Result<MyReviewUi?> {
-        return try {
-            val reviews = usuarioRemoteDataSource.getReviewsDeUsuario(usuarioActualId)
-            val resena = reviews.find { it.albumId.toString() == albumId }
-            Result.success(resena?.toMyReviewUi())
-        } catch (e: HttpException) {
-            Log.d("ReviewRepository", "getMyReviewByAlbumId: ${e.message}")
-            Result.failure(errorDelBackend(e))
-        } catch (e: Exception) {
-            Log.d("ReviewRepository", "getMyReviewByAlbumId: ${e.message}")
-            Result.failure(e)
-        }
-    }
 
     // Si llega el id de la resena se modifica; si no, se crea
     suspend fun guardarResena(
@@ -60,7 +24,7 @@ class ReviewRepository @Inject constructor(
     ): Result<Unit> {
         return try {
             val createReviewDto = CreateReviewDto(
-                usuarioId = usuarioActualId.toInt(),
+                usuarioId = USUARIO_ACTUAL_ID.toInt(),
                 albumId = albumId.toInt(),
                 calificacion = rating,
                 comentario = texto,
@@ -97,6 +61,7 @@ class ReviewRepository @Inject constructor(
         return try {
             Result.success(reviewLocalDataSource.getDiscussionByReviewId(reviewId = reviewId))
         } catch (e: Exception) {
+            Log.d("ReviewRepository", "getDiscussionByReviewId: ${e.message}")
             Result.failure(ErrorDeDatosLocalesException())
         }
     }
@@ -178,8 +143,10 @@ class ReviewRepository @Inject constructor(
             reviewLocalDataSource.guardarDiscusion(discusion = actualizada)
             Result.success(actualizada)
         } catch (e: IndexOutOfBoundsException) {
+            Log.d("ReviewRepository", "actualizarDiscusion: ${e.message}")
             Result.failure(ContenidoNoEncontradoException())
         } catch (e: Exception) {
+            Log.d("ReviewRepository", "actualizarDiscusion: ${e.message}")
             Result.failure(ErrorDeDatosLocalesException())
         }
     }

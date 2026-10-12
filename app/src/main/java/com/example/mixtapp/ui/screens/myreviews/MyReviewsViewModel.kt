@@ -8,8 +8,9 @@ import com.example.mixtapp.data.model.MyReviewUi
 import com.example.mixtapp.data.repository.AuthRepository
 import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
 import com.example.mixtapp.data.repository.ErrorDelServidorException
-import com.example.mixtapp.data.repository.SinConexionException
 import com.example.mixtapp.data.repository.ReviewRepository
+import com.example.mixtapp.data.repository.SinConexionException
+import com.example.mixtapp.data.repository.UsuarioRepository
 import com.example.mixtapp.ui.screens.myreviews.model.FILTRO_A_Z
 import com.example.mixtapp.ui.screens.myreviews.model.FILTRO_CALIFICACION_4
 import com.example.mixtapp.ui.screens.myreviews.model.FILTRO_CALIFICACION_5
@@ -26,14 +27,15 @@ import javax.inject.Inject
 @HiltViewModel
 class MyReviewsViewModel @Inject constructor(
     private val authRepository: AuthRepository,
-    private val reviewRepository: ReviewRepository
+    private val reviewRepository: ReviewRepository,
+    private val usuarioRepository: UsuarioRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MyReviewsState())
     val uiState: StateFlow<MyReviewsState> = _uiState.asStateFlow()
 
-    // La pantalla la llama cada vez que se muestra, para ver los cambios al volver de editar
-    fun getReviews() {
+    // Recibe el id del usuario, asi que la pantalla la llama desde un LaunchedEffect
+    fun getReviews(userId: String) {
         val usuario = authRepository.currentUser?.email?.substringBefore("@") ?: ""
         // Al volver se conserva el filtro que estaba elegido
         val filtro = _uiState.value.selectedFilterId.ifEmpty { myReviewFilters.first().id }
@@ -41,7 +43,7 @@ class MyReviewsViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
 
-            val resenas = reviewRepository.getMyReviews()
+            val resenas = usuarioRepository.getReviewsDeUsuario(id = userId)
 
             if (resenas.isSuccess) {
                 val todas = resenas.getOrNull() ?: emptyList()

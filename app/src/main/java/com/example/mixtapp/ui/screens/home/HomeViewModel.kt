@@ -10,13 +10,11 @@ import com.example.mixtapp.data.repository.AlbumRepository
 import com.example.mixtapp.data.repository.AuthRepository
 import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
 import com.example.mixtapp.data.repository.ErrorDelServidorException
-import com.example.mixtapp.data.repository.ReviewRepository
 import com.example.mixtapp.data.repository.SinConexionException
 import com.example.mixtapp.ui.screens.home.model.FILTRO_AMIGOS
 import com.example.mixtapp.ui.screens.home.model.FILTRO_TENDENCIAS
 import com.example.mixtapp.ui.screens.home.model.homeFilters
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,11 +25,13 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val authRepository: AuthRepository,
-    private val albumRepository: AlbumRepository,
-    private val reviewRepository: ReviewRepository
+    private val albumRepository: AlbumRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(HomeState())
+    // La foto de perfil se lee al crear el estado, como en clase
+    private val _uiState = MutableStateFlow(
+        HomeState(profileImageUrl = authRepository.currentUser?.photoUrl?.toString() ?: "")
+    )
     val uiState: StateFlow<HomeState> = _uiState.asStateFlow()
 
     // No recibe parametros, asi que los datos se cargan al crear el ViewModel
@@ -44,43 +44,22 @@ class HomeViewModel @Inject constructor(
             _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
             val filtroInicial = homeFilters.first().id
 
-            // Los albumes y mis resenas salen a la vez y se espera la mas lenta
-            val albumesPendientes = async { albumRepository.getSongReviews() }
-            val misResenasPendientes = async { reviewRepository.getMyReviews() }
+            // Cada album llega con sus resenas, y las mias ya vienen marcadas
+            val result = albumRepository.getSongReviews()
 
-            val resultAlbumes = albumesPendientes.await()
-            val resultMisResenas = misResenasPendientes.await()
-
-            // Aunque mis resenas no lleguen, el inicio muestra los albumes con el error arriba
-            if (resultAlbumes.isSuccess) {
-                val todos = resultAlbumes.getOrNull() ?: emptyList()
-                val idsDeMisResenas = (resultMisResenas.getOrNull() ?: emptyList()).map { it.id }
+            if (result.isSuccess) {
+                val todos = result.getOrNull() ?: emptyList()
 
                 _uiState.update {
                     it.copy(
-                        albums = aplicarFiltro(
-                            filtroId = filtroInicial,
-                            todos = todos,
-                            idsDeMisResenas = idsDeMisResenas,
-                        ),
+                        albums = aplicarFiltro(filtroId = filtroInicial, todos = todos),
                         todos = todos,
                         trending = enTendencia(todos = todos),
-                        friendActivity = actividadDeAmigos(
-                            todos = todos,
-                            idsDeMisResenas = idsDeMisResenas,
-                        ),
+                        friendActivity = actividadDeAmigos(todos = todos),
                         filters = homeFilters,
                         selectedFilterId = filtroInicial,
-                        idsDeMisResenas = idsDeMisResenas,
                         isLoading = false,
-                        errorMessageRes = if (resultMisResenas.isSuccess) {
-                            null
-                        } else {
-                            mensajeDeError(
-                                error = resultMisResenas.exceptionOrNull(),
-                                generico = R.string.error_cargar_contenido,
-                            )
-                        },
+                        errorMessageRes = null,
                     )
                 }
             } else {
@@ -88,7 +67,7 @@ class HomeViewModel @Inject constructor(
                     it.copy(
                         isLoading = false,
                         errorMessageRes = mensajeDeError(
-                            error = resultAlbumes.exceptionOrNull(),
+                            error = result.exceptionOrNull(),
                             generico = R.string.error_cargar_contenido,
                         )
                     )
@@ -97,57 +76,41 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun refrescarFotoDePerfil() {
-        val foto = authRepository.currentUser?.photoUrl?.toString() ?: ""
-
-        _uiState.update { it.copy(profileImageUrl = foto) }
-    }
-
     // Los albumes ya estan cargados: cambiar de filtro no vuelve a pedirlos al backend
     fun updateSelectedFilter(filtroId: String) {
-        val estado = _uiState.value
+        val todos = _uiState.value.todos
 
         _uiState.update {
             it.copy(
                 selectedFilterId = filtroId,
-                albums = aplicarFiltro(
-                    filtroId = filtroId,
-                    todos = estado.todos,
-                    idsDeMisResenas = estado.idsDeMisResenas,
-                ),
+                albums = aplicarFiltro(filtroId = filtroId, todos = todos),
             )
         }
     }
 
-    private fun aplicarFiltro(
-        filtroId: String,
-        todos: List<SongReviewUi>,
-        idsDeMisResenas: List<String>,
-    ): List<SongReviewUi> = when (filtroId) {
-        FILTRO_TENDENCIAS -> todos.sortedByDescending { it.reviews.size }
+    private fun aplicarFiltro(filtroId: String, todos: List<SongReviewUi>): List<SongReviewUi> =
+        when (filtroId) {
+            FILTRO_TENDENCIAS -> todos.sortedByDescending { it.reviews.size }
 
-        // Los albumes que reseno alguien distinto a mi
-        FILTRO_AMIGOS -> todos.filter { songReview ->
-            songReview.reviews.any { it.id !in idsDeMisResenas }
+            // Los albumes que reseno alguien distinto a mi
+            FILTRO_AMIGOS -> todos.filter { songReview ->
+                songReview.reviews.any { !it.esMia }
+            }
+
+            else -> todos
         }
-
-        else -> todos
-    }
 
     // El album con mas resenas
     private fun enTendencia(todos: List<SongReviewUi>): SongReviewUi? =
         todos.sortedByDescending { it.reviews.size }.firstOrNull()
 
-    // La resena mas reciente que escribio otro usuario
-    private fun actividadDeAmigos(
-        todos: List<SongReviewUi>,
-        idsDeMisResenas: List<String>,
-    ): FriendActivityUi? {
+    // De las resenas de otros usuarios, la del album que se escucho mas recientemente
+    private fun actividadDeAmigos(todos: List<SongReviewUi>): FriendActivityUi? {
         val actividades = mutableListOf<FriendActivityUi>()
 
         todos.forEach { songReview ->
             songReview.reviews.forEach { review ->
-                if (review.id !in idsDeMisResenas) {
+                if (!review.esMia) {
                     actividades.add(
                         FriendActivityUi(
                             id = review.id,
@@ -162,6 +125,7 @@ class HomeViewModel @Inject constructor(
             }
         }
 
+        // La fecha va como AAAA-MM-DD, asi que ordenar el texto ordena las fechas
         return actividades.sortedByDescending { it.date }.firstOrNull()
     }
 

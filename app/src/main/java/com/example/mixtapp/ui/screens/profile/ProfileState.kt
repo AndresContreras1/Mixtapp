@@ -10,7 +10,8 @@ data class ProfileState(
     // Los favoritos y las barras de calificaciones se calculan con mis resenas
     val favoritos: List<Album> = emptyList(),
     val barrasDeCalificacion: List<Float> = emptyList(),
-    val isLoading: Boolean = false,
+    // Arranca cargando porque lo primero que hace la pantalla es pedir mis resenas
+    val isLoading: Boolean = true,
     // Las pestanas las provee el ViewModel; el componente solo las pinta
     val tabs: List<ProfileTabUi> = emptyList(),
     val selectedTabId: String = "",
