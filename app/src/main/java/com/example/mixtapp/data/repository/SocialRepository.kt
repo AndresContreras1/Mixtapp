@@ -6,7 +6,7 @@ import com.example.mixtapp.data.model.FollowingUi
 import com.example.mixtapp.data.model.NotificationUi
 import javax.inject.Inject
 
-// Seguidos y notificaciones siguen locales: el backend y Firestore todavia no los tienen
+// Seguidos y notificaciones siguen locales: el backend todavia no los tiene
 class SocialRepository @Inject constructor(
     private val socialLocalDataSource: SocialLocalDataSource
 ) {
