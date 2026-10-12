@@ -65,21 +65,24 @@ fun DiscussionReviewCard(
                 starSize = 14.dp,
             )
 
-            Text(
-                text = review.reviewText,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 14.dp)
-                    .background(
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.14f),
-                        shape = RoundedCornerShape(10.dp),
-                    )
-                    .padding(horizontal = 14.dp, vertical = 12.dp),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.66f),
-                fontSize = 14.sp,
-                lineHeight = 18.sp,
-                fontWeight = FontWeight.Bold,
-            )
+            // Una resena que solo tiene calificacion no muestra la caja del texto
+            if (review.reviewText.isNotEmpty()) {
+                Text(
+                    text = review.reviewText,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 14.dp)
+                        .background(
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.14f),
+                            shape = RoundedCornerShape(10.dp),
+                        )
+                        .padding(horizontal = 14.dp, vertical = 12.dp),
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.66f),
+                    fontSize = 14.sp,
+                    lineHeight = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
 
             ReviewActionsRow(
                 likes = review.likes,

@@ -2,6 +2,7 @@ package com.example.mixtapp.ui.screens.profile
 
 import android.net.Uri
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -55,6 +56,12 @@ fun ProfileScreen(
 ) {
     val state by profileViewModel.uiState.collectAsState()
 
+    // Cerrar sesion esta en el perfil y tambien en el error, para que nadie quede atrapado
+    val onLogoutClick = {
+        profileViewModel.cerrarSesion()
+        logoutButtonPressed()
+    }
+
     // Necesita el id del usuario, asi que se pide en un LaunchedEffect.
     // Corre cada vez que se muestra: al volver de escribir una resena, ya aparece aqui
     LaunchedEffect(Unit) {
@@ -67,10 +74,16 @@ fun ProfileScreen(
                 CircularProgressIndicator()
             }
         }
-        // Sin resenas cargadas solo se muestra el motivo del error
+        // Sin resenas cargadas solo se muestra el motivo del error y la salida para cerrar sesion
         state.errorMessageRes != null && state.misResenas.isEmpty() -> {
-            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Column(
+                modifier = modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 Text(text = stringResource(state.errorMessageRes ?: R.string.error_cargar_contenido))
+
+                LogoutButton(onLogoutClick = onLogoutClick)
             }
         }
         else -> ProfileScreenContent(
@@ -88,10 +101,7 @@ fun ProfileScreen(
             onTabSelected = { profileViewModel.updateSelectedTab(tabId = it) },
             onSettingsClick = onSettingsClick,
             onMoreClick = onMoreClick,
-            onLogoutClick = {
-                profileViewModel.cerrarSesion()
-                logoutButtonPressed()
-            },
+            onLogoutClick = onLogoutClick,
             onReviewClick = onReviewClick,
             onSeeAllReviewsClick = onSeeAllReviewsClick,
             resenaEnEdicionId = state.resenaEnEdicionId,

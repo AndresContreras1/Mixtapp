@@ -43,7 +43,10 @@ class UserProfileViewModel @Inject constructor(
             val result = usuarioRepository.getReviewsDeUsuario(id = userId)
 
             if (result.isSuccess) {
-                _uiState.update { it.copy(reviews = result.getOrNull() ?: emptyList()) }
+                // La fecha va como AAAA-MM-DD: la escuchada mas reciente queda arriba
+                val reviews = (result.getOrNull() ?: emptyList()).sortedByDescending { it.date }
+
+                _uiState.update { it.copy(reviews = reviews) }
             } else {
                 _uiState.update { it.copy(errorMessageRes = mensajeDeError(result.exceptionOrNull())) }
             }

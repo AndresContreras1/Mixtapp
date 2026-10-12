@@ -55,7 +55,8 @@ class ProfileViewModel @Inject constructor(
             val result = usuarioRepository.getReviewsDeUsuario(id = userId)
 
             if (result.isSuccess) {
-                val misResenas = result.getOrNull() ?: emptyList()
+                // La fecha va como AAAA-MM-DD: la escuchada mas reciente queda arriba
+                val misResenas = (result.getOrNull() ?: emptyList()).sortedByDescending { it.date }
 
                 _uiState.update {
                     it.copy(
@@ -64,7 +65,8 @@ class ProfileViewModel @Inject constructor(
                         barrasDeCalificacion = barrasDe(resenas = misResenas),
                         isLoading = false,
                         tabs = profileTabs,
-                        selectedTabId = profileTabs.first().id,
+                        // Al volver se conserva la pestana elegida
+                        selectedTabId = it.selectedTabId.ifEmpty { profileTabs.first().id },
                         usuario = usuario,
                         profileImageUrl = foto,
                         resenaEnEdicionId = null,
@@ -76,7 +78,8 @@ class ProfileViewModel @Inject constructor(
                     it.copy(
                         isLoading = false,
                         tabs = profileTabs,
-                        selectedTabId = profileTabs.first().id,
+                        // Al volver se conserva la pestana elegida
+                        selectedTabId = it.selectedTabId.ifEmpty { profileTabs.first().id },
                         usuario = usuario,
                         profileImageUrl = foto,
                         errorMessageRes = mensajeDelBackend(

@@ -38,8 +38,13 @@ class SongReviewsViewModel @Inject constructor(
             if (result.isSuccess && song != null) {
                 _uiState.update {
                     it.copy(
-                        // Mi resena va primero para que se vea apenas entro al album
-                        song = song.copy(reviews = song.reviews.sortedByDescending { review -> review.esMia }),
+                        // De la escuchada mas reciente a la mas antigua, y mi resena primero
+                        // para que se vea apenas entro al album
+                        song = song.copy(
+                            reviews = song.reviews
+                                .sortedByDescending { review -> review.fecha }
+                                .sortedByDescending { review -> review.esMia }
+                        ),
                         miResenaId = song.reviews.find { review -> review.esMia }?.id,
                         isLoading = false,
                         errorMessageRes = null,

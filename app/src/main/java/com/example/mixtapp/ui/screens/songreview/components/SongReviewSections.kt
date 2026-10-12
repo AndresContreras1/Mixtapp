@@ -128,7 +128,6 @@ fun SongReviewSections(
 
             ReviewItem(
                 review = review,
-                esMia = review.esMia,
                 onEditClick = onWriteReviewClick,
                 onDeleteClick = onDeleteMyReviewClick,
                 onAuthorClick = { onAuthorClick(review.authorId) },
