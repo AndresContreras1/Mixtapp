@@ -10,6 +10,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,10 +31,25 @@ import com.example.mixtapp.ui.theme.displayFontFamily
 fun MyReviewsHeader(
     username: String,
     iniciales: String,
-    joinDate: String,
+    reviewsCount: Int,
+    onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
+        IconButton(
+            onClick = onBackClick,
+            modifier = Modifier.size(30.dp)
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                contentDescription = stringResource(R.string.back),
+                tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.72f),
+                modifier = Modifier.size(30.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(
                 modifier = Modifier
@@ -59,7 +78,7 @@ fun MyReviewsHeader(
                     fontFamily = displayFontFamily
                 )
                 Text(
-                    text = stringResource(R.string.join_date, joinDate),
+                    text = "$reviewsCount ${stringResource(R.string.resenas_label)}",
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
                     fontSize = 13.sp
                 )

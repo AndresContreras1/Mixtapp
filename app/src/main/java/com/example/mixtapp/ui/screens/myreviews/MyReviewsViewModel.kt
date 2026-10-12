@@ -10,14 +10,12 @@ import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
 import com.example.mixtapp.data.repository.ErrorDelServidorException
 import com.example.mixtapp.data.repository.SinConexionException
 import com.example.mixtapp.data.repository.ReviewRepository
-import com.example.mixtapp.data.repository.SocialRepository
 import com.example.mixtapp.ui.screens.myreviews.model.FILTRO_A_Z
 import com.example.mixtapp.ui.screens.myreviews.model.FILTRO_CALIFICACION_4
 import com.example.mixtapp.ui.screens.myreviews.model.FILTRO_CALIFICACION_5
 import com.example.mixtapp.ui.screens.myreviews.model.FILTRO_MEJOR_CALIFICADAS
 import com.example.mixtapp.ui.screens.myreviews.model.myReviewFilters
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -28,43 +26,34 @@ import javax.inject.Inject
 @HiltViewModel
 class MyReviewsViewModel @Inject constructor(
     private val authRepository: AuthRepository,
-    private val reviewRepository: ReviewRepository,
-    private val socialRepository: SocialRepository
+    private val reviewRepository: ReviewRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MyReviewsState())
     val uiState: StateFlow<MyReviewsState> = _uiState.asStateFlow()
 
-    // No recibe parametros, asi que los datos se cargan al crear el ViewModel
-    init {
-        getReviews()
-    }
-
-    private fun getReviews() {
+    // La pantalla la llama cada vez que se muestra, para ver los cambios al volver de editar
+    fun getReviews() {
         val usuario = authRepository.currentUser?.email?.substringBefore("@") ?: ""
-        val filtroInicial = myReviewFilters.first().id
+        // Al volver se conserva el filtro que estaba elegido
+        val filtro = _uiState.value.selectedFilterId.ifEmpty { myReviewFilters.first().id }
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
-            // Las dos peticiones salen a la vez y se espera la mas lenta
-            val perfilPendiente = async { socialRepository.getProfile() }
-            val resenasPendientes = async { reviewRepository.getMyReviews() }
 
-            val perfil = perfilPendiente.await()
-            val resenas = resenasPendientes.await()
+            val resenas = reviewRepository.getMyReviews()
 
-            if (perfil.isSuccess && resenas.isSuccess) {
+            if (resenas.isSuccess) {
+                val todas = resenas.getOrNull() ?: emptyList()
+
                 _uiState.update {
                     it.copy(
                         username = usuario,
                         iniciales = usuario.take(2).uppercase(),
-                        joinDate = perfil.getOrNull()?.joinDate ?: "",
+                        todas = todas,
                         filters = myReviewFilters,
-                        selectedFilterId = filtroInicial,
-                        reviews = aplicarFiltro(
-                            filtroId = filtroInicial,
-                            todas = resenas.getOrNull() ?: emptyList(),
-                        ),
+                        selectedFilterId = filtro,
+                        reviews = aplicarFiltro(filtroId = filtro, todas = todas),
                         isLoading = false,
                         errorMessageRes = null,
                     )
@@ -72,9 +61,13 @@ class MyReviewsViewModel @Inject constructor(
             } else {
                 _uiState.update {
                     it.copy(
+                        username = usuario,
+                        iniciales = usuario.take(2).uppercase(),
+                        filters = myReviewFilters,
+                        selectedFilterId = filtro,
                         isLoading = false,
                         errorMessageRes = mensajeDeError(
-                            error = perfil.exceptionOrNull() ?: resenas.exceptionOrNull(),
+                            error = resenas.exceptionOrNull(),
                             generico = R.string.error_cargar_contenido,
                         )
                     )
@@ -83,42 +76,34 @@ class MyReviewsViewModel @Inject constructor(
         }
     }
 
+    // Las resenas ya estan cargadas: filtrar no vuelve a pedirlas al backend
     fun updateSelectedFilter(filtroId: String) {
-        viewModelScope.launch {
-            val resenas = reviewRepository.getMyReviews()
+        val todas = _uiState.value.todas
 
-            if (resenas.isSuccess) {
-                _uiState.update {
-                    it.copy(
-                        selectedFilterId = filtroId,
-                        reviews = aplicarFiltro(
-                            filtroId = filtroId,
-                            todas = resenas.getOrNull() ?: emptyList(),
-                        ),
-                        errorMessageRes = null,
-                    )
-                }
-            } else {
-                _uiState.update {
-                    it.copy(
-                        errorMessageRes = mensajeDeError(
-                            error = resenas.exceptionOrNull(),
-                            generico = R.string.error_actualizar_lista,
-                        )
-                    )
-                }
-            }
+        _uiState.update {
+            it.copy(
+                selectedFilterId = filtroId,
+                reviews = aplicarFiltro(filtroId = filtroId, todas = todas),
+                errorMessageRes = null,
+            )
         }
     }
 
+    // Eliminar filtra la lista en vez de volver a pedir todas las resenas
     fun eliminarResena(reviewId: String) {
         viewModelScope.launch {
             val result = reviewRepository.eliminarResena(reviewId = reviewId)
 
             if (result.isSuccess) {
-                val restantes = _uiState.value.reviews.filter { it.id != reviewId }
+                val restantes = _uiState.value.todas.filter { it.id != reviewId }
 
-                _uiState.update { it.copy(reviews = restantes, errorMessageRes = null) }
+                _uiState.update {
+                    it.copy(
+                        todas = restantes,
+                        reviews = aplicarFiltro(filtroId = it.selectedFilterId, todas = restantes),
+                        errorMessageRes = null,
+                    )
+                }
             } else {
                 _uiState.update {
                     it.copy(
@@ -139,7 +124,8 @@ class MyReviewsViewModel @Inject constructor(
             FILTRO_A_Z -> todas.sortedBy { it.album.title }
             FILTRO_CALIFICACION_5 -> todas.filter { it.rating == 5 }
             FILTRO_CALIFICACION_4 -> todas.filter { it.rating == 4 }
-            else -> todas
+            // Recientes: la fecha va como AAAA-MM-DD, asi que ordenar el texto ordena las fechas
+            else -> todas.sortedByDescending { it.date }
         }
     }
 

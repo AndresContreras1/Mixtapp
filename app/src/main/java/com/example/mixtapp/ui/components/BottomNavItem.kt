@@ -2,8 +2,6 @@ package com.example.mixtapp.ui.components
 
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
@@ -33,12 +31,6 @@ val bottomNavItems = listOf(
         outlineIcon = Icons.Outlined.Search,
         route = Screen.Search.route,
         label = R.string.search_title
-    ),
-    BottomNavItem(
-        filledIcon = Icons.AutoMirrored.Filled.List,
-        outlineIcon = Icons.AutoMirrored.Outlined.List,
-        route = Screen.MyReviews.route,
-        label = R.string.my_reviews
     ),
     BottomNavItem(
         filledIcon = Icons.Filled.Person,
