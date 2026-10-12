@@ -17,10 +17,18 @@ import com.example.mixtapp.ui.theme.*
 @Composable
 fun LoginScreen(
     loginViewModel: LoginViewModel,
+    onLoginSuccess: () -> Unit,
     onSignUpClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val state by loginViewModel.uiState.collectAsState()
+
+    // El ViewModel valida y autoriza; cuando entra, la pantalla avisa para navegar
+    LaunchedEffect(state.navigate) {
+        if (state.navigate) {
+            onLoginSuccess()
+        }
+    }
 
     LoginScreenContent(
         email = state.email,
