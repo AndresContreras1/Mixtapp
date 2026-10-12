@@ -62,8 +62,7 @@ fun ProfileScreen(
         logoutButtonPressed()
     }
 
-    // Necesita el id del usuario, asi que se pide en un LaunchedEffect.
-    // Corre cada vez que se muestra: al volver de escribir una resena, ya aparece aqui
+    // Necesita el id del usuario, asi que se pide en un LaunchedEffect
     LaunchedEffect(Unit) {
         profileViewModel.getProfile(userId = userId)
     }

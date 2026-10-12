@@ -8,5 +8,7 @@ data class DiscussionState(
     val discussion: DiscussionUi? = null,
     val nuevoComentario: String = "",
     val replyingToCommentId: String? = null,
+    // Arranca cargando porque lo primero que hace la pantalla es pedir la discusion
+    val isLoading: Boolean = true,
     @StringRes val errorMessageRes: Int? = null,
 )

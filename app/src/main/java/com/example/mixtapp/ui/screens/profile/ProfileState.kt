@@ -26,5 +26,7 @@ data class ProfileState(
     val guardandoEdicion: Boolean = false,
     @StringRes val errorEdicionRes: Int? = null,
     @StringRes val errorImagenRes: Int? = null,
+    // Mientras se borra no se manda otro DELETE
+    val eliminando: Boolean = false,
     @StringRes val errorMessageRes: Int? = null,
 )

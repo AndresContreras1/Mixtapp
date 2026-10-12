@@ -43,8 +43,7 @@ fun MyReviewsScreen(
 ) {
     val state by myReviewsViewModel.uiState.collectAsState()
 
-    // Necesita el id del usuario, asi que se pide en un LaunchedEffect.
-    // Corre cada vez que se muestra: al volver de editar una resena, ya sale cambiada
+    // Necesita el id del usuario, asi que se pide en un LaunchedEffect
     LaunchedEffect(Unit) {
         myReviewsViewModel.getReviews(userId = userId)
     }
