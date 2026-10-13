@@ -14,9 +14,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mixtapp.data.local.LocalFollowingProvider
 import com.example.mixtapp.data.model.FollowingReviewUi
+import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.ReviewActionsRow
 import com.example.mixtapp.ui.utils.ReviewAlbumRow
 import com.example.mixtapp.ui.utils.ReviewAuthorRow
@@ -94,5 +97,18 @@ fun FollowingReviewCard(
                 modifier = Modifier.padding(top = 10.dp),
             )
         }
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun FollowingReviewCardPreview() {
+    MixtappTheme(darkTheme = true) {
+        FollowingReviewCard(
+            review = LocalFollowingProvider.following.reviews.first(),
+            onLikeClick = {},
+            onShareClick = {},
+            onCommentsClick = {},
+        )
     }
 }

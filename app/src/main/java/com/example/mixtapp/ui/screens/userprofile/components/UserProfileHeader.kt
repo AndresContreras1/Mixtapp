@@ -13,10 +13,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.data.local.LocalUsuarioProvider
 import com.example.mixtapp.data.model.UsuarioUi
+import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.BackButton
 import com.example.mixtapp.ui.utils.ProfileAsyncImage
 
@@ -72,5 +75,18 @@ fun UserProfileHeader(
                 fontWeight = FontWeight.Bold
             )
         }
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun UserProfileHeaderPreview() {
+    MixtappTheme(darkTheme = true) {
+        UserProfileHeader(
+            usuario = LocalUsuarioProvider.usuario,
+            reviewsCount = 3,
+            cargandoResenas = false,
+            onBackClick = {},
+        )
     }
 }

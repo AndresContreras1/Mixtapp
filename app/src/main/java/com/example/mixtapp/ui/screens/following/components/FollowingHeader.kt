@@ -14,9 +14,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.data.local.LocalFollowingProvider
+import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.theme.displayFontFamily
 
 @Composable
@@ -67,5 +70,18 @@ fun FollowingHeader(
                 modifier = Modifier.width(150.dp),
             )
         }
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun FollowingHeaderPreview() {
+    MixtappTheme(darkTheme = true) {
+        FollowingHeader(
+            followingCount = LocalFollowingProvider.following.followingCount,
+            followersCount = LocalFollowingProvider.following.followersCount,
+            friendQuery = "",
+            onFriendQueryChange = {},
+        )
     }
 }

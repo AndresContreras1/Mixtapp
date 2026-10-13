@@ -13,10 +13,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.data.local.LocalDiscussionProvider
 import com.example.mixtapp.data.model.DiscussionCommentUi
+import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.theme.displayFontFamily
 
 @Composable
@@ -82,5 +85,18 @@ fun ThreadCommentItem(
                 modifier = Modifier.padding(top = 6.dp),
             )
         }
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun ThreadCommentItemPreview() {
+    MixtappTheme(darkTheme = true) {
+        ThreadCommentItem(
+            comment = LocalDiscussionProvider.discussions.first().comments.first(),
+            isReplying = false,
+            onLikeClick = {},
+            onReplyClick = {},
+        )
     }
 }

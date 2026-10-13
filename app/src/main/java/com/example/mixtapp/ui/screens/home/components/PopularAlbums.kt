@@ -6,8 +6,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.mixtapp.data.local.LocalSongReviewProvider
 import com.example.mixtapp.data.model.SongReviewUi
+import com.example.mixtapp.ui.theme.MixtappTheme
 
 // Todos los albumes del backend en una fila que se desliza
 @Composable
@@ -29,5 +32,16 @@ fun PopularAlbums(
                 onClick = { onAlbumClick(albums[index].album.id) }
             )
         }
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun PopularAlbumsPreview() {
+    MixtappTheme(darkTheme = true) {
+        PopularAlbums(
+            albums = LocalSongReviewProvider.popularSongs,
+            onAlbumClick = {},
+        )
     }
 }

@@ -17,10 +17,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.data.local.LocalFriendActivityProvider
 import com.example.mixtapp.data.model.FriendActivityUi
+import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.StarRating
 
 @Composable
@@ -78,5 +81,16 @@ fun FriendsActivity(
                 fontWeight = FontWeight.Bold
             )
         }
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun FriendsActivityPreview() {
+    MixtappTheme(darkTheme = true) {
+        FriendsActivity(
+            activity = LocalFriendActivityProvider.friendActivity,
+            onClick = {},
+        )
     }
 }

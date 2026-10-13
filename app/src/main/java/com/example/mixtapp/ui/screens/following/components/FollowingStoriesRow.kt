@@ -23,10 +23,13 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.data.local.LocalFollowingProvider
 import com.example.mixtapp.data.model.FollowingStoryUi
+import com.example.mixtapp.ui.theme.MixtappTheme
 
 @Composable
 fun FollowingStoriesRow(
@@ -103,6 +106,18 @@ private fun FollowingStoryBubble(
             fontSize = 13.sp,
             lineHeight = 16.sp,
             fontWeight = FontWeight.SemiBold,
+        )
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun FollowingStoriesRowPreview() {
+    MixtappTheme(darkTheme = true) {
+        FollowingStoriesRow(
+            stories = LocalFollowingProvider.following.stories,
+            selectedStoryId = null,
+            onStoryClick = {},
         )
     }
 }

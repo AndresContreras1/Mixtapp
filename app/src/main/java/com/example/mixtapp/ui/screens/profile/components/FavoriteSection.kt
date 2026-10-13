@@ -16,11 +16,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.data.local.LocalAlbumProvider
 import com.example.mixtapp.data.model.Album
 import com.example.mixtapp.data.model.FAVORITOS_EN_PERFIL
+import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AlbumAsyncImage
 
 @Composable
@@ -69,5 +72,13 @@ fun FavoriteSection(
 
         Spacer(modifier = Modifier.height(56.dp))
         HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f))
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun FavoriteSectionPreview() {
+    MixtappTheme(darkTheme = true) {
+        FavoriteSection(favoriteAlbums = LocalAlbumProvider.albums.take(FAVORITOS_EN_PERFIL))
     }
 }

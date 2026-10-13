@@ -14,9 +14,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppButton
 import com.example.mixtapp.ui.utils.AppTextField
 
@@ -74,6 +76,23 @@ fun LoginForm(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(82.dp)
+        )
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun LoginFormPreview() {
+    MixtappTheme(darkTheme = true) {
+        LoginForm(
+            email = "",
+            onEmailChange = {},
+            contrasena = "",
+            onContrasenaChange = {},
+            contrasenaVisible = false,
+            onContrasenaVisibleChange = {},
+            cargando = false,
+            onLoginClick = {},
         )
     }
 }

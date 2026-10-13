@@ -15,9 +15,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.data.local.LocalMyReviewsProvider
+import com.example.mixtapp.data.model.FAVORITOS_EN_PERFIL
+import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.ErrorMessage
 import com.example.mixtapp.ui.utils.ProfileAsyncImage
 
@@ -69,6 +73,21 @@ fun ProfileAvatarSection(
             text = stringResource(R.string.user_stats, resenas, favoritos),
             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
             fontSize = 14.sp
+        )
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun ProfileAvatarSectionPreview() {
+    MixtappTheme(darkTheme = true) {
+        ProfileAvatarSection(
+            profileImageUrl = "",
+            subiendoImagen = false,
+            errorImagenRes = null,
+            onImagePicked = {},
+            reviewsCount = LocalMyReviewsProvider.reviews.size,
+            favoritosCount = FAVORITOS_EN_PERFIL,
         )
     }
 }

@@ -18,9 +18,11 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.ui.theme.MixtappTheme
 
 @Composable
 fun TermsRow(
@@ -66,6 +68,17 @@ fun TermsRow(
             lineHeight = 20.sp,
             fontWeight = FontWeight.Black,
             modifier = Modifier.weight(1f)
+        )
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun TermsRowPreview() {
+    MixtappTheme(darkTheme = true) {
+        TermsRow(
+            checked = false,
+            onCheckedChange = {},
         )
     }
 }

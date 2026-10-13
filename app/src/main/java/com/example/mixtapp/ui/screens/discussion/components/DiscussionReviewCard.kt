@@ -17,10 +17,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.data.local.LocalDiscussionProvider
 import com.example.mixtapp.data.model.DiscussionReviewUi
+import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.ReviewActionsRow
 import com.example.mixtapp.ui.utils.ReviewAlbumRow
 import com.example.mixtapp.ui.utils.ReviewAuthorRow
@@ -101,5 +104,17 @@ fun DiscussionReviewCard(
                     .padding(top = 9.dp),
             )
         }
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun DiscussionReviewCardPreview() {
+    MixtappTheme(darkTheme = true) {
+        DiscussionReviewCard(
+            review = LocalDiscussionProvider.discussions.first().review,
+            onLikeClick = {},
+            onShareClick = {},
+        )
     }
 }

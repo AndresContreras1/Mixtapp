@@ -19,9 +19,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.ui.theme.MixtappTheme
 
 @Composable
 fun CommentActionsRow(
@@ -72,5 +74,19 @@ fun CommentActionsRow(
                 fontWeight = FontWeight.Bold,
             )
         }
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun CommentActionsRowPreview() {
+    MixtappTheme(darkTheme = true) {
+        CommentActionsRow(
+            likes = 12,
+            isLiked = true,
+            isReplying = false,
+            onLikeClick = {},
+            onReplyClick = {},
+        )
     }
 }
