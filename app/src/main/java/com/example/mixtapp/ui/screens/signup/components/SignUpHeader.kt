@@ -10,11 +10,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
-import com.example.mixtapp.ui.components.HeaderLogo
+import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.theme.displayFontFamily
+import com.example.mixtapp.ui.utils.HeaderLogo
 
 @Composable
 fun SignUpHeader(
@@ -47,5 +49,13 @@ fun SignUpHeader(
             lineHeight = 20.sp,
             fontWeight = FontWeight.Medium
         )
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun SignUpHeaderPreview() {
+    MixtappTheme(darkTheme = true) {
+        SignUpHeader()
     }
 }

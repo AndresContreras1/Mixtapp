@@ -1,14 +1,15 @@
 package com.example.mixtapp.data.model
 
+// Las estadisticas se calculan con las resenas del album que vienen del backend
 data class SongReviewUi(
     val id: String,
     val album: Album,
     val rating: Double,
+    // El promedio ya redondeado, para pintar las estrellas
+    val estrellas: Int,
     val ratingCount: String,
     val recommendRate: Int,
     val userRating: Int,
-    val isSaved: Boolean,
-    val isLiked: Boolean,
     val reviews: List<SongReviewItemUi>,
 )
 
@@ -17,9 +18,9 @@ data class SongReviewItemUi(
     val authorId: String,
     val author: String,
     val authorImage: String,
-    val daysAgo: String,
+    val fecha: String,
     val rating: Int,
     val content: String,
-    val likes: Int,
-    val isLiked: Boolean,
+    // Si la escribio el usuario de la app: el repositorio la marca al mapear
+    val esMia: Boolean,
 )

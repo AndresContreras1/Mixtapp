@@ -4,10 +4,10 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
-import com.example.mixtapp.data.model.SongReviewUi
 import com.example.mixtapp.data.repository.AlbumRepository
 import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
 import com.example.mixtapp.data.repository.ErrorDelServidorException
+import com.example.mixtapp.data.repository.ReviewRepository
 import com.example.mixtapp.data.repository.SinConexionException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,23 +19,36 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SongReviewsViewModel @Inject constructor(
-    private val albumRepository: AlbumRepository
+    private val albumRepository: AlbumRepository,
+    private val reviewRepository: ReviewRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SongReviewsState())
     val uiState: StateFlow<SongReviewsState> = _uiState.asStateFlow()
 
-    // Buscar la cancion es responsabilidad del ViewModel, no de la navegacion
+    // Buscar el album es responsabilidad del ViewModel, no de la navegacion
     fun getSongById(songId: String) {
-        if (_uiState.value.song != null) return
-
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
-            val result = albumRepository.getSongReviewById(songId = songId)
 
-            if (result.isSuccess) {
+            // El album llega con todas sus resenas, y la mia ya viene marcada
+            val result = albumRepository.getSongReviewById(songId = songId)
+            val song = result.getOrNull()
+
+            if (result.isSuccess && song != null) {
                 _uiState.update {
-                    it.copy(song = result.getOrNull(), isLoading = false, errorMessageRes = null)
+                    it.copy(
+                        // De la escuchada mas reciente a la mas antigua, y mi resena primero
+                        // para que se vea apenas entro al album
+                        song = song.copy(
+                            reviews = song.reviews
+                                .sortedByDescending { review -> review.fecha }
+                                .sortedByDescending { review -> review.esMia }
+                        ),
+                        miResenaId = song.reviews.find { review -> review.esMia }?.id,
+                        isLoading = false,
+                        errorMessageRes = null,
+                    )
                 }
             } else {
                 _uiState.update {
@@ -51,62 +64,40 @@ class SongReviewsViewModel @Inject constructor(
         }
     }
 
-    fun updateUserRating(rating: Int) {
+    // Quitar mi resena filtra la lista y recalcula el promedio, sin volver a pedir el album
+    fun eliminarMiResena() {
         val song = _uiState.value.song ?: return
-        val nueva = if (rating == song.userRating) 0 else rating
+        val miResenaId = _uiState.value.miResenaId ?: return
+
+        if (_uiState.value.eliminando) return
 
         viewModelScope.launch {
-            val result = albumRepository.calificarSongReview(songReview = song, rating = nueva)
+            _uiState.update { it.copy(eliminando = true, errorMessageRes = null) }
 
-            actualizarDesde(result = result, generico = R.string.error_calificar)
-        }
-    }
+            val result = reviewRepository.eliminarResena(reviewId = miResenaId)
 
-    fun guardarQuitarGuardado() {
-        val song = _uiState.value.song ?: return
+            if (result.isSuccess) {
+                // Se filtra la lista que hay ahora en el estado
+                val restantes = (_uiState.value.song?.reviews ?: emptyList()).filter { it.id != miResenaId }
 
-        viewModelScope.launch {
-            val result = albumRepository.guardarQuitarSongReview(songReview = song)
-
-            actualizarDesde(result = result, generico = R.string.error_guardar_album)
-        }
-    }
-
-    fun darQuitarLike() {
-        val song = _uiState.value.song ?: return
-
-        viewModelScope.launch {
-            val result = albumRepository.darQuitarLikeSongReview(songReview = song)
-
-            actualizarDesde(result = result, generico = R.string.error_me_gusta)
-        }
-    }
-
-    fun darQuitarLikeResena(reviewId: String) {
-        val song = _uiState.value.song ?: return
-
-        val result = albumRepository.darQuitarLikeResenaDeAlbum(
-            songReview = song,
-            reviewId = reviewId,
-        )
-
-        actualizarDesde(result = result, generico = R.string.error_me_gusta)
-    }
-
-    private fun actualizarDesde(
-        result: Result<SongReviewUi>,
-        @StringRes generico: Int,
-    ) {
-        if (result.isSuccess) {
-            _uiState.update { it.copy(song = result.getOrNull(), errorMessageRes = null) }
-        } else {
-            _uiState.update {
-                it.copy(
-                    errorMessageRes = mensajeDeError(
-                        error = result.exceptionOrNull(),
-                        generico = generico,
+                _uiState.update {
+                    it.copy(
+                        song = albumRepository.conEstadisticas(album = song.album, reviews = restantes),
+                        miResenaId = null,
+                        eliminando = false,
+                        errorMessageRes = null,
                     )
-                )
+                }
+            } else {
+                _uiState.update {
+                    it.copy(
+                        eliminando = false,
+                        errorMessageRes = mensajeDeError(
+                            error = result.exceptionOrNull(),
+                            generico = R.string.error_eliminar_resena,
+                        )
+                    )
+                }
             }
         }
     }

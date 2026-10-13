@@ -9,21 +9,25 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.mixtapp.ui.components.ErrorMessage
+import androidx.compose.ui.unit.sp
+import com.example.mixtapp.R
+import com.example.mixtapp.ui.theme.MixtappTheme
+import com.example.mixtapp.ui.utils.AppButton
+import com.example.mixtapp.ui.utils.ErrorMessage
 
 @Composable
 fun ReviewActionsCard(
     listenedDate: String,
-    isFavorite: Boolean,
+    publicando: Boolean,
     errorMessageRes: Int?,
     onDateChange: (String) -> Unit,
-    onDatePickerClick: () -> Unit,
-    onFavoriteClick: () -> Unit,
     onPostClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -44,30 +48,42 @@ fun ReviewActionsCard(
             ) {
                 DateListenedRow(
                     listenedDate = listenedDate,
-                    onDateChange = onDateChange,
-                    onDatePickerClick = onDatePickerClick
-                )
-
-                Spacer(modifier = Modifier.height(14.dp))
-                HorizontalDivider(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.42f))
-                Spacer(modifier = Modifier.height(12.dp))
-
-                FavoriteRow(
-                    isFavorite = isFavorite,
-                    onFavoriteClick = onFavoriteClick
+                    onDateChange = onDateChange
                 )
             }
         }
 
         Spacer(modifier = Modifier.height(26.dp))
 
-        PostButton(
-            onClick = onPostClick
+        // El mismo boton de la app: mientras se guarda muestra que esta cargando
+        AppButton(
+            texto = stringResource(R.string.post),
+            onClick = onPostClick,
+            cargando = publicando,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Black,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp)
         )
 
         ErrorMessage(
             messageRes = errorMessageRes,
             modifier = Modifier.padding(top = 12.dp)
+        )
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun ReviewActionsCardPreview() {
+    MixtappTheme(darkTheme = true) {
+        ReviewActionsCard(
+            listenedDate = "2026-10-01",
+            publicando = false,
+            errorMessageRes = null,
+            onDateChange = {},
+            onPostClick = {},
         )
     }
 }

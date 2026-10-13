@@ -8,7 +8,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import com.example.mixtapp.R
+import com.example.mixtapp.ui.theme.MixtappTheme
 
 @Composable
 fun SearchTextField(
@@ -30,4 +32,15 @@ fun SearchTextField(
         },
         singleLine = true
     )
+}
+
+@Composable
+@Preview(showBackground = true)
+fun SearchTextFieldPreview() {
+    MixtappTheme(darkTheme = true) {
+        SearchTextField(
+            value = "",
+            onValueChange = {},
+        )
+    }
 }

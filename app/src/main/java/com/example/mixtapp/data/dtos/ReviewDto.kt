@@ -3,6 +3,7 @@ package com.example.mixtapp.data.dtos
 import com.example.mixtapp.data.model.MyReviewUi
 import com.example.mixtapp.data.model.SongReviewItemUi
 
+// Resena de un album, con el usuario que la escribio
 data class ReviewConUsuarioDto(
     val id: Int,
     val calificacion: Int,
@@ -15,6 +16,7 @@ data class ReviewConUsuarioDto(
     val usuario: UsuarioDto,
 )
 
+// Resena de un usuario, con el album que resena
 data class ReviewConAlbumDto(
     val id: Int,
     val calificacion: Int,
@@ -24,20 +26,20 @@ data class ReviewConAlbumDto(
     val albumId: Int,
     val createdAt: String,
     val updatedAt: String,
-    val album: AlbumDto,
+    val album: AlbumDeResenaDto,
 )
 
-fun ReviewConUsuarioDto.toSongReviewItemUi(): SongReviewItemUi {
+// El repositorio pasa el id del usuario de la app para marcar su resena
+fun ReviewConUsuarioDto.toSongReviewItemUi(usuarioActualId: String): SongReviewItemUi {
     return SongReviewItemUi(
         id = id.toString(),
         authorId = usuarioId.toString(),
         author = usuario.nombre,
         authorImage = usuario.fotoUrl ?: "",
-        daysAgo = fechaEscucha ?: "",
+        fecha = fechaEscucha ?: "",
         rating = calificacion,
         content = comentario ?: "",
-        likes = 0,
-        isLiked = false,
+        esMia = usuarioId.toString() == usuarioActualId,
     )
 }
 

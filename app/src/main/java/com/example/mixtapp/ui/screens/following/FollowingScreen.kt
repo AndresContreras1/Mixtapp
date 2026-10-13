@@ -8,6 +8,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,7 +31,9 @@ fun FollowingScreen(
     val state by followingViewModel.uiState.collectAsState()
 
     if (state.following == null) {
-        Text(text = stringResource(state.errorMessageRes ?: R.string.resenas_no_encontradas))
+        Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Text(text = stringResource(state.errorMessageRes ?: R.string.resenas_no_encontradas))
+        }
     } else {
         FollowingScreenContent(
             following = state.following!!,

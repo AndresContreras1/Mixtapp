@@ -1,0 +1,43 @@
+package com.example.mixtapp.ui.utils
+
+import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.sp
+import com.example.mixtapp.R
+import com.example.mixtapp.ui.theme.MixtappTheme
+
+@Composable
+fun ErrorMessage(
+    @StringRes messageRes: Int?,
+    modifier: Modifier = Modifier
+) {
+    AnimatedVisibility(
+        visible = messageRes != null,
+        modifier = modifier,
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
+        Text(
+            // Mientras se desvanece ya es null: se queda vacio en vez de mostrar otro texto
+            text = if (messageRes != null) stringResource(messageRes) else "",
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            fontSize = 14.sp
+        )
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun ErrorMessagePreview() {
+    MixtappTheme(darkTheme = true) {
+        ErrorMessage(messageRes = R.string.error_generico)
+    }
+}

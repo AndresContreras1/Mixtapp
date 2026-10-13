@@ -1,5 +1,6 @@
 package com.example.mixtapp.data.repository
 
+import android.util.Log
 import com.example.mixtapp.data.datasource.impl.UsuarioRetrofitDataSourceImpl
 import com.example.mixtapp.data.dtos.toMyReviewUi
 import com.example.mixtapp.data.dtos.toUsuarioUi
@@ -17,9 +18,11 @@ class UsuarioRepository @Inject constructor(
             val usuario = usuarioRemoteDataSource.getUsuarioById(id)
             Result.success(usuario.toUsuarioUi())
         } catch (e: HttpException) {
-            Result.failure(ErrorDelServidorException())
+            Log.d("UsuarioRepository", "getUsuarioById: ${e.message}")
+            Result.failure(errorDelBackend(e))
         } catch (e: Exception) {
-            Result.failure(SinConexionException())
+            Log.d("UsuarioRepository", "getUsuarioById: ${e.message}")
+            Result.failure(ErrorInesperadoException())
         }
     }
 
@@ -29,9 +32,11 @@ class UsuarioRepository @Inject constructor(
             val resenas = reviews.map { it.toMyReviewUi() }
             Result.success(resenas)
         } catch (e: HttpException) {
-            Result.failure(ErrorDelServidorException())
+            Log.d("UsuarioRepository", "getReviewsDeUsuario: ${e.message}")
+            Result.failure(errorDelBackend(e))
         } catch (e: Exception) {
-            Result.failure(SinConexionException())
+            Log.d("UsuarioRepository", "getReviewsDeUsuario: ${e.message}")
+            Result.failure(ErrorInesperadoException())
         }
     }
 }

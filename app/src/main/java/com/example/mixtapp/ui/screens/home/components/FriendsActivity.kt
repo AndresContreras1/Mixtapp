@@ -17,18 +17,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.data.local.LocalFriendActivityProvider
 import com.example.mixtapp.data.model.FriendActivityUi
-import com.example.mixtapp.ui.components.StarRating
+import com.example.mixtapp.ui.theme.MixtappTheme
+import com.example.mixtapp.ui.utils.StarRating
 
 @Composable
 fun FriendsActivity(
     activity: FriendActivityUi,
+    onClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Card(
+        onClick = { onClick(activity.album.id) },
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(
@@ -63,8 +68,29 @@ fun FriendsActivity(
             Text(
                 text = stringResource(R.string.cita_entre_comillas, activity.quote),
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.9f),
-                fontSize = 12.sp
+                fontSize = 12.sp,
+                maxLines = 4
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = stringResource(R.string.titulo_guion_subtitulo, activity.author, activity.date),
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                fontSize = 11.sp,
+                fontWeight = FontWeight.Bold
             )
         }
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun FriendsActivityPreview() {
+    MixtappTheme(darkTheme = true) {
+        FriendsActivity(
+            activity = LocalFriendActivityProvider.friendActivity,
+            onClick = {},
+        )
     }
 }

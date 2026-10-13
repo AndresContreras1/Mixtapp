@@ -84,9 +84,6 @@ object LocalAlbumProvider {
         tags = listOf("2006", "emo", "Rock Alternativo"),
     )
 
-    // Mientras no exista un selector de album, el boton + abre siempre este
-    val albumPorDefecto = fromZero
-
     val albums = listOf(
         teatroDira,
         rush,

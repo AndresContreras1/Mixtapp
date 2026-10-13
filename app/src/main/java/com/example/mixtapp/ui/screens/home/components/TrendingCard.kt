@@ -24,13 +24,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.data.local.LocalSongReviewProvider
 import com.example.mixtapp.data.model.SongReviewUi
-import com.example.mixtapp.ui.components.AlbumAsyncImage
-import com.example.mixtapp.ui.components.StarRating
-import kotlin.math.roundToInt
+import com.example.mixtapp.ui.theme.MixtappTheme
+import com.example.mixtapp.ui.utils.AlbumAsyncImage
+import com.example.mixtapp.ui.utils.StarRating
 
 @Composable
 fun TrendingCard(
@@ -74,7 +76,7 @@ fun TrendingCard(
                     modifier = Modifier.align(Alignment.BottomStart)
                 ) {
                     Text(
-                        text = stringResource(R.string.titulo_guion_subtitulo, songReview.album.artist, songReview.album.title),
+                        text = stringResource(R.string.titulo_guion_subtitulo, songReview.album.title, songReview.album.artist),
                         color = MaterialTheme.colorScheme.onSurface,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold
@@ -82,7 +84,7 @@ fun TrendingCard(
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         StarRating(
-                            rating = songReview.rating.roundToInt(),
+                            rating = songReview.estrellas,
                             starCount = 5,
                             starSize = 14.dp,
                             spacing = 0.dp,
@@ -95,7 +97,11 @@ fun TrendingCard(
                         Spacer(modifier = Modifier.width(10.dp))
 
                         Text(
-                            text = stringResource(R.string.plays_this_week),
+                            text = if (songReview.ratingCount == "1") {
+                                stringResource(R.string.una_resena)
+                            } else {
+                                stringResource(R.string.n_resenas, songReview.ratingCount)
+                            },
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 12.sp
                         )
@@ -103,5 +109,16 @@ fun TrendingCard(
                 }
             }
         }
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun TrendingCardPreview() {
+    MixtappTheme(darkTheme = true) {
+        TrendingCard(
+            songReview = LocalSongReviewProvider.trendingSong,
+            onClick = {},
+        )
     }
 }

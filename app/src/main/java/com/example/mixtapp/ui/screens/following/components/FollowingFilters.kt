@@ -9,10 +9,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mixtapp.ui.components.AppChip
 import com.example.mixtapp.ui.screens.following.model.FollowingFilterUi
+import com.example.mixtapp.ui.screens.following.model.followingFilters
+import com.example.mixtapp.ui.theme.MixtappTheme
+import com.example.mixtapp.ui.utils.AppChip
 
 @Composable
 fun FollowingFilters(
@@ -37,5 +40,17 @@ fun FollowingFilters(
                 fontSize = 14.sp,
             )
         }
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun FollowingFiltersPreview() {
+    MixtappTheme(darkTheme = true) {
+        FollowingFilters(
+            filters = followingFilters,
+            selectedFilterId = followingFilters.first().id,
+            onFilterSelected = {},
+        )
     }
 }

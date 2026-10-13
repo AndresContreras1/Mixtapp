@@ -17,16 +17,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.data.local.LocalNotificationsProvider
 import com.example.mixtapp.data.model.NotificationUi
-import com.example.mixtapp.ui.components.AlbumAsyncImage
+import com.example.mixtapp.ui.theme.MixtappTheme
+import com.example.mixtapp.ui.utils.AlbumAsyncImage
 
 @Composable
 fun NotificationRow(notification: NotificationUi, modifier: Modifier = Modifier) {
@@ -56,7 +60,10 @@ fun NotificationRow(notification: NotificationUi, modifier: Modifier = Modifier)
 
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = NotificationMessage(notification),
+                text = mensajeDeNotificacion(
+                    notification = notification,
+                    colorResaltado = MaterialTheme.colorScheme.onSurface,
+                ),
                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = alpha),
                 fontSize = 14.sp,
                 lineHeight = 19.sp,
@@ -69,10 +76,10 @@ fun NotificationRow(notification: NotificationUi, modifier: Modifier = Modifier)
             )
         }
 
-        notification.thumbnail?.let { url ->
+        if (notification.thumbnail.isNotEmpty()) {
             Spacer(modifier = Modifier.width(10.dp))
             AlbumAsyncImage(
-                cover = url,
+                cover = notification.thumbnail,
                 contentDescription = stringResource(R.string.notification_thumbnail),
                 alpha = 1f,
                 modifier = Modifier
@@ -83,23 +90,31 @@ fun NotificationRow(notification: NotificationUi, modifier: Modifier = Modifier)
     }
 }
 
-// El nombre del actor y la palabra resaltada van en negrita; el resto en texto normal
-@Composable
-private fun NotificationMessage(notification: NotificationUi) = buildAnnotatedString {
-    withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)) {
+// El nombre del actor y la palabra resaltada van en negrita; el resto en texto normal.
+// No es un composable: el color del tema llega desde la fila
+private fun mensajeDeNotificacion(notification: NotificationUi, colorResaltado: Color) = buildAnnotatedString {
+    withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = colorResaltado)) {
         append(notification.actorName)
     }
     append(" ")
 
     val word = notification.highlightedWord
-    if (word != null && notification.message.contains(word)) {
+    if (word.isNotEmpty() && notification.message.contains(word)) {
         val index = notification.message.indexOf(word)
         append(notification.message.substring(0, index))
-        withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)) {
+        withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = colorResaltado)) {
             append(word)
         }
         append(notification.message.substring(index + word.length))
     } else {
         append(notification.message)
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun NotificationRowPreview() {
+    MixtappTheme(darkTheme = true) {
+        NotificationRow(notification = LocalNotificationsProvider.notifications.first())
     }
 }

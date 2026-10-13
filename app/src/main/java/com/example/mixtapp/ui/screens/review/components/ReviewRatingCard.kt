@@ -19,10 +19,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
-import com.example.mixtapp.ui.components.StarRating
+import com.example.mixtapp.ui.theme.MixtappTheme
+import com.example.mixtapp.ui.utils.StarRating
 
 @Composable
 fun ReviewRatingCard(
@@ -75,5 +77,16 @@ fun ReviewRatingCard(
                 fontWeight = FontWeight.Bold
             )
         }
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun ReviewRatingCardPreview() {
+    MixtappTheme(darkTheme = true) {
+        ReviewRatingCard(
+            rating = 4,
+            onRatingChange = {},
+        )
     }
 }

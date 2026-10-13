@@ -43,10 +43,28 @@ object LocalDiscussionProvider {
             ),
             comments = sharedComments,
         ),
+        // La resena de Jen solo tiene calificacion y todavia nadie la comenta
+        DiscussionUi(
+            id = "rush-jen",
+            review = DiscussionReviewUi(
+                id = "rush-jen",
+                reviewerName = "Jen",
+                reviewerAvatarText = "J",
+                reviewedAt = "hace 40 min",
+                album = LocalAlbumProvider.rush,
+                rating = 4,
+                reviewText = "",
+                likes = 9,
+                commentsCount = 0,
+                isLiked = false,
+                isShared = false,
+            ),
+            comments = emptyList(),
+        ),
     )
 }
 
-// Hilo de comentarios de ejemplo, compartido por las dos discusiones
+// Hilo de comentarios de ejemplo, compartido por las dos primeras discusiones
 private val sharedComments = listOf(
     DiscussionCommentUi(
         id = "comment-priya",

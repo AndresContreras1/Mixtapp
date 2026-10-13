@@ -1,0 +1,89 @@
+package com.example.mixtapp.ui.utils
+
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Email
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.example.mixtapp.ui.theme.MixtappTheme
+
+@Composable
+fun AppTextField(
+    label: String,
+    placeholder: String,
+    value: String,
+    onValueChange: (String) -> Unit,
+    icon: ImageVector,
+    keyboardOptions: KeyboardOptions,
+    esContrasena: Boolean,
+    contrasenaVisible: Boolean,
+    onContrasenaVisibleChange: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val currentTransformation =
+        if (esContrasena && !contrasenaVisible) {
+            PasswordVisualTransformation()
+        } else {
+            VisualTransformation.None
+        }
+
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        modifier = modifier.fillMaxWidth(),
+        label = { Text(text = label) },
+        placeholder = { Text(text = placeholder) },
+        // El icono es decorativo: la etiqueta ya dice que va en el campo
+        leadingIcon = {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(24.dp)
+            )
+        },
+        trailingIcon = if (esContrasena) {
+            {
+                IconButton(onClick = onContrasenaVisibleChange) {
+                    PasswordVisibilityIcon(contrasenaVisible = contrasenaVisible)
+                }
+            }
+        } else {
+            null
+        },
+        singleLine = true,
+        keyboardOptions = keyboardOptions,
+        visualTransformation = currentTransformation
+    )
+}
+
+
+@Composable
+@Preview(showBackground = true)
+fun AppTextFieldPreview() {
+    MixtappTheme(darkTheme = true) {
+        AppTextField(
+            label = "Correo",
+            placeholder = "Escribe tu correo",
+            value = "",
+            onValueChange = {},
+            icon = Icons.Outlined.Email,
+            keyboardOptions = KeyboardOptions.Default,
+            esContrasena = false,
+            contrasenaVisible = false,
+            onContrasenaVisibleChange = {}
+        )
+    }
+}

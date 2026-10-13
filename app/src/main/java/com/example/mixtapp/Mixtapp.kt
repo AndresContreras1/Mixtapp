@@ -3,26 +3,20 @@ package com.example.mixtapp
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.mixtapp.navigation.AppNavigation
-import com.example.mixtapp.navigation.NavigationLogic
-import com.example.mixtapp.navigation.Screen
-import com.example.mixtapp.ui.components.BottomNav
-import com.example.mixtapp.ui.components.WriteReviewFab
+import com.example.mixtapp.ui.navigation.AppNavigation
+import com.example.mixtapp.ui.navigation.BottomNav
+import com.example.mixtapp.ui.navigation.NavigationLogic
+import com.example.mixtapp.ui.navigation.Screen
+import com.example.mixtapp.ui.utils.WriteReviewFab
 
 @Composable
 fun Mixtapp(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
     val navBackStackEntry = navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry.value?.destination?.route
-
-    val mixtappViewModel: MixtappViewModel = hiltViewModel()
-    val state by mixtappViewModel.uiState.collectAsState()
 
     val mostrarBarra = NavigationLogic.shouldShowBottomBar(currentRoute)
 
@@ -34,13 +28,10 @@ fun Mixtapp(modifier: Modifier = Modifier) {
             }
         },
         floatingActionButton = {
-            if (mostrarBarra && state.mostrarBotonResena) {
+            if (mostrarBarra) {
+                // El + abre la lista de albumes para elegir cual resenar
                 WriteReviewFab(
-                    onClick = {
-                        navController.navigate(
-                            Screen.WriteReview.createRoute(albumId = state.albumParaResenar)
-                        )
-                    }
+                    onClick = { navController.navigate(Screen.SelectAlbum.route) }
                 )
             }
         }

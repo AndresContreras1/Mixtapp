@@ -14,14 +14,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
-import com.example.mixtapp.ui.components.ErrorMessage
-import com.example.mixtapp.ui.components.PickImageButton
-import com.example.mixtapp.ui.components.ProfileAsyncImage
+import com.example.mixtapp.data.local.LocalMyReviewsProvider
+import com.example.mixtapp.data.model.FAVORITOS_EN_PERFIL
+import com.example.mixtapp.ui.theme.MixtappTheme
+import com.example.mixtapp.ui.utils.ErrorMessage
+import com.example.mixtapp.ui.utils.ProfileAsyncImage
 
 @Composable
 fun ProfileAvatarSection(
@@ -30,8 +32,7 @@ fun ProfileAvatarSection(
     errorImagenRes: Int?,
     onImagePicked: (Uri) -> Unit,
     reviewsCount: Int,
-    albumsCount: Int,
-    listsCount: Int,
+    favoritosCount: Int,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -44,9 +45,8 @@ fun ProfileAvatarSection(
             contentDescription = stringResource(R.string.foto_perfil),
             modifier = Modifier
                 .size(100.dp)
-                .clip(CircleShape)
                 .border(1.5.dp, MaterialTheme.colorScheme.primary, CircleShape)
-                .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f))
+                .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f), CircleShape)
         )
         Spacer(modifier = Modifier.height(12.dp))
         PickImageButton(
@@ -58,10 +58,36 @@ fun ProfileAvatarSection(
             modifier = Modifier.padding(top = 8.dp)
         )
         Spacer(modifier = Modifier.height(16.dp))
+        val resenas = if (reviewsCount == 1) {
+            stringResource(R.string.una_resena)
+        } else {
+            stringResource(R.string.n_resenas, reviewsCount)
+        }
+        val favoritos = if (favoritosCount == 1) {
+            stringResource(R.string.un_favorito)
+        } else {
+            stringResource(R.string.n_favoritos, favoritosCount)
+        }
+
         Text(
-            text = stringResource(R.string.user_stats, reviewsCount, albumsCount, listsCount),
+            text = stringResource(R.string.user_stats, resenas, favoritos),
             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
             fontSize = 14.sp
+        )
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun ProfileAvatarSectionPreview() {
+    MixtappTheme(darkTheme = true) {
+        ProfileAvatarSection(
+            profileImageUrl = "",
+            subiendoImagen = false,
+            errorImagenRes = null,
+            onImagePicked = {},
+            reviewsCount = LocalMyReviewsProvider.reviews.size,
+            favoritosCount = FAVORITOS_EN_PERFIL,
         )
     }
 }

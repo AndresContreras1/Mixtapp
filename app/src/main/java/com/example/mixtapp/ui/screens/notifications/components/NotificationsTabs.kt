@@ -7,11 +7,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mixtapp.ui.components.AppChip
+import com.example.mixtapp.data.local.LocalNotificationsProvider
 import com.example.mixtapp.ui.screens.notifications.model.NotificationTabUi
 import com.example.mixtapp.ui.screens.notifications.model.TAB_SIN_LEER
+import com.example.mixtapp.ui.screens.notifications.model.notificationTabs
+import com.example.mixtapp.ui.theme.MixtappTheme
+import com.example.mixtapp.ui.utils.AppChip
 
 @Composable
 fun NotificationsTabs(
@@ -43,5 +47,18 @@ fun NotificationsTabs(
                 fontSize = 13.sp,
             )
         }
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun NotificationsTabsPreview() {
+    MixtappTheme(darkTheme = true) {
+        NotificationsTabs(
+            tabs = notificationTabs,
+            unreadCount = LocalNotificationsProvider.notifications.count { !it.isRead },
+            selectedTabId = notificationTabs.first().id,
+            onTabSelected = {},
+        )
     }
 }

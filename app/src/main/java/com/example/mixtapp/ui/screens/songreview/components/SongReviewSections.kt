@@ -5,37 +5,32 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.data.local.LocalSongReviewProvider
 import com.example.mixtapp.data.model.SongReviewUi
-import com.example.mixtapp.ui.components.ErrorMessage
+import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.theme.displayFontFamily
+import com.example.mixtapp.ui.utils.BackButton
+import com.example.mixtapp.ui.utils.ErrorMessage
 
 @Composable
 fun SongReviewSections(
     songReview: SongReviewUi,
-    onRatingChange: (Int) -> Unit,
-    onSaveClick: () -> Unit,
-    onLikeClick: () -> Unit,
-    onWriteReviewClick: () -> Unit,
-    onBackClick: () -> Unit,
+    miResenaId: String?,
     errorMessageRes: Int?,
-    onReviewLikeClick: (String) -> Unit,
-    onReviewReplyClick: (String) -> Unit,
+    onWriteReviewClick: () -> Unit,
+    onDeleteMyReviewClick: () -> Unit,
+    onBackClick: () -> Unit,
     onAuthorClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -45,17 +40,7 @@ fun SongReviewSections(
     ) {
         item {
             Column {
-                IconButton(
-                    onClick = onBackClick,
-                    modifier = Modifier.size(30.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                        contentDescription = stringResource(R.string.back),
-                        tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.72f),
-                        modifier = Modifier.size(30.dp)
-                    )
-                }
+                BackButton(onBackClick = onBackClick)
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -86,24 +71,17 @@ fun SongReviewSections(
 
                 ReleaseStats(
                     rating = songReview.rating,
+                    estrellas = songReview.estrellas,
                     ratingCount = songReview.ratingCount,
                     recommendRate = songReview.recommendRate
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                // Tocar la tarjeta abre la pantalla para escribir o editar mi resena
                 UserRatingSection(
                     rating = songReview.userRating,
-                    onRatingChange = onRatingChange
-                )
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                ActionButtons(
-                    isSaved = songReview.isSaved,
-                    isLiked = songReview.isLiked,
-                    onSaveClick = onSaveClick,
-                    onLikeClick = onLikeClick
+                    onClick = onWriteReviewClick
                 )
 
                 ErrorMessage(
@@ -117,18 +95,49 @@ fun SongReviewSections(
 
         item {
             ReviewsHeader(
+                tieneResena = miResenaId != null,
                 onWriteReviewClick = onWriteReviewClick,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
         }
 
-        items(songReview.reviews, key = { it.id }) { review ->
+        if (songReview.reviews.isEmpty()) {
+            item {
+                Text(
+                    text = stringResource(R.string.sin_resenas_album),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontSize = 14.sp
+                )
+            }
+        }
+
+        // Los comentarios del album son sus resenas del backend
+        items(songReview.reviews.size) { index ->
+            val review = songReview.reviews[index]
+
             ReviewItem(
                 review = review,
-                onLikeClick = { onReviewLikeClick(review.id) },
-                onReplyClick = { onReviewReplyClick(review.id) },
-                onAuthorClick = { onAuthorClick(review.authorId) }
+                onEditClick = onWriteReviewClick,
+                onDeleteClick = onDeleteMyReviewClick,
+                onAuthorClick = { onAuthorClick(review.authorId) },
+                modifier = Modifier.padding(bottom = 12.dp)
             )
         }
+    }
+}
+
+@Composable
+@Preview(showBackground = true, device = "spec:width=393dp,height=852dp")
+fun SongReviewSectionsPreview() {
+    MixtappTheme(darkTheme = true) {
+        SongReviewSections(
+            songReview = LocalSongReviewProvider.songs.first(),
+            miResenaId = null,
+            errorMessageRes = null,
+            onWriteReviewClick = {},
+            onDeleteMyReviewClick = {},
+            onBackClick = {},
+            onAuthorClick = {},
+        )
     }
 }

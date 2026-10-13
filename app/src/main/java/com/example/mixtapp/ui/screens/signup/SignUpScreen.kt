@@ -8,19 +8,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.mixtapp.ui.components.*
 import com.example.mixtapp.ui.screens.signup.components.SignUpFooter
 import com.example.mixtapp.ui.screens.signup.components.SignUpForm
 import com.example.mixtapp.ui.screens.signup.components.SignUpHeader
 import com.example.mixtapp.ui.theme.*
+import com.example.mixtapp.ui.utils.*
 
 @Composable
 fun SignUpScreen(
     signUpViewModel: SignUpViewModel,
+    onSignUpSuccess: () -> Unit,
     onLoginClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val state by signUpViewModel.uiState.collectAsState()
+
+    // El ViewModel valida y autoriza; cuando la cuenta queda creada, la pantalla avisa para navegar
+    LaunchedEffect(state.navigate) {
+        if (state.navigate) {
+            onSignUpSuccess()
+        }
+    }
 
     SignUpScreenContent(
         usuario = state.usuario,

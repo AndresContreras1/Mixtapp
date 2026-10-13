@@ -6,9 +6,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.mixtapp.data.local.LocalAlbumProvider
 import com.example.mixtapp.data.model.Album
-import com.example.mixtapp.ui.screens.review.MAX_REVIEW_LENGTH
+import com.example.mixtapp.data.model.MAX_REVIEW_LENGTH
+import com.example.mixtapp.ui.theme.MixtappTheme
 
 @Composable
 fun WriteReviewList(
@@ -16,13 +19,11 @@ fun WriteReviewList(
     rating: Int,
     reviewText: String,
     listenedDate: String,
-    isFavorite: Boolean,
+    publicando: Boolean,
     errorMessageRes: Int?,
     onRatingChange: (Int) -> Unit,
     onReviewChange: (String) -> Unit,
     onDateChange: (String) -> Unit,
-    onDatePickerClick: () -> Unit,
-    onFavoriteClick: () -> Unit,
     onPostClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -59,14 +60,31 @@ fun WriteReviewList(
         item {
             ReviewActionsCard(
                 listenedDate = listenedDate,
-                isFavorite = isFavorite,
+                publicando = publicando,
                 errorMessageRes = errorMessageRes,
                 onDateChange = onDateChange,
-                onDatePickerClick = onDatePickerClick,
-                onFavoriteClick = onFavoriteClick,
                 onPostClick = onPostClick,
                 modifier = Modifier.padding(top = 22.dp)
             )
         }
+    }
+}
+
+@Composable
+@Preview(showBackground = true, device = "spec:width=393dp,height=852dp")
+fun WriteReviewListPreview() {
+    MixtappTheme(darkTheme = true) {
+        WriteReviewList(
+            album = LocalAlbumProvider.toxicity,
+            rating = 4,
+            reviewText = "",
+            listenedDate = "",
+            publicando = false,
+            errorMessageRes = null,
+            onRatingChange = {},
+            onReviewChange = {},
+            onDateChange = {},
+            onPostClick = {},
+        )
     }
 }

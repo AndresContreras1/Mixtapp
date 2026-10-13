@@ -1,13 +1,13 @@
 package com.example.mixtapp.data.repository
 
+import android.util.Log
 import com.example.mixtapp.data.datasource.SocialLocalDataSource
 import com.example.mixtapp.data.model.FollowingReviewUi
 import com.example.mixtapp.data.model.FollowingUi
-import com.example.mixtapp.data.model.FriendActivityUi
 import com.example.mixtapp.data.model.NotificationUi
-import com.example.mixtapp.data.model.ProfileUi
 import javax.inject.Inject
 
+// Seguidos y notificaciones siguen locales: el backend todavia no los tiene
 class SocialRepository @Inject constructor(
     private val socialLocalDataSource: SocialLocalDataSource
 ) {
@@ -15,19 +15,8 @@ class SocialRepository @Inject constructor(
     suspend fun getFollowing(): Result<FollowingUi> {
         return try {
             Result.success(socialLocalDataSource.getFollowing())
-        } catch (e: NoSuchElementException) {
-            Result.failure(ContenidoNoEncontradoException())
         } catch (e: Exception) {
-            Result.failure(ErrorDeDatosLocalesException())
-        }
-    }
-
-    suspend fun getFriendActivity(): Result<FriendActivityUi> {
-        return try {
-            Result.success(socialLocalDataSource.getFriendActivity())
-        } catch (e: NoSuchElementException) {
-            Result.failure(ContenidoNoEncontradoException())
-        } catch (e: Exception) {
+            Log.d("SocialRepository", "getFollowing: ${e.message}")
             Result.failure(ErrorDeDatosLocalesException())
         }
     }
@@ -35,19 +24,8 @@ class SocialRepository @Inject constructor(
     suspend fun getNotifications(): Result<List<NotificationUi>> {
         return try {
             Result.success(socialLocalDataSource.getNotifications())
-        } catch (e: NoSuchElementException) {
-            Result.failure(ContenidoNoEncontradoException())
         } catch (e: Exception) {
-            Result.failure(ErrorDeDatosLocalesException())
-        }
-    }
-
-    suspend fun getProfile(): Result<ProfileUi> {
-        return try {
-            Result.success(socialLocalDataSource.getProfile())
-        } catch (e: NoSuchElementException) {
-            Result.failure(ContenidoNoEncontradoException())
-        } catch (e: Exception) {
+            Log.d("SocialRepository", "getNotifications: ${e.message}")
             Result.failure(ErrorDeDatosLocalesException())
         }
     }
@@ -85,6 +63,7 @@ class SocialRepository @Inject constructor(
             socialLocalDataSource.guardarFollowing(following = actualizado)
             Result.success(actualizado)
         } catch (e: Exception) {
+            Log.d("SocialRepository", "actualizarFollowingReview: ${e.message}")
             Result.failure(ErrorDeDatosLocalesException())
         }
     }

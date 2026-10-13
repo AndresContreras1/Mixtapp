@@ -10,12 +10,14 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -23,13 +25,13 @@ import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalDiscussionProvider
 import com.example.mixtapp.data.model.DiscussionUi
-import com.example.mixtapp.ui.components.ErrorMessage
 import com.example.mixtapp.ui.screens.discussion.components.CommentsDivider
 import com.example.mixtapp.ui.screens.discussion.components.DiscussionHeader
 import com.example.mixtapp.ui.screens.discussion.components.DiscussionReviewCard
 import com.example.mixtapp.ui.screens.discussion.components.NewCommentField
 import com.example.mixtapp.ui.screens.discussion.components.ThreadCommentItem
 import com.example.mixtapp.ui.theme.MixtappTheme
+import com.example.mixtapp.ui.utils.ErrorMessage
 
 // Recibe solo el id de la resena; el ViewModel se encarga de buscar la discusion
 @Composable
@@ -45,10 +47,18 @@ fun DiscussionScreen(
         discussionViewModel.getDiscussionByReviewId(reviewId = reviewId)
     }
 
-    if (state.discussion == null) {
-        Text(text = stringResource(state.errorMessageRes ?: R.string.discusion_no_encontrada))
-    } else {
-        DiscussionScreenContent(
+    when {
+        state.isLoading -> {
+            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+        }
+        state.discussion == null -> {
+            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(text = stringResource(state.errorMessageRes ?: R.string.discusion_no_encontrada))
+            }
+        }
+        else -> DiscussionScreenContent(
             discussion = state.discussion!!,
             nuevoComentario = state.nuevoComentario,
             replyingToCommentId = state.replyingToCommentId,

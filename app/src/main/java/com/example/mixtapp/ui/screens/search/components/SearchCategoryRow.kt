@@ -18,9 +18,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mixtapp.data.local.LocalSearchCategoriesProvider
 import com.example.mixtapp.data.model.SearchCategoryUi
+import com.example.mixtapp.ui.theme.MixtappTheme
 
 @Composable
 fun SearchCategoryRow(
@@ -73,5 +76,17 @@ fun SearchCategoryRow(
         }
 
         HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.6f), thickness = 1.dp)
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun SearchCategoryRowPreview() {
+    MixtappTheme(darkTheme = true) {
+        SearchCategoryRow(
+            category = LocalSearchCategoriesProvider.categories.first(),
+            selected = true,
+            onClick = {},
+        )
     }
 }

@@ -1,6 +1,6 @@
 package com.example.mixtapp.ui.screens.discussion.components
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,14 +8,17 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.ui.theme.MixtappTheme
 
 @Composable
 fun NewCommentField(
@@ -39,12 +42,25 @@ fun NewCommentField(
 
         Spacer(modifier = Modifier.size(12.dp))
 
-        Text(
-            text = stringResource(R.string.publicar_comentario),
-            modifier = Modifier.clickable { onPublicarClick() },
-            color = MaterialTheme.colorScheme.primary,
-            fontSize = 13.sp,
-            fontWeight = FontWeight.Bold,
+        TextButton(onClick = onPublicarClick, contentPadding = PaddingValues(0.dp)) {
+            Text(
+                text = stringResource(R.string.publicar_comentario),
+                color = MaterialTheme.colorScheme.primary,
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Bold,
+            )
+        }
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun NewCommentFieldPreview() {
+    MixtappTheme(darkTheme = true) {
+        NewCommentField(
+            value = "",
+            onValueChange = {},
+            onPublicarClick = {},
         )
     }
 }

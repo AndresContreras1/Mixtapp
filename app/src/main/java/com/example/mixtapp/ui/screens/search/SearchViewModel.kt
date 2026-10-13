@@ -12,7 +12,6 @@ import com.example.mixtapp.data.repository.AlbumRepository
 import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
 import com.example.mixtapp.data.repository.ErrorDelServidorException
 import com.example.mixtapp.data.repository.SinConexionException
-import com.example.mixtapp.ui.screens.search.model.SearchResultUi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,7 +19,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.math.roundToInt
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
@@ -33,6 +31,7 @@ class SearchViewModel @Inject constructor(
     // No recibe parametros, asi que los datos se cargan al crear el ViewModel
     init {
         getCategories()
+        getAlbumes()
     }
 
     private fun getCategories() {
@@ -56,10 +55,11 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    fun updateQuery(query: String) {
-        val categoriaActual = _uiState.value.selectedCategoryId
-
+    // Los albumes se piden una sola vez; buscar y ordenar trabajan sobre esta lista
+    private fun getAlbumes() {
         viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
+
             val result = albumRepository.getSongReviews()
 
             if (result.isSuccess) {
@@ -67,59 +67,24 @@ class SearchViewModel @Inject constructor(
 
                 _uiState.update {
                     it.copy(
-                        query = query,
-                        selectedCategoryId = if (query.isBlank()) categoriaActual else null,
-                        resultados = aResultados(
-                            songReviews = buscarPorNombre(query = query, todos = todos)
+                        todos = todos,
+                        // Si ya se escribio algo mientras cargaba, se resuelve con lo que llego
+                        resultados = resultadosPara(
+                            query = it.query,
+                            categoriaId = it.selectedCategoryId,
+                            todos = todos,
                         ),
+                        isLoading = false,
                         errorMessageRes = null,
                     )
                 }
             } else {
                 _uiState.update {
                     it.copy(
-                        query = query,
+                        isLoading = false,
                         errorMessageRes = mensajeDeError(
                             error = result.exceptionOrNull(),
-                            generico = R.string.error_actualizar_lista,
-                        ),
-                    )
-                }
-            }
-        }
-    }
-
-    fun updateSelectedCategory(categoryId: String) {
-        val yaEstaba = _uiState.value.selectedCategoryId == categoryId
-
-        viewModelScope.launch {
-            val result = albumRepository.getSongReviews()
-
-            if (result.isSuccess) {
-                val todos = result.getOrNull() ?: emptyList()
-
-                _uiState.update {
-                    it.copy(
-                        selectedCategoryId = if (yaEstaba) null else categoryId,
-                        resultados = if (yaEstaba) {
-                            emptyList()
-                        } else {
-                            aResultados(
-                                songReviews = ordenarPorCategoria(
-                                    categoryId = categoryId,
-                                    todos = todos,
-                                )
-                            )
-                        },
-                        errorMessageRes = null,
-                    )
-                }
-            } else {
-                _uiState.update {
-                    it.copy(
-                        errorMessageRes = mensajeDeError(
-                            error = result.exceptionOrNull(),
-                            generico = R.string.error_actualizar_lista,
+                            generico = R.string.error_cargar_contenido,
                         )
                     )
                 }
@@ -127,14 +92,47 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    private fun buscarPorNombre(query: String, todos: List<SongReviewUi>): List<SongReviewUi> {
-        if (query.isBlank()) return emptyList()
+    fun updateQuery(query: String) {
+        val estado = _uiState.value
+        val categoria = if (query.isBlank()) estado.selectedCategoryId else null
 
-        return todos.filter { songReview ->
+        _uiState.update {
+            it.copy(
+                query = query,
+                selectedCategoryId = categoria,
+                resultados = resultadosPara(query = query, categoriaId = categoria, todos = estado.todos),
+            )
+        }
+    }
+
+    fun updateSelectedCategory(categoryId: String) {
+        val estado = _uiState.value
+        val categoria = if (estado.selectedCategoryId == categoryId) null else categoryId
+
+        _uiState.update {
+            it.copy(
+                selectedCategoryId = categoria,
+                resultados = resultadosPara(query = estado.query, categoriaId = categoria, todos = estado.todos),
+            )
+        }
+    }
+
+    private fun resultadosPara(
+        query: String,
+        categoriaId: String?,
+        todos: List<SongReviewUi>,
+    ): List<SongReviewUi> = when {
+        query.isNotBlank() -> buscarPorNombre(query = query, todos = todos)
+        categoriaId != null -> ordenarPorCategoria(categoryId = categoriaId, todos = todos)
+        // Sin busqueda ni categoria se muestran todos los albumes
+        else -> todos
+    }
+
+    private fun buscarPorNombre(query: String, todos: List<SongReviewUi>): List<SongReviewUi> =
+        todos.filter { songReview ->
             songReview.album.title.contains(query, ignoreCase = true) ||
                     songReview.album.artist.contains(query, ignoreCase = true)
         }
-    }
 
     private fun ordenarPorCategoria(
         categoryId: String,
@@ -142,15 +140,10 @@ class SearchViewModel @Inject constructor(
     ): List<SongReviewUi> = when (categoryId) {
         CATEGORIA_FECHA_LANZAMIENTO -> todos.sortedByDescending { it.album.year }
         CATEGORIA_MEJOR_CALIFICADOS -> todos.sortedByDescending { it.rating }
-        CATEGORIA_MAS_POPULARES -> todos.sortedByDescending { it.recommendRate }
+        // Los mas populares son los que tienen mas resenas
+        CATEGORIA_MAS_POPULARES -> todos.sortedByDescending { it.reviews.size }
         else -> todos
     }
-
-    // Redondear es del ViewModel: la pantalla solo recibe el numero de estrellas
-    private fun aResultados(songReviews: List<SongReviewUi>): List<SearchResultUi> =
-        songReviews.map { songReview ->
-            SearchResultUi(songReview = songReview, estrellas = songReview.rating.roundToInt())
-        }
 
     @StringRes
     private fun mensajeDeError(error: Throwable?, @StringRes generico: Int): Int = when (error) {

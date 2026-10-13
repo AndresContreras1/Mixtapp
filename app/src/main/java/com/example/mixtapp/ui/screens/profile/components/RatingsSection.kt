@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,22 +13,28 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
-import com.example.mixtapp.ui.components.StarRating
+import com.example.mixtapp.ui.theme.MixtappTheme
+import com.example.mixtapp.ui.utils.StarRating
 
 @Composable
 fun RatingsSection(
+    // Una barra por calificacion, de 0 a 5 estrellas, segun cuantas resenas tienen cada una
     ratingBars: List<Float>,
+    onMasActividadClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
@@ -42,7 +49,7 @@ fun RatingsSection(
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold
             )
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            TextButton(onClick = onMasActividadClick, contentPadding = PaddingValues(0.dp)) {
                 Text(
                     text = stringResource(R.string.more_activity),
                     color = MaterialTheme.colorScheme.primary,
@@ -80,9 +87,10 @@ fun RatingsSection(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
+            // La primera barra es la de 0 estrellas, asi que va la estrella vacia
             Icon(
-                imageVector = Icons.Default.Star,
-                contentDescription = stringResource(R.string.una_estrella),
+                imageVector = Icons.Outlined.StarOutline,
+                contentDescription = stringResource(R.string.cero_estrellas),
                 tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
                 modifier = Modifier.size(12.dp)
             )
@@ -97,5 +105,16 @@ fun RatingsSection(
                 onRatingChange = null
             )
         }
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun RatingsSectionPreview() {
+    MixtappTheme(darkTheme = true) {
+        RatingsSection(
+            ratingBars = listOf(0.2f, 0f, 0.4f, 0.6f, 1f, 0.8f),
+            onMasActividadClick = {},
+        )
     }
 }

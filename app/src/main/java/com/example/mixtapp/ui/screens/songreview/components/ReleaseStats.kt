@@ -9,9 +9,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -20,25 +20,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
-import com.example.mixtapp.ui.components.StarRating
+import com.example.mixtapp.data.local.LocalSongReviewProvider
+import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.theme.displayFontFamily
-import kotlin.math.roundToInt
+import com.example.mixtapp.ui.utils.StarRating
 
 @Composable
 fun ReleaseStats(
     rating: Double,
+    estrellas: Int,
     ratingCount: String,
     recommendRate: Int,
     modifier: Modifier = Modifier
 ) {
-    Card(
+    OutlinedCard(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        colors = CardDefaults.outlinedCardColors(containerColor = Color.Transparent),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f))
     ) {
         Row(
@@ -50,15 +52,25 @@ fun ReleaseStats(
             StatItem(
                 value = stringResource(R.string.rating_promedio, rating),
                 label = null,
-                estrellas = rating.roundToInt(),
+                estrellas = estrellas,
                 modifier = Modifier.weight(1f)
             )
             VerticalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f), modifier = Modifier.height(30.dp))
-            StatItem(value = ratingCount, label = stringResource(R.string.ratings_label), modifier = Modifier.weight(1f))
+            StatItem(
+                value = ratingCount,
+                label = if (ratingCount == "1") {
+                    stringResource(R.string.calificacion_label)
+                } else {
+                    stringResource(R.string.ratings_label)
+                },
+                estrellas = null,
+                modifier = Modifier.weight(1f)
+            )
             VerticalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f), modifier = Modifier.height(30.dp))
             StatItem(
                 value = stringResource(R.string.recomendacion_porcentaje, recommendRate),
                 label = stringResource(R.string.recommend_label),
+                estrellas = null,
                 modifier = Modifier.weight(1f)
             )
         }
@@ -66,7 +78,7 @@ fun ReleaseStats(
 }
 
 @Composable
-private fun StatItem(value: String, label: String?, estrellas: Int? = null, modifier: Modifier = Modifier) {
+private fun StatItem(value: String, label: String?, estrellas: Int?, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -97,5 +109,20 @@ private fun StatItem(value: String, label: String?, estrellas: Int? = null, modi
                 fontSize = 12.sp
             )
         }
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun ReleaseStatsPreview() {
+    val song = LocalSongReviewProvider.songs.first()
+
+    MixtappTheme(darkTheme = true) {
+        ReleaseStats(
+            rating = song.rating,
+            estrellas = song.estrellas,
+            ratingCount = song.ratingCount,
+            recommendRate = song.recommendRate,
+        )
     }
 }

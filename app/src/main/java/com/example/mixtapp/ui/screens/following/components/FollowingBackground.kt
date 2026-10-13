@@ -1,28 +1,41 @@
 package com.example.mixtapp.ui.screens.following.components
 
-import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.mixtapp.ui.theme.MixtappTheme
+import com.example.mixtapp.ui.utils.DecorativeCircle
 
+// Los mismos circulos de AppBackground, en otras posiciones
 @Composable
 fun FollowingBackground(modifier: Modifier = Modifier) {
-    val circuloIzquierdo = MaterialTheme.colorScheme.secondary.copy(alpha = 0.58f)
-    val circuloDerecho = MaterialTheme.colorScheme.surfaceDim.copy(alpha = 0.9f)
+    Box(modifier = modifier.fillMaxSize()) {
+        DecorativeCircle(
+            size = 312.dp,
+            color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.58f),
+            modifier = Modifier.offset(x = (-228).dp, y = 204.dp)
+        )
 
-    Canvas(modifier = modifier.fillMaxSize()) {
-        drawCircle(
-            color = circuloIzquierdo,
-            radius = 156.dp.toPx(),
-            center = Offset(-72.dp.toPx(), 360.dp.toPx()),
+        DecorativeCircle(
+            size = 264.dp,
+            color = MaterialTheme.colorScheme.surfaceDim.copy(alpha = 0.9f),
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .offset(x = 174.dp, y = 428.dp)
         )
-        drawCircle(
-            color = circuloDerecho,
-            radius = 132.dp.toPx(),
-            center = Offset(size.width + 42.dp.toPx(), 560.dp.toPx()),
-        )
+    }
+}
+
+@Composable
+@Preview(showBackground = true, device = "spec:width=393dp,height=852dp")
+fun FollowingBackgroundPreview() {
+    MixtappTheme(darkTheme = true) {
+        FollowingBackground()
     }
 }

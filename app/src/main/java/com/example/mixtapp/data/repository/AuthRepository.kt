@@ -1,5 +1,6 @@
 package com.example.mixtapp.data.repository
 
+import android.util.Log
 import com.example.mixtapp.data.datasource.AuthRemoteDataSource
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.FirebaseTooManyRequestsException
@@ -22,14 +23,19 @@ class AuthRepository @Inject constructor(
             authRemoteDataSource.signIn(email = email, password = password)
             Result.success(Unit)
         } catch (e: FirebaseAuthInvalidCredentialsException) {
+            Log.d("AuthRepository", "signIn: ${e.message}")
             Result.failure(CredencialesInvalidasException())
         } catch (e: FirebaseAuthInvalidUserException) {
+            Log.d("AuthRepository", "signIn: ${e.message}")
             Result.failure(CorreoNoRegistradoException())
         } catch (e: FirebaseNetworkException) {
+            Log.d("AuthRepository", "signIn: ${e.message}")
             Result.failure(SinConexionException())
         } catch (e: FirebaseTooManyRequestsException) {
+            Log.d("AuthRepository", "signIn: ${e.message}")
             Result.failure(DemasiadosIntentosException())
         } catch (e: Exception) {
+            Log.d("AuthRepository", "signIn: ${e.message}")
             Result.failure(ErrorDeInicioSesionException())
         }
     }
@@ -39,14 +45,19 @@ class AuthRepository @Inject constructor(
             authRemoteDataSource.signUp(email = email, password = password)
             Result.success(Unit)
         } catch (e: FirebaseAuthUserCollisionException) {
+            Log.d("AuthRepository", "signUp: ${e.message}")
             Result.failure(CorreoYaRegistradoException())
         } catch (e: FirebaseAuthInvalidCredentialsException) {
+            Log.d("AuthRepository", "signUp: ${e.message}")
             Result.failure(CredencialesInvalidasException())
         } catch (e: FirebaseNetworkException) {
+            Log.d("AuthRepository", "signUp: ${e.message}")
             Result.failure(SinConexionException())
         } catch (e: FirebaseTooManyRequestsException) {
+            Log.d("AuthRepository", "signUp: ${e.message}")
             Result.failure(DemasiadosIntentosException())
         } catch (e: Exception) {
+            Log.d("AuthRepository", "signUp: ${e.message}")
             Result.failure(ErrorDeRegistroException())
         }
     }

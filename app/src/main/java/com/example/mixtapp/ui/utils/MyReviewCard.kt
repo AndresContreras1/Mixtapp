@@ -1,0 +1,111 @@
+package com.example.mixtapp.ui.utils
+
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.mixtapp.R
+import com.example.mixtapp.data.local.LocalMyReviewsProvider
+import com.example.mixtapp.data.model.MyReviewUi
+import com.example.mixtapp.ui.theme.MixtappTheme
+
+@Composable
+fun MyReviewCard(
+    review: MyReviewUi,
+    onReviewClick: (String) -> Unit,
+    showEditButton: Boolean,
+    // Recibe la resena completa: el perfil la edita ahi mismo y Mis resenas abre su album
+    onEditClick: (MyReviewUi) -> Unit,
+    onDeleteClick: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        onClick = { onReviewClick(review.album.id) },
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(14.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLowest
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
+    ) {
+        Box(modifier = Modifier.padding(16.dp)) {
+            ReviewRatingBadge(
+                rating = review.rating,
+                modifier = Modifier.align(Alignment.TopEnd)
+            )
+
+            Column(modifier = Modifier.padding(end = 44.dp)) {
+                ReviewCardHeader(review = review, mostrarEstrellas = true)
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Text(
+                    text = review.excerpt,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.85f),
+                    fontSize = 13.sp,
+                    lineHeight = 18.sp,
+                    maxLines = 4
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                ReviewCardFooter(review = review)
+
+                if (showEditButton) {
+                    Row {
+                        IconButton(onClick = { onEditClick(review) }) {
+                            Icon(
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = stringResource(R.string.editar_resena),
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                        IconButton(onClick = { onDeleteClick(review.id) }) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = stringResource(R.string.eliminar_resena),
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun MyReviewCardPreview() {
+    MixtappTheme(darkTheme = true) {
+        MyReviewCard(
+            review = LocalMyReviewsProvider.reviews.first(),
+            onReviewClick = {},
+            showEditButton = true,
+            onEditClick = {},
+            onDeleteClick = {}
+        )
+    }
+}

@@ -7,12 +7,16 @@ import com.example.mixtapp.ui.screens.myreviews.model.MyReviewFilterUi
 data class MyReviewsState(
     val username: String = "",
     val iniciales: String = "",
-    val joinDate: String = "",
+    // Todas mis resenas, para cambiar de filtro sin volver a pedirlas
+    val todas: List<MyReviewUi> = emptyList(),
     // Ya vienen ordenadas o filtradas por el ViewModel
     val reviews: List<MyReviewUi> = emptyList(),
     // Los filtros los provee el ViewModel; el componente solo los pinta
     val filters: List<MyReviewFilterUi> = emptyList(),
     val selectedFilterId: String = "",
-    val isLoading: Boolean = false,
+    // Arranca cargando porque lo primero que hace la pantalla es pedir mis resenas
+    val isLoading: Boolean = true,
+    // Mientras se borra no se manda otro DELETE
+    val eliminando: Boolean = false,
     @StringRes val errorMessageRes: Int? = null,
 )

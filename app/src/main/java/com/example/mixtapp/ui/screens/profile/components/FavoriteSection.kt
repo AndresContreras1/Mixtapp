@@ -16,11 +16,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.data.local.LocalAlbumProvider
 import com.example.mixtapp.data.model.Album
-import com.example.mixtapp.ui.components.AlbumAsyncImage
+import com.example.mixtapp.data.model.FAVORITOS_EN_PERFIL
+import com.example.mixtapp.ui.theme.MixtappTheme
+import com.example.mixtapp.ui.utils.AlbumAsyncImage
 
 @Composable
 fun FavoriteSection(
@@ -35,23 +39,46 @@ fun FavoriteSection(
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            favoriteAlbums.forEach { album ->
-                AlbumAsyncImage(
-                    cover = album.cover,
-                    contentDescription = stringResource(R.string.album_cover, album.title),
-                    alpha = 1f,
-                    modifier = Modifier
-                        .weight(1f)
-                        .aspectRatio(1f)
-                        .clip(RoundedCornerShape(8.dp))
-                )
+
+        if (favoriteAlbums.isEmpty()) {
+            Text(
+                text = stringResource(R.string.sin_favoritos),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                fontSize = 14.sp
+            )
+        } else {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                favoriteAlbums.forEach { album ->
+                    AlbumAsyncImage(
+                        cover = album.cover,
+                        contentDescription = stringResource(R.string.album_cover, album.title),
+                        alpha = 1f,
+                        modifier = Modifier
+                            .weight(1f)
+                            .aspectRatio(1f)
+                            .clip(RoundedCornerShape(8.dp))
+                    )
+                }
+
+                // Los espacios vacios mantienen el tamano de las portadas aunque haya menos de cuatro
+                repeat(FAVORITOS_EN_PERFIL - favoriteAlbums.size) {
+                    Spacer(modifier = Modifier.weight(1f))
+                }
             }
         }
+
         Spacer(modifier = Modifier.height(56.dp))
         HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f))
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun FavoriteSectionPreview() {
+    MixtappTheme(darkTheme = true) {
+        FavoriteSection(favoriteAlbums = LocalAlbumProvider.albums.take(FAVORITOS_EN_PERFIL))
     }
 }

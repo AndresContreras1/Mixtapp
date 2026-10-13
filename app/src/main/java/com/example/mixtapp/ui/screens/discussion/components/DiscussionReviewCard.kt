@@ -17,13 +17,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.data.local.LocalDiscussionProvider
 import com.example.mixtapp.data.model.DiscussionReviewUi
-import com.example.mixtapp.ui.components.ReviewActionsRow
-import com.example.mixtapp.ui.components.ReviewAlbumRow
-import com.example.mixtapp.ui.components.ReviewAuthorRow
+import com.example.mixtapp.ui.theme.MixtappTheme
+import com.example.mixtapp.ui.utils.ReviewActionsRow
+import com.example.mixtapp.ui.utils.ReviewAlbumRow
+import com.example.mixtapp.ui.utils.ReviewAuthorRow
 
 @Composable
 fun DiscussionReviewCard(
@@ -65,27 +68,34 @@ fun DiscussionReviewCard(
                 starSize = 14.dp,
             )
 
-            Text(
-                text = review.reviewText,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 14.dp)
-                    .background(
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.14f),
-                        shape = RoundedCornerShape(10.dp),
-                    )
-                    .padding(horizontal = 14.dp, vertical = 12.dp),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.66f),
-                fontSize = 14.sp,
-                lineHeight = 18.sp,
-                fontWeight = FontWeight.Bold,
-            )
+            // Una resena que solo tiene calificacion no muestra la caja del texto
+            if (review.reviewText.isNotEmpty()) {
+                Text(
+                    text = review.reviewText,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 14.dp)
+                        .background(
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.14f),
+                            shape = RoundedCornerShape(10.dp),
+                        )
+                        .padding(horizontal = 14.dp, vertical = 12.dp),
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.66f),
+                    fontSize = 14.sp,
+                    lineHeight = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
 
             ReviewActionsRow(
                 likes = review.likes,
                 isLiked = review.isLiked,
                 onLikeClick = onLikeClick,
-                commentsLabel = stringResource(R.string.comments_count, review.commentsCount),
+                commentsLabel = if (review.commentsCount == 1) {
+                    stringResource(R.string.un_comentario)
+                } else {
+                    stringResource(R.string.comments_count, review.commentsCount)
+                },
                 onCommentsClick = null,
                 isShared = review.isShared,
                 onShareClick = onShareClick,
@@ -94,5 +104,17 @@ fun DiscussionReviewCard(
                     .padding(top = 9.dp),
             )
         }
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun DiscussionReviewCardPreview() {
+    MixtappTheme(darkTheme = true) {
+        DiscussionReviewCard(
+            review = LocalDiscussionProvider.discussions.first().review,
+            onLikeClick = {},
+            onShareClick = {},
+        )
     }
 }

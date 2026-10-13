@@ -7,11 +7,15 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.mixtapp.data.local.LocalFollowingProvider
 import com.example.mixtapp.data.model.FollowingReviewUi
 import com.example.mixtapp.data.model.FollowingUi
-import com.example.mixtapp.ui.components.ErrorMessage
 import com.example.mixtapp.ui.screens.following.model.FollowingFilterUi
+import com.example.mixtapp.ui.screens.following.model.followingFilters
+import com.example.mixtapp.ui.theme.MixtappTheme
+import com.example.mixtapp.ui.utils.ErrorMessage
 
 @Composable
 fun FollowingList(
@@ -78,5 +82,29 @@ fun FollowingList(
                 modifier = Modifier.padding(bottom = 18.dp),
             )
         }
+    }
+}
+
+@Composable
+@Preview(showBackground = true, device = "spec:width=393dp,height=852dp")
+fun FollowingListPreview() {
+    val following = LocalFollowingProvider.following
+
+    MixtappTheme(darkTheme = true) {
+        FollowingList(
+            following = following,
+            reviews = following.reviews,
+            friendQuery = "",
+            filters = followingFilters,
+            selectedFilterId = followingFilters.first().id,
+            selectedStoryId = null,
+            errorMessageRes = null,
+            onFriendQueryChange = {},
+            onFilterSelected = {},
+            onStoryClick = {},
+            onLikeClick = {},
+            onShareClick = {},
+            onCommentsClick = {},
+        )
     }
 }

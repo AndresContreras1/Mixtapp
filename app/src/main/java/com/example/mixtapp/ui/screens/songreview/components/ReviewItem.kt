@@ -1,7 +1,6 @@
 package com.example.mixtapp.ui.screens.songreview.components
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,46 +9,50 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.outlined.FavoriteBorder
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.data.local.LocalSongReviewProvider
 import com.example.mixtapp.data.model.SongReviewItemUi
-import com.example.mixtapp.ui.components.ProfileAsyncImage
-import com.example.mixtapp.ui.components.StarRating
+import com.example.mixtapp.ui.theme.MixtappTheme
+import com.example.mixtapp.ui.utils.ProfileAsyncImage
+import com.example.mixtapp.ui.utils.StarRating
 
+// La resena del usuario de la app (esMia) se marca y trae los botones de editar y eliminar
 @Composable
 fun ReviewItem(
     review: SongReviewItemUi,
-    onLikeClick: () -> Unit,
-    onReplyClick: () -> Unit,
+    onEditClick: () -> Unit,
+    onDeleteClick: () -> Unit,
     onAuthorClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Card(
+    OutlinedCard(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f))
+        colors = CardDefaults.outlinedCardColors(containerColor = Color.Transparent),
+        border = BorderStroke(
+            1.dp,
+            if (review.esMia) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
+        )
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
@@ -64,14 +67,16 @@ fun ReviewItem(
                     ProfileAsyncImage(
                         profileImage = review.authorImage,
                         contentDescription = stringResource(R.string.foto_perfil),
-                        modifier = Modifier
-                            .size(40.dp)
-                            .clip(CircleShape)
+                        modifier = Modifier.size(40.dp)
                     )
                 }
                 Spacer(modifier = Modifier.width(12.dp))
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(review.author, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold)
+                    Text(
+                        text = if (review.esMia) "${review.author} ${stringResource(R.string.marca_propia)}" else review.author,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontWeight = FontWeight.Bold
+                    )
                     StarRating(
                         rating = review.rating,
                         // Solo se dibujan las estrellas obtenidas, sin ranuras vacias
@@ -84,7 +89,7 @@ fun ReviewItem(
                         onRatingChange = null
                     )
                 }
-                Text(review.daysAgo, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f), fontSize = 10.sp)
+                Text(review.fecha, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f), fontSize = 10.sp)
             }
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -96,34 +101,37 @@ fun ReviewItem(
                 lineHeight = 18.sp
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                IconButton(
-                    onClick = onLikeClick,
-                    modifier = Modifier.size(14.dp)
-                ) {
-                    Icon(
-                        imageVector = if (review.isLiked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-                        contentDescription = stringResource(R.string.like_review),
-                        tint = if (review.isLiked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                        modifier = Modifier.size(14.dp)
-                    )
+            if (review.esMia) {
+                Row {
+                    IconButton(onClick = onEditClick) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = stringResource(R.string.editar_resena),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    IconButton(onClick = onDeleteClick) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = stringResource(R.string.eliminar_resena),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
                 }
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = review.likes.toString(),
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                    fontSize = 12.sp
-                )
-                Spacer(modifier = Modifier.width(16.dp))
-                Text(
-                    text = stringResource(R.string.reply),
-                    modifier = Modifier.clickable { onReplyClick() },
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                    fontSize = 12.sp
-                )
             }
         }
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun ReviewItemPreview() {
+    MixtappTheme(darkTheme = true) {
+        ReviewItem(
+            review = LocalSongReviewProvider.songs.first().reviews.first(),
+            onEditClick = {},
+            onDeleteClick = {},
+            onAuthorClick = {},
+        )
     }
 }

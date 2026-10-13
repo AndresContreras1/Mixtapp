@@ -10,7 +10,7 @@ object LocalFollowingProvider {
         followingCount = 84,
         followersCount = 312,
         stories = listOf(
-            FollowingStoryUi(id = "log", label = "Tu historia", initials = "+", isAddAction = true),
+            FollowingStoryUi(id = "log", label = "", initials = "+", isAddAction = true),
             FollowingStoryUi(id = "jen", label = "Jen", initials = "J", isAddAction = false),
             FollowingStoryUi(id = "jhon", label = "Jhon", initials = "Jh", isAddAction = false),
             FollowingStoryUi(id = "vik", label = "Vik", initials = "V", isAddAction = false),

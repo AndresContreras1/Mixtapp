@@ -18,19 +18,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.data.local.LocalMyReviewsProvider
+import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.theme.displayFontFamily
+import com.example.mixtapp.ui.utils.BackButton
 
 @Composable
 fun MyReviewsHeader(
     username: String,
     iniciales: String,
-    joinDate: String,
+    reviewsCount: Int,
+    onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
+        BackButton(onBackClick = onBackClick)
+
+        Spacer(modifier = Modifier.height(12.dp))
+
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(
                 modifier = Modifier
@@ -59,7 +68,11 @@ fun MyReviewsHeader(
                     fontFamily = displayFontFamily
                 )
                 Text(
-                    text = stringResource(R.string.join_date, joinDate),
+                    text = if (reviewsCount == 1) {
+                        stringResource(R.string.una_resena)
+                    } else {
+                        stringResource(R.string.n_resenas, reviewsCount)
+                    },
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
                     fontSize = 13.sp
                 )
@@ -74,6 +87,19 @@ fun MyReviewsHeader(
             fontSize = 26.sp,
             fontWeight = FontWeight.Black,
             fontFamily = displayFontFamily
+        )
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun MyReviewsHeaderPreview() {
+    MixtappTheme(darkTheme = true) {
+        MyReviewsHeader(
+            username = "andres",
+            iniciales = "AN",
+            reviewsCount = LocalMyReviewsProvider.reviews.size,
+            onBackClick = {},
         )
     }
 }
