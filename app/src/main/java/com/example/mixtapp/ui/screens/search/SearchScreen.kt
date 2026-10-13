@@ -15,6 +15,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -42,6 +43,11 @@ fun SearchScreen(
     modifier: Modifier = Modifier,
 ) {
     val state by searchViewModel.uiState.collectAsState()
+
+    // Se pide cada vez que se muestra: al volver de escribir una resena, el promedio ya sale al dia
+    LaunchedEffect(Unit) {
+        searchViewModel.getAlbumes()
+    }
 
     when {
         state.isLoading -> {

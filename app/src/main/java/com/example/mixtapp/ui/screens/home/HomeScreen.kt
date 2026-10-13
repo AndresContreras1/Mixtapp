@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -25,6 +26,7 @@ import com.example.mixtapp.ui.utils.AppBackground
 fun HomeScreen(
     homeViewModel: HomeViewModel,
     onAlbumClick: (String) -> Unit,
+    onAuthorClick: (String) -> Unit,
     onSearchClick: () -> Unit,
     onProfileClick: () -> Unit,
     onFollowingClick: () -> Unit,
@@ -32,6 +34,12 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
 ) {
     val state by homeViewModel.uiState.collectAsState()
+
+    // Se pide cada vez que se muestra: al volver de escribir o borrar una resena ya sale al dia
+    LaunchedEffect(Unit) {
+        homeViewModel.getAlbums()
+        homeViewModel.refrescarFotoDePerfil()
+    }
 
     when {
         state.isLoading -> {
@@ -56,6 +64,7 @@ fun HomeScreen(
             errorMessageRes = state.errorMessageRes,
             onFilterSelected = { homeViewModel.updateSelectedFilter(filtroId = it) },
             onAlbumClick = onAlbumClick,
+            onAuthorClick = onAuthorClick,
             onSearchClick = onSearchClick,
             onProfileClick = onProfileClick,
             onFollowingClick = onFollowingClick,
@@ -77,6 +86,7 @@ fun HomeScreenContent(
     errorMessageRes: Int?,
     onFilterSelected: (String) -> Unit,
     onAlbumClick: (String) -> Unit,
+    onAuthorClick: (String) -> Unit,
     onSearchClick: () -> Unit,
     onProfileClick: () -> Unit,
     onFollowingClick: () -> Unit,
@@ -97,6 +107,7 @@ fun HomeScreenContent(
             errorMessageRes = errorMessageRes,
             onFilterSelected = onFilterSelected,
             onAlbumClick = onAlbumClick,
+            onAuthorClick = onAuthorClick,
             onSearchClick = onSearchClick,
             onProfileClick = onProfileClick,
             onFollowingClick = onFollowingClick,
@@ -121,6 +132,7 @@ fun HomeScreenPreview() {
             errorMessageRes = null,
             onFilterSelected = {},
             onAlbumClick = {},
+            onAuthorClick = {},
             onSearchClick = {},
             onProfileClick = {},
             onFollowingClick = {},

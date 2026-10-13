@@ -28,10 +28,9 @@ class SearchViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(SearchState())
     val uiState: StateFlow<SearchState> = _uiState.asStateFlow()
 
-    // No recibe parametros, asi que los datos se cargan al crear el ViewModel
+    // Las categorias no cambian, asi que se cargan una vez al crear el ViewModel
     init {
         getCategories()
-        getAlbumes()
     }
 
     private fun getCategories() {
@@ -55,8 +54,8 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    // Los albumes se piden una sola vez; buscar y ordenar trabajan sobre esta lista
-    private fun getAlbumes() {
+    // La pantalla la llama cada vez que se muestra; buscar y ordenar trabajan sobre esta lista
+    fun getAlbumes() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
 

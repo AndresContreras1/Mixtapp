@@ -1,6 +1,6 @@
 package com.example.mixtapp.data.model
 
-// Las estadisticas se calculan con las resenas del album que vienen del backend
+// Las estadisticas se calculan con las resenas guardadas del album
 data class SongReviewUi(
     val id: String,
     val album: Album,

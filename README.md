@@ -11,7 +11,7 @@
   <img alt="Jetpack Compose" src="https://img.shields.io/badge/Jetpack%20Compose-UI-4285F4?logo=jetpackcompose&logoColor=white" />
   <img alt="Material 3" src="https://img.shields.io/badge/Material%203-paleta%20propia-757575?logo=materialdesign&logoColor=white" />
   <img alt="Hilt" src="https://img.shields.io/badge/Hilt-2.60.1%20%C2%B7%20KSP-2196F3" />
-  <img alt="Firebase" src="https://img.shields.io/badge/Firebase-Auth%20%C2%B7%20Storage-FFCA28?logo=firebase&logoColor=black" />
+  <img alt="Firebase" src="https://img.shields.io/badge/Firebase-Auth%20%C2%B7%20Storage%20%C2%B7%20Firestore-FFCA28?logo=firebase&logoColor=black" />
   <img alt="Retrofit" src="https://img.shields.io/badge/Retrofit-2.9.0-48B983" />
   <img alt="Coil" src="https://img.shields.io/badge/Coil-2.4.0-1B1B1B" />
   <img alt="minSdk" src="https://img.shields.io/badge/minSdk-26-3DDC84?logo=android&logoColor=white" />
@@ -19,33 +19,32 @@
 
 Mixtapp es una app Android donde abres un álbum, le pones de 0 a 5 estrellas, escribes tu reseña
 y ves lo que publican las demás personas. Está escrita en Kotlin con Jetpack Compose, una sola
-Activity y arquitectura en capas sobre Firebase (Authentication y Storage) y un backend propio de
-Express que la app consume con Retrofit. Es el proyecto semestral de Computación Móvil de la
-Pontificia Universidad Javeriana.
+Activity y arquitectura en capas sobre Firebase (Authentication, Storage y Cloud Firestore). Es el
+proyecto semestral de Computación Móvil de la Pontificia Universidad Javeriana.
 
 > [!NOTE]
-> Los álbumes, las reseñas y los usuarios vienen del backend de Express
-> ([mixtapp-backend](https://github.com/AndresContreras1/mixtapp-backend)) con **Retrofit**. Los
-> usuarios de Firebase no existen en ese backend, así que la app trabaja con el usuario `1`, como
-> permite el enunciado del sprint 9. Seguidos, notificaciones y la discusión de una reseña siguen
-> con datos de prueba en `data/local/`.
+> Los álbumes, las reseñas y los perfiles viven en **Cloud Firestore**. La capa de datos tiene una
+> segunda implementación con **Retrofit** contra el backend de Express
+> ([mixtapp-backend](https://github.com/AndresContreras1/mixtapp-backend)): las dos cumplen el mismo
+> contrato y se cambia de una a otra con una línea en cada repositorio. Seguidos, notificaciones y
+> la discusión de una reseña siguen con datos de prueba en `data/local/`.
 
-[Estado](#estado) · [Arquitectura](#arquitectura) · [Decisiones](#decisiones) ·
-[Cómo ejecutarlo](#cómo-ejecutarlo) · [Estructura](#estructura)
+[Estado](#estado) · [Arquitectura](#arquitectura) · [Datos en Firestore](#datos-en-firestore) ·
+[Decisiones](#decisiones) · [Cómo ejecutarlo](#cómo-ejecutarlo) · [Estructura](#estructura)
 
 ## Estado
 
 | Módulo | Estado |
 |---|---|
 | Registro, inicio de sesión y sesión persistente con Firebase Auth | Funcionando |
-| Mensajes de error en español según el tipo de fallo | Funcionando |
-| Inicio con todos los álbumes, la tendencia y la actividad de otros usuarios | Funcionando, backend |
-| Detalle del álbum con promedio, total de calificaciones y % que lo recomienda | Funcionando, backend |
-| Comentarios (reseñas) de cada álbum | Funcionando, backend |
-| Mi perfil con únicamente mis reseñas, editables y eliminables ahí mismo | Funcionando, backend |
-| Perfil de otro usuario con sus reseñas | Funcionando, backend |
-| Escribir, modificar y eliminar mi reseña desde el álbum, mi perfil y Mis reseñas | Funcionando, backend |
+| Al registrarse, el nombre y el usuario quedan guardados en Firestore | Funcionando |
+| Mi perfil y modificarlo (nombre, usuario y biografía) | Funcionando, Firestore |
+| Perfil de cualquier otro usuario con sus reseñas | Funcionando, Firestore |
+| Inicio con todos los álbumes, la tendencia y la actividad de otros usuarios | Funcionando, Firestore |
+| Detalle del álbum con promedio, total de calificaciones y % que lo recomienda | Funcionando, Firestore |
+| Escribir, modificar y eliminar mi reseña desde el álbum, mi perfil y Mis reseñas | Funcionando, Firestore |
 | Foto de perfil subida a Firebase Storage | Funcionando |
+| Consumo del backend de Express con Retrofit | Implementado, intercambiable con Firestore |
 | Seguidos, notificaciones y discusión de una reseña | Datos de prueba en memoria |
 | Modo claro | Pendiente: falta diseñar cómo se ven las pantallas en claro |
 | Tipografía propia del tema | Pendiente |
@@ -59,32 +58,52 @@ flowchart LR
     S["<b>Pantalla</b><br/>pinta y avisa"]
     V["<b>ViewModel</b><br/>estado y lógica"]
     R["<b>Repository</b><br/>try/catch y Result"]
-    D["<b>DataSource</b><br/>contrato e implementación"]
-    F[("<b>Firebase</b><br/>Auth · Storage")]
+    D["<b>DataSource</b><br/>contrato e implementaciones"]
+    F[("<b>Firebase</b><br/>Auth · Storage · Firestore")]
     E[("<b>Express</b><br/>API REST con Retrofit")]
     L[("<b>data/local</b><br/>datos de prueba")]
 
     S --> V --> R --> D
     D --> F
-    D --> E
+    D -. "misma interfaz" .-> E
     D --> L
 ```
 
-**El data source** declara la petición y devuelve el DTO. Cada contrato
-(`AlbumRemoteDataSource`, `ReviewRemoteDataSource`, `UsuarioRemoteDataSource`) tiene su
-implementación con Retrofit en `impl/`. **El repositorio** hace el `try`/`catch` (`HttpException`
-con su código, el resto como error general), mapea el DTO al modelo de la pantalla y devuelve un
-`Result<T>`. **El ViewModel** mira `result.isSuccess`, toma uno de los dos caminos y ahí vive la
-lógica: filtrar, ordenar y decidir qué se muestra. **La pantalla** pinta y avisa.
+**El data source** declara la petición y devuelve el DTO de su base. Cada contrato
+(`AlbumRemoteDataSource`, `ReviewRemoteDataSource`, `UsuarioRemoteDataSource`) tiene una
+implementación en `impl/firestore` y otra en `impl/retrofit`. **El repositorio** hace el
+`try`/`catch`, mapea el DTO al modelo de la pantalla, organiza varios data sources (por ejemplo, la
+reseña lleva una copia del usuario y del álbum) y devuelve un `Result<T>`. **El ViewModel** mira
+`result.isSuccess`, toma uno de los dos caminos y ahí vive la lógica: filtrar, ordenar y decidir
+qué se muestra. **La pantalla** pinta y avisa.
 
 | Qué | Con qué |
 |---|---|
 | UI | Jetpack Compose · Material 3 · Coil |
 | Estado | ViewModel · `MutableStateFlow` · un `UiState` por pantalla |
 | Navegación | Navigation Compose · un `NavHost` · rutas en `sealed class` |
-| Datos | Firebase Auth · Storage · Retrofit · corrutinas con `suspend`, `viewModelScope` y `async` |
+| Datos | Firebase Auth · Storage · Cloud Firestore · Retrofit · corrutinas con `suspend` y `viewModelScope` |
 | Inyección | Dagger Hilt con KSP: `FirebaseHiltModule` y `AppModule` |
 | Build | Gradle Kotlin DSL · `libs.versions.toml` |
+
+## Datos en Firestore
+
+| Colección | Documento | Campos |
+|---|---|---|
+| `usuarios` | el uid de Authentication | `username`, `nombre` (texto) · `bio`, `fotoUrl` (texto o null) |
+| `albumes` | `1` a `8` | `titulo`, `artista`, `portadaUrl`, `genero` (texto) · `anio` (número) |
+| `reviews` | id aleatorio | `usuarioId`, `albumId` (texto) · `calificacion` (número) · `comentario` (texto) · `fechaEscucha` (texto `AAAA-MM-DD` o null) · `usuario` y `album` (mapas) |
+
+Los tipos tienen que coincidir con los DTO: `toObject` falla si `anio` o `calificacion` no son
+número, y `whereEqualTo` no encuentra reseñas si `albumId` o `usuarioId` se guardan como número.
+
+- El correo y la contraseña se quedan en Authentication; en Firestore no se guardan.
+- Firestore no tiene joins, así que cada reseña guarda una copia de lo que se muestra con ella:
+  `usuario` (`nombre`, `fotoUrl`) y `album` (`titulo`, `artista`, `portadaUrl`).
+- Si alguien cambia su nombre, sus reseñas viejas conservan el anterior hasta que las edite. La
+  foto siempre se sube a la misma ruta (`profileImages/<uid>.jpg`), así que las reseñas que ya
+  tenían foto muestran la nueva y las que se escribieron sin foto se quedan sin ella. Es el costo
+  de desnormalizar y se acepta.
 
 ## Decisiones
 
@@ -99,17 +118,25 @@ lógica: filtrar, ordenar y decidir qué se muestra. **La pantalla** pinta y avi
   existe: si llega su id se modifica y si no se crea.
 - **Mis reseñas se editan en el mismo perfil.** El lápiz convierte la tarjeta en un formulario y la
   papelera la elimina sin salir de la pantalla.
-- **El promedio y el porcentaje que recomienda se calculan en el repositorio** con las reseñas de
-  cada álbum que devuelve el backend; las de todos los álbumes se piden a la vez con `async`.
-- **Mi reseña la marca el repositorio.** Cada reseña llega con `esMia`, así el inicio, el detalle
-  y la pantalla de escribir saben cuál es la mía sin hacer otra petición.
+- **El promedio y el porcentaje que recomienda se calculan en el repositorio** con las reseñas
+  guardadas de cada álbum; las de todos los álbumes se piden a la vez con `async`.
+- **Mi reseña la marca el repositorio.** Cada reseña llega con `esMia` (su `usuarioId` es mi uid),
+  así el inicio, el detalle y la pantalla de escribir saben cuál es la mía sin otra petición.
+- **Inicio, Buscar, perfil, Mis reseñas y el detalle se vuelven a pedir al mostrarse**, así una
+  reseña nueva aparece al volver.
 - **El color sale del `MaterialTheme`.** No hay colores quemados fuera de `Color.kt`, salvo el
   fondo de la ventana en `themes.xml` y los drawables XML (icono y marcadores de imagen), que se
   pintan sin Compose y repiten a mano los colores de la paleta.
+- **Hilt se compila con KSP.** El proyecto está en AGP 9.3.3, que trae Kotlin integrado (por eso no
+  se aplica `kotlin.android`) y deja `kapt` solo como transición. El plugin de KSP ya estaba en el
+  build de clase. `firebase-storage` reemplaza a `firebase-storage-ktx`: desde el BoM 32.5 son el
+  mismo módulo.
+- **Los errores de Firestore los traduce el repositorio**, igual que el `HttpException` del
+  backend: sin conexión, documento que no existe o error del servidor.
 - **La app es solo oscura.** El esquema claro existe como plantilla, pero no se aplica hasta que
   estén diseñadas las pantallas en modo claro.
-- **Hay callbacks vacíos a propósito**: ajustes, más opciones y las pestañas Diario, Listas y
-  Biblioteca del perfil apuntan a pantallas que todavía no existen.
+- **Hay callbacks vacíos a propósito**: más opciones y las pestañas Diario, Listas y Biblioteca del
+  perfil apuntan a pantallas que todavía no existen.
 
 ## Cómo ejecutarlo
 
@@ -120,13 +147,41 @@ emulador o dispositivo con **Android 8.0 o superior** (`minSdk 26`). El `google-
 git clone https://github.com/AndresContreras1/Mixtapp.git
 ```
 
-1. En `mixtapp-backend`, con PostgreSQL encendido, corre `npm run dev` y espera
-   `Servidor escuchando en el puerto 3000`.
-2. Abre Mixtapp en Android Studio, espera a que Gradle sincronice y dale a **Run**. El emulador
-   llega al backend por `http://10.0.2.2:3000/` (HTTP permitido solo hacia esa IP en
-   `network_security_config.xml`).
+Abre la carpeta en Android Studio, espera a que Gradle sincronice y dale a **Run**. Desde la
+terminal, `./gradlew assembleDebug` (en Windows `gradlew.bat assembleDebug`).
 
-Desde la terminal, `./gradlew assembleDebug` (en Windows `gradlew.bat assembleDebug`).
+<details>
+<summary>Firestore: crear la base y los datos iniciales</summary>
+
+1. Consola de Firebase → **Firestore Database → Crear base de datos**, en **modo de prueba**.
+2. Cargar los datos iniciales con **Iniciar colección** y **Agregar documento**, con los ids y
+   los tipos de la tabla de arriba:
+   - `albumes`: los 8 álbumes de `data/local/LocalAlbumProvider.kt`, con las portadas de
+     `data/local/AlbumCovers.kt` (ids `1` a `8`).
+   - `usuarios`: cuatro usuarios de prueba (ids `2` a `5`) con `username`, `nombre` y `bio`.
+   - `reviews`: sus reseñas, cada una con `usuarioId`, `albumId` y las copias `usuario`
+     (`nombre`, `fotoUrl`) y `album` (`titulo`, `artista`, `portadaUrl`).
+3. Crear una cuenta en la app: el registro guarda tus datos en `usuarios` con tu uid.
+
+Las reglas del modo de prueba vencen unos 30 días después de crear la base, igual que las de
+Storage. Antes de la sustentación hay que revisarlas en la consola (**Firestore Database → Reglas**
+y **Storage → Reglas**); si vencieron, las lecturas y la subida de la foto fallan por permisos.
+
+</details>
+
+<details>
+<summary>Usar el backend de Express en vez de Firestore</summary>
+
+En `AlbumRepository`, `ReviewRepository` y `UsuarioRepository` cambia la implementación que
+reciben (`...FirestoreDataSourceImpl`) por la de Retrofit (`...RetrofitDataSourceImpl`) y corre
+`npm run dev` en `mixtapp-backend`. El emulador lo encuentra en `http://10.0.2.2:3000/`. Los usuarios
+de Firebase no existen en el backend, así que la implementación de Retrofit trata al usuario `1` como
+el usuario de la app: guarda mis reseñas a su nombre, y `idDelUsuarioEnLaBase` le dice al
+repositorio que las del usuario `1` son las mías. El backend no tiene rutas para crear ni modificar
+usuarios, así que con Retrofit el registro y Editar perfil no guardan nada en la base: quedan como
+*to-do* en `UsuarioRetrofitDataSourceImpl`, igual que en clase.
+
+</details>
 
 <details>
 <summary>Dos ajustes en la consola de Firebase</summary>
@@ -146,9 +201,11 @@ Sin ellos, dos de los mensajes de error nunca salen:
 app/src/main/java/com/example/mixtapp/
 ├── data/
 │   ├── datasource/      contratos · Auth · Storage · locales
-│   │   ├── impl/        implementaciones con Retrofit
+│   │   ├── impl/
+│   │   │   ├── firestore/   Album · Review · Usuario
+│   │   │   └── retrofit/    Album · Review · Usuario
 │   │   └── services/    servicios de Retrofit
-│   ├── dtos/            DTO del backend y sus funciones de mapeo
+│   ├── dtos/            DTO de cada base y sus funciones de mapeo
 │   ├── injection/       FirebaseHiltModule · AppModule
 │   ├── local/           proveedores de datos de prueba
 │   ├── model/           las entidades que usa la UI

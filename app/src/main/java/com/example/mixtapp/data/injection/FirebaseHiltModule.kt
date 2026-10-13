@@ -3,7 +3,10 @@ package com.example.mixtapp.data.injection
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.firestore
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.storage
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,5 +25,10 @@ class FirebaseHiltModule {
 
     @Provides
     @Singleton
-    fun storage(): FirebaseStorage = FirebaseStorage.getInstance()
+    fun storage(): FirebaseStorage = Firebase.storage
+
+    // Igual que con Retrofit, la instancia de Firestore la crea Hilt una sola vez
+    @Singleton
+    @Provides
+    fun firestore(): FirebaseFirestore = Firebase.firestore
 }

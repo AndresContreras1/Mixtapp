@@ -35,6 +35,7 @@ fun HomeSections(
     errorMessageRes: Int?,
     onFilterSelected: (String) -> Unit,
     onAlbumClick: (String) -> Unit,
+    onAuthorClick: (String) -> Unit,
     onSearchClick: () -> Unit,
     onProfileClick: () -> Unit,
     onFollowingClick: () -> Unit,
@@ -101,7 +102,8 @@ fun HomeSections(
 
                 FriendsActivity(
                     activity = friendActivity,
-                    onClick = onAlbumClick
+                    onClick = onAlbumClick,
+                    onAuthorClick = onAuthorClick
                 )
 
                 Spacer(modifier = Modifier.height(28.dp))
@@ -115,7 +117,7 @@ fun HomeSections(
             Spacer(modifier = Modifier.height(6.dp))
         }
 
-        // Todos los albumes del backend, uno debajo del otro
+        // Todos los albumes guardados, uno debajo del otro
         items(todos.size) { index ->
             ReviewAlbumRow(
                 cover = todos[index].album.cover,
@@ -149,6 +151,7 @@ fun HomeSectionsPreview() {
             errorMessageRes = null,
             onFilterSelected = {},
             onAlbumClick = {},
+            onAuthorClick = {},
             onSearchClick = {},
             onProfileClick = {},
             onFollowingClick = {},

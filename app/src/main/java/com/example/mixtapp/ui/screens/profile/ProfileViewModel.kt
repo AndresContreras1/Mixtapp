@@ -43,16 +43,50 @@ class ProfileViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(ProfileState())
     val uiState: StateFlow<ProfileState> = _uiState.asStateFlow()
 
-    // Recibe el id del usuario, asi que la pantalla la llama desde un LaunchedEffect
-    fun getProfile(userId: String) {
-        // Recortar el correo es logica, asi que se hace aqui y no en el componente
-        val usuario = authRepository.currentUser?.email?.substringBefore("@") ?: ""
+    // La pantalla la llama cada vez que se muestra, para ver las resenas nuevas al volver
+    fun getProfile() {
+        val usuarioDelCorreo = authRepository.usuarioDelCorreo
         val foto = authRepository.currentUser?.photoUrl?.toString() ?: ""
+
+        // Mis datos y mis resenas se usan por su lado, asi que cada uno va en su propio launch
+        viewModelScope.launch {
+            val perfil = usuarioRepository.getMiPerfil()
+
+            if (perfil.isSuccess) {
+                val miPerfil = perfil.getOrNull()
+
+                _uiState.update {
+                    it.copy(
+                        usuario = miPerfil?.username ?: usuarioDelCorreo,
+                        nombre = miPerfil?.nombre ?: "",
+                        bio = miPerfil?.bio ?: "",
+                        profileImageUrl = foto,
+                        avisoPerfilRes = null,
+                    )
+                }
+            } else {
+                val error = perfil.exceptionOrNull()
+
+                _uiState.update {
+                    it.copy(
+                        // Si mis datos ya estaban cargados se conservan; si no, sale la parte del correo
+                        usuario = it.usuario.ifEmpty { usuarioDelCorreo },
+                        profileImageUrl = foto,
+                        // Sin mi documento en Firestore se pide completar el perfil; otro error se avisa
+                        avisoPerfilRes = if (error is ContenidoNoEncontradoException) {
+                            R.string.completa_tu_perfil
+                        } else {
+                            mensajeDeError(error = error, generico = R.string.error_cargar_contenido)
+                        },
+                    )
+                }
+            }
+        }
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
 
-            val result = usuarioRepository.getReviewsDeUsuario(id = userId)
+            val result = reviewRepository.getMyReviews()
 
             if (result.isSuccess) {
                 // La fecha va como AAAA-MM-DD: la escuchada mas reciente queda arriba
@@ -67,8 +101,6 @@ class ProfileViewModel @Inject constructor(
                         tabs = profileTabs,
                         // Al volver se conserva la pestana elegida
                         selectedTabId = it.selectedTabId.ifEmpty { profileTabs.first().id },
-                        usuario = usuario,
-                        profileImageUrl = foto,
                         // Si estaba editando una resena que sigue existiendo, la edicion no se pierde
                         resenaEnEdicionId = if (misResenas.any { r -> r.id == it.resenaEnEdicionId }) {
                             it.resenaEnEdicionId
@@ -85,9 +117,7 @@ class ProfileViewModel @Inject constructor(
                         tabs = profileTabs,
                         // Al volver se conserva la pestana elegida
                         selectedTabId = it.selectedTabId.ifEmpty { profileTabs.first().id },
-                        usuario = usuario,
-                        profileImageUrl = foto,
-                        errorMessageRes = mensajeDelBackend(
+                        errorMessageRes = mensajeDeError(
                             error = result.exceptionOrNull(),
                             generico = R.string.error_cargar_contenido,
                         ),
@@ -122,7 +152,7 @@ class ProfileViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         eliminando = false,
-                        errorMessageRes = mensajeDelBackend(
+                        errorMessageRes = mensajeDeError(
                             error = result.exceptionOrNull(),
                             generico = R.string.error_eliminar_resena,
                         )
@@ -208,7 +238,7 @@ class ProfileViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         guardandoEdicion = false,
-                        errorEdicionRes = mensajeDelBackend(
+                        errorEdicionRes = mensajeDeError(
                             error = result.exceptionOrNull(),
                             generico = R.string.error_publicar_resena,
                         ),
@@ -227,11 +257,17 @@ class ProfileViewModel @Inject constructor(
             val result = storageRepository.uploadProfileImage(uri = uri)
 
             if (result.isSuccess) {
+                val url = result.getOrNull() ?: ""
+
+                // El documento de Firestore tambien guarda la foto para que otros la vean en mi perfil
+                val guardada = usuarioRepository.actualizarFotoDePerfil(fotoUrl = url)
+
                 _uiState.update {
                     it.copy(
                         subiendoImagen = false,
-                        profileImageUrl = result.getOrNull() ?: "",
-                        errorImagenRes = null,
+                        profileImageUrl = url,
+                        // La foto ya quedo en Storage; si el documento no se actualiza, se avisa
+                        errorImagenRes = if (guardada.isSuccess) null else R.string.error_guardar_perfil,
                     )
                 }
             } else {
@@ -264,10 +300,11 @@ class ProfileViewModel @Inject constructor(
     }
 
     @StringRes
-    private fun mensajeDelBackend(error: Throwable?, @StringRes generico: Int): Int = when (error) {
+    private fun mensajeDeError(error: Throwable?, @StringRes generico: Int): Int = when (error) {
         is ContenidoNoEncontradoException -> R.string.contenido_no_encontrado
         is ErrorDelServidorException -> R.string.error_servidor
         is SinConexionException -> R.string.error_sin_conexion
+        is SinSesionException -> R.string.error_sin_sesion
         else -> generico
     }
 

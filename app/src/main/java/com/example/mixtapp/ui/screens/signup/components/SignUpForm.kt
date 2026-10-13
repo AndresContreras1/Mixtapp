@@ -17,6 +17,8 @@ import com.example.mixtapp.ui.utils.AppButton
 
 @Composable
 fun SignUpForm(
+    nombre: String,
+    onNombreChange: (String) -> Unit,
     usuario: String,
     onUsuarioChange: (String) -> Unit,
     email: String,
@@ -40,6 +42,8 @@ fun SignUpForm(
         modifier = modifier
     ) {
         SignUpFields(
+            nombre = nombre,
+            onNombreChange = onNombreChange,
             usuario = usuario,
             onUsuarioChange = onUsuarioChange,
             email = email,
@@ -82,6 +86,8 @@ fun SignUpForm(
 fun SignUpFormPreview(){
     MixtappTheme(darkTheme = true) {
         SignUpForm(
+            nombre = "",
+            onNombreChange = {},
             usuario = "",
             onUsuarioChange = {},
             email = "",

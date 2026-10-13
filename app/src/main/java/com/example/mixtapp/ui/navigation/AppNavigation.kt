@@ -8,9 +8,10 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.mixtapp.data.model.USUARIO_ACTUAL_ID
 import com.example.mixtapp.ui.screens.discussion.DiscussionScreen
 import com.example.mixtapp.ui.screens.discussion.DiscussionViewModel
+import com.example.mixtapp.ui.screens.editprofile.EditProfileScreen
+import com.example.mixtapp.ui.screens.editprofile.EditProfileViewModel
 import com.example.mixtapp.ui.screens.following.FollowingScreen
 import com.example.mixtapp.ui.screens.following.FollowingViewModel
 import com.example.mixtapp.ui.screens.home.HomeScreen
@@ -42,6 +43,19 @@ private fun NavHostController.navegarLimpiandoLaPila(ruta: String) {
     navigate(ruta) {
         popUpTo(0) { inclusive = true }
     }
+}
+
+// Abrir un album, el perfil de un usuario y escribir una resena se repite en varias pantallas
+private fun NavHostController.abrirAlbum(songId: String) {
+    navigate(Screen.SongDetail.createRoute(songId = songId))
+}
+
+private fun NavHostController.abrirPerfil(userId: String) {
+    navigate(Screen.UserProfile.createRoute(userId = userId))
+}
+
+private fun NavHostController.abrirEscribirResena(albumId: String) {
+    navigate(Screen.WriteReview.createRoute(albumId = albumId))
 }
 
 @Composable
@@ -101,7 +115,10 @@ fun AppNavigation(
             HomeScreen(
                 homeViewModel = homeViewModel,
                 onAlbumClick = { songId ->
-                    navController.navigate(Screen.SongDetail.createRoute(songId = songId))
+                    navController.abrirAlbum(songId = songId)
+                },
+                onAuthorClick = { userId ->
+                    navController.abrirPerfil(userId = userId)
                 },
                 onSearchClick = { navController.navigate(Screen.Search.route) },
                 onProfileClick = { navController.navigate(Screen.Profile.route) },
@@ -116,7 +133,7 @@ fun AppNavigation(
             SearchScreen(
                 searchViewModel = searchViewModel,
                 onAlbumClick = { songId ->
-                    navController.navigate(Screen.SongDetail.createRoute(songId = songId))
+                    navController.abrirAlbum(songId = songId)
                 }
             )
         }
@@ -147,7 +164,7 @@ fun AppNavigation(
             WriteReviewScreen(
                 albumId = albumId,
                 writeReviewViewModel = writeReviewViewModel,
-                // Se vuelve a la pantalla desde donde se abrio
+                // Al volver, la pantalla anterior pide sus datos de nuevo y la resena ya aparece
                 onPublicada = { navController.popBackStack() },
                 onCancel = { navController.popBackStack() }
             )
@@ -157,13 +174,12 @@ fun AppNavigation(
             val myReviewsViewModel: MyReviewsViewModel = hiltViewModel()
 
             MyReviewsScreen(
-                userId = USUARIO_ACTUAL_ID,
                 myReviewsViewModel = myReviewsViewModel,
                 onReviewClick = { songId ->
-                    navController.navigate(Screen.SongDetail.createRoute(songId = songId))
+                    navController.abrirAlbum(songId = songId)
                 },
                 onEditClick = { albumId ->
-                    navController.navigate(Screen.WriteReview.createRoute(albumId = albumId))
+                    navController.abrirEscribirResena(albumId = albumId)
                 },
                 onBackClick = { navController.popBackStack() }
             )
@@ -172,19 +188,28 @@ fun AppNavigation(
         composable(route = Screen.Profile.route) {
             val profileViewModel: ProfileViewModel = hiltViewModel()
 
-            // Mi perfil es el del usuario quemado del backend, como en clase
             ProfileScreen(
-                userId = USUARIO_ACTUAL_ID,
                 profileViewModel = profileViewModel,
-                onSettingsClick = {},
+                onSettingsClick = { navController.navigate(Screen.EditProfile.route) },
                 onMoreClick = {},
                 logoutButtonPressed = {
                     navController.navegarLimpiandoLaPila(Screen.Login.route)
                 },
                 onReviewClick = { songId ->
-                    navController.navigate(Screen.SongDetail.createRoute(songId = songId))
+                    navController.abrirAlbum(songId = songId)
                 },
                 onSeeAllReviewsClick = { navController.navigate(Screen.MyReviews.route) }
+            )
+        }
+
+        composable(route = Screen.EditProfile.route) {
+            val editProfileViewModel: EditProfileViewModel = hiltViewModel()
+
+            EditProfileScreen(
+                editProfileViewModel = editProfileViewModel,
+                // El perfil vuelve a pedir sus datos al mostrarse, asi que ya sale con los cambios
+                onGuardado = { navController.popBackStack() },
+                onBackClick = { navController.popBackStack() }
             )
         }
 
@@ -200,11 +225,11 @@ fun AppNavigation(
                 songId = songId,
                 songReviewsViewModel = songReviewsViewModel,
                 onWriteReviewClick = {
-                    navController.navigate(Screen.WriteReview.createRoute(albumId = songId))
+                    navController.abrirEscribirResena(albumId = songId)
                 },
                 onBackClick = { navController.popBackStack() },
                 onAuthorClick = { userId ->
-                    navController.navigate(Screen.UserProfile.createRoute(userId = userId))
+                    navController.abrirPerfil(userId = userId)
                 }
             )
         }
@@ -220,7 +245,7 @@ fun AppNavigation(
                 userId = userId,
                 userProfileViewModel = userProfileViewModel,
                 onReviewClick = { songId ->
-                    navController.navigate(Screen.SongDetail.createRoute(songId = songId))
+                    navController.abrirAlbum(songId = songId)
                 },
                 onBackClick = { navController.popBackStack() }
             )

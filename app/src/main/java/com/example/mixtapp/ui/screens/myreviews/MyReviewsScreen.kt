@@ -34,7 +34,6 @@ import com.example.mixtapp.ui.utils.MyReviewCard
 
 @Composable
 fun MyReviewsScreen(
-    userId: String,
     myReviewsViewModel: MyReviewsViewModel,
     onReviewClick: (String) -> Unit,
     onEditClick: (String) -> Unit,
@@ -43,9 +42,9 @@ fun MyReviewsScreen(
 ) {
     val state by myReviewsViewModel.uiState.collectAsState()
 
-    // Necesita el id del usuario, asi que se pide en un LaunchedEffect
+    // Se pide cada vez que se muestra: al volver de editar una resena, ya sale cambiada
     LaunchedEffect(Unit) {
-        myReviewsViewModel.getReviews(userId = userId)
+        myReviewsViewModel.getReviews()
     }
 
     when {

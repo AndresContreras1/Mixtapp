@@ -3,7 +3,7 @@ package com.example.mixtapp.data.local
 import com.example.mixtapp.data.model.SongReviewItemUi
 import com.example.mixtapp.data.model.SongReviewUi
 
-// Solo para las previews y las pruebas: la app lee los albumes y sus resenas del backend
+// Solo para las previews y las pruebas: la app lee los albumes y sus resenas de la base remota
 object LocalSongReviewProvider {
 
     val songs = listOf(

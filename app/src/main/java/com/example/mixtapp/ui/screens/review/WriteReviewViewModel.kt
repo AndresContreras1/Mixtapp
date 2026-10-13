@@ -101,7 +101,7 @@ class WriteReviewViewModel @Inject constructor(
             else -> null
         }
 
-        // Si el formulario no pasa las validaciones no se consulta al backend
+        // Si el formulario no pasa las validaciones no se consulta la base
         if (errorRes != null) {
             _uiState.update { it.copy(errorMessageRes = errorRes) }
             return

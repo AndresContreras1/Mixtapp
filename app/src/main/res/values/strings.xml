@@ -17,6 +17,8 @@
     <!-- SignUp / Login Extra -->
     <string name="create_account">Crear cuenta</string>
     <string name="signup_description">Empieza a seguir tus álbumes, calificaciones y tus canciones favoritas.</string>
+    <string name="nombre">Nombre</string>
+    <string name="ingresa_tu_nombre">Ingresa tu nombre</string>
     <string name="username">Nombre de usuario</string>
     <string name="choose_username">Ingresa tu usuario</string>
     <string name="create_password">Crear contraseña</string>
@@ -125,6 +127,7 @@
 
     <!-- Home -->
     <string name="titulo_guion_subtitulo">%1$s - %2$s</string>
+    <string name="arroba_usuario">@%1$s</string>
     <string name="cita_entre_comillas">\"%1$s\"</string>
 
     <!-- My reviews -->
@@ -147,6 +150,7 @@
 
     <!-- Profile -->
     <string name="cerrar_sesion">Cerrar sesión</string>
+    <string name="completa_tu_perfil">Completa tu nombre y tu biografía en Ajustes</string>
     <string name="sin_favoritos">Califica un álbum con 5 estrellas para verlo aquí</string>
 
     <!-- Write review -->
@@ -160,6 +164,15 @@
     <string name="your_rating">Tu calificación</string>
     <string name="tap_to_rate">Toca para calificar</string>
     <string name="post">PUBLICAR</string>
+
+    <!-- Edit profile -->
+    <string name="editar_perfil">Editar perfil</string>
+    <string name="editar_perfil_descripcion">Así te ven los demás en Mixtapp</string>
+    <string name="biografia">Biografía</string>
+    <string name="biografia_placeholder">Cuéntale a la comunidad qué música te gusta</string>
+    <string name="guardar_cambios">Guardar cambios</string>
+    <string name="error_guardar_perfil">No se pudo guardar tu perfil. Inténtalo de nuevo</string>
+    <string name="error_username_espacios">El nombre de usuario no puede tener espacios</string>
 
     <!-- Select album -->
     <string name="elegir_album_titulo">¿Qué álbum vas a reseñar?</string>

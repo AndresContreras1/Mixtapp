@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AlternateEmail
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Person
@@ -20,6 +21,8 @@ import com.example.mixtapp.ui.utils.AppTextField
 
 @Composable
 fun SignUpFields(
+    nombre: String,
+    onNombreChange: (String) -> Unit,
     usuario: String,
     onUsuarioChange: (String) -> Unit,
     email: String,
@@ -36,12 +39,26 @@ fun SignUpFields(
 ) {
     Column(modifier = modifier) {
         AppTextField(
+            label = stringResource(R.string.nombre),
+            placeholder = stringResource(R.string.ingresa_tu_nombre),
+            value = nombre,
+            onValueChange = onNombreChange,
+            keyboardOptions = KeyboardOptions.Default,
+            icon = Icons.Outlined.Person,
+            esContrasena = false,
+            contrasenaVisible = false,
+            onContrasenaVisibleChange = {}
+        )
+
+        Spacer(modifier = Modifier.height(14.dp))
+
+        AppTextField(
             label = stringResource(R.string.username),
             placeholder = stringResource(R.string.choose_username),
             value = usuario,
             onValueChange = onUsuarioChange,
             keyboardOptions = KeyboardOptions.Default,
-            icon = Icons.Outlined.Person,
+            icon = Icons.Outlined.AlternateEmail,
             esContrasena = false,
             contrasenaVisible = false,
             onContrasenaVisibleChange = {}
@@ -96,6 +113,8 @@ fun SignUpFields(
 fun SignUpFieldsPreview() {
     MixtappTheme(darkTheme = true) {
         SignUpFields(
+            nombre = "",
+            onNombreChange = {},
             usuario = "",
             onUsuarioChange = {},
             email = "",

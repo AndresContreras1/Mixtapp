@@ -2,13 +2,14 @@ package com.example.mixtapp.data.local
 
 import com.example.mixtapp.data.model.UsuarioUi
 
-// Solo para las previews: la app lee los usuarios del backend
+// Solo para las previews: la app lee los usuarios de la base remota
 object LocalUsuarioProvider {
 
     val usuario = UsuarioUi(
         id = "2",
         nombre = "Mateo Gómez",
-        email = "mateo@example.com",
+        username = "mateo",
+        bio = "Rock alternativo y conciertos en vivo",
         fotoUrl = "",
     )
 }

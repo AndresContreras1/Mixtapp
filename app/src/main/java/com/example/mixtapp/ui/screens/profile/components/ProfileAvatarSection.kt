@@ -15,11 +15,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalMyReviewsProvider
+import com.example.mixtapp.data.local.LocalUsuarioProvider
 import com.example.mixtapp.data.model.FAVORITOS_EN_PERFIL
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.ErrorMessage
@@ -27,6 +30,8 @@ import com.example.mixtapp.ui.utils.ProfileAsyncImage
 
 @Composable
 fun ProfileAvatarSection(
+    nombre: String,
+    bio: String,
     profileImageUrl: String,
     subiendoImagen: Boolean,
     errorImagenRes: Int?,
@@ -48,6 +53,24 @@ fun ProfileAvatarSection(
                 .border(1.5.dp, MaterialTheme.colorScheme.primary, CircleShape)
                 .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f), CircleShape)
         )
+        Spacer(modifier = Modifier.height(12.dp))
+        if (nombre.isNotEmpty()) {
+            Text(
+                text = nombre,
+                color = MaterialTheme.colorScheme.onSurface,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
+        if (bio.isNotEmpty()) {
+            Text(
+                text = bio,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
+                fontSize = 13.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(top = 4.dp)
+            )
+        }
         Spacer(modifier = Modifier.height(12.dp))
         PickImageButton(
             action = onImagePicked,
@@ -82,6 +105,8 @@ fun ProfileAvatarSection(
 fun ProfileAvatarSectionPreview() {
     MixtappTheme(darkTheme = true) {
         ProfileAvatarSection(
+            nombre = LocalUsuarioProvider.usuario.nombre,
+            bio = LocalUsuarioProvider.usuario.bio,
             profileImageUrl = "",
             subiendoImagen = false,
             errorImagenRes = null,

@@ -45,7 +45,6 @@ import com.example.mixtapp.ui.utils.MyReviewCard
 
 @Composable
 fun ProfileScreen(
-    userId: String,
     profileViewModel: ProfileViewModel,
     onSettingsClick: () -> Unit,
     onMoreClick: () -> Unit,
@@ -62,9 +61,9 @@ fun ProfileScreen(
         logoutButtonPressed()
     }
 
-    // Necesita el id del usuario, asi que se pide en un LaunchedEffect
+    // Se pide cada vez que se muestra: al volver de escribir una resena, ya aparece aqui
     LaunchedEffect(Unit) {
-        profileViewModel.getProfile(userId = userId)
+        profileViewModel.getProfile()
     }
 
     when {
@@ -90,10 +89,13 @@ fun ProfileScreen(
             favoritos = state.favoritos,
             barrasDeCalificacion = state.barrasDeCalificacion,
             usuario = state.usuario,
+            nombre = state.nombre,
+            bio = state.bio,
             profileImageUrl = state.profileImageUrl,
             subiendoImagen = state.subiendoImagen,
             errorImagenRes = state.errorImagenRes,
             errorMessageRes = state.errorMessageRes,
+            avisoPerfilRes = state.avisoPerfilRes,
             onImagePicked = { profileViewModel.subirFotoDePerfil(uri = it) },
             tabs = state.tabs,
             selectedTabId = state.selectedTabId,
@@ -125,10 +127,13 @@ fun ProfileScreenContent(
     favoritos: List<Album>,
     barrasDeCalificacion: List<Float>,
     usuario: String,
+    nombre: String,
+    bio: String,
     profileImageUrl: String,
     subiendoImagen: Boolean,
     errorImagenRes: Int?,
     errorMessageRes: Int?,
+    avisoPerfilRes: Int?,
     onImagePicked: (Uri) -> Unit,
     tabs: List<ProfileTabUi>,
     selectedTabId: String,
@@ -178,6 +183,8 @@ fun ProfileScreenContent(
             ) {
                 item {
                     ProfileAvatarSection(
+                        nombre = nombre,
+                        bio = bio,
                         profileImageUrl = profileImageUrl,
                         subiendoImagen = subiendoImagen,
                         errorImagenRes = errorImagenRes,
@@ -189,6 +196,11 @@ fun ProfileScreenContent(
 
                     ErrorMessage(
                         messageRes = errorMessageRes,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+
+                    ErrorMessage(
+                        messageRes = avisoPerfilRes,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
 
@@ -255,10 +267,13 @@ fun ProfileScreenPreview() {
             favoritos = LocalAlbumProvider.albums.take(2),
             barrasDeCalificacion = listOf(0f, 0f, 0f, 0f, 1f, 0.5f),
             usuario = "usuario",
+            nombre = "Usuario de Mixtapp",
+            bio = "Escucho rock y metal todo el dia",
             profileImageUrl = "",
             subiendoImagen = false,
             errorImagenRes = null,
             errorMessageRes = null,
+            avisoPerfilRes = null,
             onImagePicked = {},
             tabs = profileTabs,
             selectedTabId = profileTabs.first().id,

@@ -28,21 +28,17 @@ class HomeViewModel @Inject constructor(
     private val albumRepository: AlbumRepository
 ) : ViewModel() {
 
-    // La foto de perfil se lee al crear el estado, como en clase
-    private val _uiState = MutableStateFlow(
-        HomeState(profileImageUrl = authRepository.currentUser?.photoUrl?.toString() ?: "")
-    )
+    private val _uiState = MutableStateFlow(HomeState())
     val uiState: StateFlow<HomeState> = _uiState.asStateFlow()
 
-    // No recibe parametros, asi que los datos se cargan al crear el ViewModel
-    init {
-        getAlbums()
-    }
+    // La pantalla la llama cada vez que se muestra: el init solo corre una vez al crear el
+    // ViewModel, y al volver atras se seguirian viendo los datos viejos
+    fun getAlbums() {
+        // Al volver se conserva el filtro que estaba elegido
+        val filtroInicial = _uiState.value.selectedFilterId.ifEmpty { homeFilters.first().id }
 
-    private fun getAlbums() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
-            val filtroInicial = homeFilters.first().id
 
             // Cada album llega con sus resenas, y las mias ya vienen marcadas
             val result = albumRepository.getSongReviews()
@@ -76,7 +72,14 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    // Los albumes ya estan cargados: cambiar de filtro no vuelve a pedirlos al backend
+    // Tambien se llama al mostrarse: si cambie la foto en el perfil, al volver ya sale la nueva
+    fun refrescarFotoDePerfil() {
+        val foto = authRepository.currentUser?.photoUrl?.toString() ?: ""
+
+        _uiState.update { it.copy(profileImageUrl = foto) }
+    }
+
+    // Los albumes ya estan cargados: cambiar de filtro no vuelve a pedirlos
     fun updateSelectedFilter(filtroId: String) {
         val todos = _uiState.value.todos
 
@@ -117,6 +120,7 @@ class HomeViewModel @Inject constructor(
                             album = songReview.album,
                             rating = review.rating,
                             quote = review.content,
+                            authorId = review.authorId,
                             author = review.author,
                             date = review.fecha,
                         )

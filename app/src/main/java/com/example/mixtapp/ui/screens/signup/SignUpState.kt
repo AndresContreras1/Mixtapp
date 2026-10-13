@@ -3,6 +3,7 @@ package com.example.mixtapp.ui.screens.signup
 import androidx.annotation.StringRes
 
 data class SignUpState(
+    val nombre: String = "",
     val usuario: String = "",
     val email: String = "",
     val contrasena: String = "",

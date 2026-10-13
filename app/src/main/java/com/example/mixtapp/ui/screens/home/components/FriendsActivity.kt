@@ -2,6 +2,7 @@ package com.example.mixtapp.ui.screens.home.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -13,6 +14,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -30,6 +32,7 @@ import com.example.mixtapp.ui.utils.StarRating
 fun FriendsActivity(
     activity: FriendActivityUi,
     onClick: (String) -> Unit,
+    onAuthorClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Card(
@@ -74,12 +77,19 @@ fun FriendsActivity(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Text(
-                text = stringResource(R.string.titulo_guion_subtitulo, activity.author, activity.date),
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                fontSize = 11.sp,
-                fontWeight = FontWeight.Bold
-            )
+            // Tocar el autor abre su perfil; el alto fijo no agranda la tarjeta
+            TextButton(
+                onClick = { onAuthorClick(activity.authorId) },
+                modifier = Modifier.height(24.dp),
+                contentPadding = PaddingValues(0.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.titulo_guion_subtitulo, activity.author, activity.date),
+                    color = MaterialTheme.colorScheme.primary,
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
         }
     }
 }
@@ -91,6 +101,7 @@ fun FriendsActivityPreview() {
         FriendsActivity(
             activity = LocalFriendActivityProvider.friendActivity,
             onClick = {},
+            onAuthorClick = {},
         )
     }
 }

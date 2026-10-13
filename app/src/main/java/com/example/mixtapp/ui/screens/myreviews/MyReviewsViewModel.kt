@@ -34,24 +34,34 @@ class MyReviewsViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(MyReviewsState())
     val uiState: StateFlow<MyReviewsState> = _uiState.asStateFlow()
 
-    // Recibe el id del usuario, asi que la pantalla la llama desde un LaunchedEffect
-    fun getReviews(userId: String) {
-        val usuario = authRepository.currentUser?.email?.substringBefore("@") ?: ""
+    // La pantalla la llama cada vez que se muestra, para ver los cambios al volver de editar
+    fun getReviews() {
+        val usuarioDelCorreo = authRepository.usuarioDelCorreo
         // Al volver se conserva el filtro que estaba elegido
         val filtro = _uiState.value.selectedFilterId.ifEmpty { myReviewFilters.first().id }
+
+        // Mis datos y mis resenas se usan por su lado, asi que cada uno va en su propio launch
+        viewModelScope.launch {
+            val perfil = usuarioRepository.getMiPerfil()
+
+            _uiState.update {
+                // Sin mis datos en Firestore se queda el usuario que ya tenia, o la parte del correo
+                val usuario = perfil.getOrNull()?.username ?: it.username.ifEmpty { usuarioDelCorreo }
+
+                it.copy(username = usuario, iniciales = usuario.take(2).uppercase())
+            }
+        }
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
 
-            val resenas = usuarioRepository.getReviewsDeUsuario(id = userId)
+            val resenas = reviewRepository.getMyReviews()
 
             if (resenas.isSuccess) {
                 val todas = resenas.getOrNull() ?: emptyList()
 
                 _uiState.update {
                     it.copy(
-                        username = usuario,
-                        iniciales = usuario.take(2).uppercase(),
                         todas = todas,
                         filters = myReviewFilters,
                         selectedFilterId = filtro,
@@ -63,8 +73,6 @@ class MyReviewsViewModel @Inject constructor(
             } else {
                 _uiState.update {
                     it.copy(
-                        username = usuario,
-                        iniciales = usuario.take(2).uppercase(),
                         filters = myReviewFilters,
                         selectedFilterId = filtro,
                         isLoading = false,
@@ -78,7 +86,7 @@ class MyReviewsViewModel @Inject constructor(
         }
     }
 
-    // Las resenas ya estan cargadas: filtrar no vuelve a pedirlas al backend
+    // Las resenas ya estan cargadas: filtrar no vuelve a pedirlas
     fun updateSelectedFilter(filtroId: String) {
         val todas = _uiState.value.todas
 

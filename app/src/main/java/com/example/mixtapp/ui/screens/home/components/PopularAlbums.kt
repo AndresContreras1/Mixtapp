@@ -12,7 +12,7 @@ import com.example.mixtapp.data.local.LocalSongReviewProvider
 import com.example.mixtapp.data.model.SongReviewUi
 import com.example.mixtapp.ui.theme.MixtappTheme
 
-// Todos los albumes del backend en una fila que se desliza
+// Todos los albumes en una fila que se desliza
 @Composable
 fun PopularAlbums(
     albums: List<SongReviewUi>,

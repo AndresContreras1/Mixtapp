@@ -5,6 +5,8 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
+import com.example.mixtapp.data.model.MAX_NOMBRE_LENGTH
+import com.example.mixtapp.data.model.MAX_USERNAME_LENGTH
 import com.example.mixtapp.data.model.MIN_PASSWORD_LENGTH
 import com.example.mixtapp.data.repository.AuthRepository
 import com.example.mixtapp.data.repository.CorreoYaRegistradoException
@@ -12,6 +14,7 @@ import com.example.mixtapp.data.repository.CredencialesInvalidasException
 import com.example.mixtapp.data.repository.DemasiadosIntentosException
 import com.example.mixtapp.data.repository.ErrorDeRegistroException
 import com.example.mixtapp.data.repository.SinConexionException
+import com.example.mixtapp.data.repository.UsuarioRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,14 +25,19 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val usuarioRepository: UsuarioRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SignUpState())
     val uiState: StateFlow<SignUpState> = _uiState.asStateFlow()
 
+    fun updateNombre(nombre: String) {
+        _uiState.update { it.copy(nombre = nombre.take(MAX_NOMBRE_LENGTH), errorMessageRes = null) }
+    }
+
     fun updateUsuario(usuario: String) {
-        _uiState.update { it.copy(usuario = usuario, errorMessageRes = null) }
+        _uiState.update { it.copy(usuario = usuario.take(MAX_USERNAME_LENGTH), errorMessageRes = null) }
     }
 
     fun updateEmail(email: String) {
@@ -69,11 +77,15 @@ class SignUpViewModel @Inject constructor(
         if (estado.cargando) return
 
         val errorRes = when {
-            estado.usuario.isBlank() ||
+            estado.nombre.isBlank() ||
+                    estado.usuario.isBlank() ||
                     estado.email.isBlank() ||
                     estado.contrasena.isBlank() ||
                     estado.confirmarContrasena.isBlank() ->
                 R.string.error_campos_obligatorios
+
+            estado.usuario.trim().contains(" ") ->
+                R.string.error_username_espacios
 
             !estado.email.contains("@") ->
                 R.string.error_email_invalido
@@ -100,17 +112,31 @@ class SignUpViewModel @Inject constructor(
             return
         }
 
-        signUp(email = estado.email, contrasena = estado.contrasena)
+        signUp(
+            nombre = estado.nombre.trim(),
+            usuario = estado.usuario.trim(),
+            email = estado.email,
+            contrasena = estado.contrasena,
+        )
     }
 
     // signUp es suspend, asi que se lanza la corrutina donde se necesita
-    private fun signUp(email: String, contrasena: String) {
+    private fun signUp(nombre: String, usuario: String, email: String, contrasena: String) {
         viewModelScope.launch {
             _uiState.update { it.copy(cargando = true, errorMessageRes = null) }
 
+            // Primero se crea la cuenta en Authentication y con su uid se guardan los datos en Firestore
             val result = authRepository.signUp(email = email, password = contrasena)
 
             if (result.isSuccess) {
+                val registro = usuarioRepository.registrarUsuario(username = usuario, nombre = nombre)
+
+                // Si fallan los datos de Firestore la cuenta ya existe: el perfil avisa que hay que
+                // completarlos en Editar perfil, asi que se entra igual en vez de dejarlo atascado
+                if (!registro.isSuccess) {
+                    Log.d("SignUpViewModel", registro.exceptionOrNull()?.message.toString())
+                }
+
                 _uiState.update {
                     it.copy(cargando = false, errorMessageRes = null, navigate = true)
                 }

@@ -5,7 +5,7 @@ import com.example.mixtapp.data.model.DiscussionUi
 import javax.inject.Inject
 
 // Las discusiones siguen locales. Las funciones son suspend como las remotas: si estos datos
-// pasan al backend, el ViewModel no cambia
+// pasan a la base remota, el ViewModel no cambia
 class ReviewLocalDataSource @Inject constructor() {
 
     suspend fun getDiscussionByReviewId(reviewId: String): DiscussionUi? =
