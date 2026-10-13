@@ -22,7 +22,7 @@ class UsuarioRepository @Inject constructor(
             Result.failure(errorDelBackend(e))
         } catch (e: Exception) {
             Log.d("UsuarioRepository", "getUsuarioById: ${e.message}")
-            Result.failure(e)
+            Result.failure(ErrorInesperadoException())
         }
     }
 
@@ -36,7 +36,7 @@ class UsuarioRepository @Inject constructor(
             Result.failure(errorDelBackend(e))
         } catch (e: Exception) {
             Log.d("UsuarioRepository", "getReviewsDeUsuario: ${e.message}")
-            Result.failure(e)
+            Result.failure(ErrorInesperadoException())
         }
     }
 }

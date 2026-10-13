@@ -1,8 +1,10 @@
 package com.example.mixtapp.ui.utils
 
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -28,7 +30,8 @@ fun ProfileAsyncImage(
         error = painterResource(id = R.drawable.user_image_icon),
         placeholder = painterResource(id = R.drawable.loading_img),
         contentScale = ContentScale.Crop,
-        modifier = modifier
+        // La foto de perfil siempre es redonda; quien la usa solo le da el tamano
+        modifier = modifier.clip(CircleShape)
     )
 }
 
