@@ -45,7 +45,7 @@ class ReviewRepository @Inject constructor(
             Result.failure(errorDeFirestore(e))
         } catch (e: Exception) {
             Log.d("ReviewRepository", "getMyReviews: ${e.message}")
-            Result.failure(e)
+            Result.failure(ErrorInesperadoException())
         }
     }
 

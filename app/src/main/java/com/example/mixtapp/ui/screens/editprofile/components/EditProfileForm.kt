@@ -11,9 +11,12 @@ import androidx.compose.material.icons.outlined.Person
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
+import com.example.mixtapp.data.local.LocalUsuarioProvider
 import com.example.mixtapp.data.model.MAX_BIO_LENGTH
+import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppTextArea
 import com.example.mixtapp.ui.utils.AppTextField
 
@@ -62,6 +65,23 @@ fun EditProfileForm(
             label = stringResource(R.string.biografia),
             placeholder = stringResource(R.string.biografia_placeholder),
             maxLength = MAX_BIO_LENGTH
+        )
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun EditProfileFormPreview() {
+    val usuario = LocalUsuarioProvider.usuario
+
+    MixtappTheme(darkTheme = true) {
+        EditProfileForm(
+            nombre = usuario.nombre,
+            onNombreChange = {},
+            username = usuario.username,
+            onUsernameChange = {},
+            bio = usuario.bio,
+            onBioChange = {},
         )
     }
 }

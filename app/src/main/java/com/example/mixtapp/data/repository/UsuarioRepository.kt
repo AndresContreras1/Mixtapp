@@ -57,7 +57,7 @@ class UsuarioRepository @Inject constructor(
             Result.failure(ContenidoNoEncontradoException())
         } catch (e: Exception) {
             Log.d("UsuarioRepository", "getMiPerfil: ${e.message}")
-            Result.failure(e)
+            Result.failure(ErrorInesperadoException())
         }
     }
 
@@ -100,7 +100,7 @@ class UsuarioRepository @Inject constructor(
             Result.failure(errorDeFirestore(e))
         } catch (e: Exception) {
             Log.d("UsuarioRepository", "registrarUsuario: ${e.message}")
-            Result.failure(e)
+            Result.failure(ErrorInesperadoException())
         }
     }
 
@@ -128,7 +128,7 @@ class UsuarioRepository @Inject constructor(
             Result.failure(errorDeFirestore(e))
         } catch (e: Exception) {
             Log.d("UsuarioRepository", "actualizarPerfil: ${e.message}")
-            Result.failure(e)
+            Result.failure(ErrorInesperadoException())
         }
     }
 
@@ -159,7 +159,7 @@ class UsuarioRepository @Inject constructor(
             Result.success(Unit)
         } catch (e: Exception) {
             Log.d("UsuarioRepository", "actualizarFotoDePerfil: ${e.message}")
-            Result.failure(e)
+            Result.failure(ErrorInesperadoException())
         }
     }
 }
