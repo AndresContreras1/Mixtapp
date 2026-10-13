@@ -10,9 +10,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.ui.theme.MixtappTheme
 
 @Composable
 fun BrowseByHeader(modifier: Modifier = Modifier) {
@@ -27,5 +29,13 @@ fun BrowseByHeader(modifier: Modifier = Modifier) {
         )
 
         HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.6f), thickness = 1.dp)
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun BrowseByHeaderPreview() {
+    MixtappTheme(darkTheme = true) {
+        BrowseByHeader()
     }
 }

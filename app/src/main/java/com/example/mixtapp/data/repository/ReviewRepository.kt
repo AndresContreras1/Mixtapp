@@ -101,7 +101,7 @@ class ReviewRepository @Inject constructor(
             Result.failure(ContenidoNoEncontradoException())
         } catch (e: Exception) {
             Log.d("ReviewRepository", "guardarResena: ${e.message}")
-            Result.failure(e)
+            Result.failure(ErrorInesperadoException())
         }
     }
 
@@ -117,7 +117,7 @@ class ReviewRepository @Inject constructor(
             Result.failure(errorDeFirestore(e))
         } catch (e: Exception) {
             Log.d("ReviewRepository", "eliminarResena: ${e.message}")
-            Result.failure(e)
+            Result.failure(ErrorInesperadoException())
         }
     }
 

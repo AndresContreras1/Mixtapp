@@ -27,10 +27,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.screens.profile.model.ProfileTabUi
+import com.example.mixtapp.ui.screens.profile.model.profileTabs
+import com.example.mixtapp.ui.theme.MixtappTheme
 
 @Composable
 fun ProfileHeader(
@@ -117,5 +120,20 @@ fun ProfileHeader(
             }
         }
         HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f), thickness = 0.5.dp)
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun ProfileHeaderPreview() {
+    MixtappTheme(darkTheme = true) {
+        ProfileHeader(
+            usuario = "andres",
+            tabs = profileTabs,
+            selectedTabId = profileTabs.first().id,
+            onTabSelected = {},
+            onSettingsClick = {},
+            onMoreClick = {},
+        )
     }
 }

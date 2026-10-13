@@ -23,10 +23,13 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.data.local.LocalNotificationsProvider
 import com.example.mixtapp.data.model.NotificationUi
+import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AlbumAsyncImage
 
 @Composable
@@ -105,5 +108,13 @@ private fun mensajeDeNotificacion(notification: NotificationUi, colorResaltado: 
         append(notification.message.substring(index + word.length))
     } else {
         append(notification.message)
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun NotificationRowPreview() {
+    MixtappTheme(darkTheme = true) {
+        NotificationRow(notification = LocalNotificationsProvider.notifications.first())
     }
 }

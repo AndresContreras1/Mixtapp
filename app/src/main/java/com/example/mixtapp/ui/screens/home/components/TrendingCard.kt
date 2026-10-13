@@ -24,10 +24,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.data.local.LocalSongReviewProvider
 import com.example.mixtapp.data.model.SongReviewUi
+import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AlbumAsyncImage
 import com.example.mixtapp.ui.utils.StarRating
 
@@ -106,5 +109,16 @@ fun TrendingCard(
                 }
             }
         }
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun TrendingCardPreview() {
+    MixtappTheme(darkTheme = true) {
+        TrendingCard(
+            songReview = LocalSongReviewProvider.trendingSong,
+            onClick = {},
+        )
     }
 }

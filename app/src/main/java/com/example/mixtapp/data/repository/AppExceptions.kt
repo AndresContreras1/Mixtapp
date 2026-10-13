@@ -34,6 +34,9 @@ class ErrorDeDatosLocalesException : Exception("Fallo la lectura de los datos lo
 
 class ErrorDelServidorException : Exception("La base remota respondio con un error")
 
+// Lo que no tiene un catch propio; el detalle de la excepcion original queda en el log
+class ErrorInesperadoException : Exception("Fallo inesperado")
+
 // El backend responde 404 cuando el album, el usuario o la resena no existen
 fun errorDelBackend(e: HttpException): Exception =
     if (e.code() == 404) ContenidoNoEncontradoException() else ErrorDelServidorException()

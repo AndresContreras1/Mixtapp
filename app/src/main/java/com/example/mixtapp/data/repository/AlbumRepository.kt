@@ -37,7 +37,8 @@ class AlbumRepository @Inject constructor(
             val albumes = albumRemoteDataSource.getAlbumes()
             val usuarioActualId = idDeMiUsuario()
 
-            // Las resenas de todos los albumes se piden a la vez y se espera la mas lenta
+            // Las resenas de todos los albumes se piden a la vez y se espera la mas lenta. Si una
+            // falla, falla todo: un album sin sus resenas mostraria un promedio que no es
             val songReviews = coroutineScope {
                 val pendientes = albumes.map { album ->
                     async {
@@ -63,7 +64,7 @@ class AlbumRepository @Inject constructor(
             Result.failure(errorDeFirestore(e))
         } catch (e: Exception) {
             Log.d("AlbumRepository", "getSongReviews: ${e.message}")
-            Result.failure(e)
+            Result.failure(ErrorInesperadoException())
         }
     }
 
@@ -97,7 +98,7 @@ class AlbumRepository @Inject constructor(
             Result.failure(ContenidoNoEncontradoException())
         } catch (e: Exception) {
             Log.d("AlbumRepository", "getSongReviewById: ${e.message}")
-            Result.failure(e)
+            Result.failure(ErrorInesperadoException())
         }
     }
 

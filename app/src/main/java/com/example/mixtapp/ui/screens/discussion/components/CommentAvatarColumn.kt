@@ -14,8 +14,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mixtapp.data.local.LocalDiscussionProvider
+import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.theme.displayFontFamily
 
 @Composable
@@ -53,5 +56,18 @@ fun CommentAvatarColumn(
                     .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.45f))
             )
         }
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun CommentAvatarColumnPreview() {
+    val comentario = LocalDiscussionProvider.discussions.first().comments.first()
+
+    MixtappTheme(darkTheme = true) {
+        CommentAvatarColumn(
+            initials = comentario.initials,
+            isReply = comentario.isReply,
+        )
     }
 }

@@ -7,7 +7,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.DecorativeCircle
 
 @Composable
@@ -43,5 +45,13 @@ private fun ReviewCircleDecorations(modifier: Modifier = Modifier) {
                 .align(Alignment.CenterEnd)
                 .offset(x = 104.dp, y = (-180).dp)
         )
+    }
+}
+
+@Composable
+@Preview(showBackground = true, device = "spec:width=393dp,height=852dp")
+fun WriteReviewBackgroundPreview() {
+    MixtappTheme(darkTheme = true) {
+        WriteReviewBackground()
     }
 }

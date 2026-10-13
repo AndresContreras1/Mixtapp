@@ -13,8 +13,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
+import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppTextField
 
 @Composable
@@ -102,6 +104,29 @@ fun SignUpFields(
             esContrasena = true,
             contrasenaVisible = confirmarVisible,
             onContrasenaVisibleChange = onConfirmarVisibleChange
+        )
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun SignUpFieldsPreview() {
+    MixtappTheme(darkTheme = true) {
+        SignUpFields(
+            nombre = "",
+            onNombreChange = {},
+            usuario = "",
+            onUsuarioChange = {},
+            email = "",
+            onEmailChange = {},
+            contrasena = "",
+            onContrasenaChange = {},
+            confirmarContrasena = "",
+            onConfirmarContrasenaChange = {},
+            contrasenaVisible = false,
+            onContrasenaVisibleChange = {},
+            confirmarVisible = false,
+            onConfirmarVisibleChange = {},
         )
     }
 }

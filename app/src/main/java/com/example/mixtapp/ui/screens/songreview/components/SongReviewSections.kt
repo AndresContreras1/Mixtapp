@@ -12,10 +12,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.data.local.LocalSongReviewProvider
 import com.example.mixtapp.data.model.SongReviewUi
+import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.theme.displayFontFamily
 import com.example.mixtapp.ui.utils.BackButton
 import com.example.mixtapp.ui.utils.ErrorMessage
@@ -120,5 +123,21 @@ fun SongReviewSections(
                 modifier = Modifier.padding(bottom = 12.dp)
             )
         }
+    }
+}
+
+@Composable
+@Preview(showBackground = true, device = "spec:width=393dp,height=852dp")
+fun SongReviewSectionsPreview() {
+    MixtappTheme(darkTheme = true) {
+        SongReviewSections(
+            songReview = LocalSongReviewProvider.songs.first(),
+            miResenaId = null,
+            errorMessageRes = null,
+            onWriteReviewClick = {},
+            onDeleteMyReviewClick = {},
+            onBackClick = {},
+            onAuthorClick = {},
+        )
     }
 }

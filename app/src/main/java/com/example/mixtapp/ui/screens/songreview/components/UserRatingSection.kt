@@ -17,9 +17,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.StarRating
 
 // Mi calificacion del album: las estrellas solo se muestran y la tarjeta entera es el boton
@@ -56,5 +58,16 @@ fun UserRatingSection(
                 onRatingChange = null
             )
         }
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun UserRatingSectionPreview() {
+    MixtappTheme(darkTheme = true) {
+        UserRatingSection(
+            rating = 4,
+            onClick = {},
+        )
     }
 }

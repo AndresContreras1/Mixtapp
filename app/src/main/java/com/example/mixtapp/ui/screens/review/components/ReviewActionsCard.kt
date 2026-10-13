@@ -14,9 +14,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppButton
 import com.example.mixtapp.ui.utils.ErrorMessage
 
@@ -68,6 +70,20 @@ fun ReviewActionsCard(
         ErrorMessage(
             messageRes = errorMessageRes,
             modifier = Modifier.padding(top = 12.dp)
+        )
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun ReviewActionsCardPreview() {
+    MixtappTheme(darkTheme = true) {
+        ReviewActionsCard(
+            listenedDate = "2026-10-01",
+            publicando = false,
+            errorMessageRes = null,
+            onDateChange = {},
+            onPostClick = {},
         )
     }
 }

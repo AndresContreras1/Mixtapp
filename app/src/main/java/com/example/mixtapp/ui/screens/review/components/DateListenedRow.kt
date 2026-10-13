@@ -15,9 +15,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.ui.theme.MixtappTheme
 
 @Composable
 fun DateListenedRow(
@@ -51,6 +53,17 @@ fun DateListenedRow(
             label = { Text(text = stringResource(R.string.label_fecha_escucha)) },
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+        )
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun DateListenedRowPreview() {
+    MixtappTheme(darkTheme = true) {
+        DateListenedRow(
+            listenedDate = "2026-10-01",
+            onDateChange = {},
         )
     }
 }
