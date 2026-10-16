@@ -12,6 +12,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.theme.MixtappTheme
+import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun WriteReviewFab(
@@ -20,10 +23,16 @@ fun WriteReviewFab(
 ) {
     FloatingActionButton(
         onClick = onClick,
-        modifier = modifier,
+        modifier = modifier.shadow(
+            elevation = 14.dp,
+            shape = CircleShape,
+            ambientColor = MaterialTheme.colorScheme.primary,
+            spotColor = MaterialTheme.colorScheme.primary
+        ),
         containerColor = MaterialTheme.colorScheme.primary,
         contentColor = MaterialTheme.colorScheme.onSurface,
-        shape = CircleShape
+        shape = CircleShape,
+        elevation = FloatingActionButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp)
     ) {
         Icon(
             imageVector = Icons.Filled.Add,

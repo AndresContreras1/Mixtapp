@@ -13,6 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.ui.theme.MixtappTheme
+import androidx.compose.ui.graphics.Brush
 
 // Un circulo de color para los fondos; quien lo usa lo ubica con align y offset en el modifier
 @Composable
@@ -24,8 +25,14 @@ fun DecorativeCircle(
     Box(
         modifier = modifier
             .size(size)
-            .clip(CircleShape)
-            .background(color)
+            .background(
+                brush = Brush.radialGradient(
+                    0f to color,
+                    0.6f to color.copy(alpha = color.alpha * 0.6f),
+                    1f to Color.Transparent
+                ),
+                shape = CircleShape
+            )
     )
 }
 

@@ -2,6 +2,7 @@ package com.example.mixtapp.ui.utils
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Email
@@ -9,7 +10,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -50,7 +53,6 @@ fun AppTextField(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(24.dp)
             )
         },
@@ -65,10 +67,33 @@ fun AppTextField(
         },
         singleLine = true,
         keyboardOptions = keyboardOptions,
-        visualTransformation = currentTransformation
+        visualTransformation = currentTransformation,
+        shape = RoundedCornerShape(16.dp),
+        colors = appTextFieldColors(),
     )
 }
 
+@Composable
+fun appTextFieldColors(): TextFieldColors {
+    val scheme = MaterialTheme.colorScheme
+    return OutlinedTextFieldDefaults.colors(
+        focusedContainerColor = scheme.surfaceVariant.copy(alpha = 0.55f),
+        unfocusedContainerColor = scheme.surfaceVariant.copy(alpha = 0.35f),
+        focusedBorderColor = scheme.inversePrimary,
+        unfocusedBorderColor = scheme.outline.copy(alpha = 0.55f),
+        focusedTextColor = scheme.onSurface,
+        unfocusedTextColor = scheme.onSurface,
+        cursorColor = scheme.inversePrimary,
+        focusedLabelColor = scheme.inversePrimary,
+        unfocusedLabelColor = scheme.onSurfaceVariant.copy(alpha = 0.75f),
+        focusedPlaceholderColor = scheme.onSurfaceVariant.copy(alpha = 0.5f),
+        unfocusedPlaceholderColor = scheme.onSurfaceVariant.copy(alpha = 0.5f),
+        focusedLeadingIconColor = scheme.inversePrimary,
+        unfocusedLeadingIconColor = scheme.onSurfaceVariant,
+        focusedTrailingIconColor = scheme.onSurfaceVariant,
+        unfocusedTrailingIconColor = scheme.onSurfaceVariant,
+    )
+}
 
 @Composable
 @Preview(showBackground = true)

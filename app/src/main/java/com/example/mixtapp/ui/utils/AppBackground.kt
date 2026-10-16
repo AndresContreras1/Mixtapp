@@ -9,6 +9,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.ui.theme.MixtappTheme
+import androidx.compose.ui.graphics.Brush
+import com.example.mixtapp.ui.theme.BackgroundGlow
 
 @Composable
 fun AppBackground(
@@ -17,7 +19,11 @@ fun AppBackground(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(MaterialTheme.colorScheme.background, BackgroundGlow)
+                )
+            )
     ) {
         DecorativeCircles()
     }
