@@ -254,8 +254,8 @@ implementación que reciben (`...FirestoreDataSourceImpl`) por la de Retrofit
 - El backend no tiene rutas para crear ni modificar usuarios, ni likes ni seguidores. Igual que en
   clase, esas funciones quedan como *to-do* en las implementaciones de Retrofit y las listas de
   seguidores salen vacías: los likes y el seguimiento solo funcionan con Firestore.
-- Con HTTP no hay una conexión continua: el flujo del inicio manda una sola vez lo que responde el
-  backend.
+- Con HTTP no hay una conexión continua: el flujo del inicio manda una sola vez lo que responde
+  `GET /reviews`. La discusión de una reseña usa `GET /reviews/:id` y pide su álbum aparte.
 
 </details>
 

@@ -11,5 +11,5 @@ interface AlbumRemoteDataSource {
     // Retrofit no tenga que usarlo
     suspend fun getReviewsDeAlbum(id: String, currentUserId: String = ""): List<ReviewConUsuarioDto>
     // Datos en vivo: cada vez que cambia una resena llega la lista completa de nuevo
-    fun listenAllReviews(): Flow<List<ReviewConUsuarioDto>>
+    fun listenAllReviews(currentUserId: String = ""): Flow<List<ReviewConUsuarioDto>>
 }

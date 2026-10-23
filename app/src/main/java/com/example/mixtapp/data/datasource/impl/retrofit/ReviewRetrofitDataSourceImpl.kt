@@ -1,19 +1,32 @@
 package com.example.mixtapp.data.datasource.impl.retrofit
 
 import com.example.mixtapp.data.datasource.ReviewRemoteDataSource
+import com.example.mixtapp.data.datasource.services.AlbumRetrofitService
 import com.example.mixtapp.data.datasource.services.ReviewRetrofitService
+import com.example.mixtapp.data.dtos.AlbumDeResenaDto
 import com.example.mixtapp.data.dtos.CreateReviewDto
 import com.example.mixtapp.data.dtos.ReviewConAlbumDto
 import javax.inject.Inject
 
 class ReviewRetrofitDataSourceImpl @Inject constructor(
-    private val service: ReviewRetrofitService
+    private val service: ReviewRetrofitService,
+    private val albumService: AlbumRetrofitService
 ) : ReviewRemoteDataSource {
 
-    // to-do: el backend no tiene una ruta para traer una resena por su id. Se avisa como no
-    // encontrada, igual que un documento que no existe en Firestore
+    // El backend no tiene likes. La resena trae al usuario en el include, pero no copia el album
+    // como Firestore: se pide aparte para que el DTO llegue igual por las dos bases
     override suspend fun getReviewById(id: String, currentUserId: String): ReviewConAlbumDto {
-        throw NoSuchElementException("El backend no tiene la resena $id")
+        val review = service.getReviewById(id)
+        val album = albumService.getAlbumById(review.albumId)
+
+        return review.copy(
+            album = AlbumDeResenaDto(
+                id = album.id,
+                titulo = album.titulo,
+                artista = album.artista,
+                portadaUrl = album.portadaUrl,
+            )
+        )
     }
 
     // En el backend la resena siempre queda a nombre del usuario 1, y solo van los campos de su

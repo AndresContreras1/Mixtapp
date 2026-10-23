@@ -51,7 +51,7 @@ class AlbumFirestoreDataSourceImpl @Inject constructor(
 
     // El listener escucha la coleccion reviews: cada cambio manda la lista completa por el flujo.
     // Un like solo cambia likesCount en la resena, asi que tambien llega por aqui
-    override fun listenAllReviews(): Flow<List<ReviewConUsuarioDto>> = callbackFlow {
+    override fun listenAllReviews(currentUserId: String): Flow<List<ReviewConUsuarioDto>> = callbackFlow {
         val listenerRegistration = db.collection("reviews")
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {

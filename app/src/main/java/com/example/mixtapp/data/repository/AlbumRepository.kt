@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.mixtapp.data.datasource.AlbumLocalDataSource
 import com.example.mixtapp.data.datasource.AuthRemoteDataSource
 import com.example.mixtapp.data.datasource.impl.firestore.AlbumFirestoreDataSourceImpl
+import com.example.mixtapp.data.dtos.AlbumDto
 import com.example.mixtapp.data.dtos.toAlbum
 import com.example.mixtapp.data.dtos.toAlbumReviewItemUi
 import com.example.mixtapp.data.model.Album
@@ -72,10 +73,13 @@ class AlbumRepository @Inject constructor(
     // ViewModel en el catch
     fun getAlbumReviewsLive(): Flow<List<AlbumReviewsUi>> {
         val usuarioActualId = authRemoteDataSource.currentUser?.uid ?: ""
+        // Los albumes no cambian mientras se usa la app: se piden con la primera lista y no en
+        // cada cambio, para no gastar lecturas
+        var albumes: List<AlbumDto> = emptyList()
 
-        return albumRemoteDataSource.listenAllReviews()
+        return albumRemoteDataSource.listenAllReviews(currentUserId = usuarioActualId)
             .map { reviews ->
-                val albumes = albumRemoteDataSource.getAlbumes()
+                if (albumes.isEmpty()) albumes = albumRemoteDataSource.getAlbumes()
 
                 albumes.map { album ->
                     conEstadisticas(
