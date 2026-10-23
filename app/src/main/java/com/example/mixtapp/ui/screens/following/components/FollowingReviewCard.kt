@@ -29,7 +29,6 @@ fun FollowingReviewCard(
     review: FollowingReviewUi,
     onLikeClick: () -> Unit,
     onShareClick: () -> Unit,
-    onCommentsClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Card(
@@ -90,8 +89,6 @@ fun FollowingReviewCard(
                 likes = review.likes,
                 isLiked = review.isLiked,
                 onLikeClick = onLikeClick,
-                commentsLabel = review.comments.toString(),
-                onCommentsClick = onCommentsClick,
                 isShared = review.isShared,
                 onShareClick = onShareClick,
                 modifier = Modifier.padding(top = 10.dp),
@@ -108,7 +105,6 @@ fun FollowingReviewCardPreview() {
             review = LocalFollowingProvider.following.reviews.first(),
             onLikeClick = {},
             onShareClick = {},
-            onCommentsClick = {},
         )
     }
 }

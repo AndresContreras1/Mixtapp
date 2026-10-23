@@ -30,6 +30,7 @@ import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalFollowingProvider
 import com.example.mixtapp.data.model.FollowingStoryUi
 import com.example.mixtapp.ui.theme.MixtappTheme
+import com.example.mixtapp.ui.utils.ProfileAsyncImage
 
 @Composable
 fun FollowingStoriesRow(
@@ -90,12 +91,20 @@ private fun FollowingStoryBubble(
                 ),
             contentAlignment = Alignment.Center,
         ) {
-            Text(
-                text = story.initials,
-                color = if (story.isAddAction) MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.58f) else MaterialTheme.colorScheme.onSurfaceVariant,
-                fontSize = if (story.isAddAction) 36.sp else 17.sp,
-                fontWeight = FontWeight.Black,
-            )
+            if (!story.isAddAction && !story.fotoUrl.isNullOrBlank()) {
+                ProfileAsyncImage(
+                    profileImage = story.fotoUrl,
+                    contentDescription = story.label,
+                    modifier = Modifier.size(58.dp)
+                )
+            } else {
+                Text(
+                    text = story.initials,
+                    color = if (story.isAddAction) MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.58f) else MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontSize = if (story.isAddAction) 36.sp else 17.sp,
+                    fontWeight = FontWeight.Black,
+                )
+            }
         }
 
         Text(

@@ -92,22 +92,26 @@ fun HomeSections(
 
             Spacer(modifier = Modifier.height(28.dp))
 
+            SectionTitle(
+                title = stringResource(R.string.friends_activity),
+                onSeeAllClick = onFollowingClick
+            )
+
+            Spacer(modifier = Modifier.height(14.dp))
+
             if (friendActivity != null) {
-                SectionTitle(
-                    title = stringResource(R.string.friends_activity),
-                    onSeeAllClick = onFollowingClick
-                )
-
-                Spacer(modifier = Modifier.height(14.dp))
-
                 FriendsActivity(
                     activity = friendActivity,
                     onClick = onAlbumClick,
                     onAuthorClick = onAuthorClick
                 )
-
-                Spacer(modifier = Modifier.height(28.dp))
+            } else {
+                FriendsActivityEmpty(
+                    onFollowingClick = onFollowingClick
+                )
             }
+
+            Spacer(modifier = Modifier.height(28.dp))
 
             SectionTitle(
                 title = stringResource(R.string.todos_los_albumes),

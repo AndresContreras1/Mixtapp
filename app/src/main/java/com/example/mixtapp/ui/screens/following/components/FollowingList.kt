@@ -31,7 +31,6 @@ fun FollowingList(
     onStoryClick: (String) -> Unit,
     onLikeClick: (String) -> Unit,
     onShareClick: (String) -> Unit,
-    onCommentsClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -78,7 +77,6 @@ fun FollowingList(
                 review = review,
                 onLikeClick = { onLikeClick(review.id) },
                 onShareClick = { onShareClick(review.id) },
-                onCommentsClick = { onCommentsClick(review.id) },
                 modifier = Modifier.padding(bottom = 18.dp),
             )
         }
@@ -104,7 +102,6 @@ fun FollowingListPreview() {
             onStoryClick = {},
             onLikeClick = {},
             onShareClick = {},
-            onCommentsClick = {},
         )
     }
 }

@@ -198,6 +198,9 @@ fun AppNavigation(
                 onReviewClick = { songId ->
                     navController.abrirAlbum(songId = songId)
                 },
+                onUserClick = { userId ->
+                    navController.abrirPerfil(userId = userId)
+                },
                 onSeeAllReviewsClick = { navController.navigate(Screen.MyReviews.route) }
             )
         }
@@ -247,6 +250,9 @@ fun AppNavigation(
                 onReviewClick = { songId ->
                     navController.abrirAlbum(songId = songId)
                 },
+                onUserClick = { otherUserId ->
+                    navController.abrirPerfil(userId = otherUserId)
+                },
                 onBackClick = { navController.popBackStack() }
             )
         }
@@ -255,10 +261,7 @@ fun AppNavigation(
             val followingViewModel: FollowingViewModel = hiltViewModel()
 
             FollowingScreen(
-                followingViewModel = followingViewModel,
-                onCommentsClick = { reviewId ->
-                    navController.navigate(Screen.Discussion.createRoute(reviewId = reviewId))
-                }
+                followingViewModel = followingViewModel
             )
         }
 

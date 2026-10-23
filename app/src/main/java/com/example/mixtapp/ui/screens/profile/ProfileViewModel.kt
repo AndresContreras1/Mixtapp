@@ -21,6 +21,7 @@ import com.example.mixtapp.data.repository.SinSesionException
 import com.example.mixtapp.data.repository.StorageRepository
 import com.example.mixtapp.data.repository.UsuarioRepository
 import com.example.mixtapp.ui.screens.profile.model.profileTabs
+import com.example.mixtapp.ui.screens.userprofile.TipoLista
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -47,10 +48,13 @@ class ProfileViewModel @Inject constructor(
     fun getProfile() {
         val usuarioDelCorreo = authRepository.usuarioDelCorreo
         val foto = authRepository.currentUser?.photoUrl?.toString() ?: ""
+        val currentUserId = authRepository.currentUser?.uid
 
         // Mis datos y mis resenas se usan por su lado, asi que cada uno va en su propio launch
         viewModelScope.launch {
             val perfil = usuarioRepository.getMiPerfil()
+            val seguidoresResult = if (currentUserId != null) usuarioRepository.getSeguidoresDeUsuario(currentUserId) else Result.success(emptyList())
+            val seguidosResult = if (currentUserId != null) usuarioRepository.getSeguidosDeUsuario(currentUserId) else Result.success(emptyList())
 
             if (perfil.isSuccess) {
                 val miPerfil = perfil.getOrNull()
@@ -61,6 +65,8 @@ class ProfileViewModel @Inject constructor(
                         nombre = miPerfil?.nombre ?: "",
                         bio = miPerfil?.bio ?: "",
                         seguidores = miPerfil?.seguidores ?: 0,
+                        seguidoresList = seguidoresResult.getOrNull() ?: emptyList(),
+                        seguidosList = seguidosResult.getOrNull() ?: emptyList(),
                         profileImageUrl = foto,
                         avisoPerfilRes = null,
                     )
@@ -126,6 +132,18 @@ class ProfileViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun abrirSeguidores() {
+        _uiState.update { it.copy(tipoListaAbierta = TipoLista.SEGUIDORES) }
+    }
+
+    fun abrirSeguidos() {
+        _uiState.update { it.copy(tipoListaAbierta = TipoLista.SEGUIDOS) }
+    }
+
+    fun cerrarLista() {
+        _uiState.update { it.copy(tipoListaAbierta = null) }
     }
 
     // Eliminar filtra la lista en vez de volver a pedir todas las resenas

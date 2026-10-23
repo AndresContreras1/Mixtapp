@@ -7,7 +7,6 @@ import com.example.mixtapp.data.dtos.ReviewConAlbumDto
 import com.example.mixtapp.data.dtos.UsuarioPerfilRetrofitDto
 import javax.inject.Inject
 
-// Los usuarios de Firebase no existen en el backend: el usuario de la app se quema como el 1
 const val USUARIO_DE_LA_APP_EN_EL_BACKEND = "1"
 
 class UsuarioRetrofitDataSourceImpl @Inject constructor(
@@ -18,6 +17,10 @@ class UsuarioRetrofitDataSourceImpl @Inject constructor(
         return service.getUsuarioById(idEnElBackend(id))
     }
 
+    override suspend fun getUsuarios(): List<UsuarioPerfilRetrofitDto> {
+        return emptyList()
+    }
+
     override suspend fun getReviewsDeUsuario(id: String): List<ReviewConAlbumDto> {
         return service.getReviewsDeUsuario(idEnElBackend(id))
     }
@@ -26,10 +29,8 @@ class UsuarioRetrofitDataSourceImpl @Inject constructor(
         // to-do: el backend no tiene una ruta para crear ni modificar usuarios
     }
 
-    // En el backend el usuario de la app es el 1
     override fun idDelUsuarioEnLaBase(uid: String): String = idEnElBackend(uid)
 
-    // Los ids del backend son numeros; el uid de Firebase no, asi que ese se cambia por el 1
     private fun idEnElBackend(id: String): String =
         if (id.toIntOrNull() != null) id else USUARIO_DE_LA_APP_EN_EL_BACKEND
 }

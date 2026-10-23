@@ -101,6 +101,7 @@ private val LightColorScheme = lightColorScheme(
 @Composable
 fun MixtappTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
+    @Suppress("UNUSED_PARAMETER") dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme

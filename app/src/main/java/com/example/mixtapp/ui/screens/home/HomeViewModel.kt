@@ -11,7 +11,8 @@ import com.example.mixtapp.data.repository.AuthRepository
 import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
 import com.example.mixtapp.data.repository.ErrorDelServidorException
 import com.example.mixtapp.data.repository.SinConexionException
-import com.example.mixtapp.ui.screens.home.model.FILTRO_AMIGOS
+import com.example.mixtapp.data.repository.UsuarioRepository
+import com.example.mixtapp.ui.screens.home.model.FILTRO_SEGUIDOS
 import com.example.mixtapp.ui.screens.home.model.FILTRO_TENDENCIAS
 import com.example.mixtapp.ui.screens.home.model.homeFilters
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,7 +26,8 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val authRepository: AuthRepository,
-    private val albumRepository: AlbumRepository
+    private val albumRepository: AlbumRepository,
+    private val usuarioRepository: UsuarioRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeState())
@@ -42,16 +44,20 @@ class HomeViewModel @Inject constructor(
 
             // Cada album llega con sus resenas, y las mias ya vienen marcadas
             val result = albumRepository.getSongReviews()
+            val followedResult = usuarioRepository.getUsuariosSeguidos()
 
             if (result.isSuccess) {
                 val todos = result.getOrNull() ?: emptyList()
+                val followedUsers = if (followedResult.isSuccess) followedResult.getOrNull() ?: emptyList() else emptyList()
+                val followedIds = followedUsers.map { it.id }.toSet()
 
                 _uiState.update {
                     it.copy(
-                        albums = aplicarFiltro(filtroId = filtroInicial, todos = todos),
+                        followedIds = followedIds,
+                        albums = aplicarFiltro(filtroId = filtroInicial, todos = todos, followedIds = followedIds),
                         todos = todos,
                         trending = enTendencia(todos = todos),
-                        friendActivity = actividadDeAmigos(todos = todos),
+                        friendActivity = actividadDeSeguidos(todos = todos, followedIds = followedIds),
                         filters = homeFilters,
                         selectedFilterId = filtroInicial,
                         isLoading = false,
@@ -81,23 +87,25 @@ class HomeViewModel @Inject constructor(
 
     // Los albumes ya estan cargados: cambiar de filtro no vuelve a pedirlos
     fun updateSelectedFilter(filtroId: String) {
-        val todos = _uiState.value.todos
+        val state = _uiState.value
+        val todos = state.todos
+        val followedIds = state.followedIds
 
         _uiState.update {
             it.copy(
                 selectedFilterId = filtroId,
-                albums = aplicarFiltro(filtroId = filtroId, todos = todos),
+                albums = aplicarFiltro(filtroId = filtroId, todos = todos, followedIds = followedIds),
             )
         }
     }
 
-    private fun aplicarFiltro(filtroId: String, todos: List<SongReviewUi>): List<SongReviewUi> =
+    private fun aplicarFiltro(filtroId: String, todos: List<SongReviewUi>, followedIds: Set<String>): List<SongReviewUi> =
         when (filtroId) {
             FILTRO_TENDENCIAS -> todos.sortedByDescending { it.reviews.size }
 
-            // Los albumes que reseno alguien distinto a mi
-            FILTRO_AMIGOS -> todos.filter { songReview ->
-                songReview.reviews.any { !it.esMia }
+            // Los albumes que reseno alguien a quien sigo
+            FILTRO_SEGUIDOS -> todos.filter { songReview ->
+                songReview.reviews.any { !it.esMia && it.authorId in followedIds }
             }
 
             else -> todos
@@ -107,13 +115,13 @@ class HomeViewModel @Inject constructor(
     private fun enTendencia(todos: List<SongReviewUi>): SongReviewUi? =
         todos.sortedByDescending { it.reviews.size }.firstOrNull()
 
-    // De las resenas de otros usuarios, la del album que se escucho mas recientemente
-    private fun actividadDeAmigos(todos: List<SongReviewUi>): FriendActivityUi? {
+    // De las resenas de usuarios seguidos, la del album que se escucho mas recientemente
+    private fun actividadDeSeguidos(todos: List<SongReviewUi>, followedIds: Set<String>): FriendActivityUi? {
         val actividades = mutableListOf<FriendActivityUi>()
 
         todos.forEach { songReview ->
             songReview.reviews.forEach { review ->
-                if (!review.esMia) {
+                if (!review.esMia && review.authorId in followedIds) {
                     actividades.add(
                         FriendActivityUi(
                             id = review.id,

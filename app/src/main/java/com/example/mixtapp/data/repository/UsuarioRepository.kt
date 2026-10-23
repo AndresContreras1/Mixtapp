@@ -187,4 +187,56 @@ class UsuarioRepository @Inject constructor(
             Result.failure(ErrorInesperadoException())
         }
     }
+
+
+    // Obtiene todos los perfiles de usuario registrados en la base de datos remota.
+    suspend fun getUsuarios(): Result<List<UsuarioUi>> {
+        return try {
+            val dtos = usuarioRemoteDataSource.getUsuarios()
+            Result.success(dtos.map { it.toUsuarioUi() })
+        } catch (e: Exception) {
+            Log.d("UsuarioRepository", "getUsuarios: ${e.message}")
+            Result.failure(ErrorInesperadoException())
+        }
+    }
+
+    /**
+     * Obtiene únicamente los usuarios a los que sigue el usuario actual autenticado
+     * (filtrando aquellos cuyo campo seguidoresIds incluye el uid del usuario actual).
+     */
+    suspend fun getUsuariosSeguidos(): Result<List<UsuarioUi>> {
+        return try {
+            val currentUserId = idDelUsuarioActual() ?: return Result.success(emptyList())
+            val dtos = usuarioRemoteDataSource.getUsuarios()
+            val seguidosDtos = dtos.filter { it.seguidoresIds.contains(currentUserId) }
+            Result.success(seguidosDtos.map { it.toUsuarioUi() })
+        } catch (e: Exception) {
+            Log.d("UsuarioRepository", "getUsuariosSeguidos: ${e.message}")
+            Result.failure(ErrorInesperadoException())
+        }
+    }
+
+    suspend fun getSeguidoresDeUsuario(userId: String): Result<List<UsuarioUi>> {
+        return try {
+            val usuario = usuarioRemoteDataSource.getUsuarioById(userId)
+            val seguidoresIds = usuario.seguidoresIds.distinct()
+            val todos = usuarioRemoteDataSource.getUsuarios()
+            val seguidores = todos.filter { it.id in seguidoresIds }.map { it.toUsuarioUi() }
+            Result.success(seguidores)
+        } catch (e: Exception) {
+            Log.d("UsuarioRepository", "getSeguidoresDeUsuario: ${e.message}")
+            Result.failure(ErrorInesperadoException())
+        }
+    }
+
+    suspend fun getSeguidosDeUsuario(userId: String): Result<List<UsuarioUi>> {
+        return try {
+            val todos = usuarioRemoteDataSource.getUsuarios()
+            val seguidos = todos.filter { it.seguidoresIds.contains(userId) }.map { it.toUsuarioUi() }
+            Result.success(seguidos)
+        } catch (e: Exception) {
+            Log.d("UsuarioRepository", "getSeguidosDeUsuario: ${e.message}")
+            Result.failure(ErrorInesperadoException())
+        }
+    }
 }

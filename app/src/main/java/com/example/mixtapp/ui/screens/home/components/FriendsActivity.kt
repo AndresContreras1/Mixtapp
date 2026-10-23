@@ -95,6 +95,32 @@ fun FriendsActivity(
 }
 
 @Composable
+fun FriendsActivityEmpty(
+    onFollowingClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Card(
+        onClick = onFollowingClick,
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(8.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f)
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.25f))
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = stringResource(R.string.sin_actividad_seguidos),
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Medium
+            )
+        }
+    }
+}
+
+@Composable
 @Preview(showBackground = true)
 fun FriendsActivityPreview() {
     MixtappTheme(darkTheme = true) {
