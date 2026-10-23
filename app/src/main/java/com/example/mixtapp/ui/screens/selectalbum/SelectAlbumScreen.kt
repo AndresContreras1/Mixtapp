@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,6 +28,7 @@ import com.example.mixtapp.data.model.AlbumReviewsUi
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.theme.displayFontFamily
 import com.example.mixtapp.ui.utils.BackButton
+import com.example.mixtapp.ui.utils.LoadingBox
 import com.example.mixtapp.ui.utils.ReviewAlbumRow
 
 // El boton + abre esta pantalla para elegir el album antes de escribir la resena
@@ -43,9 +43,7 @@ fun SelectAlbumScreen(
 
     when {
         state.isLoading -> {
-            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
+            LoadingBox(modifier = modifier)
         }
         // Sin albumes cargados solo se muestra el motivo del error
         state.errorMessageRes != null && state.albums.isEmpty() -> {

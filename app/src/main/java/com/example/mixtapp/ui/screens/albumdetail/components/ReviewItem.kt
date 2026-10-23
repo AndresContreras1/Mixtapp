@@ -11,8 +11,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -33,6 +31,7 @@ import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalAlbumReviewsProvider
 import com.example.mixtapp.data.model.AlbumReviewItemUi
 import com.example.mixtapp.ui.theme.MixtappTheme
+import com.example.mixtapp.ui.utils.EditDeleteButtons
 import com.example.mixtapp.ui.utils.LikeButton
 import com.example.mixtapp.ui.utils.ProfileAsyncImage
 import com.example.mixtapp.ui.utils.StarRating
@@ -111,22 +110,10 @@ fun ReviewItem(
             )
 
             if (review.esMia) {
-                Row {
-                    IconButton(onClick = onEditClick) {
-                        Icon(
-                            imageVector = Icons.Default.Edit,
-                            contentDescription = stringResource(R.string.editar_resena),
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                    IconButton(onClick = onDeleteClick) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = stringResource(R.string.eliminar_resena),
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                }
+                EditDeleteButtons(
+                    onEditClick = onEditClick,
+                    onDeleteClick = onDeleteClick,
+                )
             }
         }
     }

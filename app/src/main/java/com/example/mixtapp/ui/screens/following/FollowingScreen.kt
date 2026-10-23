@@ -3,10 +3,10 @@ package com.example.mixtapp.ui.screens.following
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -22,6 +22,7 @@ import com.example.mixtapp.ui.screens.following.components.FollowingList
 import com.example.mixtapp.ui.screens.following.model.FollowingFilterUi
 import com.example.mixtapp.ui.screens.following.model.followingFilters
 import com.example.mixtapp.ui.theme.MixtappTheme
+import com.example.mixtapp.ui.utils.LoadingBox
 
 @Composable
 fun FollowingScreen(
@@ -34,19 +35,26 @@ fun FollowingScreen(
 ) {
     val state by followingViewModel.uiState.collectAsState()
 
+    // Se pide cada vez que se muestra: si deje de seguir a alguien o cambie un like en otra
+    // pantalla, al volver ya sale al dia
+    LaunchedEffect(Unit) {
+        followingViewModel.getFollowing()
+    }
+
+    // Con una copia local, Kotlin sabe que no es nula despues de revisarla: no hace falta el !!
+    val following = state.following
+
     when {
         state.isLoading -> {
-            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
+            LoadingBox(modifier = modifier)
         }
-        state.following == null -> {
+        following == null -> {
             Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(text = stringResource(state.errorMessageRes ?: R.string.resenas_no_encontradas))
             }
         }
         else -> FollowingScreenContent(
-            following = state.following!!,
+            following = following,
             reviews = state.reviews,
             friendQuery = state.friendQuery,
             filters = state.filters,

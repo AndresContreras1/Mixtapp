@@ -1,7 +1,6 @@
 package com.example.mixtapp.ui.screens.home
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -21,6 +20,7 @@ import com.example.mixtapp.ui.screens.home.model.HomeFilterUi
 import com.example.mixtapp.ui.screens.home.model.homeFilters
 import com.example.mixtapp.ui.theme.*
 import com.example.mixtapp.ui.utils.AppBackground
+import com.example.mixtapp.ui.utils.LoadingBox
 
 @Composable
 fun HomeScreen(
@@ -44,9 +44,7 @@ fun HomeScreen(
 
     when {
         state.isLoading -> {
-            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
+            LoadingBox(modifier = modifier)
         }
         // Sin albumes no hay nada que mostrar: solo el motivo del error
         state.errorMessageRes != null && state.todos.isEmpty() -> {

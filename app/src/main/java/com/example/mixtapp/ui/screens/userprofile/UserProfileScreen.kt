@@ -27,6 +27,7 @@ import com.example.mixtapp.data.model.UsuarioUi
 import com.example.mixtapp.ui.screens.userprofile.components.UserProfileHeader
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.ErrorMessage
+import com.example.mixtapp.ui.utils.LoadingBox
 import com.example.mixtapp.ui.utils.MyReviewCard
 
 @Composable
@@ -48,19 +49,20 @@ fun UserProfileScreen(
         userProfileViewModel.getUserReviews(userId = userId)
     }
 
+    // Con una copia local, Kotlin sabe que no es nula despues de revisarla: no hace falta el !!
+    val usuario = state.usuario
+
     when {
         state.isLoading -> {
-            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
+            LoadingBox(modifier = modifier)
         }
-        state.usuario == null -> {
+        usuario == null -> {
             Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(text = stringResource(state.errorMessageRes ?: R.string.perfil_no_encontrado))
             }
         }
         else -> UserProfileScreenContent(
-            usuario = state.usuario!!,
+            usuario = usuario,
             onSeguidoresClick = { onSeguidoresClick(userId) },
             onSeguidosClick = { onSeguidosClick(userId) },
             onFollowClick = { userProfileViewModel.followOrUnfollow() },

@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,6 +29,7 @@ import com.example.mixtapp.ui.screens.myreviews.model.MyReviewFilterUi
 import com.example.mixtapp.ui.screens.myreviews.model.myReviewFilters
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.ErrorMessage
+import com.example.mixtapp.ui.utils.LoadingBox
 import com.example.mixtapp.ui.utils.MyReviewCard
 
 @Composable
@@ -49,9 +49,7 @@ fun MyReviewsScreen(
 
     when {
         state.isLoading -> {
-            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
+            LoadingBox(modifier = modifier)
         }
         // Sin resenas cargadas solo se muestra el motivo del error
         state.errorMessageRes != null && state.todas.isEmpty() -> {

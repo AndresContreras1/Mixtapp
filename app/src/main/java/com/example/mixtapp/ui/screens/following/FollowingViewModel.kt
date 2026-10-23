@@ -31,20 +31,18 @@ class FollowingViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(FollowingState())
     val uiState: StateFlow<FollowingState> = _uiState.asStateFlow()
 
-    // No recibe parametros, asi que los datos se cargan al crear el ViewModel
-    init {
-        getFollowing()
-    }
-
-    private fun getFollowing() {
+    // La pantalla la llama cada vez que se muestra: el init solo corre una vez al crear el
+    // ViewModel, y al volver de un perfil o de una discusion se seguirian viendo los datos viejos
+    fun getFollowing() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
 
             val result = socialRepository.getFollowing()
+            val following = result.getOrNull()
 
-            if (result.isSuccess) {
-                val following = result.getOrNull() ?: return@launch
-                val filtroInicial = followingFilters.first().id
+            if (result.isSuccess && following != null) {
+                // Al volver se conserva el filtro que estaba elegido
+                val filtroInicial = _uiState.value.selectedFilterId.ifEmpty { followingFilters.first().id }
                 val query = _uiState.value.friendQuery
 
                 _uiState.update {

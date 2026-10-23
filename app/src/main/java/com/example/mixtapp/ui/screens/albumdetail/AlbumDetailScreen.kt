@@ -1,7 +1,6 @@
 package com.example.mixtapp.ui.screens.albumdetail
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -17,6 +16,7 @@ import com.example.mixtapp.data.model.AlbumReviewsUi
 import com.example.mixtapp.ui.screens.albumdetail.components.AlbumDetailSections
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppBackground
+import com.example.mixtapp.ui.utils.LoadingBox
 
 // Recibe solo el id; el ViewModel se encarga de buscar el album
 @Composable
@@ -35,19 +35,20 @@ fun AlbumDetailScreen(
         albumDetailViewModel.getAlbumById(albumId = albumId)
     }
 
+    // Con una copia local, Kotlin sabe que no es nula despues de revisarla: no hace falta el !!
+    val albumReviews = state.albumReviews
+
     when {
         state.isLoading -> {
-            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
+            LoadingBox(modifier = modifier)
         }
-        state.albumReviews == null -> {
+        albumReviews == null -> {
             Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(text = stringResource(state.errorMessageRes ?: R.string.album_no_encontrado))
             }
         }
         else -> AlbumDetailScreenContent(
-            albumReviews = state.albumReviews!!,
+            albumReviews = albumReviews,
             miResenaId = state.miResenaId,
             onLikeClick = { albumDetailViewModel.sendOrDeleteLike(reviewId = it) },
             errorMessageRes = state.errorMessageRes,
