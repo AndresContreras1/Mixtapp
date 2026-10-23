@@ -194,7 +194,7 @@
     <string name="reviews">Reseñas</string>
     <string name="write_one">Escribe una</string>
     <string name="editar_la_tuya">Edita la tuya</string>
-    <string name="marca_propia">(tú)</string>
+    <string name="marca_propia">%1$s (tú)</string>
     <string name="sin_resenas_album">Todavía nadie reseña este álbum. ¡Escribe la primera!</string>
     <string name="ratings_label">calificaciones</string>
     <string name="calificacion_label">calificación</string>

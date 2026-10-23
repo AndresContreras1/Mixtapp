@@ -75,7 +75,7 @@ fun ReviewItem(
                 Spacer(modifier = Modifier.width(12.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = if (review.esMia) "${review.author} ${stringResource(R.string.marca_propia)}" else review.author,
+                        text = if (review.esMia) stringResource(R.string.marca_propia, review.author) else review.author,
                         color = MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight.Bold
                     )

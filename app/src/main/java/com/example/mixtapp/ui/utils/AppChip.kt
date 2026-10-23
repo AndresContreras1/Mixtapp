@@ -16,12 +16,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mixtapp.R
 import com.example.mixtapp.ui.theme.MixtappTheme
 
 @Composable
@@ -70,7 +72,7 @@ fun AppChipPreview() {
     MixtappTheme(darkTheme = true) {
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             AppChip(
-                text = "Para ti",
+                text = stringResource(R.string.for_you),
                 isSelected = true,
                 onClick = {},
                 unselectedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -80,7 +82,7 @@ fun AppChipPreview() {
                 fontSize = 13.sp
             )
             AppChip(
-                text = "Tendencias",
+                text = stringResource(R.string.trending),
                 isSelected = false,
                 onClick = {},
                 unselectedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
