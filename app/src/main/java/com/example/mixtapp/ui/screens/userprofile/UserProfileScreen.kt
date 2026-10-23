@@ -24,7 +24,6 @@ import com.example.mixtapp.data.local.LocalMyReviewsProvider
 import com.example.mixtapp.data.local.LocalUsuarioProvider
 import com.example.mixtapp.data.model.MyReviewUi
 import com.example.mixtapp.data.model.UsuarioUi
-import com.example.mixtapp.ui.screens.userprofile.components.UserListDialog
 import com.example.mixtapp.ui.screens.userprofile.components.UserProfileHeader
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.ErrorMessage
@@ -35,13 +34,16 @@ fun UserProfileScreen(
     userId: String,
     userProfileViewModel: UserProfileViewModel,
     onReviewClick: (String) -> Unit,
-    onUserClick: (String) -> Unit,
+    onSeguidoresClick: (String) -> Unit,
+    onSeguidosClick: (String) -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val state by userProfileViewModel.uiState.collectAsState()
 
-    LaunchedEffect(userId) {
+    // Necesita el id que llega por la ruta, asi que se pide en un LaunchedEffect. Al volver de
+    // la lista de seguidores ya sale con los contadores al dia
+    LaunchedEffect(Unit) {
         userProfileViewModel.getUserProfile(userId = userId)
         userProfileViewModel.getUserReviews(userId = userId)
     }
@@ -59,19 +61,13 @@ fun UserProfileScreen(
         }
         else -> UserProfileScreenContent(
             usuario = state.usuario!!,
-            seguidores = state.seguidores,
-            seguidos = state.seguidos,
-            tipoListaAbierta = state.tipoListaAbierta,
-            onSeguidoresClick = userProfileViewModel::abrirSeguidores,
-            onSeguidosClick = userProfileViewModel::abrirSeguidos,
-            onCerrarLista = userProfileViewModel::cerrarLista,
-            cambiandoSeguimiento = state.cambiandoSeguimiento,
-            onFollowClick = userProfileViewModel::seguirDejarDeSeguir,
+            onSeguidoresClick = { onSeguidoresClick(userId) },
+            onSeguidosClick = { onSeguidosClick(userId) },
+            onFollowClick = { userProfileViewModel.followOrUnfollow() },
             reviews = state.reviews,
             cargandoResenas = state.cargandoResenas,
             errorMessageRes = state.errorSeguimientoRes ?: state.errorResenasRes ?: state.errorMessageRes,
             onReviewClick = onReviewClick,
-            onUserClick = onUserClick,
             onBackClick = onBackClick,
             modifier = modifier
         )
@@ -81,19 +77,13 @@ fun UserProfileScreen(
 @Composable
 fun UserProfileScreenContent(
     usuario: UsuarioUi,
-    seguidores: List<UsuarioUi>,
-    seguidos: List<UsuarioUi>,
-    tipoListaAbierta: TipoLista?,
     onSeguidoresClick: () -> Unit,
     onSeguidosClick: () -> Unit,
-    onCerrarLista: () -> Unit,
-    cambiandoSeguimiento: Boolean = false,
-    onFollowClick: () -> Unit = {},
+    onFollowClick: () -> Unit,
     reviews: List<MyReviewUi>,
     cargandoResenas: Boolean,
     errorMessageRes: Int?,
     onReviewClick: (String) -> Unit,
-    onUserClick: (String) -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -109,11 +99,8 @@ fun UserProfileScreenContent(
             item {
                 UserProfileHeader(
                     usuario = usuario,
-                    seguidoresCount = seguidores.size,
-                    seguidosCount = seguidos.size,
                     onSeguidoresClick = onSeguidoresClick,
                     onSeguidosClick = onSeguidosClick,
-                    cambiandoSeguimiento = cambiandoSeguimiento,
                     onFollowClick = onFollowClick,
                     reviewsCount = reviews.size,
                     cargandoResenas = cargandoResenas,
@@ -151,18 +138,6 @@ fun UserProfileScreenContent(
                 )
             }
         }
-
-        if (tipoListaAbierta != null) {
-            val titulo = if (tipoListaAbierta == TipoLista.SEGUIDORES) "Seguidores" else "Seguidos"
-            val lista = if (tipoListaAbierta == TipoLista.SEGUIDORES) seguidores else seguidos
-
-            UserListDialog(
-                titulo = titulo,
-                usuarios = lista,
-                onUserClick = onUserClick,
-                onDismiss = onCerrarLista
-            )
-        }
     }
 }
 
@@ -172,17 +147,13 @@ fun UserProfileScreenPreview() {
     MixtappTheme(darkTheme = true) {
         UserProfileScreenContent(
             usuario = LocalUsuarioProvider.usuario,
-            seguidores = emptyList(),
-            seguidos = emptyList(),
-            tipoListaAbierta = null,
             onSeguidoresClick = {},
             onSeguidosClick = {},
-            onCerrarLista = {},
+            onFollowClick = {},
             reviews = LocalMyReviewsProvider.reviews,
             cargandoResenas = false,
             errorMessageRes = null,
             onReviewClick = {},
-            onUserClick = {},
             onBackClick = {}
         )
     }

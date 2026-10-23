@@ -55,7 +55,7 @@ class EditProfileViewModel @Inject constructor(
                 }
             } else if (result.exceptionOrNull() is ContenidoNoEncontradoException) {
                 // Una cuenta sin datos en Firestore empieza con la parte del correo como usuario
-                _uiState.update { it.copy(username = usuarioDelCorreo, isLoading = false) }
+                _uiState.update { it.copy(username = usuarioDelCorreo, sinDocumento = true, isLoading = false) }
             } else {
                 _uiState.update {
                     it.copy(isLoading = false, errorCargaRes = mensajeDeCarga(result.exceptionOrNull()))
@@ -99,14 +99,16 @@ class EditProfileViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(guardando = true, errorMessageRes = null) }
 
-            val result = usuarioRepository.actualizarPerfil(
-                nombre = nombre,
-                username = username,
-                bio = estado.bio.trim(),
-            )
+            val result = if (estado.sinDocumento) {
+                usuarioRepository.registrarUsuario(username = username, nombre = nombre, bio = estado.bio.trim())
+            } else {
+                usuarioRepository.actualizarPerfil(nombre = nombre, username = username, bio = estado.bio.trim())
+            }
 
             if (result.isSuccess) {
-                _uiState.update { it.copy(guardando = false, guardado = true, errorMessageRes = null) }
+                _uiState.update {
+                    it.copy(guardando = false, guardado = true, sinDocumento = false, errorMessageRes = null)
+                }
             } else {
                 _uiState.update {
                     it.copy(guardando = false, errorMessageRes = mensajeDeError(result.exceptionOrNull()))

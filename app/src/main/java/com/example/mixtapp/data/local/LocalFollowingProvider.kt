@@ -20,6 +20,7 @@ object LocalFollowingProvider {
         reviews = listOf(
             FollowingReviewUi(
                 id = "toxicity-liz",
+                authorId = "liz",
                 reviewerName = "Liz",
                 reviewerInitials = "Lz",
                 reviewedAt = "hace 18 min",
@@ -33,6 +34,7 @@ object LocalFollowingProvider {
             ),
             FollowingReviewUi(
                 id = "rush-jen",
+                authorId = "jen",
                 reviewerName = "Jen",
                 reviewerInitials = "J",
                 reviewedAt = "hace 40 min",
@@ -46,6 +48,7 @@ object LocalFollowingProvider {
             ),
             FollowingReviewUi(
                 id = "from-zero-jhon",
+                authorId = "jhon",
                 reviewerName = "Jhon",
                 reviewerInitials = "Jh",
                 reviewedAt = "hace 1 hora",

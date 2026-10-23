@@ -4,7 +4,6 @@ import android.util.Log
 import com.example.mixtapp.data.datasource.AlbumLocalDataSource
 import com.example.mixtapp.data.datasource.AuthRemoteDataSource
 import com.example.mixtapp.data.datasource.impl.firestore.AlbumFirestoreDataSourceImpl
-import com.example.mixtapp.data.datasource.impl.firestore.UsuarioFirestoreDataSourceImpl
 import com.example.mixtapp.data.dtos.toAlbum
 import com.example.mixtapp.data.dtos.toAlbumReviewItemUi
 import com.example.mixtapp.data.model.Album
@@ -21,13 +20,11 @@ import kotlin.math.roundToInt
 // Desde esta calificacion se cuenta que la resena recomienda el album
 private const val CALIFICACION_PARA_RECOMENDAR = 4
 
-// Para volver al backend de Express basta con cambiar las implementaciones a las de Retrofit.
-// Authentication dice quien es el usuario de la app y el data source de usuarios con que id lo
-// guarda la base; con eso se marca mi resena
+// Para volver al backend de Express basta con cambiar la implementacion a AlbumRetrofitDataSourceImpl.
+// Authentication dice quien es el usuario de la app: con eso se marca mi resena y mis likes
 class AlbumRepository @Inject constructor(
     private val albumLocalDataSource: AlbumLocalDataSource,
     private val albumRemoteDataSource: AlbumFirestoreDataSourceImpl,
-    private val usuarioRemoteDataSource: UsuarioFirestoreDataSourceImpl,
     private val authRemoteDataSource: AuthRemoteDataSource
 ) {
 
@@ -35,14 +32,14 @@ class AlbumRepository @Inject constructor(
     suspend fun getAlbumReviews(): Result<List<AlbumReviewsUi>> {
         return try {
             val albumes = albumRemoteDataSource.getAlbumes()
-            val usuarioActualId = idDeMiUsuario()
+            val usuarioActualId = authRemoteDataSource.currentUser?.uid ?: ""
 
             // Las resenas de todos los albumes se piden a la vez y se espera la mas lenta. Si una
             // falla, falla todo: un album sin sus resenas mostraria un promedio que no es
             val albumesConResenas = coroutineScope {
                 val pendientes = albumes.map { album ->
                     async {
-                        val reviews = albumRemoteDataSource.getReviewsDeAlbum(album.id)
+                        val reviews = albumRemoteDataSource.getReviewsDeAlbum(album.id, currentUserId = usuarioActualId)
                         conEstadisticas(
                             album = album.toAlbum(),
                             reviews = reviews.map { review ->
@@ -71,12 +68,12 @@ class AlbumRepository @Inject constructor(
     // El album con todas sus resenas; entre ellas va la mia si ya lo califique
     suspend fun getAlbumReviewsById(albumId: String): Result<AlbumReviewsUi> {
         return try {
-            val usuarioActualId = idDeMiUsuario()
+            val usuarioActualId = authRemoteDataSource.currentUser?.uid ?: ""
 
             // El album y sus resenas salen a la vez
             val albumReviews = coroutineScope {
                 val album = async { albumRemoteDataSource.getAlbumById(albumId) }
-                val reviews = async { albumRemoteDataSource.getReviewsDeAlbum(albumId) }
+                val reviews = async { albumRemoteDataSource.getReviewsDeAlbum(albumId, currentUserId = usuarioActualId) }
 
                 conEstadisticas(
                     album = album.await().toAlbum(),
@@ -110,11 +107,6 @@ class AlbumRepository @Inject constructor(
             Result.failure(ErrorDeDatosLocalesException())
         }
     }
-
-    // El id con el que la base guarda mis resenas. Con Firestore, sin sesion ninguna resena es mia;
-    // con Retrofit el usuario de la app siempre es el 1 del backend
-    private fun idDeMiUsuario(): String =
-        usuarioRemoteDataSource.idDelUsuarioEnLaBase(uid = authRemoteDataSource.currentUser?.uid ?: "")
 
     // El promedio, el total, el porcentaje que recomienda y mi calificacion salen de las resenas.
     // Es publica para que el ViewModel recalcule al quitar una resena, sin volver a pedir el album

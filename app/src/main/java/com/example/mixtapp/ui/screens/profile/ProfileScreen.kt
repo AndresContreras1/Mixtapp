@@ -30,7 +30,6 @@ import com.example.mixtapp.data.local.LocalAlbumProvider
 import com.example.mixtapp.data.local.LocalMyReviewsProvider
 import com.example.mixtapp.data.model.Album
 import com.example.mixtapp.data.model.MyReviewUi
-import com.example.mixtapp.data.model.UsuarioUi
 import com.example.mixtapp.ui.screens.profile.components.EditReviewCard
 import com.example.mixtapp.ui.screens.profile.components.FavoriteSection
 import com.example.mixtapp.ui.screens.profile.components.LogoutButton
@@ -40,8 +39,6 @@ import com.example.mixtapp.ui.screens.profile.components.ProfileHeader
 import com.example.mixtapp.ui.screens.profile.components.RatingsSection
 import com.example.mixtapp.ui.screens.profile.model.ProfileTabUi
 import com.example.mixtapp.ui.screens.profile.model.profileTabs
-import com.example.mixtapp.ui.screens.userprofile.TipoLista
-import com.example.mixtapp.ui.screens.userprofile.components.UserListDialog
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.ErrorMessage
 import com.example.mixtapp.ui.utils.MyReviewCard
@@ -53,7 +50,8 @@ fun ProfileScreen(
     onMoreClick: () -> Unit,
     logoutButtonPressed: () -> Unit,
     onReviewClick: (String) -> Unit,
-    onUserClick: (String) -> Unit,
+    onSeguidoresClick: (String) -> Unit,
+    onSeguidosClick: (String) -> Unit,
     onSeeAllReviewsClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -95,13 +93,10 @@ fun ProfileScreen(
             usuario = state.usuario,
             nombre = state.nombre,
             bio = state.bio,
-            seguidoresList = state.seguidoresList,
-            seguidosList = state.seguidosList,
-            tipoListaAbierta = state.tipoListaAbierta,
-            onSeguidoresClick = profileViewModel::abrirSeguidores,
-            onSeguidosClick = profileViewModel::abrirSeguidos,
-            onCerrarLista = profileViewModel::cerrarLista,
-            onUserClick = onUserClick,
+            seguidores = state.seguidores,
+            seguidos = state.seguidos,
+            onSeguidoresClick = { onSeguidoresClick(state.usuarioId) },
+            onSeguidosClick = { onSeguidosClick(state.usuarioId) },
             profileImageUrl = state.profileImageUrl,
             subiendoImagen = state.subiendoImagen,
             errorImagenRes = state.errorImagenRes,
@@ -140,13 +135,10 @@ fun ProfileScreenContent(
     usuario: String,
     nombre: String,
     bio: String,
-    seguidoresList: List<UsuarioUi> = emptyList(),
-    seguidosList: List<UsuarioUi> = emptyList(),
-    tipoListaAbierta: TipoLista? = null,
-    onSeguidoresClick: () -> Unit = {},
-    onSeguidosClick: () -> Unit = {},
-    onCerrarLista: () -> Unit = {},
-    onUserClick: (String) -> Unit = {},
+    seguidores: Int,
+    seguidos: Int,
+    onSeguidoresClick: () -> Unit,
+    onSeguidosClick: () -> Unit,
     profileImageUrl: String,
     subiendoImagen: Boolean,
     errorImagenRes: Int?,
@@ -203,8 +195,8 @@ fun ProfileScreenContent(
                     ProfileAvatarSection(
                         nombre = nombre,
                         bio = bio,
-                        seguidoresCount = seguidoresList.size,
-                        seguidosCount = seguidosList.size,
+                        seguidores = seguidores,
+                        seguidos = seguidos,
                         onSeguidoresClick = onSeguidoresClick,
                         onSeguidosClick = onSeguidosClick,
                         profileImageUrl = profileImageUrl,
@@ -277,18 +269,6 @@ fun ProfileScreenContent(
                 }
             }
         }
-
-        if (tipoListaAbierta != null) {
-            val titulo = if (tipoListaAbierta == TipoLista.SEGUIDORES) "Seguidores" else "Seguidos"
-            val lista = if (tipoListaAbierta == TipoLista.SEGUIDORES) seguidoresList else seguidosList
-
-            UserListDialog(
-                titulo = titulo,
-                usuarios = lista,
-                onUserClick = onUserClick,
-                onDismiss = onCerrarLista
-            )
-        }
     }
 }
 
@@ -303,6 +283,10 @@ fun ProfileScreenPreview() {
             usuario = "usuario",
             nombre = "Usuario de Mixtapp",
             bio = "Escucho rock y metal todo el dia",
+            seguidores = 12,
+            seguidos = 34,
+            onSeguidoresClick = {},
+            onSeguidosClick = {},
             profileImageUrl = "",
             subiendoImagen = false,
             errorImagenRes = null,

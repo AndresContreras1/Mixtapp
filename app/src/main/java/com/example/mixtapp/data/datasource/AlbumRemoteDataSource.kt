@@ -6,5 +6,7 @@ import com.example.mixtapp.data.dtos.ReviewConUsuarioDto
 interface AlbumRemoteDataSource {
     suspend fun getAlbumes(): List<AlbumDto>
     suspend fun getAlbumById(id: String): AlbumDto
-    suspend fun getReviewsDeAlbum(id: String): List<ReviewConUsuarioDto>
+    // Con el usuario de la app se sabe a cuales resenas ya les dio like. Es opcional para que
+    // Retrofit no tenga que usarlo
+    suspend fun getReviewsDeAlbum(id: String, currentUserId: String = ""): List<ReviewConUsuarioDto>
 }

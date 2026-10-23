@@ -18,7 +18,15 @@ class AlbumRetrofitDataSourceImpl @Inject constructor(
         return service.getAlbumById(id)
     }
 
-    override suspend fun getReviewsDeAlbum(id: String): List<ReviewConUsuarioDto> {
-        return service.getReviewsDeAlbum(id)
+    // El backend no tiene likes. En el backend el usuario de la app es el 1: sus resenas vuelven
+    // con el uid de la sesion para que el repositorio las reconozca como mias
+    override suspend fun getReviewsDeAlbum(id: String, currentUserId: String): List<ReviewConUsuarioDto> {
+        return service.getReviewsDeAlbum(id).map { review ->
+            if (currentUserId.isNotEmpty() && review.usuarioId == USUARIO_DE_LA_APP_EN_EL_BACKEND) {
+                review.copy(usuarioId = currentUserId)
+            } else {
+                review
+            }
+        }
     }
 }

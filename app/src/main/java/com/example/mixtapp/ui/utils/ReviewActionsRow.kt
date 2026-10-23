@@ -4,8 +4,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.outlined.ChatBubbleOutline
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -21,11 +20,15 @@ import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.theme.MixtappTheme
 
+// Like, comentarios y compartir de una resena. Sin onCommentsClick el icono de comentarios solo
+// acompana el total, como en la misma discusion
 @Composable
 fun ReviewActionsRow(
     likes: Int,
     isLiked: Boolean,
     onLikeClick: () -> Unit,
+    commentsLabel: String,
+    onCommentsClick: (() -> Unit)?,
     isShared: Boolean,
     onShareClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -34,33 +37,43 @@ fun ReviewActionsRow(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        IconButton(
-            onClick = onLikeClick,
-            modifier = Modifier.size(16.dp),
-        ) {
+        LikeButton(
+            likes = likes,
+            isLiked = isLiked,
+            onLikeClick = onLikeClick,
+            contentDescriptionRes = R.string.like_review,
+        )
+
+        if (onCommentsClick == null) {
             Icon(
-                imageVector = if (isLiked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-                contentDescription = stringResource(R.string.like_review),
-                tint = if (isLiked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.55f),
-                modifier = Modifier.size(16.dp),
+                imageVector = Icons.Outlined.ChatBubbleOutline,
+                contentDescription = stringResource(R.string.comments),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(18.dp),
             )
+        } else {
+            IconButton(onClick = onCommentsClick) {
+                Icon(
+                    imageVector = Icons.Outlined.ChatBubbleOutline,
+                    contentDescription = stringResource(R.string.open_discussion),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(18.dp),
+                )
+            }
         }
         Text(
-            text = likes.toString(),
-            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.55f),
+            text = commentsLabel,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontSize = 12.sp,
         )
 
         Spacer(modifier = Modifier.weight(1f))
 
-        IconButton(
-            onClick = onShareClick,
-            modifier = Modifier.size(18.dp),
-        ) {
+        IconButton(onClick = onShareClick) {
             Icon(
                 imageVector = Icons.Outlined.Share,
                 contentDescription = stringResource(R.string.share_review),
-                tint = if (isShared) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                tint = if (isShared) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(18.dp),
             )
         }
@@ -76,6 +89,8 @@ fun ReviewActionsRowPreview() {
             likes = 24,
             isLiked = false,
             onLikeClick = {},
+            commentsLabel = stringResource(R.string.comments_count, 4),
+            onCommentsClick = {},
             isShared = false,
             onShareClick = {}
         )

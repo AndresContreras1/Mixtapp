@@ -30,4 +30,9 @@ sealed class Screen(val route: String) {
     data object UserProfile : Screen(route = "userProfile/{userId}") {
         fun createRoute(userId: String) = "userProfile/$userId"
     }
+
+    // Los seguidores o los seguidos de un usuario: el tipo dice cual de las dos listas
+    data object FollowList : Screen(route = "followList/{userId}/{tipo}") {
+        fun createRoute(userId: String, tipo: String) = "followList/$userId/$tipo"
+    }
 }

@@ -3,6 +3,7 @@ package com.example.mixtapp.ui.screens.following
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,16 +26,26 @@ import com.example.mixtapp.ui.theme.MixtappTheme
 @Composable
 fun FollowingScreen(
     followingViewModel: FollowingViewModel,
+    onAuthorClick: (String) -> Unit,
+    onAlbumClick: (String) -> Unit,
+    onCommentsClick: (String) -> Unit,
+    onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val state by followingViewModel.uiState.collectAsState()
 
-    if (state.following == null) {
-        Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text(text = stringResource(state.errorMessageRes ?: R.string.resenas_no_encontradas))
+    when {
+        state.isLoading -> {
+            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
         }
-    } else {
-        FollowingScreenContent(
+        state.following == null -> {
+            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(text = stringResource(state.errorMessageRes ?: R.string.resenas_no_encontradas))
+            }
+        }
+        else -> FollowingScreenContent(
             following = state.following!!,
             reviews = state.reviews,
             friendQuery = state.friendQuery,
@@ -45,8 +56,12 @@ fun FollowingScreen(
             onFriendQueryChange = { followingViewModel.updateFriendQuery(friendQuery = it) },
             onFilterSelected = { followingViewModel.updateSelectedFilter(filtroId = it) },
             onStoryClick = { followingViewModel.updateSelectedStory(storyId = it) },
-            onLikeClick = { followingViewModel.darQuitarLike(reviewId = it) },
+            onLikeClick = { followingViewModel.sendOrDeleteLike(reviewId = it) },
             onShareClick = { followingViewModel.compartirQuitar(reviewId = it) },
+            onAuthorClick = onAuthorClick,
+            onAlbumClick = onAlbumClick,
+            onCommentsClick = onCommentsClick,
+            onBackClick = onBackClick,
             modifier = modifier,
         )
     }
@@ -66,6 +81,10 @@ fun FollowingScreenContent(
     onStoryClick: (String) -> Unit,
     onLikeClick: (String) -> Unit,
     onShareClick: (String) -> Unit,
+    onAuthorClick: (String) -> Unit,
+    onAlbumClick: (String) -> Unit,
+    onCommentsClick: (String) -> Unit,
+    onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -88,6 +107,10 @@ fun FollowingScreenContent(
             onStoryClick = onStoryClick,
             onLikeClick = onLikeClick,
             onShareClick = onShareClick,
+            onAuthorClick = onAuthorClick,
+            onAlbumClick = onAlbumClick,
+            onCommentsClick = onCommentsClick,
+            onBackClick = onBackClick,
             modifier = Modifier.fillMaxSize(),
         )
     }
@@ -112,6 +135,10 @@ fun FollowingScreenPreview() {
             onStoryClick = {},
             onLikeClick = {},
             onShareClick = {},
+            onAuthorClick = {},
+            onAlbumClick = {},
+            onCommentsClick = {},
+            onBackClick = {},
         )
     }
 }

@@ -102,26 +102,39 @@ class AlbumDetailViewModel @Inject constructor(
         }
     }
 
-    fun darQuitarLike(reviewId: String) {
-        val estado = _uiState.value
-        val review = estado.albumReviews?.reviews?.find { it.id == reviewId } ?: return
-        if (reviewId in estado.likesPendientes) return
-        val darLike = !review.isLiked
-        _uiState.update { it.copy(likesPendientes = it.likesPendientes + reviewId, errorMessageRes = null) }
+    // Si el like sale bien se invierte el corazon y el contador sube o baja, sin volver a
+    // pedir el album
+    fun sendOrDeleteLike(reviewId: String) {
         viewModelScope.launch {
-            val result = reviewRepository.actualizarLike(reviewId, darLike)
-            _uiState.update { actual ->
-                actual.copy(
-                    likesPendientes = actual.likesPendientes - reviewId,
-                    albumReviews = actual.albumReviews?.copy(reviews = actual.albumReviews.reviews.map {
-                        if (it.id == reviewId && result.isSuccess) {
-                            it.copy(likes = result.getOrThrow(), isLiked = darLike)
-                        } else it
-                    }),
-                    errorMessageRes = if (result.isFailure) mensajeDeError(
-                        result.exceptionOrNull(), R.string.error_actualizar_like
-                    ) else null,
-                )
+            val result = reviewRepository.sendOrDeleteLike(reviewId = reviewId)
+
+            if (result.isSuccess) {
+                _uiState.update {
+                    it.copy(
+                        albumReviews = it.albumReviews?.copy(
+                            reviews = it.albumReviews.reviews.map { review ->
+                                if (review.id == reviewId) {
+                                    review.copy(
+                                        isLiked = !review.isLiked,
+                                        likes = if (review.isLiked) review.likes - 1 else review.likes + 1,
+                                    )
+                                } else {
+                                    review
+                                }
+                            }
+                        ),
+                        errorMessageRes = null,
+                    )
+                }
+            } else {
+                _uiState.update {
+                    it.copy(
+                        errorMessageRes = mensajeDeError(
+                            error = result.exceptionOrNull(),
+                            generico = R.string.error_actualizar_like,
+                        )
+                    )
+                }
             }
         }
     }

@@ -1,8 +1,8 @@
 package com.example.mixtapp.ui.screens.userprofile.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,12 +31,9 @@ import com.example.mixtapp.ui.utils.ProfileAsyncImage
 @Composable
 fun UserProfileHeader(
     usuario: UsuarioUi,
-    seguidoresCount: Int,
-    seguidosCount: Int,
     onSeguidoresClick: () -> Unit,
     onSeguidosClick: () -> Unit,
-    cambiandoSeguimiento: Boolean = false,
-    onFollowClick: () -> Unit = {},
+    onFollowClick: () -> Unit,
     reviewsCount: Int,
     // Mientras llegan las resenas no se muestra el total
     cargandoResenas: Boolean,
@@ -90,34 +86,27 @@ fun UserProfileHeader(
             horizontalArrangement = Arrangement.spacedBy(24.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            TextButton(
-                onClick = onSeguidoresClick,
-                contentPadding = PaddingValues(0.dp)
-            ) {
-                Text(
-                    text = "${seguidoresCount} seguidores",
-                    color = MaterialTheme.colorScheme.onBackground,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-            TextButton(
-                onClick = onSeguidosClick,
-                contentPadding = PaddingValues(0.dp)
-            ) {
-                Text(
-                    text = "${seguidosCount} seguidos",
-                    color = MaterialTheme.colorScheme.onBackground,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
+            // Tocar un contador abre esa lista
+            Text(
+                text = stringResource(R.string.cantidad_seguidores, usuario.seguidores),
+                color = MaterialTheme.colorScheme.onBackground,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.clickable { onSeguidoresClick() }
+            )
+            Text(
+                text = stringResource(R.string.cantidad_seguidos, usuario.seguidos),
+                color = MaterialTheme.colorScheme.onBackground,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.clickable { onSeguidosClick() }
+            )
         }
 
         Spacer(modifier = Modifier.height(8.dp))
 
         if (!usuario.esMiPerfil) {
-            Button(onClick = onFollowClick, enabled = !cambiandoSeguimiento) {
+            Button(onClick = onFollowClick) {
                 Text(text = stringResource(if (usuario.siguiendo) R.string.dejar_de_seguir else R.string.seguir_usuario))
             }
         }
@@ -145,10 +134,9 @@ fun UserProfileHeaderPreview() {
     MixtappTheme(darkTheme = true) {
         UserProfileHeader(
             usuario = LocalUsuarioProvider.usuario,
-            seguidoresCount = 12,
-            seguidosCount = 34,
             onSeguidoresClick = {},
             onSeguidosClick = {},
+            onFollowClick = {},
             reviewsCount = 3,
             cargandoResenas = false,
             onBackClick = {},

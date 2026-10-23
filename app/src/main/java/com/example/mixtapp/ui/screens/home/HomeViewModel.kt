@@ -44,12 +44,11 @@ class HomeViewModel @Inject constructor(
 
             // Cada album llega con sus resenas, y las mias ya vienen marcadas
             val result = albumRepository.getAlbumReviews()
-            val followedResult = usuarioRepository.getUsuariosSeguidos()
+            val followedResult = usuarioRepository.getMisSeguidos()
 
-            if (result.isSuccess) {
+            if (result.isSuccess && followedResult.isSuccess) {
                 val todos = result.getOrNull() ?: emptyList()
-                val followedUsers = if (followedResult.isSuccess) followedResult.getOrNull() ?: emptyList() else emptyList()
-                val followedIds = followedUsers.map { it.id }.toSet()
+                val followedIds = (followedResult.getOrNull() ?: emptyList()).map { it.id }.toSet()
 
                 _uiState.update {
                     it.copy(
@@ -69,7 +68,7 @@ class HomeViewModel @Inject constructor(
                     it.copy(
                         isLoading = false,
                         errorMessageRes = mensajeDeError(
-                            error = result.exceptionOrNull(),
+                            error = result.exceptionOrNull() ?: followedResult.exceptionOrNull(),
                             generico = R.string.error_cargar_contenido,
                         )
                     )

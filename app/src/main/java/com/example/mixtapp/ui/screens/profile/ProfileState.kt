@@ -3,9 +3,7 @@ package com.example.mixtapp.ui.screens.profile
 import androidx.annotation.StringRes
 import com.example.mixtapp.data.model.Album
 import com.example.mixtapp.data.model.MyReviewUi
-import com.example.mixtapp.data.model.UsuarioUi
 import com.example.mixtapp.ui.screens.profile.model.ProfileTabUi
-import com.example.mixtapp.ui.screens.userprofile.TipoLista
 
 data class ProfileState(
     val misResenas: List<MyReviewUi> = emptyList(),
@@ -17,14 +15,14 @@ data class ProfileState(
     // Las pestanas las provee el ViewModel; el componente solo las pinta
     val tabs: List<ProfileTabUi> = emptyList(),
     val selectedTabId: String = "",
+    // Mi uid, para abrir mis listas de seguidores y seguidos
+    val usuarioId: String = "",
     // Mis datos guardados en Firestore; sin ellos, el usuario sale del correo sin la arroba
     val usuario: String = "",
     val nombre: String = "",
     val bio: String = "",
     val seguidores: Int = 0,
-    val seguidoresList: List<UsuarioUi> = emptyList(),
-    val seguidosList: List<UsuarioUi> = emptyList(),
-    val tipoListaAbierta: TipoLista? = null,
+    val seguidos: Int = 0,
     // Aviso para quien todavia no tiene sus datos en Firestore; no es un error de carga
     @StringRes val avisoPerfilRes: Int? = null,
     val profileImageUrl: String = "",

@@ -49,8 +49,7 @@ fun AlbumDetailScreen(
         else -> AlbumDetailScreenContent(
             albumReviews = state.albumReviews!!,
             miResenaId = state.miResenaId,
-            likesPendientes = state.likesPendientes,
-            onLikeClick = albumDetailViewModel::darQuitarLike,
+            onLikeClick = { albumDetailViewModel.sendOrDeleteLike(reviewId = it) },
             errorMessageRes = state.errorMessageRes,
             onWriteReviewClick = onWriteReviewClick,
             onDeleteMyReviewClick = { albumDetailViewModel.eliminarMiResena() },
@@ -65,8 +64,7 @@ fun AlbumDetailScreen(
 fun AlbumDetailScreenContent(
     albumReviews: AlbumReviewsUi,
     miResenaId: String?,
-    likesPendientes: Set<String> = emptySet(),
-    onLikeClick: (String) -> Unit = {},
+    onLikeClick: (String) -> Unit,
     errorMessageRes: Int?,
     onWriteReviewClick: () -> Unit,
     onDeleteMyReviewClick: () -> Unit,
@@ -80,7 +78,6 @@ fun AlbumDetailScreenContent(
         AlbumDetailSections(
             albumReviews = albumReviews,
             miResenaId = miResenaId,
-            likesPendientes = likesPendientes,
             onLikeClick = onLikeClick,
             errorMessageRes = errorMessageRes,
             onWriteReviewClick = onWriteReviewClick,
@@ -101,6 +98,7 @@ fun AlbumDetailScreenPreview() {
         AlbumDetailScreenContent(
             albumReviews = albumReviews,
             miResenaId = null,
+            onLikeClick = {},
             errorMessageRes = null,
             onWriteReviewClick = {},
             onDeleteMyReviewClick = {},

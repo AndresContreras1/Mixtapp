@@ -12,6 +12,10 @@ import com.example.mixtapp.ui.screens.discussion.DiscussionScreen
 import com.example.mixtapp.ui.screens.discussion.DiscussionViewModel
 import com.example.mixtapp.ui.screens.editprofile.EditProfileScreen
 import com.example.mixtapp.ui.screens.editprofile.EditProfileViewModel
+import com.example.mixtapp.ui.screens.followlist.FollowListScreen
+import com.example.mixtapp.ui.screens.followlist.FollowListViewModel
+import com.example.mixtapp.ui.screens.followlist.LISTA_SEGUIDORES
+import com.example.mixtapp.ui.screens.followlist.LISTA_SEGUIDOS
 import com.example.mixtapp.ui.screens.following.FollowingScreen
 import com.example.mixtapp.ui.screens.following.FollowingViewModel
 import com.example.mixtapp.ui.screens.home.HomeScreen
@@ -56,6 +60,10 @@ private fun NavHostController.abrirPerfil(userId: String) {
 
 private fun NavHostController.abrirEscribirResena(albumId: String) {
     navigate(Screen.WriteReview.createRoute(albumId = albumId))
+}
+
+private fun NavHostController.abrirLista(userId: String, tipo: String) {
+    navigate(Screen.FollowList.createRoute(userId = userId, tipo = tipo))
 }
 
 @Composable
@@ -198,8 +206,11 @@ fun AppNavigation(
                 onReviewClick = { albumId ->
                     navController.abrirAlbum(albumId = albumId)
                 },
-                onUserClick = { userId ->
-                    navController.abrirPerfil(userId = userId)
+                onSeguidoresClick = { userId ->
+                    navController.abrirLista(userId = userId, tipo = LISTA_SEGUIDORES)
+                },
+                onSeguidosClick = { userId ->
+                    navController.abrirLista(userId = userId, tipo = LISTA_SEGUIDOS)
                 },
                 onSeeAllReviewsClick = { navController.navigate(Screen.MyReviews.route) }
             )
@@ -250,6 +261,32 @@ fun AppNavigation(
                 onReviewClick = { albumId ->
                     navController.abrirAlbum(albumId = albumId)
                 },
+                onSeguidoresClick = { otherUserId ->
+                    navController.abrirLista(userId = otherUserId, tipo = LISTA_SEGUIDORES)
+                },
+                onSeguidosClick = { otherUserId ->
+                    navController.abrirLista(userId = otherUserId, tipo = LISTA_SEGUIDOS)
+                },
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable(
+            route = Screen.FollowList.route,
+            arguments = listOf(
+                navArgument(name = "userId") { type = NavType.StringType },
+                navArgument(name = "tipo") { type = NavType.StringType }
+            )
+        ) {
+            // Solo se obtienen el id y el tipo; buscar la lista es tarea del ViewModel
+            val userId = it.arguments?.getString("userId") ?: ""
+            val tipo = it.arguments?.getString("tipo") ?: LISTA_SEGUIDORES
+            val followListViewModel: FollowListViewModel = hiltViewModel()
+
+            FollowListScreen(
+                userId = userId,
+                tipo = tipo,
+                followListViewModel = followListViewModel,
                 onUserClick = { otherUserId ->
                     navController.abrirPerfil(userId = otherUserId)
                 },
@@ -261,7 +298,17 @@ fun AppNavigation(
             val followingViewModel: FollowingViewModel = hiltViewModel()
 
             FollowingScreen(
-                followingViewModel = followingViewModel
+                followingViewModel = followingViewModel,
+                onAuthorClick = { userId ->
+                    navController.abrirPerfil(userId = userId)
+                },
+                onAlbumClick = { albumId ->
+                    navController.abrirAlbum(albumId = albumId)
+                },
+                onCommentsClick = { reviewId ->
+                    navController.navigate(Screen.Discussion.createRoute(reviewId = reviewId))
+                },
+                onBackClick = { navController.popBackStack() }
             )
         }
 

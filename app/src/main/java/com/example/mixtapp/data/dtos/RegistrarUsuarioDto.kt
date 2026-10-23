@@ -8,3 +8,10 @@ data class RegistrarUsuarioDto(
     val bio: String?,
     val fotoUrl: String?,
 )
+
+// Lo que se puede cambiar en Editar perfil; los contadores y la foto no se tocan
+data class ActualizarUsuarioDto(
+    val nombre: String,
+    val username: String,
+    val bio: String?,
+)

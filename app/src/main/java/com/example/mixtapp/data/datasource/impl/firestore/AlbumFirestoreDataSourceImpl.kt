@@ -29,12 +29,20 @@ class AlbumFirestoreDataSourceImpl @Inject constructor(
         return album?.copy(id = respuesta.id) ?: throw NoSuchElementException("No existe el album $id")
     }
 
-    override suspend fun getReviewsDeAlbum(id: String): List<ReviewConUsuarioDto> {
+    override suspend fun getReviewsDeAlbum(id: String, currentUserId: String): List<ReviewConUsuarioDto> {
         val snapshot = db.collection("reviews").whereEqualTo("albumId", id).get().await()
 
         return snapshot.documents.map { doc ->
-            val review = doc.toObject(ReviewConUsuarioDto::class.java)
-            review?.copy(id = doc.id) ?: throw Exception("Review not found")
+            val review = doc.toObject(ReviewConUsuarioDto::class.java)?.copy(id = doc.id)
+                ?: throw Exception("Review not found")
+
+            // Si en la subcoleccion likes hay un documento con mi uid, ya le di like
+            if (currentUserId.isNotEmpty()) {
+                val likeSnapshot = doc.reference.collection("likes").document(currentUserId).get().await()
+                review.liked = likeSnapshot.exists()
+            }
+
+            review
         }
     }
 }

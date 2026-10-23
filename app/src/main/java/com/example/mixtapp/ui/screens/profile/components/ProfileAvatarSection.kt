@@ -3,9 +3,9 @@ package com.example.mixtapp.ui.screens.profile.components
 import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,10 +35,10 @@ import com.example.mixtapp.ui.utils.ProfileAsyncImage
 fun ProfileAvatarSection(
     nombre: String,
     bio: String,
-    seguidoresCount: Int = 0,
-    seguidosCount: Int = 0,
-    onSeguidoresClick: () -> Unit = {},
-    onSeguidosClick: () -> Unit = {},
+    seguidores: Int,
+    seguidos: Int,
+    onSeguidoresClick: () -> Unit,
+    onSeguidosClick: () -> Unit,
     profileImageUrl: String,
     subiendoImagen: Boolean,
     errorImagenRes: Int?,
@@ -95,28 +94,21 @@ fun ProfileAvatarSection(
             horizontalArrangement = Arrangement.spacedBy(24.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            TextButton(
-                onClick = onSeguidoresClick,
-                contentPadding = PaddingValues(0.dp)
-            ) {
-                Text(
-                    text = "${seguidoresCount} seguidores",
-                    color = MaterialTheme.colorScheme.onSurface,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-            TextButton(
-                onClick = onSeguidosClick,
-                contentPadding = PaddingValues(0.dp)
-            ) {
-                Text(
-                    text = "${seguidosCount} seguidos",
-                    color = MaterialTheme.colorScheme.onSurface,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
+            // Tocar un contador abre esa lista
+            Text(
+                text = stringResource(R.string.cantidad_seguidores, seguidores),
+                color = MaterialTheme.colorScheme.onSurface,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.clickable { onSeguidoresClick() }
+            )
+            Text(
+                text = stringResource(R.string.cantidad_seguidos, seguidos),
+                color = MaterialTheme.colorScheme.onSurface,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.clickable { onSeguidosClick() }
+            )
         }
 
         val resenas = if (reviewsCount == 1) {
@@ -145,8 +137,8 @@ fun ProfileAvatarSectionPreview() {
         ProfileAvatarSection(
             nombre = LocalUsuarioProvider.usuario.nombre,
             bio = LocalUsuarioProvider.usuario.bio,
-            seguidoresCount = 12,
-            seguidosCount = 34,
+            seguidores = 12,
+            seguidos = 34,
             onSeguidoresClick = {},
             onSeguidosClick = {},
             profileImageUrl = "",

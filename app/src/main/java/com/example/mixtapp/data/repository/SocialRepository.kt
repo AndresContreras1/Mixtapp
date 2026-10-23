@@ -2,162 +2,97 @@ package com.example.mixtapp.data.repository
 
 import android.util.Log
 import com.example.mixtapp.data.datasource.AuthRemoteDataSource
+import com.example.mixtapp.data.datasource.ReviewLocalDataSource
 import com.example.mixtapp.data.datasource.SocialLocalDataSource
 import com.example.mixtapp.data.datasource.impl.firestore.UsuarioFirestoreDataSourceImpl
-import com.example.mixtapp.data.dtos.AlbumDeResenaDto
-import com.example.mixtapp.data.dtos.toAlbum
-import com.example.mixtapp.data.model.FollowingReviewUi
+import com.example.mixtapp.data.dtos.toFollowingReviewUi
 import com.example.mixtapp.data.model.FollowingStoryUi
 import com.example.mixtapp.data.model.FollowingUi
 import com.example.mixtapp.data.model.NotificationUi
+import com.google.firebase.firestore.FirebaseFirestoreException
 import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import retrofit2.HttpException
 import javax.inject.Inject
 
+// La pestana Seguidos sale de la base remota; las notificaciones de la pantalla siguen locales
 class SocialRepository @Inject constructor(
     private val socialLocalDataSource: SocialLocalDataSource,
-    private val usuarioRepository: UsuarioRepository,
-    private val authRemoteDataSource: AuthRemoteDataSource,
+    private val reviewLocalDataSource: ReviewLocalDataSource,
     private val usuarioRemoteDataSource: UsuarioFirestoreDataSourceImpl,
-    private val reviewRepository: ReviewRepository
+    private val authRemoteDataSource: AuthRemoteDataSource
 ) {
 
-    /**
-     * Obtiene los datos de la pestaña Seguidos, combinando las reseñas obtenidas de los usuarios
-     * a los que sigue el usuario actual en Firebase con las historias (burbujas superiores).
-     */
+    // Las resenas de los usuarios que sigo, la mas reciente primero, con mis contadores. Si falla
+    // una consulta falla todo: una lista a medias mostraria que alguien no ha escrito nada
     suspend fun getFollowing(): Result<FollowingUi> {
         return try {
-            val currentUserId = authRemoteDataSource.currentUser?.uid
-            val localFollowing = socialLocalDataSource.getFollowing()
-            val usersResult = usuarioRepository.getUsuariosSeguidos()
+            val usuarioId = authRemoteDataSource.currentUser?.uid
+                ?: return Result.failure(SinSesionException())
 
-            val followedUsers = if (usersResult.isSuccess) {
-                usersResult.getOrNull() ?: emptyList()
-            } else {
-                emptyList()
-            }
+            val following = coroutineScope {
+                // Mis contadores y los usuarios que sigo salen a la vez
+                val perfil = async { usuarioRemoteDataSource.getUsuarioById(usuarioId).toUsuarioUi() }
+                val usuarios = async { usuarioRemoteDataSource.getSeguidos(usuarioId).map { it.toUsuarioUi() } }
+                val miPerfil = perfil.await()
+                val seguidos = usuarios.await()
 
-            val stories = listOf(
-                FollowingStoryUi(id = "log", label = "", initials = "+", isAddAction = true, fotoUrl = null)
-            ) + followedUsers.map { user ->
-                FollowingStoryUi(
-                    id = user.id,
-                    label = user.nombre.ifEmpty { user.username },
-                    initials = user.nombre.take(2).uppercase().ifEmpty { user.username.take(2).uppercase() },
-                    isAddAction = false,
-                    fotoUrl = user.fotoUrl
+                // Las resenas de cada usuario que sigo tambien se piden a la vez, con mis likes
+                val pendientes = seguidos.map { usuario ->
+                    async { usuarioRemoteDataSource.getReviewsDeUsuario(usuario.id, currentUserId = usuarioId) }
+                }
+
+                val reviews = pendientes.map { it.await() }.flatten()
+                    .map { dto ->
+                        dto.toFollowingReviewUi(comentarios = reviewLocalDataSource.getComentarios(reviewId = dto.id).size)
+                    }
+                    // La fecha va como AAAA-MM-DD, asi que ordenar el texto ordena las fechas
+                    .sortedByDescending { it.reviewedAt }
+
+                val stories = listOf(
+                    FollowingStoryUi(id = "log", label = "", initials = "+", isAddAction = true, fotoUrl = null)
+                ) + seguidos.map { usuario ->
+                    val nombre = usuario.nombre.ifEmpty { usuario.username }
+
+                    FollowingStoryUi(
+                        id = usuario.id,
+                        label = nombre,
+                        initials = nombre.take(2).uppercase(),
+                        isAddAction = false,
+                        fotoUrl = usuario.fotoUrl,
+                    )
+                }
+
+                FollowingUi(
+                    id = usuarioId,
+                    followingCount = miPerfil.seguidos,
+                    followersCount = miPerfil.seguidores,
+                    stories = stories,
+                    reviews = reviews,
                 )
             }
 
-            val reviews = coroutineScope {
-                followedUsers.map { user ->
-                    async {
-                        try {
-                            val reviewDtos = usuarioRemoteDataSource.getReviewsDeUsuario(user.id)
-                            reviewDtos.map { dto ->
-                                FollowingReviewUi(
-                                    id = dto.id,
-                                    reviewerName = user.nombre.ifEmpty { user.username },
-                                    reviewerInitials = user.nombre.take(2).uppercase().ifEmpty { user.username.take(2).uppercase() },
-                                    reviewedAt = dto.fechaEscucha ?: dto.createdAt ?: "",
-                                    album = (dto.album ?: AlbumDeResenaDto()).toAlbum(albumId = dto.albumId),
-                                    rating = dto.calificacion,
-                                    reviewText = dto.comentario ?: "",
-                                    likes = dto.likesDeUsuarios.distinct().size,
-                                    comments = 0,
-                                    isLiked = currentUserId != null && currentUserId in dto.likesDeUsuarios,
-                                    isShared = false,
-                                )
-                            }
-                        } catch (e: Exception) {
-                            Log.d("SocialRepository", "getReviewsDeUsuario: ${e.message}")
-                            emptyList()
-                        }
-                    }
-                }.awaitAll().flatten().sortedByDescending { it.reviewedAt }
-            }
-
-            val following = localFollowing.copy(
-                followingCount = followedUsers.size,
-                stories = stories,
-                reviews = reviews,
-            )
-
             Result.success(following)
+        } catch (e: HttpException) {
+            Log.d("SocialRepository", "getFollowing: ${e.message}")
+            Result.failure(errorDelBackend(e))
+        } catch (e: FirebaseFirestoreException) {
+            Log.d("SocialRepository", "getFollowing: ${e.message}")
+            Result.failure(errorDeFirestore(e))
+        } catch (e: NoSuchElementException) {
+            Log.d("SocialRepository", "getFollowing: ${e.message}")
+            Result.failure(ContenidoNoEncontradoException())
         } catch (e: Exception) {
             Log.d("SocialRepository", "getFollowing: ${e.message}")
-            Result.failure(ErrorDeDatosLocalesException())
+            Result.failure(ErrorInesperadoException())
         }
     }
 
-    /**
-     * Obtiene la lista de notificaciones sociales.
-     */
     suspend fun getNotifications(): Result<List<NotificationUi>> {
         return try {
             Result.success(socialLocalDataSource.getNotifications())
         } catch (e: Exception) {
             Log.d("SocialRepository", "getNotifications: ${e.message}")
-            Result.failure(ErrorDeDatosLocalesException())
-        }
-    }
-
-    /**
-     * Da o quita un "me gusta" a una reseña en la sección de seguidos.
-     */
-    suspend fun darQuitarLikeFollowingReview(reviewId: String): Result<FollowingUi> {
-        return try {
-            val followingResult = getFollowing()
-            val following = followingResult.getOrNull() ?: return followingResult
-            val review = following.reviews.find { it.id == reviewId }
-                ?: return Result.failure(ContenidoNoEncontradoException())
-
-            val darLike = !review.isLiked
-            val likeResult = reviewRepository.actualizarLike(reviewId, darLike)
-
-            if (likeResult.isSuccess) {
-                getFollowing()
-            } else {
-                Result.failure(likeResult.exceptionOrNull() ?: ErrorInesperadoException())
-            }
-        } catch (e: Exception) {
-            Log.d("SocialRepository", "darQuitarLikeFollowingReview: ${e.message}")
-            Result.failure(ErrorDeDatosLocalesException())
-        }
-    }
-
-    /**
-     * Marca o desmarca una reseña como compartida en la sección de seguidos.
-     */
-    suspend fun compartirQuitarFollowingReview(reviewId: String): Result<FollowingUi> =
-        actualizarFollowingReview(reviewId = reviewId) { it.copy(isShared = !it.isShared) }
-
-    /**
-     * Función auxiliar para actualizar el estado de una reseña de seguidos específica.
-     */
-    private suspend fun actualizarFollowingReview(
-        reviewId: String,
-        cambio: (FollowingReviewUi) -> FollowingReviewUi,
-    ): Result<FollowingUi> {
-        return try {
-            val followingResult = getFollowing()
-            val following = followingResult.getOrNull() ?: return followingResult
-
-            if (following.reviews.none { it.id == reviewId }) {
-                return Result.failure(ContenidoNoEncontradoException())
-            }
-
-            val actualizado = following.copy(
-                reviews = following.reviews.map { review ->
-                    if (review.id == reviewId) cambio(review) else review
-                }
-            )
-
-            Result.success(actualizado)
-        } catch (e: Exception) {
-            Log.d("SocialRepository", "actualizarFollowingReview: ${e.message}")
             Result.failure(ErrorDeDatosLocalesException())
         }
     }

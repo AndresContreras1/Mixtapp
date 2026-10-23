@@ -21,6 +21,7 @@ import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalFollowingProvider
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.theme.displayFontFamily
+import com.example.mixtapp.ui.utils.BackButton
 
 @Composable
 fun FollowingHeader(
@@ -28,12 +29,15 @@ fun FollowingHeader(
     followersCount: Int,
     friendQuery: String,
     onFriendQueryChange: (String) -> Unit,
+    onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier.fillMaxWidth()
     ) {
-        Spacer(modifier = Modifier.height(49.dp))
+        BackButton(onBackClick = onBackClick)
+
+        Spacer(modifier = Modifier.height(19.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -82,6 +86,7 @@ fun FollowingHeaderPreview() {
             followersCount = LocalFollowingProvider.following.followersCount,
             friendQuery = "",
             onFriendQueryChange = {},
+            onBackClick = {},
         )
     }
 }

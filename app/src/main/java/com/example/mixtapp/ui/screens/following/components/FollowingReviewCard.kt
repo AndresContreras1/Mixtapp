@@ -2,6 +2,7 @@ package com.example.mixtapp.ui.screens.following.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -13,10 +14,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalFollowingProvider
 import com.example.mixtapp.data.model.FollowingReviewUi
 import com.example.mixtapp.ui.theme.MixtappTheme
@@ -29,9 +32,14 @@ fun FollowingReviewCard(
     review: FollowingReviewUi,
     onLikeClick: () -> Unit,
     onShareClick: () -> Unit,
+    onAuthorClick: () -> Unit,
+    // Tocar la tarjeta abre el album resenado
+    onAlbumClick: () -> Unit,
+    onCommentsClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Card(
+        onClick = onAlbumClick,
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
@@ -56,6 +64,7 @@ fun FollowingReviewCard(
                 avatarTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
                 nameFontSize = 15.sp,
                 dateFontSize = 12.sp,
+                modifier = Modifier.clickable { onAuthorClick() },
             )
 
             ReviewAlbumRow(
@@ -89,6 +98,12 @@ fun FollowingReviewCard(
                 likes = review.likes,
                 isLiked = review.isLiked,
                 onLikeClick = onLikeClick,
+                commentsLabel = if (review.comments == 1) {
+                    stringResource(R.string.un_comentario)
+                } else {
+                    stringResource(R.string.comments_count, review.comments)
+                },
+                onCommentsClick = onCommentsClick,
                 isShared = review.isShared,
                 onShareClick = onShareClick,
                 modifier = Modifier.padding(top = 10.dp),
@@ -105,6 +120,9 @@ fun FollowingReviewCardPreview() {
             review = LocalFollowingProvider.following.reviews.first(),
             onLikeClick = {},
             onShareClick = {},
+            onAuthorClick = {},
+            onAlbumClick = {},
+            onCommentsClick = {},
         )
     }
 }
