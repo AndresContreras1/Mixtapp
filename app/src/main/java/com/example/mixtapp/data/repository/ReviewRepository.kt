@@ -29,6 +29,22 @@ class ReviewRepository @Inject constructor(
     private val authRemoteDataSource: AuthRemoteDataSource
 ) {
 
+    suspend fun actualizarLike(reviewId: String, darLike: Boolean): Result<Int> {
+        return try {
+            val usuarioId = authRemoteDataSource.currentUser?.uid
+                ?: return Result.failure(SinSesionException())
+            val likes = reviewRemoteDataSource.actualizarLike(reviewId, usuarioId, darLike)
+            Result.success(likes.size)
+        } catch (e: FirebaseFirestoreException) {
+            Log.d("ReviewRepository", "actualizarLike: ${e.message}")
+            Result.failure(errorDeFirestore(e))
+        } catch (e: NoSuchElementException) {
+            Result.failure(ContenidoNoEncontradoException())
+        } catch (e: Exception) {
+            Result.failure(ErrorInesperadoException())
+        }
+    }
+
     suspend fun getMyReviews(): Result<List<MyReviewUi>> {
         return try {
             val usuarioId = authRemoteDataSource.currentUser?.uid

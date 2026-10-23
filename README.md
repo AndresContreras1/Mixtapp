@@ -43,6 +43,8 @@ proyecto semestral de Computación Móvil de la Pontificia Universidad Javeriana
 | Inicio con todos los álbumes, la tendencia y la actividad de otros usuarios | Funcionando, Firestore |
 | Detalle del álbum con promedio, total de calificaciones y % que lo recomienda | Funcionando, Firestore |
 | Escribir, modificar y eliminar mi reseña desde el álbum, mi perfil y Mis reseñas | Funcionando, Firestore |
+| Dar y quitar like en las reseñas del álbum, con contador en álbum y perfiles | Implementado, Firestore |
+| Seguir y dejar de seguir desde el perfil público, con contador de seguidores | Implementado, Firestore |
 | Foto de perfil subida a Firebase Storage | Funcionando |
 | Consumo del backend de Express con Retrofit | Implementado, intercambiable con Firestore |
 | Seguidos, notificaciones y discusión de una reseña | Datos de prueba en memoria |
@@ -90,9 +92,9 @@ qué se muestra. **La pantalla** pinta y avisa.
 
 | Colección | Documento | Campos |
 |---|---|---|
-| `usuarios` | el uid de Authentication | `username`, `nombre` (texto) · `bio`, `fotoUrl` (texto o null) |
+| `usuarios` | el uid de Authentication | `username`, `nombre` (texto) · `bio`, `fotoUrl` (texto o null) · `seguidoresIds` (lista de uid) |
 | `albumes` | `1` a `8` | `titulo`, `artista`, `portadaUrl`, `genero` (texto) · `anio` (número) |
-| `reviews` | id aleatorio | `usuarioId`, `albumId` (texto) · `calificacion` (número) · `comentario` (texto) · `fechaEscucha` (texto `AAAA-MM-DD` o null) · `usuario` y `album` (mapas) |
+| `reviews` | id aleatorio | `usuarioId`, `albumId` (texto) · `calificacion` (número) · `comentario` (texto) · `fechaEscucha` (texto `AAAA-MM-DD` o null) · `usuario` y `album` (mapas) · `likesDeUsuarios` (lista de uid) |
 
 Los tipos tienen que coincidir con los DTO: `toObject` falla si `anio` o `calificacion` no son
 número, y `whereEqualTo` no encuentra reseñas si `albumId` o `usuarioId` se guardan como número.
@@ -104,6 +106,32 @@ número, y `whereEqualTo` no encuentra reseñas si `albumId` o `usuarioId` se gu
   foto siempre se sube a la misma ruta (`profileImages/<uid>.jpg`), así que las reseñas que ya
   tenían foto muestran la nueva y las que se escribieron sin foto se quedan sin ella. Es el costo
   de desnormalizar y se acepta.
+
+### Likes y seguidores
+
+En el detalle del álbum, el corazón permite dar o quitar like. En el perfil público,
+**Seguir / Dejar de seguir** cambia la relación con el usuario de la sesión; el botón
+no aparece en el perfil propio. El total de seguidores se muestra en ambos perfiles.
+
+Las listas `likesDeUsuarios` y `seguidoresIds` empiezan vacías si el documento anterior
+no tiene esos campos. El total se calcula con los uid únicos. Las transacciones conservan
+las relaciones de otros usuarios y repetir una petición con el mismo estado no duplica
+el like ni el seguimiento. Editar el contenido usa `SetOptions.merge()` para conservarlas.
+Las operaciones requieren sesión y conexión; si fallan, se conserva el estado mostrado
+con un mensaje para reintentar. Los datos se recargan al entrar a cada pantalla.
+
+Estas operaciones están implementadas en Firestore. La pantalla **Seguidos**, las
+notificaciones y las discusiones siguen usando sus datos de ejemplo. Las reglas de
+Firestore deben permitir actualizar estos campos al usuario autenticado; no se incluyen
+ni se despliegan reglas desde este proyecto.
+
+Para comprobarlo con dos cuentas:
+
+1. Dar like a una reseña, salir del álbum y volver: el corazón y el total deben conservarse.
+2. Quitar el like y repetir desde otra cuenta: cada cuenta debe tener su propio estado.
+3. Seguir un perfil y volver a abrirlo; después dejar de seguir y comprobar el total.
+4. Entrar con la cuenta seguida y comprobar su contador en Mi perfil.
+5. Editar una reseña y un perfil con relaciones existentes: los contadores deben conservarse.
 
 ## Decisiones
 
@@ -127,7 +155,7 @@ número, y `whereEqualTo` no encuentra reseñas si `albumId` o `usuarioId` se gu
 - **El color sale del `MaterialTheme`.** No hay colores quemados fuera de `Color.kt`, salvo el
   fondo de la ventana en `themes.xml` y los drawables XML (icono y marcadores de imagen), que se
   pintan sin Compose y repiten a mano los colores de la paleta.
-- **Hilt se compila con KSP.** El proyecto está en AGP 9.3.3, que trae Kotlin integrado (por eso no
+- **Hilt se compila con KSP.** El proyecto está en AGP 9.0.0, que trae Kotlin integrado (por eso no
   se aplica `kotlin.android`) y deja `kapt` solo como transición. El plugin de KSP ya estaba en el
   build de clase. `firebase-storage` reemplaza a `firebase-storage-ktx`: desde el BoM 32.5 son el
   mismo módulo.

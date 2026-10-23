@@ -56,6 +56,22 @@ class UserProfileViewModel @Inject constructor(
         }
     }
 
+    fun seguirDejarDeSeguir() {
+        val usuario = _uiState.value.usuario ?: return
+        if (_uiState.value.cambiandoSeguimiento || usuario.esMiPerfil) return
+        _uiState.update { it.copy(cambiandoSeguimiento = true, errorSeguimientoRes = null) }
+        viewModelScope.launch {
+            val result = usuarioRepository.actualizarSeguimiento(usuario.id, !usuario.siguiendo)
+            _uiState.update {
+                it.copy(
+                    usuario = result.getOrNull() ?: it.usuario,
+                    cambiandoSeguimiento = false,
+                    errorSeguimientoRes = if (result.isFailure) R.string.error_actualizar_seguimiento else null,
+                )
+            }
+        }
+    }
+
     @StringRes
     private fun mensajeDeError(error: Throwable?): Int = when (error) {
         is ContenidoNoEncontradoException -> R.string.perfil_no_encontrado

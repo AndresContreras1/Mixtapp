@@ -23,4 +23,6 @@ data class SongReviewItemUi(
     val content: String,
     // Si la escribio el usuario de la app: el repositorio la marca al mapear
     val esMia: Boolean,
+    val likes: Int = 0,
+    val isLiked: Boolean = false,
 )

@@ -60,6 +60,7 @@ class ProfileViewModel @Inject constructor(
                         usuario = miPerfil?.username ?: usuarioDelCorreo,
                         nombre = miPerfil?.nombre ?: "",
                         bio = miPerfil?.bio ?: "",
+                        seguidores = miPerfil?.seguidores ?: 0,
                         profileImageUrl = foto,
                         avisoPerfilRes = null,
                     )

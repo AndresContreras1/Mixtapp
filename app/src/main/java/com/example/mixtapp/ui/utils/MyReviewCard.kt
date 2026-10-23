@@ -72,6 +72,7 @@ fun MyReviewCard(
                 Spacer(modifier = Modifier.height(12.dp))
 
                 ReviewCardFooter(review = review)
+                Text(text = stringResource(R.string.cantidad_likes, review.likes))
 
                 if (showEditButton) {
                     Row {

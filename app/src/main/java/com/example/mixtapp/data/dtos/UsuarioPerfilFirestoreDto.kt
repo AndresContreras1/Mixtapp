@@ -9,6 +9,7 @@ data class UsuarioPerfilFirestoreDto(
     val nombre: String,
     val bio: String?,
     val fotoUrl: String?,
+    val seguidoresIds: List<String> = emptyList(),
 ) : UsuarioDtoGeneric() {
 
     // Firestore necesita un constructor vacio para convertir el documento en el DTO
@@ -18,6 +19,7 @@ data class UsuarioPerfilFirestoreDto(
     override fun toUsuarioUi(): UsuarioUi {
         return UsuarioUi(
             id = id,
+            seguidores = seguidoresIds.distinct().size,
             nombre = nombre,
             username = username,
             bio = bio ?: "",

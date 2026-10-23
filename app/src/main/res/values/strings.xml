@@ -209,4 +209,11 @@
     <string name="ocultar_contrasena">Ocultar contraseña</string>
     <string name="nav_home">Inicio</string>
     <string name="nav_profile">Perfil</string>
+    <string name="quitar_like">Quitar me gusta</string>
+    <string name="cantidad_likes">%1$d Me gusta</string>
+    <string name="cantidad_seguidores">Seguidores: %1$d</string>
+    <string name="seguir_usuario">Seguir</string>
+    <string name="dejar_de_seguir">Dejar de seguir</string>
+    <string name="error_actualizar_like">No se pudo actualizar el me gusta. Inténtalo de nuevo.</string>
+    <string name="error_actualizar_seguimiento">No se pudo actualizar el seguimiento. Inténtalo de nuevo.</string>
 </resources>

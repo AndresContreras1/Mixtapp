@@ -19,6 +19,7 @@ data class ProfileState(
     val usuario: String = "",
     val nombre: String = "",
     val bio: String = "",
+    val seguidores: Int = 0,
     // Aviso para quien todavia no tiene sus datos en Firestore; no es un error de carga
     @StringRes val avisoPerfilRes: Int? = null,
     val profileImageUrl: String = "",

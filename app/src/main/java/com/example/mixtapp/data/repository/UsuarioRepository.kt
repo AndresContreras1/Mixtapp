@@ -22,7 +22,10 @@ class UsuarioRepository @Inject constructor(
     suspend fun getUsuarioById(id: String): Result<UsuarioUi> {
         return try {
             val usuario = usuarioRemoteDataSource.getUsuarioById(id)
-            Result.success(usuario.toUsuarioUi())
+            Result.success(usuario.toUsuarioUi().copy(
+                siguiendo = authRemoteDataSource.currentUser?.uid in usuario.seguidoresIds,
+                esMiPerfil = idDelUsuarioActual() == usuario.id,
+            ))
         } catch (e: HttpException) {
             Log.d("UsuarioRepository", "getUsuarioById: ${e.message}")
             Result.failure(errorDelBackend(e))
@@ -38,6 +41,25 @@ class UsuarioRepository @Inject constructor(
         }
     }
 
+    private fun idDelUsuarioActual(): String? = authRemoteDataSource.currentUser?.uid
+
+    suspend fun actualizarSeguimiento(id: String, seguir: Boolean): Result<UsuarioUi> {
+        return try {
+            val usuarioId = idDelUsuarioActual() ?: return Result.failure(SinSesionException())
+            if (id == usuarioId) return Result.failure(ErrorInesperadoException())
+            val usuario = usuarioRemoteDataSource.getUsuarioById(id).toUsuarioUi()
+            val seguidores = usuarioRemoteDataSource.actualizarSeguimiento(id, usuarioId, seguir)
+            Result.success(usuario.copy(seguidores = seguidores.size, siguiendo = seguir))
+        } catch (e: FirebaseFirestoreException) {
+            Log.d("UsuarioRepository", "actualizarSeguimiento: ${e.message}")
+            Result.failure(errorDeFirestore(e))
+        } catch (e: NoSuchElementException) {
+            Result.failure(ContenidoNoEncontradoException())
+        } catch (e: Exception) {
+            Result.failure(ErrorInesperadoException())
+        }
+    }
+
     // Mi perfil es el documento que tiene el uid de Authentication como id
     suspend fun getMiPerfil(): Result<UsuarioUi> {
         return try {
@@ -45,7 +67,10 @@ class UsuarioRepository @Inject constructor(
                 ?: return Result.failure(SinSesionException())
 
             val usuario = usuarioRemoteDataSource.getUsuarioById(usuarioId)
-            Result.success(usuario.toUsuarioUi())
+            Result.success(usuario.toUsuarioUi().copy(
+                siguiendo = authRemoteDataSource.currentUser?.uid in usuario.seguidoresIds,
+                esMiPerfil = idDelUsuarioActual() == usuario.id,
+            ))
         } catch (e: HttpException) {
             Log.d("UsuarioRepository", "getMiPerfil: ${e.message}")
             Result.failure(errorDelBackend(e))
@@ -104,7 +129,7 @@ class UsuarioRepository @Inject constructor(
         }
     }
 
-    // set reemplaza el documento entero, asi que se mandan todos los campos del perfil
+    // Se guardan los campos del perfil conservando los seguidores
     suspend fun actualizarPerfil(nombre: String, username: String, bio: String): Result<Unit> {
         return try {
             val usuarioId = authRemoteDataSource.currentUser?.uid

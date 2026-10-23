@@ -49,6 +49,8 @@ fun SongReviewsScreen(
         else -> SongReviewsScreenContent(
             songReview = state.song!!,
             miResenaId = state.miResenaId,
+            likesPendientes = state.likesPendientes,
+            onLikeClick = songReviewsViewModel::darQuitarLike,
             errorMessageRes = state.errorMessageRes,
             onWriteReviewClick = onWriteReviewClick,
             onDeleteMyReviewClick = { songReviewsViewModel.eliminarMiResena() },
@@ -63,6 +65,8 @@ fun SongReviewsScreen(
 fun SongReviewsScreenContent(
     songReview: SongReviewUi,
     miResenaId: String?,
+    likesPendientes: Set<String> = emptySet(),
+    onLikeClick: (String) -> Unit = {},
     errorMessageRes: Int?,
     onWriteReviewClick: () -> Unit,
     onDeleteMyReviewClick: () -> Unit,
@@ -76,6 +80,8 @@ fun SongReviewsScreenContent(
         SongReviewSections(
             songReview = songReview,
             miResenaId = miResenaId,
+            likesPendientes = likesPendientes,
+            onLikeClick = onLikeClick,
             errorMessageRes = errorMessageRes,
             onWriteReviewClick = onWriteReviewClick,
             onDeleteMyReviewClick = onDeleteMyReviewClick,

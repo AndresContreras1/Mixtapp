@@ -5,6 +5,8 @@ import com.example.mixtapp.data.model.MyReviewUi
 import com.example.mixtapp.data.model.UsuarioUi
 
 data class UserProfileState(
+    val cambiandoSeguimiento: Boolean = false,
+    @StringRes val errorSeguimientoRes: Int? = null,
     val usuario: UsuarioUi? = null,
     val reviews: List<MyReviewUi> = emptyList(),
     // Las resenas se piden en su propio launch, asi que tienen su propia carga

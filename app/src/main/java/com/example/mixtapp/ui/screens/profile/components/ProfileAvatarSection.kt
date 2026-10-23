@@ -32,6 +32,7 @@ import com.example.mixtapp.ui.utils.ProfileAsyncImage
 fun ProfileAvatarSection(
     nombre: String,
     bio: String,
+    seguidores: Int = 0,
     profileImageUrl: String,
     subiendoImagen: Boolean,
     errorImagenRes: Int?,
@@ -81,6 +82,7 @@ fun ProfileAvatarSection(
             modifier = Modifier.padding(top = 8.dp)
         )
         Spacer(modifier = Modifier.height(16.dp))
+        Text(text = stringResource(R.string.cantidad_seguidores, seguidores))
         val resenas = if (reviewsCount == 1) {
             stringResource(R.string.una_resena)
         } else {

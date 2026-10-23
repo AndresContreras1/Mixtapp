@@ -57,9 +57,11 @@ fun UserProfileScreen(
         }
         else -> UserProfileScreenContent(
             usuario = state.usuario!!,
+            cambiandoSeguimiento = state.cambiandoSeguimiento,
+            onFollowClick = userProfileViewModel::seguirDejarDeSeguir,
             reviews = state.reviews,
             cargandoResenas = state.cargandoResenas,
-            errorMessageRes = state.errorResenasRes,
+            errorMessageRes = state.errorSeguimientoRes ?: state.errorResenasRes ?: state.errorMessageRes,
             onReviewClick = onReviewClick,
             onBackClick = onBackClick,
             modifier = modifier
@@ -70,6 +72,8 @@ fun UserProfileScreen(
 @Composable
 fun UserProfileScreenContent(
     usuario: UsuarioUi,
+    cambiandoSeguimiento: Boolean = false,
+    onFollowClick: () -> Unit = {},
     reviews: List<MyReviewUi>,
     cargandoResenas: Boolean,
     errorMessageRes: Int?,
@@ -89,6 +93,8 @@ fun UserProfileScreenContent(
             item {
                 UserProfileHeader(
                     usuario = usuario,
+                    cambiandoSeguimiento = cambiandoSeguimiento,
+                    onFollowClick = onFollowClick,
                     reviewsCount = reviews.size,
                     cargandoResenas = cargandoResenas,
                     onBackClick = onBackClick,

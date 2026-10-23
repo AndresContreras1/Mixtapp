@@ -17,6 +17,7 @@ data class ReviewConUsuarioDto(
     // El documento de Firestore tambien guarda la copia del album; se declara aunque esta lista
     // no la use, para que toObject no avise en el Logcat "No setter/field for album"
     val album: AlbumDeResenaDto?,
+    val likesDeUsuarios: List<String> = emptyList(),
 ) {
     // Firestore necesita un constructor vacio para convertir el documento en el DTO
     constructor() : this("", 0, null, null, "", "", null, null, null, null)
@@ -35,6 +36,7 @@ data class ReviewConAlbumDto(
     // Igual que arriba: la copia del usuario tambien esta en el documento
     val usuario: UsuarioDto?,
     val album: AlbumDeResenaDto?,
+    val likesDeUsuarios: List<String> = emptyList(),
 ) {
     constructor() : this("", 0, null, null, "", "", null, null, null, null)
 }
@@ -50,6 +52,8 @@ fun ReviewConUsuarioDto.toSongReviewItemUi(usuarioActualId: String): SongReviewI
         rating = calificacion,
         content = comentario ?: "",
         esMia = usuarioId == usuarioActualId,
+        likes = likesDeUsuarios.distinct().size,
+        isLiked = usuarioActualId in likesDeUsuarios,
     )
 }
 
@@ -59,6 +63,7 @@ fun ReviewConAlbumDto.toMyReviewUi(): MyReviewUi {
         album = (album ?: AlbumDeResenaDto()).toAlbum(albumId = albumId),
         rating = calificacion,
         excerpt = comentario ?: "",
+        likes = likesDeUsuarios.distinct().size,
         date = fechaEscucha ?: "",
     )
 }

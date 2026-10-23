@@ -27,6 +27,8 @@ import com.example.mixtapp.ui.utils.ErrorMessage
 fun SongReviewSections(
     songReview: SongReviewUi,
     miResenaId: String?,
+    likesPendientes: Set<String> = emptySet(),
+    onLikeClick: (String) -> Unit = {},
     errorMessageRes: Int?,
     onWriteReviewClick: () -> Unit,
     onDeleteMyReviewClick: () -> Unit,
@@ -117,6 +119,8 @@ fun SongReviewSections(
 
             ReviewItem(
                 review = review,
+                onLikeClick = { onLikeClick(review.id) },
+                cambiandoLike = review.id in likesPendientes,
                 onEditClick = onWriteReviewClick,
                 onDeleteClick = onDeleteMyReviewClick,
                 onAuthorClick = { onAuthorClick(review.authorId) },

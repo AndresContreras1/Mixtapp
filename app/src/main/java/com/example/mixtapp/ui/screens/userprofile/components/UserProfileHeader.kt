@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -28,6 +29,8 @@ import com.example.mixtapp.ui.utils.ProfileAsyncImage
 @Composable
 fun UserProfileHeader(
     usuario: UsuarioUi,
+    cambiandoSeguimiento: Boolean = false,
+    onFollowClick: () -> Unit = {},
     reviewsCount: Int,
     // Mientras llegan las resenas no se muestra el total
     cargandoResenas: Boolean,
@@ -74,6 +77,13 @@ fun UserProfileHeader(
         }
 
         Spacer(modifier = Modifier.height(16.dp))
+
+        Text(text = stringResource(R.string.cantidad_seguidores, usuario.seguidores))
+        if (!usuario.esMiPerfil) {
+            Button(onClick = onFollowClick, enabled = !cambiandoSeguimiento) {
+                Text(text = stringResource(if (usuario.siguiendo) R.string.dejar_de_seguir else R.string.seguir_usuario))
+            }
+        }
 
         if (!cargandoResenas) {
             Text(

@@ -91,6 +91,7 @@ fun ProfileScreen(
             usuario = state.usuario,
             nombre = state.nombre,
             bio = state.bio,
+            seguidores = state.seguidores,
             profileImageUrl = state.profileImageUrl,
             subiendoImagen = state.subiendoImagen,
             errorImagenRes = state.errorImagenRes,
@@ -129,6 +130,7 @@ fun ProfileScreenContent(
     usuario: String,
     nombre: String,
     bio: String,
+    seguidores: Int = 0,
     profileImageUrl: String,
     subiendoImagen: Boolean,
     errorImagenRes: Int?,
@@ -185,6 +187,7 @@ fun ProfileScreenContent(
                     ProfileAvatarSection(
                         nombre = nombre,
                         bio = bio,
+                        seguidores = seguidores,
                         profileImageUrl = profileImageUrl,
                         subiendoImagen = subiendoImagen,
                         errorImagenRes = errorImagenRes,

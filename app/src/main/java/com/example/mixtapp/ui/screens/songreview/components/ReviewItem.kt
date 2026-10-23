@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Star
@@ -40,6 +42,8 @@ import com.example.mixtapp.ui.utils.StarRating
 @Composable
 fun ReviewItem(
     review: SongReviewItemUi,
+    onLikeClick: () -> Unit = {},
+    cambiandoLike: Boolean = false,
     onEditClick: () -> Unit,
     onDeleteClick: () -> Unit,
     onAuthorClick: () -> Unit,
@@ -100,6 +104,17 @@ fun ReviewItem(
                 fontSize = 12.sp,
                 lineHeight = 18.sp
             )
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                IconButton(onClick = onLikeClick, enabled = !cambiandoLike) {
+                    Icon(
+                        imageVector = if (review.isLiked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                        contentDescription = stringResource(if (review.isLiked) R.string.quitar_like else R.string.like_review),
+                        tint = if (review.isLiked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                Text(text = stringResource(R.string.cantidad_likes, review.likes))
+            }
 
             if (review.esMia) {
                 Row {

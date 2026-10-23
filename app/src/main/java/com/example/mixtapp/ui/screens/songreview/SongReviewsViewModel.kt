@@ -102,6 +102,30 @@ class SongReviewsViewModel @Inject constructor(
         }
     }
 
+    fun darQuitarLike(reviewId: String) {
+        val estado = _uiState.value
+        val review = estado.song?.reviews?.find { it.id == reviewId } ?: return
+        if (reviewId in estado.likesPendientes) return
+        val darLike = !review.isLiked
+        _uiState.update { it.copy(likesPendientes = it.likesPendientes + reviewId, errorMessageRes = null) }
+        viewModelScope.launch {
+            val result = reviewRepository.actualizarLike(reviewId, darLike)
+            _uiState.update { actual ->
+                actual.copy(
+                    likesPendientes = actual.likesPendientes - reviewId,
+                    song = actual.song?.copy(reviews = actual.song.reviews.map {
+                        if (it.id == reviewId && result.isSuccess) {
+                            it.copy(likes = result.getOrThrow(), isLiked = darLike)
+                        } else it
+                    }),
+                    errorMessageRes = if (result.isFailure) mensajeDeError(
+                        result.exceptionOrNull(), R.string.error_actualizar_like
+                    ) else null,
+                )
+            }
+        }
+    }
+
     @StringRes
     private fun mensajeDeError(error: Throwable?, @StringRes generico: Int): Int = when (error) {
         is ContenidoNoEncontradoException -> R.string.contenido_no_encontrado
