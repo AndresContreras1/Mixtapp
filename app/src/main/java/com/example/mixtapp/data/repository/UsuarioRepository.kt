@@ -9,6 +9,8 @@ import com.example.mixtapp.data.dtos.toMyReviewUi
 import com.example.mixtapp.data.model.MyReviewUi
 import com.example.mixtapp.data.model.UsuarioUi
 import com.google.firebase.firestore.FirebaseFirestoreException
+import com.google.firebase.messaging.FirebaseMessaging
+import kotlinx.coroutines.tasks.await
 import retrofit2.HttpException
 import javax.inject.Inject
 
@@ -113,12 +115,16 @@ class UsuarioRepository @Inject constructor(
             val usuarioId = authRemoteDataSource.currentUser?.uid
                 ?: return Result.failure(SinSesionException())
 
+            // Sin el await sigue derecho y el token queda vacio
+            val fcmToken = FirebaseMessaging.getInstance().token.await()
+
             val registrarUsuarioDto = RegistrarUsuarioDto(
                 username = username,
                 nombre = nombre,
                 bio = if (bio.isEmpty()) null else bio,
                 // La foto se sube a Storage y queda en Authentication; se copia para que otros la vean
                 fotoUrl = authRemoteDataSource.currentUser?.photoUrl?.toString(),
+                FCMToken = fcmToken,
             )
             usuarioRemoteDataSource.registrarUsuario(registrarUsuarioDto, usuarioId)
             Result.success(Unit)
@@ -178,6 +184,28 @@ class UsuarioRepository @Inject constructor(
             else Result.failure(errorDeFirestore(e))
         } catch (e: Exception) {
             Log.d("UsuarioRepository", "actualizarFotoDePerfil: ${e.message}")
+            Result.failure(ErrorInesperadoException())
+        }
+    }
+
+    // Al iniciar sesion se guarda el token de este celular: asi las notificaciones llegan aqui
+    // aunque la cuenta se haya creado en otro
+    suspend fun actualizarToken(): Result<Unit> {
+        return try {
+            val usuarioId = authRemoteDataSource.currentUser?.uid
+                ?: return Result.failure(SinSesionException())
+
+            val fcmToken = FirebaseMessaging.getInstance().token.await()
+            usuarioRemoteDataSource.actualizarToken(usuarioId, fcmToken)
+            Result.success(Unit)
+        } catch (e: HttpException) {
+            Log.d("UsuarioRepository", "actualizarToken: ${e.message}")
+            Result.failure(errorDelBackend(e))
+        } catch (e: FirebaseFirestoreException) {
+            Log.d("UsuarioRepository", "actualizarToken: ${e.message}")
+            Result.failure(errorDeFirestore(e))
+        } catch (e: Exception) {
+            Log.d("UsuarioRepository", "actualizarToken: ${e.message}")
             Result.failure(ErrorInesperadoException())
         }
     }

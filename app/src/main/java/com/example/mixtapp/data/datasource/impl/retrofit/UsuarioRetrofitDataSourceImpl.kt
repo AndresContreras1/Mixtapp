@@ -35,6 +35,10 @@ class UsuarioRetrofitDataSourceImpl @Inject constructor(
         // to-do: el backend no tiene una ruta para modificar usuarios
     }
 
+    override suspend fun actualizarToken(usuarioId: String, token: String) {
+        // to-do: el backend no tiene una ruta para modificar usuarios ni envia notificaciones
+    }
+
     override suspend fun followOrUnfollow(currentUserId: String, targetUserId: String) {
         // to-do: el backend no tiene seguidores; como en clase, solo funcionan con Firestore
     }

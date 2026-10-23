@@ -70,6 +70,12 @@ class UsuarioFirestoreDataSourceImpl @Inject constructor(
         docRef.update("fotoUrl", fotoUrl).await()
     }
 
+    // El mismo nombre de campo que deja el registro: la Cloud Function lee fcmtoken
+    override suspend fun actualizarToken(usuarioId: String, token: String) {
+        val docRef = db.collection("usuarios").document(usuarioId)
+        docRef.update("fcmtoken", token).await()
+    }
+
     // Seguir son cuatro escrituras en una transaccion: si alguna falla, Firebase deshace las demas.
     // Usuario A sigue a B: following/B en A, followers/A en B, followingCount de A y followersCount de B
     override suspend fun followOrUnfollow(currentUserId: String, targetUserId: String) {
