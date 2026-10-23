@@ -25,6 +25,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -40,103 +41,105 @@ class ProfileViewModel @Inject constructor(
     private val usuarioRepository: UsuarioRepository
 ) : ViewModel() {
 
-    private var profileSubscription: kotlinx.coroutines.Job? = null
-
-    private var reviewsSubscription: kotlinx.coroutines.Job? = null
-
     private val _uiState = MutableStateFlow(ProfileState())
     val uiState: StateFlow<ProfileState> = _uiState.asStateFlow()
 
-    // La pantalla la llama cada vez que se muestra, para ver las resenas nuevas al volver
+    // Los flujos se escuchan mientras exista el ViewModel: si se volvieran a pedir cada vez que la
+    // pantalla se muestra, se acumularian listeners
+    private var escuchandoPerfil = false
+    private var escuchandoResenas = false
+
+    // La pantalla la llama cada vez que se muestra: la foto se lee de nuevo y mis datos y mis
+    // resenas llegan en vivo, asi que un seguidor o un like desde otro celular se ven sin salir
     fun getProfile() {
         val usuarioDelCorreo = authRepository.usuarioDelCorreo
         val foto = authRepository.currentUser?.photoUrl?.toString() ?: ""
         val usuarioId = authRepository.currentUser?.uid ?: ""
 
+        _uiState.update { it.copy(usuarioId = usuarioId, profileImageUrl = foto) }
+
         // Mis datos y mis resenas se usan por su lado, asi que cada uno va en su propio launch
-        profileSubscription?.cancel()
-        profileSubscription = viewModelScope.launch {
-            usuarioRepository.observeMiPerfil().collect { perfil ->
+        if (!escuchandoPerfil) {
+            escuchandoPerfil = true
 
-                if (perfil.isSuccess) {
-                    val miPerfil = perfil.getOrNull()
-
-                    // Los contadores vienen del documento: no hace falta leer las listas
-                    _uiState.update {
-                        it.copy(
-                            usuarioId = usuarioId,
-                            usuario = miPerfil?.username ?: usuarioDelCorreo,
-                            nombre = miPerfil?.nombre ?: "",
-                            bio = miPerfil?.bio ?: "",
-                            seguidores = miPerfil?.seguidores ?: 0,
-                            seguidos = miPerfil?.seguidos ?: 0,
-                            profileImageUrl = foto,
-                            avisoPerfilRes = null,
-                        )
+            viewModelScope.launch {
+                usuarioRepository.getMiPerfilLive()
+                    .catch { e ->
+                        Log.d("ProfileViewModel", "getProfile: ${e.message}")
+                        // Al volver a la pantalla se intenta de nuevo: asi sale el perfil recien completado
+                        escuchandoPerfil = false
+                        _uiState.update {
+                            it.copy(
+                                // Si mis datos ya estaban cargados se conservan; si no, sale la parte del correo
+                                usuario = it.usuario.ifEmpty { usuarioDelCorreo },
+                                // Sin mi documento en Firestore se pide completar el perfil; otro error se avisa
+                                avisoPerfilRes = if (e is ContenidoNoEncontradoException) {
+                                    R.string.completa_tu_perfil
+                                } else {
+                                    mensajeDeError(error = e, generico = R.string.error_cargar_contenido)
+                                },
+                            )
+                        }
                     }
-                } else {
-                    val error = perfil.exceptionOrNull()
-
-                    _uiState.update {
-                        it.copy(
-                            usuarioId = usuarioId,
-                            // Si mis datos ya estaban cargados se conservan; si no, sale la parte del correo
-                            usuario = it.usuario.ifEmpty { usuarioDelCorreo },
-                            profileImageUrl = foto,
-                            // Sin mi documento en Firestore se pide completar el perfil; otro error se avisa
-                            avisoPerfilRes = if (error is ContenidoNoEncontradoException) {
-                                R.string.completa_tu_perfil
-                            } else {
-                                mensajeDeError(error = error, generico = R.string.error_cargar_contenido)
-                            },
-                        )
+                    .collect { miPerfil ->
+                        // Los contadores vienen del documento: no hace falta leer las listas
+                        _uiState.update {
+                            it.copy(
+                                usuario = miPerfil.username,
+                                nombre = miPerfil.nombre,
+                                bio = miPerfil.bio,
+                                seguidores = miPerfil.seguidores,
+                                seguidos = miPerfil.seguidos,
+                                avisoPerfilRes = null,
+                            )
+                        }
                     }
-                }
             }
         }
 
-        reviewsSubscription?.cancel()
-        reviewsSubscription = viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
+        if (!escuchandoResenas) {
+            escuchandoResenas = true
 
-            reviewRepository.observeMyReviews().collect { result ->
+            viewModelScope.launch {
+                _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
 
-                if (result.isSuccess) {
-                    // La fecha va como AAAA-MM-DD: la escuchada mas reciente queda arriba
-                    val misResenas = (result.getOrNull() ?: emptyList()).sortedByDescending { it.date }
-
-                    _uiState.update {
-                        it.copy(
-                            misResenas = misResenas,
-                            favoritos = favoritosDe(resenas = misResenas),
-                            barrasDeCalificacion = barrasDe(resenas = misResenas),
-                            isLoading = false,
-                            tabs = profileTabs,
-                            // Al volver se conserva la pestana elegida
-                            selectedTabId = it.selectedTabId.ifEmpty { profileTabs.first().id },
-                            // Si estaba editando una resena que sigue existiendo, la edicion no se pierde
-                            resenaEnEdicionId = if (misResenas.any { r -> r.id == it.resenaEnEdicionId }) {
-                                it.resenaEnEdicionId
-                            } else {
-                                null
-                            },
-                            errorMessageRes = null,
-                        )
+                reviewRepository.getMyReviewsLive()
+                    .catch { e ->
+                        Log.d("ProfileViewModel", "getProfile: ${e.message}")
+                        escuchandoResenas = false
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                tabs = profileTabs,
+                                // Al volver se conserva la pestana elegida
+                                selectedTabId = it.selectedTabId.ifEmpty { profileTabs.first().id },
+                                errorMessageRes = mensajeDeError(error = e, generico = R.string.error_cargar_contenido),
+                            )
+                        }
                     }
-                } else {
-                    _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            tabs = profileTabs,
-                            // Al volver se conserva la pestana elegida
-                            selectedTabId = it.selectedTabId.ifEmpty { profileTabs.first().id },
-                            errorMessageRes = mensajeDeError(
-                                error = result.exceptionOrNull(),
-                                generico = R.string.error_cargar_contenido,
-                            ),
-                        )
+                    .collect { resenas ->
+                        // La fecha va como AAAA-MM-DD: la escuchada mas reciente queda arriba
+                        val misResenas = resenas.sortedByDescending { it.date }
+
+                        _uiState.update {
+                            it.copy(
+                                misResenas = misResenas,
+                                favoritos = favoritosDe(resenas = misResenas),
+                                barrasDeCalificacion = barrasDe(resenas = misResenas),
+                                isLoading = false,
+                                tabs = profileTabs,
+                                // Al volver se conserva la pestana elegida
+                                selectedTabId = it.selectedTabId.ifEmpty { profileTabs.first().id },
+                                // Si estaba editando una resena que sigue existiendo, la edicion no se pierde
+                                resenaEnEdicionId = if (misResenas.any { r -> r.id == it.resenaEnEdicionId }) {
+                                    it.resenaEnEdicionId
+                                } else {
+                                    null
+                                },
+                                errorMessageRes = null,
+                            )
+                        }
                     }
-                }
             }
         }
     }
@@ -299,7 +302,7 @@ class ProfileViewModel @Inject constructor(
 
     // Los favoritos son los albumes que califique con 5
     private fun favoritosDe(resenas: List<MyReviewUi>): List<Album> =
-    resenas.filter { it.rating == CALIFICACION_MAXIMA }.map { it.album }.take(FAVORITOS_EN_PERFIL)
+        resenas.filter { it.rating == CALIFICACION_MAXIMA }.map { it.album }.take(FAVORITOS_EN_PERFIL)
 
     // Cuantas resenas tengo con cada calificacion, de 0 a 5, como el alto de cada barra
     private fun barrasDe(resenas: List<MyReviewUi>): List<Float> {

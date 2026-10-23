@@ -35,10 +35,9 @@ fun HomeScreen(
 ) {
     val state by homeViewModel.uiState.collectAsState()
 
-    // Los albumes llegan en vivo desde el ViewModel. Al mostrarse solo se piden los usuarios que
-    // sigo y mi foto, que pueden haber cambiado en otra pantalla
+    // Los albumes y los usuarios que sigo llegan en vivo desde el ViewModel. Al mostrarse solo se
+    // pide mi foto, que puede haber cambiado en otra pantalla
     LaunchedEffect(Unit) {
-        homeViewModel.cargarSeguidos()
         homeViewModel.refrescarFotoDePerfil()
     }
 

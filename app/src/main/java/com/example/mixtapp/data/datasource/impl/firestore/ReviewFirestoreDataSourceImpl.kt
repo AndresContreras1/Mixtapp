@@ -5,6 +5,10 @@ import com.example.mixtapp.data.dtos.CreateReviewDto
 import com.example.mixtapp.data.dtos.ReviewConAlbumDto
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -73,5 +77,35 @@ class ReviewFirestoreDataSourceImpl @Inject constructor(
                 transaction.update(reviewRef, "likesCount", FieldValue.increment(1))
             }
         }.await()
+    }
+
+    // El listener escucha el documento de la resena. Mi like no esta en el documento, asi que se
+    // busca con exists() cada vez que llega
+    override fun listenReviewById(id: String, currentUserId: String): Flow<ReviewConAlbumDto> = callbackFlow {
+        val listenerRegistration = db.collection("reviews").document(id)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    close(error) // cierra el flujo con error
+                    return@addSnapshotListener
+                }
+                if (snapshot != null) {
+                    // Si la borran mientras se ve, toObject da null: el repositorio lo muestra como no encontrada
+                    val review = snapshot.toObject(ReviewConAlbumDto::class.java)?.copy(id = snapshot.id)
+
+                    if (review == null) close(NoSuchElementException("No existe la resena $id"))
+                    else trySend(review).isSuccess // envia la resena al flujo
+                }
+            }
+
+        // Cuando se sale de la discusion nadie escucha el flujo y se quita el listener
+        awaitClose { listenerRegistration.remove() }
+    }.map { review ->
+        if (currentUserId.isNotEmpty()) {
+            val likeSnapshot = db.collection("reviews").document(review.id)
+                .collection("likes").document(currentUserId).get().await()
+            review.liked = likeSnapshot.exists()
+        }
+
+        review
     }
 }

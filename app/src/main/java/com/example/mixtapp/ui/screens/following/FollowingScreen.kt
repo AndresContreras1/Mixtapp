@@ -35,8 +35,7 @@ fun FollowingScreen(
 ) {
     val state by followingViewModel.uiState.collectAsState()
 
-    // Se pide cada vez que se muestra: si deje de seguir a alguien o cambie un like en otra
-    // pantalla, al volver ya sale al dia
+    // Empieza a escuchar la primera vez que se muestra; despues los cambios llegan solos
     LaunchedEffect(Unit) {
         followingViewModel.getFollowing()
     }

@@ -45,3 +45,12 @@ fun errorDelBackend(e: HttpException): Exception =
 // los permisos de las reglas, se muestra como un error del servidor
 fun errorDeFirestore(e: FirebaseFirestoreException): Exception =
     if (e.code == FirebaseFirestoreException.Code.UNAVAILABLE) SinConexionException() else ErrorDelServidorException()
+
+// Los datos en vivo no retornan Result: el repositorio cambia la excepcion por la de la app en el
+// catch del flujo y el ViewModel la recibe en el suyo
+fun errorDelFlujo(e: Throwable): Exception = when (e) {
+    is HttpException -> errorDelBackend(e)
+    is FirebaseFirestoreException -> errorDeFirestore(e)
+    is NoSuchElementException -> ContenidoNoEncontradoException()
+    else -> ErrorInesperadoException()
+}

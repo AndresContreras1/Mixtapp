@@ -1,5 +1,6 @@
 package com.example.mixtapp.ui.screens.discussion
 
+import android.util.Log
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,6 +15,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -24,41 +26,44 @@ class DiscussionViewModel @Inject constructor(
     private val reviewRepository: ReviewRepository
 ) : ViewModel() {
 
-    private var discussionSubscription: kotlinx.coroutines.Job? = null
-
     private val _uiState = MutableStateFlow(DiscussionState())
     val uiState: StateFlow<DiscussionState> = _uiState.asStateFlow()
 
-    // Buscar la discusion es responsabilidad del ViewModel, no de la navegacion
-    fun getDiscussionByReviewId(reviewId: String) {
+    // El flujo se escucha mientras exista el ViewModel: si se volviera a pedir cada vez que la
+    // pantalla se muestra, se acumularian listeners
+    private var escuchandoDiscusion = false
 
-        discussionSubscription?.cancel()
-        discussionSubscription = viewModelScope.launch {
+    // Datos en vivo: un like desde otro celular cambia el corazon y el contador sin salir
+    fun getDiscussionByReviewId(reviewId: String) {
+        if (escuchandoDiscusion) return
+        escuchandoDiscusion = true
+
+        viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
 
-            reviewRepository.observeDiscussion(reviewId).collect { result ->
-
-                if (result.isSuccess) {
+            reviewRepository.getDiscussionLive(reviewId = reviewId)
+                .catch { e ->
+                    Log.d("DiscussionViewModel", "getDiscussionByReviewId: ${e.message}")
+                    escuchandoDiscusion = false
                     _uiState.update {
-                        val updated = result.getOrNull()
                         it.copy(
-                            discussion = updated?.copy(review = updated.review.copy(isShared = it.discussion?.review?.isShared ?: false)),
+                            isLoading = false,
+                            errorMessageRes = mensajeDeError(error = e, generico = R.string.error_cargar_contenido),
+                        )
+                    }
+                }
+                .collect { discussion ->
+                    _uiState.update {
+                        it.copy(
+                            // Compartir solo existe en esta pantalla: se conserva al llegar datos nuevos
+                            discussion = discussion.copy(
+                                review = discussion.review.copy(isShared = it.discussion?.review?.isShared ?: false)
+                            ),
                             isLoading = false,
                             errorMessageRes = null,
                         )
                     }
-                } else {
-                    _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            errorMessageRes = mensajeDeError(
-                                error = result.exceptionOrNull(),
-                                generico = R.string.error_cargar_contenido,
-                            )
-                        )
-                    }
                 }
-            }
         }
     }
 
@@ -101,7 +106,8 @@ class DiscussionViewModel @Inject constructor(
         }
     }
 
-    // Firestore confirma el like; la suscripcion actualiza el corazon y el contador.
+    // No se copia el estado a mano: la transaccion cambia likesCount, eso dispara el flujo y llega
+    // la resena con el corazon y el contador al dia
     fun sendOrDeleteLike() {
         val reviewId = _uiState.value.discussion?.id ?: return
 
@@ -109,7 +115,7 @@ class DiscussionViewModel @Inject constructor(
             val result = reviewRepository.sendOrDeleteLike(reviewId = reviewId)
 
             if (result.isSuccess) {
-                // El listener aplica el estado confirmado sin duplicar contadores.
+                _uiState.update { it.copy(errorMessageRes = null) }
             } else {
                 _uiState.update {
                     it.copy(

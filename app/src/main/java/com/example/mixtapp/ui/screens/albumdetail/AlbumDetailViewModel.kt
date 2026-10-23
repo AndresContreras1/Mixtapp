@@ -1,5 +1,6 @@
 package com.example.mixtapp.ui.screens.albumdetail
 
+import android.util.Log
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,6 +14,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -23,48 +25,50 @@ class AlbumDetailViewModel @Inject constructor(
     private val reviewRepository: ReviewRepository
 ) : ViewModel() {
 
-    private var albumSubscription: kotlinx.coroutines.Job? = null
-
     private val _uiState = MutableStateFlow(AlbumDetailState())
     val uiState: StateFlow<AlbumDetailState> = _uiState.asStateFlow()
 
-    // Buscar el album es responsabilidad del ViewModel, no de la navegacion
-    fun getAlbumById(albumId: String) {
-        albumSubscription?.cancel()
-        albumSubscription = viewModelScope.launch {
+    // El flujo se escucha mientras exista el ViewModel: si se volviera a pedir cada vez que la
+    // pantalla se muestra, se acumularian listeners
+    private var escuchandoAlbum = false
+
+    // Datos en vivo: cada cambio en las resenas del album (una nueva, un like desde otro celular)
+    // llega solo y la pantalla se vuelve a pintar, sin salir y volver a entrar
+    fun escucharAlbum(albumId: String) {
+        if (escuchandoAlbum) return
+        escuchandoAlbum = true
+
+        viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
 
-            // El album llega con todas sus resenas, y la mia ya viene marcada
-            albumRepository.observeAlbum(albumId).collect { result ->
-                val albumReviews = result.getOrNull()
-
-                if (result.isSuccess && albumReviews != null) {
+            albumRepository.getAlbumReviewsByIdLive(albumId = albumId)
+                .catch { e ->
+                    Log.d("AlbumDetailViewModel", "escucharAlbum: ${e.message}")
+                    // Si se cerro con error se puede volver a escuchar al entrar de nuevo
+                    escuchandoAlbum = false
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessageRes = mensajeDeError(error = e, generico = R.string.error_cargar_contenido),
+                        )
+                    }
+                }
+                .collect { albumReviews ->
                     _uiState.update {
                         it.copy(
                             // De la escuchada mas reciente a la mas antigua, y mi resena primero
                             // para que se vea apenas entro al album
                             albumReviews = albumReviews.copy(
                                 reviews = albumReviews.reviews
-                                .sortedByDescending { review -> review.fecha }
-                                .sortedByDescending { review -> review.esMia }
+                                    .sortedByDescending { review -> review.fecha }
+                                    .sortedByDescending { review -> review.esMia }
                             ),
                             miResenaId = albumReviews.reviews.find { review -> review.esMia }?.id,
                             isLoading = false,
                             errorMessageRes = null,
                         )
                     }
-                } else {
-                    _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            errorMessageRes = mensajeDeError(
-                                error = result.exceptionOrNull(),
-                                generico = R.string.error_cargar_contenido,
-                            )
-                        )
-                    }
                 }
-            }
         }
     }
 
@@ -106,13 +110,15 @@ class AlbumDetailViewModel @Inject constructor(
         }
     }
 
-    // Firestore confirma el like; la suscripcion actualiza el corazon y el contador.
+    // Con el detalle en vivo no se copia el estado a mano: la transaccion cambia likesCount, eso
+    // dispara el flujo y llega la resena con el corazon y el contador al dia, en este celular y
+    // en los demas que tengan el album abierto
     fun sendOrDeleteLike(reviewId: String) {
         viewModelScope.launch {
             val result = reviewRepository.sendOrDeleteLike(reviewId = reviewId)
 
             if (result.isSuccess) {
-                // El listener aplica el estado confirmado sin duplicar contadores.
+                _uiState.update { it.copy(errorMessageRes = null) }
             } else {
                 _uiState.update {
                     it.copy(

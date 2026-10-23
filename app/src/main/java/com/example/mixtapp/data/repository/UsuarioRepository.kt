@@ -10,6 +10,9 @@ import com.example.mixtapp.data.model.MyReviewUi
 import com.example.mixtapp.data.model.UsuarioUi
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.messaging.FirebaseMessaging
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 import retrofit2.HttpException
 import javax.inject.Inject
@@ -18,51 +21,24 @@ import javax.inject.Inject
 // El backend todavia no tiene rutas para guardar usuarios ni seguidores, asi que esas funciones
 // quedan como to-do en esa implementacion, como en clase
 class UsuarioRepository @Inject constructor(
-    private val db: com.google.firebase.firestore.FirebaseFirestore,
     private val usuarioRemoteDataSource: UsuarioFirestoreDataSourceImpl,
     private val authRemoteDataSource: AuthRemoteDataSource
 ) {
-    fun observeUsuario(id: String): kotlinx.coroutines.flow.Flow<Result<UsuarioUi>> =
-        observeChanges(db.collection("usuarios").whereEqualTo(com.google.firebase.firestore.FieldPath.documentId(), id)) { getUsuarioById(id) }
 
-    fun observeMiPerfil(): kotlinx.coroutines.flow.Flow<Result<UsuarioUi>> =
-        observeChanges(db.collection("usuarios").whereEqualTo(com.google.firebase.firestore.FieldPath.documentId(), authRemoteDataSource.currentUser?.uid ?: "sin-sesion")) { getMiPerfil() }
+    // El perfil en vivo: si alguien lo sigue desde otro celular, el contador cambia sin salir.
+    // Con mi uid el data source dice si ya lo sigo
+    fun getUsuarioByIdLive(id: String): Flow<UsuarioUi> {
+        val usuarioActualId = authRemoteDataSource.currentUser?.uid ?: ""
 
-    fun observeReviews(id: String): kotlinx.coroutines.flow.Flow<Result<List<MyReviewUi>>> =
-        observeChanges(db.collection("reviews").whereEqualTo("usuarioId", id)) { getReviewsDeUsuario(id) }
-
-    fun observeSeguidores(userId: String): kotlinx.coroutines.flow.Flow<Result<List<UsuarioUi>>> =
-        observeChanges(db.collection("usuarios").document(userId).collection("followers")) { getSeguidores(userId) }
-
-    fun observeSeguidos(userId: String): kotlinx.coroutines.flow.Flow<Result<List<UsuarioUi>>> =
-        observeChanges(db.collection("usuarios").document(userId).collection("following")) { getSeguidos(userId) }
-
-    fun observeMisSeguidos(): kotlinx.coroutines.flow.Flow<Result<List<UsuarioUi>>> =
-        observeChanges(db.collection("usuarios").document(authRemoteDataSource.currentUser?.uid ?: "sin-sesion").collection("following")) { getMisSeguidos() }
-
-
-    // Con mi uid el data source dice si ya sigo a este usuario
-    suspend fun getUsuarioById(id: String): Result<UsuarioUi> {
-        return try {
-            val usuarioActualId = authRemoteDataSource.currentUser?.uid ?: ""
-            val usuario = usuarioRemoteDataSource.getUsuarioById(id, currentUserId = usuarioActualId).toUsuarioUi()
-
-            Result.success(usuario.copy(esMiPerfil = usuario.id == usuarioActualId))
-        } catch (e: HttpException) {
-            Log.d("UsuarioRepository", "getUsuarioById: ${e.message}")
-            Result.failure(errorDelBackend(e))
-        } catch (e: FirebaseFirestoreException) {
-            Log.d("UsuarioRepository", "getUsuarioById: ${e.message}")
-            Result.failure(errorDeFirestore(e))
-        } catch (e: NoSuchElementException) {
-            Log.d("UsuarioRepository", "getUsuarioById: ${e.message}")
-            Result.failure(ContenidoNoEncontradoException())
-        } catch (e: kotlinx.coroutines.CancellationException) {
-            throw e
-        } catch (e: Exception) {
-            Log.d("UsuarioRepository", "getUsuarioById: ${e.message}")
-            Result.failure(ErrorInesperadoException())
-        }
+        return usuarioRemoteDataSource.listenUsuarioById(id, currentUserId = usuarioActualId)
+            .map { dto ->
+                val usuario = dto.toUsuarioUi()
+                usuario.copy(esMiPerfil = usuario.id == usuarioActualId)
+            }
+            .catch { e ->
+                Log.d("UsuarioRepository", "getUsuarioByIdLive: ${e.message}")
+                throw errorDelFlujo(e)
+            }
     }
 
     // Sigue o deja de seguir: el data source decide segun si ya lo sigo. La UI cambia el boton
@@ -83,12 +59,22 @@ class UsuarioRepository @Inject constructor(
         } catch (e: FirebaseFirestoreException) {
             Log.d("UsuarioRepository", "followOrUnfollow: ${e.message}")
             Result.failure(errorDeFirestore(e))
-        } catch (e: kotlinx.coroutines.CancellationException) {
-            throw e
         } catch (e: Exception) {
             Log.d("UsuarioRepository", "followOrUnfollow: ${e.message}")
             Result.failure(ErrorInesperadoException())
         }
+    }
+
+    // Mis contadores en vivo: si alguien me sigue desde otro celular, el numero cambia solo
+    fun getMiPerfilLive(): Flow<UsuarioUi> {
+        val usuarioId = authRemoteDataSource.currentUser?.uid ?: ""
+
+        return usuarioRemoteDataSource.listenUsuarioById(usuarioId)
+            .map { dto -> dto.toUsuarioUi().copy(esMiPerfil = true) }
+            .catch { e ->
+                Log.d("UsuarioRepository", "getMiPerfilLive: ${e.message}")
+                throw errorDelFlujo(e)
+            }
     }
 
     // Mi perfil es el documento que tiene el uid de Authentication como id
@@ -108,32 +94,19 @@ class UsuarioRepository @Inject constructor(
         } catch (e: NoSuchElementException) {
             Log.d("UsuarioRepository", "getMiPerfil: ${e.message}")
             Result.failure(ContenidoNoEncontradoException())
-        } catch (e: kotlinx.coroutines.CancellationException) {
-            throw e
         } catch (e: Exception) {
             Log.d("UsuarioRepository", "getMiPerfil: ${e.message}")
             Result.failure(ErrorInesperadoException())
         }
     }
 
-    suspend fun getReviewsDeUsuario(id: String): Result<List<MyReviewUi>> {
-        return try {
-            val reviews = usuarioRemoteDataSource.getReviewsDeUsuario(id)
-            val resenas = reviews.map { it.toMyReviewUi() }
-            Result.success(resenas)
-        } catch (e: HttpException) {
-            Log.d("UsuarioRepository", "getReviewsDeUsuario: ${e.message}")
-            Result.failure(errorDelBackend(e))
-        } catch (e: FirebaseFirestoreException) {
-            Log.d("UsuarioRepository", "getReviewsDeUsuario: ${e.message}")
-            Result.failure(errorDeFirestore(e))
-        } catch (e: kotlinx.coroutines.CancellationException) {
-            throw e
-        } catch (e: Exception) {
-            Log.d("UsuarioRepository", "getReviewsDeUsuario: ${e.message}")
-            Result.failure(ErrorInesperadoException())
-        }
-    }
+    fun getReviewsDeUsuarioLive(id: String): Flow<List<MyReviewUi>> =
+        usuarioRemoteDataSource.listenReviewsDeUsuario(id)
+            .map { reviews -> reviews.map { it.toMyReviewUi() } }
+            .catch { e ->
+                Log.d("UsuarioRepository", "getReviewsDeUsuarioLive: ${e.message}")
+                throw errorDelFlujo(e)
+            }
 
     // Primero se crea la cuenta en Authentication y despues, con su uid, se guardan los demas datos.
     // Tambien completa el perfil de una cuenta creada antes del sprint 10, que no tiene documento
@@ -161,8 +134,6 @@ class UsuarioRepository @Inject constructor(
         } catch (e: FirebaseFirestoreException) {
             Log.d("UsuarioRepository", "registrarUsuario: ${e.message}")
             Result.failure(errorDeFirestore(e))
-        } catch (e: kotlinx.coroutines.CancellationException) {
-            throw e
         } catch (e: Exception) {
             Log.d("UsuarioRepository", "registrarUsuario: ${e.message}")
             Result.failure(ErrorInesperadoException())
@@ -188,8 +159,6 @@ class UsuarioRepository @Inject constructor(
         } catch (e: FirebaseFirestoreException) {
             Log.d("UsuarioRepository", "actualizarPerfil: ${e.message}")
             Result.failure(errorDeFirestore(e))
-        } catch (e: kotlinx.coroutines.CancellationException) {
-            throw e
         } catch (e: Exception) {
             Log.d("UsuarioRepository", "actualizarPerfil: ${e.message}")
             Result.failure(ErrorInesperadoException())
@@ -213,8 +182,6 @@ class UsuarioRepository @Inject constructor(
             // Sin documento todavia: la foto se copia cuando complete su perfil en Editar perfil
             if (e.code == FirebaseFirestoreException.Code.NOT_FOUND) Result.success(Unit)
             else Result.failure(errorDeFirestore(e))
-        } catch (e: kotlinx.coroutines.CancellationException) {
-            throw e
         } catch (e: Exception) {
             Log.d("UsuarioRepository", "actualizarFotoDePerfil: ${e.message}")
             Result.failure(ErrorInesperadoException())
@@ -237,55 +204,30 @@ class UsuarioRepository @Inject constructor(
         } catch (e: FirebaseFirestoreException) {
             Log.d("UsuarioRepository", "actualizarToken: ${e.message}")
             Result.failure(errorDeFirestore(e))
-        } catch (e: kotlinx.coroutines.CancellationException) {
-            throw e
         } catch (e: Exception) {
             Log.d("UsuarioRepository", "actualizarToken: ${e.message}")
             Result.failure(ErrorInesperadoException())
         }
     }
 
-    suspend fun getSeguidores(userId: String): Result<List<UsuarioUi>> {
-        return try {
-            val seguidores = usuarioRemoteDataSource.getSeguidores(userId)
-            Result.success(seguidores.map { it.toUsuarioUi() })
-        } catch (e: HttpException) {
-            Log.d("UsuarioRepository", "getSeguidores: ${e.message}")
-            Result.failure(errorDelBackend(e))
-        } catch (e: FirebaseFirestoreException) {
-            Log.d("UsuarioRepository", "getSeguidores: ${e.message}")
-            Result.failure(errorDeFirestore(e))
-        } catch (e: kotlinx.coroutines.CancellationException) {
-            throw e
-        } catch (e: Exception) {
-            Log.d("UsuarioRepository", "getSeguidores: ${e.message}")
-            Result.failure(ErrorInesperadoException())
-        }
-    }
+    // Las listas en vivo: si alguien empieza a seguirlo desde otro celular, aparece sin salir
+    fun getSeguidoresLive(userId: String): Flow<List<UsuarioUi>> =
+        usuarioRemoteDataSource.listenSeguidores(userId)
+            .map { seguidores -> seguidores.map { it.toUsuarioUi() } }
+            .catch { e ->
+                Log.d("UsuarioRepository", "getSeguidoresLive: ${e.message}")
+                throw errorDelFlujo(e)
+            }
 
-    suspend fun getSeguidos(userId: String): Result<List<UsuarioUi>> {
-        return try {
-            val seguidos = usuarioRemoteDataSource.getSeguidos(userId)
-            Result.success(seguidos.map { it.toUsuarioUi() })
-        } catch (e: HttpException) {
-            Log.d("UsuarioRepository", "getSeguidos: ${e.message}")
-            Result.failure(errorDelBackend(e))
-        } catch (e: FirebaseFirestoreException) {
-            Log.d("UsuarioRepository", "getSeguidos: ${e.message}")
-            Result.failure(errorDeFirestore(e))
-        } catch (e: kotlinx.coroutines.CancellationException) {
-            throw e
-        } catch (e: Exception) {
-            Log.d("UsuarioRepository", "getSeguidos: ${e.message}")
-            Result.failure(ErrorInesperadoException())
-        }
-    }
+    fun getSeguidosLive(userId: String): Flow<List<UsuarioUi>> =
+        usuarioRemoteDataSource.listenSeguidos(userId)
+            .map { seguidos -> seguidos.map { it.toUsuarioUi() } }
+            .catch { e ->
+                Log.d("UsuarioRepository", "getSeguidosLive: ${e.message}")
+                throw errorDelFlujo(e)
+            }
 
     // Los usuarios que sigo, para el filtro de seguidos del inicio
-    suspend fun getMisSeguidos(): Result<List<UsuarioUi>> {
-        val usuarioId = authRemoteDataSource.currentUser?.uid
-            ?: return Result.failure(SinSesionException())
-
-        return getSeguidos(userId = usuarioId)
-    }
+    fun getMisSeguidosLive(): Flow<List<UsuarioUi>> =
+        getSeguidosLive(userId = authRemoteDataSource.currentUser?.uid ?: "")
 }
