@@ -30,6 +30,11 @@
     <string name="already_have_account">¿Ya tienes una cuenta?</string>
     <string name="log_in">Iniciar sesión</string>
 
+    <!-- General -->
+    <string name="close">Cerrar</string>
+    <string name="sin_seguidores">No hay seguidores</string>
+    <string name="sin_seguidos">No sigue a nadie</string>
+
     <!-- Home Extra -->
     <string name="for_you">Para ti</string>
     <string name="trending">Tendencias</string>

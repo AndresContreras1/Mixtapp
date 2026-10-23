@@ -27,9 +27,18 @@ class UserProfileViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
             val result = usuarioRepository.getUsuarioById(id = userId)
+            val seguidoresResult = usuarioRepository.getSeguidoresDeUsuario(userId = userId)
+            val seguidosResult = usuarioRepository.getSeguidosDeUsuario(userId = userId)
 
             if (result.isSuccess) {
-                _uiState.update { it.copy(usuario = result.getOrNull(), isLoading = false) }
+                _uiState.update {
+                    it.copy(
+                        usuario = result.getOrNull(),
+                        seguidores = seguidoresResult.getOrNull() ?: emptyList(),
+                        seguidos = seguidosResult.getOrNull() ?: emptyList(),
+                        isLoading = false
+                    )
+                }
             } else {
                 _uiState.update {
                     it.copy(isLoading = false, errorMessageRes = mensajeDeError(result.exceptionOrNull()))
@@ -44,9 +53,7 @@ class UserProfileViewModel @Inject constructor(
             val result = usuarioRepository.getReviewsDeUsuario(id = userId)
 
             if (result.isSuccess) {
-                // La fecha va como AAAA-MM-DD: la escuchada mas reciente queda arriba
                 val reviews = (result.getOrNull() ?: emptyList()).sortedByDescending { it.date }
-
                 _uiState.update { it.copy(reviews = reviews, cargandoResenas = false) }
             } else {
                 _uiState.update {
@@ -56,15 +63,31 @@ class UserProfileViewModel @Inject constructor(
         }
     }
 
+    fun abrirSeguidores() {
+        _uiState.update { it.copy(tipoListaAbierta = TipoLista.SEGUIDORES) }
+    }
+
+    fun abrirSeguidos() {
+        _uiState.update { it.copy(tipoListaAbierta = TipoLista.SEGUIDOS) }
+    }
+
+    fun cerrarLista() {
+        _uiState.update { it.copy(tipoListaAbierta = null) }
+    }
+
     fun seguirDejarDeSeguir() {
         val usuario = _uiState.value.usuario ?: return
         if (_uiState.value.cambiandoSeguimiento || usuario.esMiPerfil) return
         _uiState.update { it.copy(cambiandoSeguimiento = true, errorSeguimientoRes = null) }
         viewModelScope.launch {
             val result = usuarioRepository.actualizarSeguimiento(usuario.id, !usuario.siguiendo)
+            val seguidoresResult = usuarioRepository.getSeguidoresDeUsuario(usuario.id)
+            val seguidosResult = usuarioRepository.getSeguidosDeUsuario(usuario.id)
             _uiState.update {
                 it.copy(
                     usuario = result.getOrNull() ?: it.usuario,
+                    seguidores = seguidoresResult.getOrNull() ?: it.seguidores,
+                    seguidos = seguidosResult.getOrNull() ?: it.seguidos,
                     cambiandoSeguimiento = false,
                     errorSeguimientoRes = if (result.isFailure) R.string.error_actualizar_seguimiento else null,
                 )

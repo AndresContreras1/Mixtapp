@@ -215,4 +215,28 @@ class UsuarioRepository @Inject constructor(
             Result.failure(ErrorInesperadoException())
         }
     }
+
+    suspend fun getSeguidoresDeUsuario(userId: String): Result<List<UsuarioUi>> {
+        return try {
+            val usuario = usuarioRemoteDataSource.getUsuarioById(userId)
+            val seguidoresIds = usuario.seguidoresIds.distinct()
+            val todos = usuarioRemoteDataSource.getUsuarios()
+            val seguidores = todos.filter { it.id in seguidoresIds }.map { it.toUsuarioUi() }
+            Result.success(seguidores)
+        } catch (e: Exception) {
+            Log.d("UsuarioRepository", "getSeguidoresDeUsuario: ${e.message}")
+            Result.failure(ErrorInesperadoException())
+        }
+    }
+
+    suspend fun getSeguidosDeUsuario(userId: String): Result<List<UsuarioUi>> {
+        return try {
+            val todos = usuarioRemoteDataSource.getUsuarios()
+            val seguidos = todos.filter { it.seguidoresIds.contains(userId) }.map { it.toUsuarioUi() }
+            Result.success(seguidos)
+        } catch (e: Exception) {
+            Log.d("UsuarioRepository", "getSeguidosDeUsuario: ${e.message}")
+            Result.failure(ErrorInesperadoException())
+        }
+    }
 }

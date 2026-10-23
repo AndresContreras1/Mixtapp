@@ -3,7 +3,9 @@ package com.example.mixtapp.ui.screens.profile
 import androidx.annotation.StringRes
 import com.example.mixtapp.data.model.Album
 import com.example.mixtapp.data.model.MyReviewUi
+import com.example.mixtapp.data.model.UsuarioUi
 import com.example.mixtapp.ui.screens.profile.model.ProfileTabUi
+import com.example.mixtapp.ui.screens.userprofile.TipoLista
 
 data class ProfileState(
     val misResenas: List<MyReviewUi> = emptyList(),
@@ -20,6 +22,9 @@ data class ProfileState(
     val nombre: String = "",
     val bio: String = "",
     val seguidores: Int = 0,
+    val seguidoresList: List<UsuarioUi> = emptyList(),
+    val seguidosList: List<UsuarioUi> = emptyList(),
+    val tipoListaAbierta: TipoLista? = null,
     // Aviso para quien todavia no tiene sus datos en Firestore; no es un error de carga
     @StringRes val avisoPerfilRes: Int? = null,
     val profileImageUrl: String = "",

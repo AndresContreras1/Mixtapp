@@ -4,16 +4,20 @@ import androidx.annotation.StringRes
 import com.example.mixtapp.data.model.MyReviewUi
 import com.example.mixtapp.data.model.UsuarioUi
 
+enum class TipoLista {
+    SEGUIDORES, SEGUIDOS
+}
+
 data class UserProfileState(
-    val cambiandoSeguimiento: Boolean = false,
-    @StringRes val errorSeguimientoRes: Int? = null,
     val usuario: UsuarioUi? = null,
     val reviews: List<MyReviewUi> = emptyList(),
-    // Las resenas se piden en su propio launch, asi que tienen su propia carga
-    val cargandoResenas: Boolean = true,
-    // Arranca cargando porque lo primero que hace la pantalla es pedir el perfil
+    val seguidores: List<UsuarioUi> = emptyList(),
+    val seguidos: List<UsuarioUi> = emptyList(),
+    val tipoListaAbierta: TipoLista? = null,
     val isLoading: Boolean = true,
+    val cargandoResenas: Boolean = false,
+    val cambiandoSeguimiento: Boolean = false,
     @StringRes val errorMessageRes: Int? = null,
-    // El error de las resenas va aparte, porque se piden en otro launch
     @StringRes val errorResenasRes: Int? = null,
+    @StringRes val errorSeguimientoRes: Int? = null,
 )
