@@ -2,10 +2,32 @@ package com.example.mixtapp.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.googlefonts.Font
+import androidx.compose.ui.text.googlefonts.GoogleFont
+import com.example.mixtapp.R
 
-val displayFontFamily = FontFamily.Serif
+// Las fuentes se descargan de Google Fonts: el certificado esta en res/values/font_certs.xml.
+// Si no se pueden descargar (sin internet), Android pone la fuente por defecto
+val provider = GoogleFont.Provider(
+    providerAuthority = "com.google.android.gms.fonts",
+    providerPackage = "com.google.android.gms",
+    certificates = R.array.com_google_android_gms_fonts_certs
+)
 
-val bodyFontFamily = FontFamily.SansSerif
+// Una tipografia para los titulos y otra para el texto
+val displayFontFamily = FontFamily(
+    Font(
+        googleFont = GoogleFont("Playfair Display"),
+        fontProvider = provider,
+    )
+)
+
+val bodyFontFamily = FontFamily(
+    Font(
+        googleFont = GoogleFont("Inter"),
+        fontProvider = provider,
+    )
+)
 
 val baseline = Typography()
 

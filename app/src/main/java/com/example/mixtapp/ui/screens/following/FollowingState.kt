@@ -13,5 +13,7 @@ data class FollowingState(
     val filters: List<FollowingFilterUi> = emptyList(),
     val selectedFilterId: String = "",
     val selectedStoryId: String? = null,
+    // Arranca cargando porque lo primero que hace el ViewModel es pedir las resenas
+    val isLoading: Boolean = true,
     @StringRes val errorMessageRes: Int? = null,
 )

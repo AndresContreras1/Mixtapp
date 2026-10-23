@@ -12,6 +12,7 @@ import com.example.mixtapp.data.repository.CredencialesInvalidasException
 import com.example.mixtapp.data.repository.DemasiadosIntentosException
 import com.example.mixtapp.data.repository.ErrorDeInicioSesionException
 import com.example.mixtapp.data.repository.SinConexionException
+import com.example.mixtapp.data.repository.UsuarioRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,7 +23,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val usuarioRepository: UsuarioRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(LoginState())
@@ -78,6 +80,14 @@ class LoginViewModel @Inject constructor(
             val result = authRepository.signIn(email = email, password = contrasena)
 
             if (result.isSuccess) {
+                // El token de este celular se guarda para recibir las notificaciones. Si falla,
+                // se entra igual: la sesion ya se inicio y solo se pierden las notificaciones
+                val token = usuarioRepository.actualizarToken()
+
+                if (!token.isSuccess) {
+                    Log.d("LoginViewModel", token.exceptionOrNull()?.message.toString())
+                }
+
                 _uiState.update {
                     it.copy(cargando = false, errorMessageRes = null, navigate = true)
                 }

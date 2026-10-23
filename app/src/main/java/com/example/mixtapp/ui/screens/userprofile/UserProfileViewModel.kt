@@ -11,6 +11,7 @@ import com.example.mixtapp.data.repository.UsuarioRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -21,24 +22,17 @@ class UserProfileViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(UserProfileState())
-    val uiState: StateFlow<UserProfileState> = _uiState
+    val uiState: StateFlow<UserProfileState> = _uiState.asStateFlow()
 
+    // El perfil llega con sus contadores y con si ya lo sigo
     fun getUserProfile(userId: String) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
+
             val result = usuarioRepository.getUsuarioById(id = userId)
-            val seguidoresResult = usuarioRepository.getSeguidoresDeUsuario(userId = userId)
-            val seguidosResult = usuarioRepository.getSeguidosDeUsuario(userId = userId)
 
             if (result.isSuccess) {
-                _uiState.update {
-                    it.copy(
-                        usuario = result.getOrNull(),
-                        seguidores = seguidoresResult.getOrNull() ?: emptyList(),
-                        seguidos = seguidosResult.getOrNull() ?: emptyList(),
-                        isLoading = false
-                    )
-                }
+                _uiState.update { it.copy(usuario = result.getOrNull(), isLoading = false) }
             } else {
                 _uiState.update {
                     it.copy(isLoading = false, errorMessageRes = mensajeDeError(result.exceptionOrNull()))
@@ -63,34 +57,36 @@ class UserProfileViewModel @Inject constructor(
         }
     }
 
-    fun abrirSeguidores() {
-        _uiState.update { it.copy(tipoListaAbierta = TipoLista.SEGUIDORES) }
-    }
-
-    fun abrirSeguidos() {
-        _uiState.update { it.copy(tipoListaAbierta = TipoLista.SEGUIDOS) }
-    }
-
-    fun cerrarLista() {
-        _uiState.update { it.copy(tipoListaAbierta = null) }
-    }
-
-    fun seguirDejarDeSeguir() {
+    // Si sale bien se invierte el boton y el contador de seguidores sube o baja, sin volver a
+    // pedir el perfil
+    fun followOrUnfollow() {
         val usuario = _uiState.value.usuario ?: return
-        if (_uiState.value.cambiandoSeguimiento || usuario.esMiPerfil) return
-        _uiState.update { it.copy(cambiandoSeguimiento = true, errorSeguimientoRes = null) }
+
         viewModelScope.launch {
-            val result = usuarioRepository.actualizarSeguimiento(usuario.id, !usuario.siguiendo)
-            val seguidoresResult = usuarioRepository.getSeguidoresDeUsuario(usuario.id)
-            val seguidosResult = usuarioRepository.getSeguidosDeUsuario(usuario.id)
-            _uiState.update {
-                it.copy(
-                    usuario = result.getOrNull() ?: it.usuario,
-                    seguidores = seguidoresResult.getOrNull() ?: it.seguidores,
-                    seguidos = seguidosResult.getOrNull() ?: it.seguidos,
-                    cambiandoSeguimiento = false,
-                    errorSeguimientoRes = if (result.isFailure) R.string.error_actualizar_seguimiento else null,
-                )
+            val result = usuarioRepository.followOrUnfollow(targetUserId = usuario.id)
+
+            if (result.isSuccess) {
+                _uiState.update {
+                    it.copy(
+                        usuario = it.usuario?.copy(
+                            seguidores = if (it.usuario.siguiendo) it.usuario.seguidores - 1 else it.usuario.seguidores + 1,
+                            siguiendo = !it.usuario.siguiendo,
+                        ),
+                        errorSeguimientoRes = null,
+                    )
+                }
+            } else {
+                val error = result.exceptionOrNull()
+
+                _uiState.update {
+                    it.copy(
+                        errorSeguimientoRes = if (error is SinConexionException) {
+                            R.string.error_sin_conexion
+                        } else {
+                            R.string.error_actualizar_seguimiento
+                        }
+                    )
+                }
             }
         }
     }

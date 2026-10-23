@@ -7,7 +7,7 @@ import com.example.mixtapp.R
 import com.example.mixtapp.data.model.CATEGORIA_FECHA_LANZAMIENTO
 import com.example.mixtapp.data.model.CATEGORIA_MAS_POPULARES
 import com.example.mixtapp.data.model.CATEGORIA_MEJOR_CALIFICADOS
-import com.example.mixtapp.data.model.SongReviewUi
+import com.example.mixtapp.data.model.AlbumReviewsUi
 import com.example.mixtapp.data.repository.AlbumRepository
 import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
 import com.example.mixtapp.data.repository.ErrorDelServidorException
@@ -59,7 +59,7 @@ class SearchViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
 
-            val result = albumRepository.getSongReviews()
+            val result = albumRepository.getAlbumReviews()
 
             if (result.isSuccess) {
                 val todos = result.getOrNull() ?: emptyList()
@@ -119,24 +119,24 @@ class SearchViewModel @Inject constructor(
     private fun resultadosPara(
         query: String,
         categoriaId: String?,
-        todos: List<SongReviewUi>,
-    ): List<SongReviewUi> = when {
+        todos: List<AlbumReviewsUi>,
+    ): List<AlbumReviewsUi> = when {
         query.isNotBlank() -> buscarPorNombre(query = query, todos = todos)
         categoriaId != null -> ordenarPorCategoria(categoryId = categoriaId, todos = todos)
         // Sin busqueda ni categoria se muestran todos los albumes
         else -> todos
     }
 
-    private fun buscarPorNombre(query: String, todos: List<SongReviewUi>): List<SongReviewUi> =
-        todos.filter { songReview ->
-            songReview.album.title.contains(query, ignoreCase = true) ||
-                    songReview.album.artist.contains(query, ignoreCase = true)
+    private fun buscarPorNombre(query: String, todos: List<AlbumReviewsUi>): List<AlbumReviewsUi> =
+        todos.filter { albumReviews ->
+            albumReviews.album.title.contains(query, ignoreCase = true) ||
+                    albumReviews.album.artist.contains(query, ignoreCase = true)
         }
 
     private fun ordenarPorCategoria(
         categoryId: String,
-        todos: List<SongReviewUi>,
-    ): List<SongReviewUi> = when (categoryId) {
+        todos: List<AlbumReviewsUi>,
+    ): List<AlbumReviewsUi> = when (categoryId) {
         CATEGORIA_FECHA_LANZAMIENTO -> todos.sortedByDescending { it.album.year }
         CATEGORIA_MEJOR_CALIFICADOS -> todos.sortedByDescending { it.rating }
         // Los mas populares son los que tienen mas resenas

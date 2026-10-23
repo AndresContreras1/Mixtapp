@@ -1,4 +1,4 @@
-package com.example.mixtapp.ui.screens.songreview.components
+package com.example.mixtapp.ui.screens.albumdetail.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
@@ -24,7 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
-import com.example.mixtapp.data.local.LocalSongReviewProvider
+import com.example.mixtapp.data.local.LocalAlbumReviewsProvider
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.theme.displayFontFamily
 import com.example.mixtapp.ui.utils.StarRating
@@ -115,14 +115,14 @@ private fun StatItem(value: String, label: String?, estrellas: Int?, modifier: M
 @Composable
 @Preview(showBackground = true)
 fun ReleaseStatsPreview() {
-    val song = LocalSongReviewProvider.songs.first()
+    val albumReviews = LocalAlbumReviewsProvider.albumReviews.first()
 
     MixtappTheme(darkTheme = true) {
         ReleaseStats(
-            rating = song.rating,
-            estrellas = song.estrellas,
-            ratingCount = song.ratingCount,
-            recommendRate = song.recommendRate,
+            rating = albumReviews.rating,
+            estrellas = albumReviews.estrellas,
+            ratingCount = albumReviews.ratingCount,
+            recommendRate = albumReviews.recommendRate,
         )
     }
 }

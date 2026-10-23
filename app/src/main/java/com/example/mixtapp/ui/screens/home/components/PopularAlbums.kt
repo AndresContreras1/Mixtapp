@@ -8,14 +8,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.mixtapp.data.local.LocalSongReviewProvider
-import com.example.mixtapp.data.model.SongReviewUi
+import com.example.mixtapp.data.local.LocalAlbumReviewsProvider
+import com.example.mixtapp.data.model.AlbumReviewsUi
 import com.example.mixtapp.ui.theme.MixtappTheme
 
 // Todos los albumes en una fila que se desliza
 @Composable
 fun PopularAlbums(
-    albums: List<SongReviewUi>,
+    albums: List<AlbumReviewsUi>,
     onAlbumClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -40,7 +40,7 @@ fun PopularAlbums(
 fun PopularAlbumsPreview() {
     MixtappTheme(darkTheme = true) {
         PopularAlbums(
-            albums = LocalSongReviewProvider.popularSongs,
+            albums = LocalAlbumReviewsProvider.popularAlbums,
             onAlbumClick = {},
         )
     }

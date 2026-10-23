@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,6 +22,7 @@ import com.example.mixtapp.ui.screens.review.components.ReviewHeader
 import com.example.mixtapp.ui.screens.review.components.WriteReviewBackground
 import com.example.mixtapp.ui.screens.review.components.WriteReviewList
 import com.example.mixtapp.ui.theme.MixtappTheme
+import com.example.mixtapp.ui.utils.LoadingBox
 
 // Recibe solo el id; el ViewModel se encarga de buscar el album y mi resena si ya existe
 @Composable
@@ -46,19 +46,20 @@ fun WriteReviewScreen(
         writeReviewViewModel.getAlbumById(albumId = albumId)
     }
 
+    // Con una copia local, Kotlin sabe que no es nula despues de revisarla: no hace falta el !!
+    val album = state.album
+
     when {
         state.isLoading -> {
-            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
+            LoadingBox(modifier = modifier)
         }
-        state.album == null -> {
+        album == null -> {
             Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(text = stringResource(state.errorMessageRes ?: R.string.album_no_encontrado))
             }
         }
         else -> WriteReviewScreenContent(
-            album = state.album!!,
+            album = album,
             editando = state.reviewId != null,
             rating = state.rating,
             reviewText = state.reviewText,

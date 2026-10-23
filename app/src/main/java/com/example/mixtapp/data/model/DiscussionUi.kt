@@ -10,6 +10,8 @@ data class DiscussionReviewUi(
     val id: String,
     val reviewerName: String,
     val reviewerAvatarText: String,
+    // La foto de quien la escribio; si esta vacia se muestran las iniciales
+    val reviewerImage: String,
     val reviewedAt: String,
     val album: Album,
     val rating: Int,

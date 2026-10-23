@@ -9,6 +9,7 @@ import com.example.mixtapp.data.datasource.impl.firestore.UsuarioFirestoreDataSo
 import com.example.mixtapp.data.dtos.CreateReviewAlbumDto
 import com.example.mixtapp.data.dtos.CreateReviewDto
 import com.example.mixtapp.data.dtos.CreateReviewUsuarioDto
+import com.example.mixtapp.data.dtos.toDiscussionReviewUi
 import com.example.mixtapp.data.dtos.toMyReviewUi
 import com.example.mixtapp.data.model.DiscussionCommentUi
 import com.example.mixtapp.data.model.DiscussionUi
@@ -20,7 +21,8 @@ import retrofit2.HttpException
 import javax.inject.Inject
 
 // Organiza varios data sources: las resenas, el usuario y el album que se copian en cada una,
-// y Authentication para saber quien es el usuario de la app
+// los comentarios locales y Authentication para saber quien es el usuario de la app.
+// Para volver al backend de Express basta con cambiar las implementaciones a las de Retrofit
 class ReviewRepository @Inject constructor(
     private val reviewLocalDataSource: ReviewLocalDataSource,
     private val reviewRemoteDataSource: ReviewFirestoreDataSourceImpl,
@@ -29,18 +31,23 @@ class ReviewRepository @Inject constructor(
     private val authRemoteDataSource: AuthRemoteDataSource
 ) {
 
-    suspend fun actualizarLike(reviewId: String, darLike: Boolean): Result<Int> {
+    // Da el like o lo quita: el data source decide segun si ya existe. La UI cambia el corazon
+    // y el contador solo si esto sale bien
+    suspend fun sendOrDeleteLike(reviewId: String): Result<Unit> {
         return try {
             val usuarioId = authRemoteDataSource.currentUser?.uid
                 ?: return Result.failure(SinSesionException())
-            val likes = reviewRemoteDataSource.actualizarLike(reviewId, usuarioId, darLike)
-            Result.success(likes.size)
+
+            reviewRemoteDataSource.sendOrDeleteLike(reviewId = reviewId, userId = usuarioId)
+            Result.success(Unit)
+        } catch (e: HttpException) {
+            Log.d("ReviewRepository", "sendOrDeleteLike: ${e.message}")
+            Result.failure(errorDelBackend(e))
         } catch (e: FirebaseFirestoreException) {
-            Log.d("ReviewRepository", "actualizarLike: ${e.message}")
+            Log.d("ReviewRepository", "sendOrDeleteLike: ${e.message}")
             Result.failure(errorDeFirestore(e))
-        } catch (e: NoSuchElementException) {
-            Result.failure(ContenidoNoEncontradoException())
         } catch (e: Exception) {
+            Log.d("ReviewRepository", "sendOrDeleteLike: ${e.message}")
             Result.failure(ErrorInesperadoException())
         }
     }
@@ -93,6 +100,7 @@ class ReviewRepository @Inject constructor(
                     calificacion = rating,
                     comentario = texto,
                     fechaEscucha = if (fecha.isEmpty()) null else fecha,
+                    likesCount = 0,
                     usuario = CreateReviewUsuarioDto(nombre = nombre.await(), fotoUrl = photoUrl),
                     album = CreateReviewAlbumDto(
                         titulo = albumDto.titulo,
@@ -137,15 +145,32 @@ class ReviewRepository @Inject constructor(
         }
     }
 
+    // La resena sale de la base remota, con mi like, y sus comentarios de los datos locales
     suspend fun getDiscussionByReviewId(reviewId: String): Result<DiscussionUi> {
         return try {
-            val discusion = reviewLocalDataSource.getDiscussionByReviewId(reviewId = reviewId)
-                ?: return Result.failure(ContenidoNoEncontradoException())
+            val usuarioId = authRemoteDataSource.currentUser?.uid ?: ""
+            val review = reviewRemoteDataSource.getReviewById(reviewId, currentUserId = usuarioId)
+            val comentarios = reviewLocalDataSource.getComentarios(reviewId = reviewId)
 
-            Result.success(discusion)
+            Result.success(
+                DiscussionUi(
+                    id = reviewId,
+                    review = review.toDiscussionReviewUi(comentarios = comentarios.size),
+                    comments = comentarios,
+                )
+            )
+        } catch (e: HttpException) {
+            Log.d("ReviewRepository", "getDiscussionByReviewId: ${e.message}")
+            Result.failure(errorDelBackend(e))
+        } catch (e: FirebaseFirestoreException) {
+            Log.d("ReviewRepository", "getDiscussionByReviewId: ${e.message}")
+            Result.failure(errorDeFirestore(e))
+        } catch (e: NoSuchElementException) {
+            Log.d("ReviewRepository", "getDiscussionByReviewId: ${e.message}")
+            Result.failure(ContenidoNoEncontradoException())
         } catch (e: Exception) {
             Log.d("ReviewRepository", "getDiscussionByReviewId: ${e.message}")
-            Result.failure(ErrorDeDatosLocalesException())
+            Result.failure(ErrorInesperadoException())
         }
     }
 
@@ -154,9 +179,9 @@ class ReviewRepository @Inject constructor(
         autor: String,
         texto: String,
         esRespuesta: Boolean,
-    ): Result<DiscussionUi> = actualizarDiscusion(reviewId = reviewId) { discusion ->
+    ): Result<List<DiscussionCommentUi>> = actualizarComentarios(reviewId = reviewId) { comentarios ->
         val comentario = DiscussionCommentUi(
-            id = "comentario-propio-" + (discusion.comments.size + 1),
+            id = "comentario-propio-" + (comentarios.size + 1),
             author = autor,
             initials = autor.take(2).lowercase(),
             // Vacio: la pantalla muestra "ahora" desde strings.xml
@@ -167,44 +192,20 @@ class ReviewRepository @Inject constructor(
             isLiked = false,
         )
 
-        discusion.copy(
-            review = discusion.review.copy(
-                commentsCount = discusion.review.commentsCount + 1
-            ),
-            comments = discusion.comments + comentario,
-        )
+        comentarios + comentario
     }
-
-    suspend fun darQuitarLikeResena(reviewId: String): Result<DiscussionUi> =
-        actualizarDiscusion(reviewId = reviewId) { discusion ->
-            val nuevoLike = !discusion.review.isLiked
-
-            discusion.copy(
-                review = discusion.review.copy(
-                    likes = if (nuevoLike) discusion.review.likes + 1 else discusion.review.likes - 1,
-                    isLiked = nuevoLike,
-                )
-            )
-        }
-
-    suspend fun compartirQuitarResena(reviewId: String): Result<DiscussionUi> =
-        actualizarDiscusion(reviewId = reviewId) { discusion ->
-            discusion.copy(review = discusion.review.copy(isShared = !discusion.review.isShared))
-        }
 
     suspend fun darQuitarLikeComentario(
         reviewId: String,
         commentId: String,
-    ): Result<DiscussionUi> = actualizarDiscusion(reviewId = reviewId) { discusion ->
-        discusion.copy(
-            comments = discusion.comments.map { comentario ->
-                if (comentario.id == commentId) {
-                    conLike(comentario = comentario)
-                } else {
-                    comentario
-                }
+    ): Result<List<DiscussionCommentUi>> = actualizarComentarios(reviewId = reviewId) { comentarios ->
+        comentarios.map { comentario ->
+            if (comentario.id == commentId) {
+                conLike(comentario = comentario)
+            } else {
+                comentario
             }
-        )
+        }
     }
 
     private fun conLike(comentario: DiscussionCommentUi): DiscussionCommentUi {
@@ -216,22 +217,18 @@ class ReviewRepository @Inject constructor(
         )
     }
 
-    private suspend fun actualizarDiscusion(
+    private suspend fun actualizarComentarios(
         reviewId: String,
-        cambio: (DiscussionUi) -> DiscussionUi,
-    ): Result<DiscussionUi> {
+        cambio: (List<DiscussionCommentUi>) -> List<DiscussionCommentUi>,
+    ): Result<List<DiscussionCommentUi>> {
         return try {
-            val discusion = reviewLocalDataSource.getDiscussionByReviewId(reviewId = reviewId)
-                ?: return Result.failure(ContenidoNoEncontradoException())
-            val actualizada = cambio(discusion)
+            val comentarios = reviewLocalDataSource.getComentarios(reviewId = reviewId)
+            val actualizados = cambio(comentarios)
 
-            reviewLocalDataSource.guardarDiscusion(discusion = actualizada)
-            Result.success(actualizada)
-        } catch (e: IndexOutOfBoundsException) {
-            Log.d("ReviewRepository", "actualizarDiscusion: ${e.message}")
-            Result.failure(ContenidoNoEncontradoException())
+            reviewLocalDataSource.guardarComentarios(reviewId = reviewId, comentarios = actualizados)
+            Result.success(actualizados)
         } catch (e: Exception) {
-            Log.d("ReviewRepository", "actualizarDiscusion: ${e.message}")
+            Log.d("ReviewRepository", "actualizarComentarios: ${e.message}")
             Result.failure(ErrorDeDatosLocalesException())
         }
     }

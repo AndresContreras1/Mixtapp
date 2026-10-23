@@ -32,7 +32,7 @@ class SelectAlbumViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
 
-            val result = albumRepository.getSongReviews()
+            val result = albumRepository.getAlbumReviews()
 
             if (result.isSuccess) {
                 _uiState.update {

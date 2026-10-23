@@ -4,16 +4,18 @@ import android.util.Log
 import com.example.mixtapp.data.datasource.AlbumLocalDataSource
 import com.example.mixtapp.data.datasource.AuthRemoteDataSource
 import com.example.mixtapp.data.datasource.impl.firestore.AlbumFirestoreDataSourceImpl
-import com.example.mixtapp.data.datasource.impl.firestore.UsuarioFirestoreDataSourceImpl
+import com.example.mixtapp.data.dtos.AlbumDto
 import com.example.mixtapp.data.dtos.toAlbum
-import com.example.mixtapp.data.dtos.toSongReviewItemUi
+import com.example.mixtapp.data.dtos.toAlbumReviewItemUi
 import com.example.mixtapp.data.model.Album
 import com.example.mixtapp.data.model.SearchCategoryUi
-import com.example.mixtapp.data.model.SongReviewItemUi
-import com.example.mixtapp.data.model.SongReviewUi
+import com.example.mixtapp.data.model.AlbumReviewItemUi
+import com.example.mixtapp.data.model.AlbumReviewsUi
 import com.google.firebase.firestore.FirebaseFirestoreException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import retrofit2.HttpException
 import javax.inject.Inject
 import kotlin.math.roundToInt
@@ -21,32 +23,30 @@ import kotlin.math.roundToInt
 // Desde esta calificacion se cuenta que la resena recomienda el album
 private const val CALIFICACION_PARA_RECOMENDAR = 4
 
-// Para volver al backend de Express basta con cambiar las implementaciones a las de Retrofit.
-// Authentication dice quien es el usuario de la app y el data source de usuarios con que id lo
-// guarda la base; con eso se marca mi resena
+// Para volver al backend de Express basta con cambiar la implementacion a AlbumRetrofitDataSourceImpl.
+// Authentication dice quien es el usuario de la app: con eso se marca mi resena y mis likes
 class AlbumRepository @Inject constructor(
     private val albumLocalDataSource: AlbumLocalDataSource,
     private val albumRemoteDataSource: AlbumFirestoreDataSourceImpl,
-    private val usuarioRemoteDataSource: UsuarioFirestoreDataSourceImpl,
     private val authRemoteDataSource: AuthRemoteDataSource
 ) {
 
     // Cada album llega con sus resenas para calcular el promedio y cuantos lo recomiendan
-    suspend fun getSongReviews(): Result<List<SongReviewUi>> {
+    suspend fun getAlbumReviews(): Result<List<AlbumReviewsUi>> {
         return try {
             val albumes = albumRemoteDataSource.getAlbumes()
-            val usuarioActualId = idDeMiUsuario()
+            val usuarioActualId = authRemoteDataSource.currentUser?.uid ?: ""
 
             // Las resenas de todos los albumes se piden a la vez y se espera la mas lenta. Si una
             // falla, falla todo: un album sin sus resenas mostraria un promedio que no es
-            val songReviews = coroutineScope {
+            val albumesConResenas = coroutineScope {
                 val pendientes = albumes.map { album ->
                     async {
-                        val reviews = albumRemoteDataSource.getReviewsDeAlbum(album.id)
+                        val reviews = albumRemoteDataSource.getReviewsDeAlbum(album.id, currentUserId = usuarioActualId)
                         conEstadisticas(
                             album = album.toAlbum(),
                             reviews = reviews.map { review ->
-                                review.toSongReviewItemUi(usuarioActualId = usuarioActualId)
+                                review.toAlbumReviewItemUi(usuarioActualId = usuarioActualId)
                             }
                         )
                     }
@@ -55,49 +55,73 @@ class AlbumRepository @Inject constructor(
                 pendientes.map { it.await() }
             }
 
-            Result.success(songReviews)
+            Result.success(albumesConResenas)
         } catch (e: HttpException) {
-            Log.d("AlbumRepository", "getSongReviews: ${e.message}")
+            Log.d("AlbumRepository", "getAlbumReviews: ${e.message}")
             Result.failure(errorDelBackend(e))
         } catch (e: FirebaseFirestoreException) {
-            Log.d("AlbumRepository", "getSongReviews: ${e.message}")
+            Log.d("AlbumRepository", "getAlbumReviews: ${e.message}")
             Result.failure(errorDeFirestore(e))
         } catch (e: Exception) {
-            Log.d("AlbumRepository", "getSongReviews: ${e.message}")
+            Log.d("AlbumRepository", "getAlbumReviews: ${e.message}")
             Result.failure(ErrorInesperadoException())
         }
     }
 
+    // Datos en vivo para el inicio: cada vez que cambia una resena se arman de nuevo los albumes con
+    // sus estadisticas. Como en clase, retorna el flujo y no un Result: los errores los recibe el
+    // ViewModel en el catch
+    fun getAlbumReviewsLive(): Flow<List<AlbumReviewsUi>> {
+        val usuarioActualId = authRemoteDataSource.currentUser?.uid ?: ""
+        // Los albumes no cambian mientras se usa la app: se piden con la primera lista y no en
+        // cada cambio, para no gastar lecturas
+        var albumes: List<AlbumDto> = emptyList()
+
+        return albumRemoteDataSource.listenAllReviews(currentUserId = usuarioActualId)
+            .map { reviews ->
+                if (albumes.isEmpty()) albumes = albumRemoteDataSource.getAlbumes()
+
+                albumes.map { album ->
+                    conEstadisticas(
+                        album = album.toAlbum(),
+                        reviews = reviews
+                            .filter { review -> review.albumId == album.id }
+                            .map { review -> review.toAlbumReviewItemUi(usuarioActualId = usuarioActualId) }
+                    )
+                }
+            }
+    }
+
     // El album con todas sus resenas; entre ellas va la mia si ya lo califique
-    suspend fun getSongReviewById(songId: String): Result<SongReviewUi> {
+    suspend fun getAlbumReviewsById(albumId: String): Result<AlbumReviewsUi> {
         return try {
-            val usuarioActualId = idDeMiUsuario()
+            val usuarioActualId = authRemoteDataSource.currentUser?.uid ?: ""
 
             // El album y sus resenas salen a la vez
-            val songReview = coroutineScope {
-                val album = async { albumRemoteDataSource.getAlbumById(songId) }
-                val reviews = async { albumRemoteDataSource.getReviewsDeAlbum(songId) }
+            val albumReviews = coroutineScope {
+                val album = async { albumRemoteDataSource.getAlbumById(albumId) }
+                val reviews = async { albumRemoteDataSource.getReviewsDeAlbum(albumId, currentUserId = usuarioActualId) }
 
                 conEstadisticas(
                     album = album.await().toAlbum(),
                     reviews = reviews.await().map { review ->
-                        review.toSongReviewItemUi(usuarioActualId = usuarioActualId)
+                        review.toAlbumReviewItemUi(usuarioActualId = usuarioActualId)
                     }
                 )
             }
 
-            Result.success(songReview)
+            Result.success(albumReviews)
         } catch (e: HttpException) {
-            Log.d("AlbumRepository", "getSongReviewById: ${e.message}")
+            Log.d("AlbumRepository", "getAlbumReviewsById: ${e.message}")
             Result.failure(errorDelBackend(e))
         } catch (e: FirebaseFirestoreException) {
-            Log.d("AlbumRepository", "getSongReviewById: ${e.message}")
+            Log.d("AlbumRepository", "getAlbumReviewsById: ${e.message}")
             Result.failure(errorDeFirestore(e))
         } catch (e: NoSuchElementException) {
-            Log.d("AlbumRepository", "getSongReviewById: ${e.message}")
+            Log.d("AlbumRepository", "getAlbumReviewsById: ${e.message}")
             Result.failure(ContenidoNoEncontradoException())
         } catch (e: Exception) {
-            Log.d("AlbumRepository", "getSongReviewById: ${e.message}")
+            Log.d("AlbumRepository", "getAlbumReviewsById: ${e.message}")
             Result.failure(ErrorInesperadoException())
         }
     }
@@ -111,14 +135,9 @@ class AlbumRepository @Inject constructor(
         }
     }
 
-    // El id con el que la base guarda mis resenas. Con Firestore, sin sesion ninguna resena es mia;
-    // con Retrofit el usuario de la app siempre es el 1 del backend
-    private fun idDeMiUsuario(): String =
-        usuarioRemoteDataSource.idDelUsuarioEnLaBase(uid = authRemoteDataSource.currentUser?.uid ?: "")
-
     // El promedio, el total, el porcentaje que recomienda y mi calificacion salen de las resenas.
     // Es publica para que el ViewModel recalcule al quitar una resena, sin volver a pedir el album
-    fun conEstadisticas(album: Album, reviews: List<SongReviewItemUi>): SongReviewUi {
+    fun conEstadisticas(album: Album, reviews: List<AlbumReviewItemUi>): AlbumReviewsUi {
         var suma = 0
         var recomiendan = 0
 
@@ -131,7 +150,7 @@ class AlbumRepository @Inject constructor(
         val porcentaje = if (reviews.isEmpty()) 0 else recomiendan * 100 / reviews.size
         val miResena = reviews.find { it.esMia }
 
-        return SongReviewUi(
+        return AlbumReviewsUi(
             id = album.id,
             album = album,
             rating = promedio,

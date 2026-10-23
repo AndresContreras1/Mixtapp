@@ -1,4 +1,4 @@
-package com.example.mixtapp.ui.screens.songreview.components
+package com.example.mixtapp.ui.screens.albumdetail.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,19 +16,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
-import com.example.mixtapp.data.local.LocalSongReviewProvider
-import com.example.mixtapp.data.model.SongReviewUi
+import com.example.mixtapp.data.local.LocalAlbumReviewsProvider
+import com.example.mixtapp.data.model.AlbumReviewsUi
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.theme.displayFontFamily
 import com.example.mixtapp.ui.utils.BackButton
 import com.example.mixtapp.ui.utils.ErrorMessage
 
 @Composable
-fun SongReviewSections(
-    songReview: SongReviewUi,
+fun AlbumDetailSections(
+    albumReviews: AlbumReviewsUi,
     miResenaId: String?,
-    likesPendientes: Set<String> = emptySet(),
-    onLikeClick: (String) -> Unit = {},
+    onLikeClick: (String) -> Unit,
     errorMessageRes: Int?,
     onWriteReviewClick: () -> Unit,
     onDeleteMyReviewClick: () -> Unit,
@@ -46,16 +45,16 @@ fun SongReviewSections(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                ReleaseImage(cover = songReview.album.cover, albumTitle = songReview.album.title)
+                ReleaseImage(cover = albumReviews.album.cover, albumTitle = albumReviews.album.title)
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                ReleaseTags(tags = songReview.album.tags)
+                ReleaseTags(tags = albumReviews.album.tags)
 
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Text(
-                    text = songReview.album.title,
+                    text = albumReviews.album.title,
                     color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 28.sp,
                     fontFamily = displayFontFamily,
@@ -63,7 +62,7 @@ fun SongReviewSections(
                 )
 
                 Text(
-                    text = songReview.album.artist,
+                    text = albumReviews.album.artist,
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
@@ -72,17 +71,17 @@ fun SongReviewSections(
                 Spacer(modifier = Modifier.height(24.dp))
 
                 ReleaseStats(
-                    rating = songReview.rating,
-                    estrellas = songReview.estrellas,
-                    ratingCount = songReview.ratingCount,
-                    recommendRate = songReview.recommendRate
+                    rating = albumReviews.rating,
+                    estrellas = albumReviews.estrellas,
+                    ratingCount = albumReviews.ratingCount,
+                    recommendRate = albumReviews.recommendRate
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // Tocar la tarjeta abre la pantalla para escribir o editar mi resena
                 UserRatingSection(
-                    rating = songReview.userRating,
+                    rating = albumReviews.userRating,
                     onClick = onWriteReviewClick
                 )
 
@@ -103,7 +102,7 @@ fun SongReviewSections(
             )
         }
 
-        if (songReview.reviews.isEmpty()) {
+        if (albumReviews.reviews.isEmpty()) {
             item {
                 Text(
                     text = stringResource(R.string.sin_resenas_album),
@@ -114,13 +113,12 @@ fun SongReviewSections(
         }
 
         // Los comentarios del album son sus resenas guardadas
-        items(songReview.reviews.size) { index ->
-            val review = songReview.reviews[index]
+        items(albumReviews.reviews.size) { index ->
+            val review = albumReviews.reviews[index]
 
             ReviewItem(
                 review = review,
                 onLikeClick = { onLikeClick(review.id) },
-                cambiandoLike = review.id in likesPendientes,
                 onEditClick = onWriteReviewClick,
                 onDeleteClick = onDeleteMyReviewClick,
                 onAuthorClick = { onAuthorClick(review.authorId) },
@@ -132,11 +130,12 @@ fun SongReviewSections(
 
 @Composable
 @Preview(showBackground = true, device = "spec:width=393dp,height=852dp")
-fun SongReviewSectionsPreview() {
+fun AlbumDetailSectionsPreview() {
     MixtappTheme(darkTheme = true) {
-        SongReviewSections(
-            songReview = LocalSongReviewProvider.songs.first(),
+        AlbumDetailSections(
+            albumReviews = LocalAlbumReviewsProvider.albumReviews.first(),
             miResenaId = null,
+            onLikeClick = {},
             errorMessageRes = null,
             onWriteReviewClick = {},
             onDeleteMyReviewClick = {},

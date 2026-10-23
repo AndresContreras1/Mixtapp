@@ -20,8 +20,10 @@ object LocalFollowingProvider {
         reviews = listOf(
             FollowingReviewUi(
                 id = "toxicity-liz",
+                authorId = "liz",
                 reviewerName = "Liz",
                 reviewerInitials = "Lz",
+                reviewerImage = "",
                 reviewedAt = "hace 18 min",
                 album = LocalAlbumProvider.toxicity,
                 rating = 5,
@@ -33,8 +35,10 @@ object LocalFollowingProvider {
             ),
             FollowingReviewUi(
                 id = "rush-jen",
+                authorId = "jen",
                 reviewerName = "Jen",
                 reviewerInitials = "J",
+                reviewerImage = "",
                 reviewedAt = "hace 40 min",
                 album = LocalAlbumProvider.rush,
                 rating = 4,
@@ -46,8 +50,10 @@ object LocalFollowingProvider {
             ),
             FollowingReviewUi(
                 id = "from-zero-jhon",
+                authorId = "jhon",
                 reviewerName = "Jhon",
                 reviewerInitials = "Jh",
+                reviewerImage = "",
                 reviewedAt = "hace 1 hora",
                 album = LocalAlbumProvider.fromZero,
                 rating = 5,

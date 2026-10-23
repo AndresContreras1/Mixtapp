@@ -31,7 +31,6 @@
     <string name="log_in">Iniciar sesión</string>
 
     <!-- General -->
-    <string name="close">Cerrar</string>
     <string name="sin_seguidores">No hay seguidores</string>
     <string name="sin_seguidos">No sigue a nadie</string>
 
@@ -45,6 +44,7 @@
     <string name="friends_activity">Actividad de seguidos</string>
     <string name="sin_actividad_seguidos">Aún no hay reseñas de personas a quienes sigues</string>
     <string name="todos_los_albumes">Todos los álbumes</string>
+    <string name="resenas_de_seguidos">Reseñas de quienes sigues</string>
 
     <!-- Profile Extra -->
     <string name="user_stats">%1$s • %2$s</string>
@@ -194,7 +194,7 @@
     <string name="reviews">Reseñas</string>
     <string name="write_one">Escribe una</string>
     <string name="editar_la_tuya">Edita la tuya</string>
-    <string name="marca_propia">(tú)</string>
+    <string name="marca_propia">%1$s (tú)</string>
     <string name="sin_resenas_album">Todavía nadie reseña este álbum. ¡Escribe la primera!</string>
     <string name="ratings_label">calificaciones</string>
     <string name="calificacion_label">calificación</string>
@@ -217,7 +217,10 @@
     <string name="nav_profile">Perfil</string>
     <string name="quitar_like">Quitar me gusta</string>
     <string name="cantidad_likes">%1$d Me gusta</string>
-    <string name="cantidad_seguidores">Seguidores: %1$d</string>
+    <string name="cantidad_seguidores">%1$d seguidores</string>
+    <string name="cantidad_seguidos">%1$d seguidos</string>
+    <string name="titulo_seguidores">Seguidores</string>
+    <string name="titulo_seguidos">Seguidos</string>
     <string name="seguir_usuario">Seguir</string>
     <string name="dejar_de_seguir">Dejar de seguir</string>
     <string name="error_actualizar_like">No se pudo actualizar el me gusta. Inténtalo de nuevo.</string>

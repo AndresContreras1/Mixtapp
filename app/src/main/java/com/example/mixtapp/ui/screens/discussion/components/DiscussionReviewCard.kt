@@ -15,10 +15,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalDiscussionProvider
 import com.example.mixtapp.data.model.DiscussionReviewUi
 import com.example.mixtapp.ui.theme.MixtappTheme
@@ -46,6 +48,7 @@ fun DiscussionReviewCard(
             ReviewAuthorRow(
                 reviewerName = review.reviewerName,
                 avatarText = review.reviewerAvatarText,
+                avatarImage = review.reviewerImage,
                 reviewedAt = review.reviewedAt,
                 avatarSize = 40.dp,
                 avatarBrush = SolidColor(MaterialTheme.colorScheme.secondary),
@@ -89,6 +92,13 @@ fun DiscussionReviewCard(
                 likes = review.likes,
                 isLiked = review.isLiked,
                 onLikeClick = onLikeClick,
+                // Ya estamos en la discusion: el icono solo acompana el total
+                commentsLabel = if (review.commentsCount == 1) {
+                    stringResource(R.string.un_comentario)
+                } else {
+                    stringResource(R.string.comments_count, review.commentsCount)
+                },
+                onCommentsClick = null,
                 isShared = review.isShared,
                 onShareClick = onShareClick,
                 modifier = Modifier

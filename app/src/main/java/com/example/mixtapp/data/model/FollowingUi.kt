@@ -18,13 +18,18 @@ data class FollowingStoryUi(
 
 data class FollowingReviewUi(
     val id: String,
+    // Para abrir el perfil de quien la escribio
+    val authorId: String,
     val reviewerName: String,
     val reviewerInitials: String,
+    // La foto de quien la escribio; si esta vacia se muestran las iniciales
+    val reviewerImage: String,
     val reviewedAt: String,
     val album: Album,
     val rating: Int,
     val reviewText: String,
     val likes: Int,
+    // Los comentarios de la discusion de esta resena
     val comments: Int,
     val isLiked: Boolean,
     val isShared: Boolean,

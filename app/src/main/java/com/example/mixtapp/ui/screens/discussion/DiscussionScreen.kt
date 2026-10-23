@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,6 +31,7 @@ import com.example.mixtapp.ui.screens.discussion.components.NewCommentField
 import com.example.mixtapp.ui.screens.discussion.components.ThreadCommentItem
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.ErrorMessage
+import com.example.mixtapp.ui.utils.LoadingBox
 
 // Recibe solo el id de la resena; el ViewModel se encarga de buscar la discusion
 @Composable
@@ -47,24 +47,25 @@ fun DiscussionScreen(
         discussionViewModel.getDiscussionByReviewId(reviewId = reviewId)
     }
 
+    // Con una copia local, Kotlin sabe que no es nula despues de revisarla: no hace falta el !!
+    val discussion = state.discussion
+
     when {
         state.isLoading -> {
-            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
+            LoadingBox(modifier = modifier)
         }
-        state.discussion == null -> {
+        discussion == null -> {
             Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(text = stringResource(state.errorMessageRes ?: R.string.discusion_no_encontrada))
             }
         }
         else -> DiscussionScreenContent(
-            discussion = state.discussion!!,
+            discussion = discussion,
             nuevoComentario = state.nuevoComentario,
             replyingToCommentId = state.replyingToCommentId,
             errorMessageRes = state.errorMessageRes,
             onBackClick = onBackClick,
-            onReviewLikeClick = { discussionViewModel.darQuitarLikeResena() },
+            onReviewLikeClick = { discussionViewModel.sendOrDeleteLike() },
             onReviewShareClick = { discussionViewModel.compartirQuitarResena() },
             onCommentLikeClick = { discussionViewModel.darQuitarLikeComentario(commentId = it) },
             onCommentReplyClick = { discussionViewModel.responderComentario(commentId = it) },

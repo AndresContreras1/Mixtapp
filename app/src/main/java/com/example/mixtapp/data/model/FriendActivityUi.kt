@@ -8,5 +8,6 @@ data class FriendActivityUi(
     // Para saber a cual perfil llevar al tocar el autor
     val authorId: String,
     val author: String,
+    val authorImage: String,
     val date: String,
 )

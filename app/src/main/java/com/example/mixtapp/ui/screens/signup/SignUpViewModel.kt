@@ -129,7 +129,7 @@ class SignUpViewModel @Inject constructor(
             val result = authRepository.signUp(email = email, password = contrasena)
 
             if (result.isSuccess) {
-                val registro = usuarioRepository.registrarUsuario(username = usuario, nombre = nombre)
+                val registro = usuarioRepository.registrarUsuario(username = usuario, nombre = nombre, bio = "")
 
                 // Si fallan los datos de Firestore la cuenta ya existe: el perfil avisa que hay que
                 // completarlos en Editar perfil, asi que se entra igual en vez de dejarlo atascado

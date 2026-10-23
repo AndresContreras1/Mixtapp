@@ -15,8 +15,8 @@ sealed class Screen(val route: String) {
     data object EditProfile : Screen(route = "editProfile")
 
     // Las pantallas de detalle reciben un id por la ruta
-    data object SongDetail : Screen(route = "songDetail/{songId}") {
-        fun createRoute(songId: String) = "songDetail/$songId"
+    data object AlbumDetail : Screen(route = "albumDetail/{albumId}") {
+        fun createRoute(albumId: String) = "albumDetail/$albumId"
     }
 
     data object Discussion : Screen(route = "discussion/{reviewId}") {
@@ -29,5 +29,10 @@ sealed class Screen(val route: String) {
 
     data object UserProfile : Screen(route = "userProfile/{userId}") {
         fun createRoute(userId: String) = "userProfile/$userId"
+    }
+
+    // Los seguidores o los seguidos de un usuario: el tipo dice cual de las dos listas
+    data object FollowList : Screen(route = "followList/{userId}/{tipo}") {
+        fun createRoute(userId: String, tipo: String) = "followList/$userId/$tipo"
     }
 }

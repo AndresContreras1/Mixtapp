@@ -1,7 +1,6 @@
 package com.example.mixtapp.ui.screens.home
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -13,14 +12,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalFriendActivityProvider
-import com.example.mixtapp.data.local.LocalSongReviewProvider
+import com.example.mixtapp.data.local.LocalAlbumReviewsProvider
 import com.example.mixtapp.data.model.FriendActivityUi
-import com.example.mixtapp.data.model.SongReviewUi
+import com.example.mixtapp.data.model.AlbumReviewsUi
 import com.example.mixtapp.ui.screens.home.components.HomeSections
 import com.example.mixtapp.ui.screens.home.model.HomeFilterUi
 import com.example.mixtapp.ui.screens.home.model.homeFilters
 import com.example.mixtapp.ui.theme.*
 import com.example.mixtapp.ui.utils.AppBackground
+import com.example.mixtapp.ui.utils.LoadingBox
 
 @Composable
 fun HomeScreen(
@@ -35,17 +35,16 @@ fun HomeScreen(
 ) {
     val state by homeViewModel.uiState.collectAsState()
 
-    // Se pide cada vez que se muestra: al volver de escribir o borrar una resena ya sale al dia
+    // Los albumes llegan en vivo desde el ViewModel. Al mostrarse solo se piden los usuarios que
+    // sigo y mi foto, que pueden haber cambiado en otra pantalla
     LaunchedEffect(Unit) {
-        homeViewModel.getAlbums()
+        homeViewModel.cargarSeguidos()
         homeViewModel.refrescarFotoDePerfil()
     }
 
     when {
         state.isLoading -> {
-            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
+            LoadingBox(modifier = modifier)
         }
         // Sin albumes no hay nada que mostrar: solo el motivo del error
         state.errorMessageRes != null && state.todos.isEmpty() -> {
@@ -57,9 +56,10 @@ fun HomeScreen(
             albums = state.albums,
             todos = state.todos,
             trending = state.trending,
-            friendActivity = state.friendActivity,
+            resenasDeSeguidos = state.resenasDeSeguidos,
             filters = state.filters,
             selectedFilterId = state.selectedFilterId,
+            soloSeguidos = state.soloSeguidos,
             profileImageUrl = state.profileImageUrl,
             errorMessageRes = state.errorMessageRes,
             onFilterSelected = { homeViewModel.updateSelectedFilter(filtroId = it) },
@@ -76,12 +76,13 @@ fun HomeScreen(
 
 @Composable
 fun HomeScreenContent(
-    albums: List<SongReviewUi>,
-    todos: List<SongReviewUi>,
-    trending: SongReviewUi?,
-    friendActivity: FriendActivityUi?,
+    albums: List<AlbumReviewsUi>,
+    todos: List<AlbumReviewsUi>,
+    trending: AlbumReviewsUi?,
+    resenasDeSeguidos: List<FriendActivityUi>,
     filters: List<HomeFilterUi>,
     selectedFilterId: String,
+    soloSeguidos: Boolean,
     profileImageUrl: String,
     errorMessageRes: Int?,
     onFilterSelected: (String) -> Unit,
@@ -100,9 +101,10 @@ fun HomeScreenContent(
             albums = albums,
             todos = todos,
             trending = trending,
-            friendActivity = friendActivity,
+            resenasDeSeguidos = resenasDeSeguidos,
             filters = filters,
             selectedFilterId = selectedFilterId,
+            soloSeguidos = soloSeguidos,
             profileImageUrl = profileImageUrl,
             errorMessageRes = errorMessageRes,
             onFilterSelected = onFilterSelected,
@@ -122,12 +124,13 @@ fun HomeScreenContent(
 fun HomeScreenPreview() {
     MixtappTheme(darkTheme = true) {
         HomeScreenContent(
-            albums = LocalSongReviewProvider.popularSongs,
-            todos = LocalSongReviewProvider.songs,
-            trending = LocalSongReviewProvider.trendingSong,
-            friendActivity = LocalFriendActivityProvider.friendActivity,
+            albums = LocalAlbumReviewsProvider.popularAlbums,
+            todos = LocalAlbumReviewsProvider.albumReviews,
+            trending = LocalAlbumReviewsProvider.trendingAlbum,
+            resenasDeSeguidos = LocalFriendActivityProvider.friendActivities,
             filters = homeFilters,
             selectedFilterId = homeFilters.first().id,
+            soloSeguidos = false,
             profileImageUrl = "",
             errorMessageRes = null,
             onFilterSelected = {},

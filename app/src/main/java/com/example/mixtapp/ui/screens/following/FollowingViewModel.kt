@@ -5,8 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
 import com.example.mixtapp.data.model.FollowingReviewUi
-import com.example.mixtapp.data.model.FollowingUi
 import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
+import com.example.mixtapp.data.repository.ErrorDelServidorException
+import com.example.mixtapp.data.repository.ReviewRepository
+import com.example.mixtapp.data.repository.SinConexionException
 import com.example.mixtapp.data.repository.SocialRepository
 import com.example.mixtapp.ui.screens.following.model.FILTRO_CALIFICACIONES
 import com.example.mixtapp.ui.screens.following.model.FILTRO_LISTAS
@@ -22,24 +24,25 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FollowingViewModel @Inject constructor(
-    private val socialRepository: SocialRepository
+    private val socialRepository: SocialRepository,
+    private val reviewRepository: ReviewRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(FollowingState())
     val uiState: StateFlow<FollowingState> = _uiState.asStateFlow()
 
-    // No recibe parametros, asi que los datos se cargan al crear el ViewModel
-    init {
-        getFollowing()
-    }
-
-    private fun getFollowing() {
+    // La pantalla la llama cada vez que se muestra: el init solo corre una vez al crear el
+    // ViewModel, y al volver de un perfil o de una discusion se seguirian viendo los datos viejos
+    fun getFollowing() {
         viewModelScope.launch {
-            val result = socialRepository.getFollowing()
+            _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
 
-            if (result.isSuccess) {
-                val following = result.getOrNull() ?: return@launch
-                val filtroInicial = followingFilters.first().id
+            val result = socialRepository.getFollowing()
+            val following = result.getOrNull()
+
+            if (result.isSuccess && following != null) {
+                // Al volver se conserva el filtro que estaba elegido
+                val filtroInicial = _uiState.value.selectedFilterId.ifEmpty { followingFilters.first().id }
                 val query = _uiState.value.friendQuery
 
                 _uiState.update {
@@ -52,12 +55,14 @@ class FollowingViewModel @Inject constructor(
                         ),
                         filters = followingFilters,
                         selectedFilterId = filtroInicial,
+                        isLoading = false,
                         errorMessageRes = null,
                     )
                 }
             } else {
                 _uiState.update {
                     it.copy(
+                        isLoading = false,
                         errorMessageRes = mensajeDeError(
                             error = result.exceptionOrNull(),
                             generico = R.string.error_cargar_contenido,
@@ -104,47 +109,49 @@ class FollowingViewModel @Inject constructor(
         _uiState.update { it.copy(selectedStoryId = storyId) }
     }
 
-    fun darQuitarLike(reviewId: String) {
+    // Si el like sale bien se invierte el corazon y el contador sube o baja, sin volver a pedir
+    // las resenas
+    fun sendOrDeleteLike(reviewId: String) {
         viewModelScope.launch {
-            val result = socialRepository.darQuitarLikeFollowingReview(reviewId = reviewId)
+            val result = reviewRepository.sendOrDeleteLike(reviewId = reviewId)
 
-            actualizarDesde(result = result, generico = R.string.error_me_gusta)
-        }
-    }
-
-    fun compartirQuitar(reviewId: String) {
-        viewModelScope.launch {
-            val result = socialRepository.compartirQuitarFollowingReview(reviewId = reviewId)
-
-            actualizarDesde(result = result, generico = R.string.error_compartir)
-        }
-    }
-
-    private fun actualizarDesde(result: Result<FollowingUi>, @StringRes generico: Int) {
-        if (result.isFailure) {
-            _uiState.update {
-                it.copy(
-                    errorMessageRes = mensajeDeError(
-                        error = result.exceptionOrNull(),
-                        generico = generico,
+            if (result.isSuccess) {
+                actualizarResena(reviewId = reviewId) { review ->
+                    review.copy(
+                        isLiked = !review.isLiked,
+                        likes = if (review.isLiked) review.likes - 1 else review.likes + 1,
                     )
-                )
+                }
+            } else {
+                _uiState.update {
+                    it.copy(
+                        errorMessageRes = mensajeDeError(
+                            error = result.exceptionOrNull(),
+                            generico = R.string.error_me_gusta,
+                        )
+                    )
+                }
             }
-            return
         }
+    }
 
-        val following = result.getOrNull() ?: return
-        val query = _uiState.value.friendQuery
-        val filtroId = _uiState.value.selectedFilterId
+    // Compartir solo marca la tarjeta en esta pantalla
+    fun compartirQuitar(reviewId: String) {
+        actualizarResena(reviewId = reviewId) { review -> review.copy(isShared = !review.isShared) }
+    }
 
+    // Cambia la resena en la lista completa y en la filtrada que se ve
+    private fun actualizarResena(reviewId: String, cambio: (FollowingReviewUi) -> FollowingReviewUi) {
         _uiState.update {
             it.copy(
-                following = following,
-                reviews = aplicarFiltros(
-                    friendQuery = query,
-                    filtroId = filtroId,
-                    todas = following.reviews,
+                following = it.following?.copy(
+                    reviews = it.following.reviews.map { review ->
+                        if (review.id == reviewId) cambio(review) else review
+                    }
                 ),
+                reviews = it.reviews.map { review ->
+                    if (review.id == reviewId) cambio(review) else review
+                },
                 errorMessageRes = null,
             )
         }
@@ -168,6 +175,8 @@ class FollowingViewModel @Inject constructor(
     @StringRes
     private fun mensajeDeError(error: Throwable?, @StringRes generico: Int): Int = when (error) {
         is ContenidoNoEncontradoException -> R.string.contenido_no_encontrado
+        is ErrorDelServidorException -> R.string.error_servidor
+        is SinConexionException -> R.string.error_sin_conexion
         else -> generico
     }
 }

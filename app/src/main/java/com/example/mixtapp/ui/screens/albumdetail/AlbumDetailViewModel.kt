@@ -1,4 +1,4 @@
-package com.example.mixtapp.ui.screens.songreview
+package com.example.mixtapp.ui.screens.albumdetail
 
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
@@ -18,34 +18,34 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SongReviewsViewModel @Inject constructor(
+class AlbumDetailViewModel @Inject constructor(
     private val albumRepository: AlbumRepository,
     private val reviewRepository: ReviewRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(SongReviewsState())
-    val uiState: StateFlow<SongReviewsState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(AlbumDetailState())
+    val uiState: StateFlow<AlbumDetailState> = _uiState.asStateFlow()
 
     // Buscar el album es responsabilidad del ViewModel, no de la navegacion
-    fun getSongById(songId: String) {
+    fun getAlbumById(albumId: String) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
 
             // El album llega con todas sus resenas, y la mia ya viene marcada
-            val result = albumRepository.getSongReviewById(songId = songId)
-            val song = result.getOrNull()
+            val result = albumRepository.getAlbumReviewsById(albumId = albumId)
+            val albumReviews = result.getOrNull()
 
-            if (result.isSuccess && song != null) {
+            if (result.isSuccess && albumReviews != null) {
                 _uiState.update {
                     it.copy(
                         // De la escuchada mas reciente a la mas antigua, y mi resena primero
                         // para que se vea apenas entro al album
-                        song = song.copy(
-                            reviews = song.reviews
+                        albumReviews = albumReviews.copy(
+                            reviews = albumReviews.reviews
                                 .sortedByDescending { review -> review.fecha }
                                 .sortedByDescending { review -> review.esMia }
                         ),
-                        miResenaId = song.reviews.find { review -> review.esMia }?.id,
+                        miResenaId = albumReviews.reviews.find { review -> review.esMia }?.id,
                         isLoading = false,
                         errorMessageRes = null,
                     )
@@ -66,7 +66,7 @@ class SongReviewsViewModel @Inject constructor(
 
     // Quitar mi resena filtra la lista y recalcula el promedio, sin volver a pedir el album
     fun eliminarMiResena() {
-        val song = _uiState.value.song ?: return
+        val albumReviews = _uiState.value.albumReviews ?: return
         val miResenaId = _uiState.value.miResenaId ?: return
 
         if (_uiState.value.eliminando) return
@@ -78,11 +78,11 @@ class SongReviewsViewModel @Inject constructor(
 
             if (result.isSuccess) {
                 // Se filtra la lista que hay ahora en el estado
-                val restantes = (_uiState.value.song?.reviews ?: emptyList()).filter { it.id != miResenaId }
+                val restantes = (_uiState.value.albumReviews?.reviews ?: emptyList()).filter { it.id != miResenaId }
 
                 _uiState.update {
                     it.copy(
-                        song = albumRepository.conEstadisticas(album = song.album, reviews = restantes),
+                        albumReviews = albumRepository.conEstadisticas(album = albumReviews.album, reviews = restantes),
                         miResenaId = null,
                         eliminando = false,
                         errorMessageRes = null,
@@ -102,26 +102,39 @@ class SongReviewsViewModel @Inject constructor(
         }
     }
 
-    fun darQuitarLike(reviewId: String) {
-        val estado = _uiState.value
-        val review = estado.song?.reviews?.find { it.id == reviewId } ?: return
-        if (reviewId in estado.likesPendientes) return
-        val darLike = !review.isLiked
-        _uiState.update { it.copy(likesPendientes = it.likesPendientes + reviewId, errorMessageRes = null) }
+    // Si el like sale bien se invierte el corazon y el contador sube o baja, sin volver a
+    // pedir el album
+    fun sendOrDeleteLike(reviewId: String) {
         viewModelScope.launch {
-            val result = reviewRepository.actualizarLike(reviewId, darLike)
-            _uiState.update { actual ->
-                actual.copy(
-                    likesPendientes = actual.likesPendientes - reviewId,
-                    song = actual.song?.copy(reviews = actual.song.reviews.map {
-                        if (it.id == reviewId && result.isSuccess) {
-                            it.copy(likes = result.getOrThrow(), isLiked = darLike)
-                        } else it
-                    }),
-                    errorMessageRes = if (result.isFailure) mensajeDeError(
-                        result.exceptionOrNull(), R.string.error_actualizar_like
-                    ) else null,
-                )
+            val result = reviewRepository.sendOrDeleteLike(reviewId = reviewId)
+
+            if (result.isSuccess) {
+                _uiState.update {
+                    it.copy(
+                        albumReviews = it.albumReviews?.copy(
+                            reviews = it.albumReviews.reviews.map { review ->
+                                if (review.id == reviewId) {
+                                    review.copy(
+                                        isLiked = !review.isLiked,
+                                        likes = if (review.isLiked) review.likes - 1 else review.likes + 1,
+                                    )
+                                } else {
+                                    review
+                                }
+                            }
+                        ),
+                        errorMessageRes = null,
+                    )
+                }
+            } else {
+                _uiState.update {
+                    it.copy(
+                        errorMessageRes = mensajeDeError(
+                            error = result.exceptionOrNull(),
+                            generico = R.string.error_actualizar_like,
+                        )
+                    )
+                }
             }
         }
     }

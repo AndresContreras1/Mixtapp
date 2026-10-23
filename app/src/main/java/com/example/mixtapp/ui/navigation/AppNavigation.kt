@@ -12,6 +12,10 @@ import com.example.mixtapp.ui.screens.discussion.DiscussionScreen
 import com.example.mixtapp.ui.screens.discussion.DiscussionViewModel
 import com.example.mixtapp.ui.screens.editprofile.EditProfileScreen
 import com.example.mixtapp.ui.screens.editprofile.EditProfileViewModel
+import com.example.mixtapp.ui.screens.followlist.FollowListScreen
+import com.example.mixtapp.ui.screens.followlist.FollowListViewModel
+import com.example.mixtapp.ui.screens.followlist.LISTA_SEGUIDORES
+import com.example.mixtapp.ui.screens.followlist.LISTA_SEGUIDOS
 import com.example.mixtapp.ui.screens.following.FollowingScreen
 import com.example.mixtapp.ui.screens.following.FollowingViewModel
 import com.example.mixtapp.ui.screens.home.HomeScreen
@@ -32,8 +36,8 @@ import com.example.mixtapp.ui.screens.selectalbum.SelectAlbumScreen
 import com.example.mixtapp.ui.screens.selectalbum.SelectAlbumViewModel
 import com.example.mixtapp.ui.screens.signup.SignUpScreen
 import com.example.mixtapp.ui.screens.signup.SignUpViewModel
-import com.example.mixtapp.ui.screens.songreview.SongReviewsScreen
-import com.example.mixtapp.ui.screens.songreview.SongReviewsViewModel
+import com.example.mixtapp.ui.screens.albumdetail.AlbumDetailScreen
+import com.example.mixtapp.ui.screens.albumdetail.AlbumDetailViewModel
 import com.example.mixtapp.ui.screens.splash.SplashScreen
 import com.example.mixtapp.ui.screens.splash.SplashViewModel
 import com.example.mixtapp.ui.screens.userprofile.UserProfileScreen
@@ -46,8 +50,8 @@ private fun NavHostController.navegarLimpiandoLaPila(ruta: String) {
 }
 
 // Abrir un album, el perfil de un usuario y escribir una resena se repite en varias pantallas
-private fun NavHostController.abrirAlbum(songId: String) {
-    navigate(Screen.SongDetail.createRoute(songId = songId))
+private fun NavHostController.abrirAlbum(albumId: String) {
+    navigate(Screen.AlbumDetail.createRoute(albumId = albumId))
 }
 
 private fun NavHostController.abrirPerfil(userId: String) {
@@ -56,6 +60,10 @@ private fun NavHostController.abrirPerfil(userId: String) {
 
 private fun NavHostController.abrirEscribirResena(albumId: String) {
     navigate(Screen.WriteReview.createRoute(albumId = albumId))
+}
+
+private fun NavHostController.abrirLista(userId: String, tipo: String) {
+    navigate(Screen.FollowList.createRoute(userId = userId, tipo = tipo))
 }
 
 @Composable
@@ -114,8 +122,8 @@ fun AppNavigation(
 
             HomeScreen(
                 homeViewModel = homeViewModel,
-                onAlbumClick = { songId ->
-                    navController.abrirAlbum(songId = songId)
+                onAlbumClick = { albumId ->
+                    navController.abrirAlbum(albumId = albumId)
                 },
                 onAuthorClick = { userId ->
                     navController.abrirPerfil(userId = userId)
@@ -132,8 +140,8 @@ fun AppNavigation(
 
             SearchScreen(
                 searchViewModel = searchViewModel,
-                onAlbumClick = { songId ->
-                    navController.abrirAlbum(songId = songId)
+                onAlbumClick = { albumId ->
+                    navController.abrirAlbum(albumId = albumId)
                 }
             )
         }
@@ -175,8 +183,8 @@ fun AppNavigation(
 
             MyReviewsScreen(
                 myReviewsViewModel = myReviewsViewModel,
-                onReviewClick = { songId ->
-                    navController.abrirAlbum(songId = songId)
+                onReviewClick = { albumId ->
+                    navController.abrirAlbum(albumId = albumId)
                 },
                 onEditClick = { albumId ->
                     navController.abrirEscribirResena(albumId = albumId)
@@ -195,11 +203,14 @@ fun AppNavigation(
                 logoutButtonPressed = {
                     navController.navegarLimpiandoLaPila(Screen.Login.route)
                 },
-                onReviewClick = { songId ->
-                    navController.abrirAlbum(songId = songId)
+                onReviewClick = { albumId ->
+                    navController.abrirAlbum(albumId = albumId)
                 },
-                onUserClick = { userId ->
-                    navController.abrirPerfil(userId = userId)
+                onSeguidoresClick = { userId ->
+                    navController.abrirLista(userId = userId, tipo = LISTA_SEGUIDORES)
+                },
+                onSeguidosClick = { userId ->
+                    navController.abrirLista(userId = userId, tipo = LISTA_SEGUIDOS)
                 },
                 onSeeAllReviewsClick = { navController.navigate(Screen.MyReviews.route) }
             )
@@ -217,18 +228,18 @@ fun AppNavigation(
         }
 
         composable(
-            route = Screen.SongDetail.route,
-            arguments = listOf(navArgument(name = "songId") { type = NavType.StringType })
+            route = Screen.AlbumDetail.route,
+            arguments = listOf(navArgument(name = "albumId") { type = NavType.StringType })
         ) {
             // Solo se obtiene el id; buscar el album es tarea del ViewModel
-            val songId = it.arguments?.getString("songId") ?: ""
-            val songReviewsViewModel: SongReviewsViewModel = hiltViewModel()
+            val albumId = it.arguments?.getString("albumId") ?: ""
+            val albumDetailViewModel: AlbumDetailViewModel = hiltViewModel()
 
-            SongReviewsScreen(
-                songId = songId,
-                songReviewsViewModel = songReviewsViewModel,
+            AlbumDetailScreen(
+                albumId = albumId,
+                albumDetailViewModel = albumDetailViewModel,
                 onWriteReviewClick = {
-                    navController.abrirEscribirResena(albumId = songId)
+                    navController.abrirEscribirResena(albumId = albumId)
                 },
                 onBackClick = { navController.popBackStack() },
                 onAuthorClick = { userId ->
@@ -247,9 +258,35 @@ fun AppNavigation(
             UserProfileScreen(
                 userId = userId,
                 userProfileViewModel = userProfileViewModel,
-                onReviewClick = { songId ->
-                    navController.abrirAlbum(songId = songId)
+                onReviewClick = { albumId ->
+                    navController.abrirAlbum(albumId = albumId)
                 },
+                onSeguidoresClick = { otherUserId ->
+                    navController.abrirLista(userId = otherUserId, tipo = LISTA_SEGUIDORES)
+                },
+                onSeguidosClick = { otherUserId ->
+                    navController.abrirLista(userId = otherUserId, tipo = LISTA_SEGUIDOS)
+                },
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable(
+            route = Screen.FollowList.route,
+            arguments = listOf(
+                navArgument(name = "userId") { type = NavType.StringType },
+                navArgument(name = "tipo") { type = NavType.StringType }
+            )
+        ) {
+            // Solo se obtienen el id y el tipo; buscar la lista es tarea del ViewModel
+            val userId = it.arguments?.getString("userId") ?: ""
+            val tipo = it.arguments?.getString("tipo") ?: LISTA_SEGUIDORES
+            val followListViewModel: FollowListViewModel = hiltViewModel()
+
+            FollowListScreen(
+                userId = userId,
+                tipo = tipo,
+                followListViewModel = followListViewModel,
                 onUserClick = { otherUserId ->
                     navController.abrirPerfil(userId = otherUserId)
                 },
@@ -261,7 +298,17 @@ fun AppNavigation(
             val followingViewModel: FollowingViewModel = hiltViewModel()
 
             FollowingScreen(
-                followingViewModel = followingViewModel
+                followingViewModel = followingViewModel,
+                onAuthorClick = { userId ->
+                    navController.abrirPerfil(userId = userId)
+                },
+                onAlbumClick = { albumId ->
+                    navController.abrirAlbum(albumId = albumId)
+                },
+                onCommentsClick = { reviewId ->
+                    navController.navigate(Screen.Discussion.createRoute(reviewId = reviewId))
+                },
+                onBackClick = { navController.popBackStack() }
             )
         }
 

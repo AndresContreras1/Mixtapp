@@ -6,15 +6,19 @@ import com.example.mixtapp.data.model.DiscussionUi
 
 object LocalDiscussionProvider {
 
-    // Cada discusion se identifica con el mismo id de la resena que la abre,
-    // para que la navegacion pueda buscarla por ese id
-    val discussions = mutableListOf(
+    // Los comentarios que se escriben en la app, por id de la resena. Viven mientras la app esta
+    // abierta; la resena de cada discusion sale de la base remota
+    val comentarios = mutableMapOf<String, List<DiscussionCommentUi>>()
+
+    // Discusiones de ejemplo para los previews
+    val discussions = listOf(
         DiscussionUi(
             id = "toxicity-liz",
             review = DiscussionReviewUi(
                 id = "toxicity-liz",
                 reviewerName = "Liz",
                 reviewerAvatarText = "Lz",
+                reviewerImage = "",
                 reviewedAt = "hace 4 h",
                 album = LocalAlbumProvider.toxicity,
                 rating = 5,
@@ -32,6 +36,7 @@ object LocalDiscussionProvider {
                 id = "from-zero-jhon",
                 reviewerName = "Jhon",
                 reviewerAvatarText = "Jh",
+                reviewerImage = "",
                 reviewedAt = "hace 1 hora",
                 album = LocalAlbumProvider.fromZero,
                 rating = 5,
@@ -50,6 +55,7 @@ object LocalDiscussionProvider {
                 id = "rush-jen",
                 reviewerName = "Jen",
                 reviewerAvatarText = "J",
+                reviewerImage = "",
                 reviewedAt = "hace 40 min",
                 album = LocalAlbumProvider.rush,
                 rating = 4,

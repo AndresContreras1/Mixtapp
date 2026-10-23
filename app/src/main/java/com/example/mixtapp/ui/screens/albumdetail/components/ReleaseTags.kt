@@ -1,4 +1,4 @@
-package com.example.mixtapp.ui.screens.songreview.components
+package com.example.mixtapp.ui.screens.albumdetail.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mixtapp.data.local.LocalSongReviewProvider
+import com.example.mixtapp.data.local.LocalAlbumReviewsProvider
 import com.example.mixtapp.ui.theme.MixtappTheme
 
 @Composable
@@ -52,6 +52,6 @@ fun ReleaseTags(
 @Preview(showBackground = true)
 fun ReleaseTagsPreview() {
     MixtappTheme(darkTheme = true) {
-        ReleaseTags(tags = LocalSongReviewProvider.songs.first().album.tags)
+        ReleaseTags(tags = LocalAlbumReviewsProvider.albumReviews.first().album.tags)
     }
 }
