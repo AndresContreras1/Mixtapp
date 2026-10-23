@@ -31,15 +31,16 @@ class ReviewFirestoreDataSourceImpl @Inject constructor(
         db.collection("reviews").add(review).await()
     }
 
-    // Solo se cambia lo que se edita: el contador de likes y la subcoleccion se conservan
+    // Solo se cambia lo que se edita y la copia de quien la escribe: el contador de likes y la
+    // subcoleccion se conservan
     override suspend fun updateReview(id: String, review: CreateReviewDto) {
         db.collection("reviews").document(id).update(
             mapOf(
                 "calificacion" to review.calificacion,
                 "comentario" to review.comentario,
                 "fechaEscucha" to review.fechaEscucha,
-                "usuario" to review.usuario,
-                "album" to review.album,
+                "usuario.nombre" to review.usuario?.nombre,
+                "usuario.fotoUrl" to review.usuario?.fotoUrl,
             )
         ).await()
     }

@@ -57,6 +57,8 @@ fun Mixtapp(modifier: Modifier = Modifier) {
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 Log.d("Token", task.result)
+            } else {
+                Log.e("Token", "Error obteniendo token", task.exception)
             }
         }
     }
