@@ -17,6 +17,9 @@ import com.example.mixtapp.data.model.MyReviewUi
 import com.google.firebase.firestore.FirebaseFirestoreException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
 import retrofit2.HttpException
 import javax.inject.Inject
 
@@ -24,19 +27,12 @@ import javax.inject.Inject
 // los comentarios locales y Authentication para saber quien es el usuario de la app.
 // Para volver al backend de Express basta con cambiar las implementaciones a las de Retrofit
 class ReviewRepository @Inject constructor(
-    private val db: com.google.firebase.firestore.FirebaseFirestore,
     private val reviewLocalDataSource: ReviewLocalDataSource,
     private val reviewRemoteDataSource: ReviewFirestoreDataSourceImpl,
     private val usuarioRemoteDataSource: UsuarioFirestoreDataSourceImpl,
     private val albumRemoteDataSource: AlbumFirestoreDataSourceImpl,
     private val authRemoteDataSource: AuthRemoteDataSource
 ) {
-    fun observeMyReviews(): kotlinx.coroutines.flow.Flow<Result<List<MyReviewUi>>> =
-        observeChanges(db.collection("reviews").whereEqualTo("usuarioId", authRemoteDataSource.currentUser?.uid ?: "")) { getMyReviews() }
-
-    fun observeDiscussion(reviewId: String): kotlinx.coroutines.flow.Flow<Result<DiscussionUi>> =
-        observeChanges(db.collection("reviews").whereEqualTo(com.google.firebase.firestore.FieldPath.documentId(), reviewId)) { getDiscussionByReviewId(reviewId) }
-
 
     // Da el like o lo quita: el data source decide segun si ya existe. La UI cambia el corazon
     // y el contador solo si esto sale bien
@@ -53,34 +49,23 @@ class ReviewRepository @Inject constructor(
         } catch (e: FirebaseFirestoreException) {
             Log.d("ReviewRepository", "sendOrDeleteLike: ${e.message}")
             Result.failure(errorDeFirestore(e))
-        } catch (e: kotlinx.coroutines.CancellationException) {
-            throw e
         } catch (e: Exception) {
             Log.d("ReviewRepository", "sendOrDeleteLike: ${e.message}")
             Result.failure(ErrorInesperadoException())
         }
     }
 
-    suspend fun getMyReviews(): Result<List<MyReviewUi>> {
-        return try {
-            val usuarioId = authRemoteDataSource.currentUser?.uid
-                ?: return Result.failure(SinSesionException())
+    // Mis resenas en vivo: un like en otro celular cambia el contador sin salir de la pantalla.
+    // Como en clase, retorna el flujo y no un Result: los errores los recibe el ViewModel en el catch
+    fun getMyReviewsLive(): Flow<List<MyReviewUi>> {
+        val usuarioId = authRemoteDataSource.currentUser?.uid ?: ""
 
-            val reviews = usuarioRemoteDataSource.getReviewsDeUsuario(usuarioId)
-            val misResenas = reviews.map { it.toMyReviewUi() }
-            Result.success(misResenas)
-        } catch (e: HttpException) {
-            Log.d("ReviewRepository", "getMyReviews: ${e.message}")
-            Result.failure(errorDelBackend(e))
-        } catch (e: FirebaseFirestoreException) {
-            Log.d("ReviewRepository", "getMyReviews: ${e.message}")
-            Result.failure(errorDeFirestore(e))
-        } catch (e: kotlinx.coroutines.CancellationException) {
-            throw e
-        } catch (e: Exception) {
-            Log.d("ReviewRepository", "getMyReviews: ${e.message}")
-            Result.failure(ErrorInesperadoException())
-        }
+        return usuarioRemoteDataSource.listenReviewsDeUsuario(usuarioId)
+            .map { reviews -> reviews.map { it.toMyReviewUi() } }
+            .catch { e ->
+                Log.d("ReviewRepository", "getMyReviewsLive: ${e.message}")
+                throw errorDelFlujo(e)
+            }
     }
 
     // Si llega el id de la resena se modifica; si no, se crea
@@ -134,8 +119,6 @@ class ReviewRepository @Inject constructor(
         } catch (e: NoSuchElementException) {
             Log.d("ReviewRepository", "guardarResena: ${e.message}")
             Result.failure(ContenidoNoEncontradoException())
-        } catch (e: kotlinx.coroutines.CancellationException) {
-            throw e
         } catch (e: Exception) {
             Log.d("ReviewRepository", "guardarResena: ${e.message}")
             Result.failure(ErrorInesperadoException())
@@ -152,43 +135,30 @@ class ReviewRepository @Inject constructor(
         } catch (e: FirebaseFirestoreException) {
             Log.d("ReviewRepository", "eliminarResena: ${e.message}")
             Result.failure(errorDeFirestore(e))
-        } catch (e: kotlinx.coroutines.CancellationException) {
-            throw e
         } catch (e: Exception) {
             Log.d("ReviewRepository", "eliminarResena: ${e.message}")
             Result.failure(ErrorInesperadoException())
         }
     }
 
-    // La resena sale de la base remota, con mi like, y sus comentarios de los datos locales
-    suspend fun getDiscussionByReviewId(reviewId: String): Result<DiscussionUi> {
-        return try {
-            val usuarioId = authRemoteDataSource.currentUser?.uid ?: ""
-            val review = reviewRemoteDataSource.getReviewById(reviewId, currentUserId = usuarioId)
-            val comentarios = reviewLocalDataSource.getComentarios(reviewId = reviewId)
+    // La resena llega en vivo de la base remota, con mi like, y sus comentarios de los datos locales
+    fun getDiscussionLive(reviewId: String): Flow<DiscussionUi> {
+        val usuarioId = authRemoteDataSource.currentUser?.uid ?: ""
 
-            Result.success(
+        return reviewRemoteDataSource.listenReviewById(reviewId, currentUserId = usuarioId)
+            .map { review ->
+                val comentarios = reviewLocalDataSource.getComentarios(reviewId = reviewId)
+
                 DiscussionUi(
                     id = reviewId,
                     review = review.toDiscussionReviewUi(comentarios = comentarios.size),
                     comments = comentarios,
                 )
-            )
-        } catch (e: HttpException) {
-            Log.d("ReviewRepository", "getDiscussionByReviewId: ${e.message}")
-            Result.failure(errorDelBackend(e))
-        } catch (e: FirebaseFirestoreException) {
-            Log.d("ReviewRepository", "getDiscussionByReviewId: ${e.message}")
-            Result.failure(errorDeFirestore(e))
-        } catch (e: NoSuchElementException) {
-            Log.d("ReviewRepository", "getDiscussionByReviewId: ${e.message}")
-            Result.failure(ContenidoNoEncontradoException())
-        } catch (e: kotlinx.coroutines.CancellationException) {
-            throw e
-        } catch (e: Exception) {
-            Log.d("ReviewRepository", "getDiscussionByReviewId: ${e.message}")
-            Result.failure(ErrorInesperadoException())
-        }
+            }
+            .catch { e ->
+                Log.d("ReviewRepository", "getDiscussionLive: ${e.message}")
+                throw errorDelFlujo(e)
+            }
     }
 
     suspend fun publicarComentario(
@@ -244,8 +214,6 @@ class ReviewRepository @Inject constructor(
 
             reviewLocalDataSource.guardarComentarios(reviewId = reviewId, comentarios = actualizados)
             Result.success(actualizados)
-        } catch (e: kotlinx.coroutines.CancellationException) {
-            throw e
         } catch (e: Exception) {
             Log.d("ReviewRepository", "actualizarComentarios: ${e.message}")
             Result.failure(ErrorDeDatosLocalesException())

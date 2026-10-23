@@ -7,6 +7,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -69,5 +70,37 @@ class AlbumFirestoreDataSourceImpl @Inject constructor(
 
         // Cuando nadie escucha el flujo, se quita el listener para no dejar la conexion activa
         awaitClose { listenerRegistration.remove() }
+    }
+
+    // Escucha solo las resenas de este album. El listener no puede esperar otra consulta, asi que
+    // mi like de cada resena se busca con exists() cada vez que llega la lista
+    override fun listenReviewsDeAlbum(id: String, currentUserId: String): Flow<List<ReviewConUsuarioDto>> = callbackFlow {
+        val listenerRegistration = db.collection("reviews").whereEqualTo("albumId", id)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    close(error) // cierra el flujo con error
+                    return@addSnapshotListener
+                }
+                if (snapshot != null) {
+                    val reviews = snapshot.documents.map { doc ->
+                        val review = doc.toObject(ReviewConUsuarioDto::class.java)
+                        review?.copy(id = doc.id) ?: throw Exception("Review not found")
+                    }
+                    trySend(reviews).isSuccess // envia la lista al flujo
+                }
+            }
+
+        // Cuando se sale del album nadie escucha el flujo y se quita el listener
+        awaitClose { listenerRegistration.remove() }
+    }.map { reviews ->
+        reviews.map { review ->
+            if (currentUserId.isNotEmpty()) {
+                val likeSnapshot = db.collection("reviews").document(review.id)
+                    .collection("likes").document(currentUserId).get().await()
+                review.liked = likeSnapshot.exists()
+            }
+
+            review
+        }
     }
 }

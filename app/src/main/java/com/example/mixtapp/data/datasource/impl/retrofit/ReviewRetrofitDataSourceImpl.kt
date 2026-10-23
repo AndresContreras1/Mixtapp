@@ -6,6 +6,9 @@ import com.example.mixtapp.data.datasource.services.ReviewRetrofitService
 import com.example.mixtapp.data.dtos.AlbumDeResenaDto
 import com.example.mixtapp.data.dtos.CreateReviewDto
 import com.example.mixtapp.data.dtos.ReviewConAlbumDto
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import javax.inject.Inject
 
 class ReviewRetrofitDataSourceImpl @Inject constructor(
@@ -45,6 +48,13 @@ class ReviewRetrofitDataSourceImpl @Inject constructor(
 
     // to-do: el backend no tiene likes; como en clase, solo funcionan con Firestore
     override suspend fun sendOrDeleteLike(reviewId: String, userId: String) {
+    }
+
+    // Con HTTP no hay una conexion continua: el flujo manda una sola vez lo que responde el backend
+    override fun listenReviewById(id: String, currentUserId: String): Flow<ReviewConAlbumDto> = callbackFlow {
+        trySend(getReviewById(id = id, currentUserId = currentUserId)).isSuccess
+
+        awaitClose { }
     }
 
     private fun paraElBackend(review: CreateReviewDto): CreateReviewDto =

@@ -1,5 +1,6 @@
 package com.example.mixtapp.ui.screens.myreviews
 
+import android.util.Log
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -20,6 +21,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -31,16 +33,16 @@ class MyReviewsViewModel @Inject constructor(
     private val usuarioRepository: UsuarioRepository
 ) : ViewModel() {
 
-    private var reviewsSubscription: kotlinx.coroutines.Job? = null
-
     private val _uiState = MutableStateFlow(MyReviewsState())
     val uiState: StateFlow<MyReviewsState> = _uiState.asStateFlow()
 
-    // La pantalla la llama cada vez que se muestra, para ver los cambios al volver de editar
+    // El flujo de mis resenas se escucha mientras exista el ViewModel, una sola vez
+    private var escuchandoResenas = false
+
+    // La pantalla la llama cada vez que se muestra: mi usuario se pide de nuevo y mis resenas
+    // llegan en vivo, asi que al volver de editar ya salen al dia
     fun getReviews() {
         val usuarioDelCorreo = authRepository.usuarioDelCorreo
-        // Al volver se conserva el filtro que estaba elegido
-        val filtro = _uiState.value.selectedFilterId.ifEmpty { myReviewFilters.first().id }
 
         // Mis datos y mis resenas se usan por su lado, asi que cada uno va en su propio launch
         viewModelScope.launch {
@@ -54,39 +56,40 @@ class MyReviewsViewModel @Inject constructor(
             }
         }
 
-        reviewsSubscription?.cancel()
-        reviewsSubscription = viewModelScope.launch {
+        if (escuchandoResenas) return
+        escuchandoResenas = true
+
+        viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
 
-            reviewRepository.observeMyReviews().collect { resenas ->
-
-                if (resenas.isSuccess) {
-                    val todas = resenas.getOrNull() ?: emptyList()
-
+            reviewRepository.getMyReviewsLive()
+                .catch { e ->
+                    Log.d("MyReviewsViewModel", "getReviews: ${e.message}")
+                    escuchandoResenas = false
                     _uiState.update {
+                        it.copy(
+                            filters = myReviewFilters,
+                            selectedFilterId = it.selectedFilterId.ifEmpty { myReviewFilters.first().id },
+                            isLoading = false,
+                            errorMessageRes = mensajeDeError(error = e, generico = R.string.error_cargar_contenido),
+                        )
+                    }
+                }
+                .collect { todas ->
+                    _uiState.update {
+                        // Al llegar datos nuevos se conserva el filtro que estaba elegido
+                        val filtroId = it.selectedFilterId.ifEmpty { myReviewFilters.first().id }
+
                         it.copy(
                             todas = todas,
                             filters = myReviewFilters,
-                            selectedFilterId = it.selectedFilterId.ifEmpty { filtro },
-                            reviews = aplicarFiltro(filtroId = it.selectedFilterId.ifEmpty { filtro }, todas = todas),
+                            selectedFilterId = filtroId,
+                            reviews = aplicarFiltro(filtroId = filtroId, todas = todas),
                             isLoading = false,
                             errorMessageRes = null,
                         )
                     }
-                } else {
-                    _uiState.update {
-                        it.copy(
-                            filters = myReviewFilters,
-                            selectedFilterId = it.selectedFilterId.ifEmpty { filtro },
-                            isLoading = false,
-                            errorMessageRes = mensajeDeError(
-                                error = resenas.exceptionOrNull(),
-                                generico = R.string.error_cargar_contenido,
-                            )
-                        )
-                    }
                 }
-            }
         }
     }
 

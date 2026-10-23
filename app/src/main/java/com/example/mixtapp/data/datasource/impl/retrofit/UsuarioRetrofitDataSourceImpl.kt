@@ -6,6 +6,9 @@ import com.example.mixtapp.data.dtos.ActualizarUsuarioDto
 import com.example.mixtapp.data.dtos.RegistrarUsuarioDto
 import com.example.mixtapp.data.dtos.ReviewConAlbumDto
 import com.example.mixtapp.data.dtos.UsuarioPerfilRetrofitDto
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import javax.inject.Inject
 
 // Los usuarios de Firebase no existen en el backend: el usuario de la app se quema como el 1
@@ -50,6 +53,32 @@ class UsuarioRetrofitDataSourceImpl @Inject constructor(
 
     override suspend fun getSeguidos(id: String): List<UsuarioPerfilRetrofitDto> {
         return emptyList()
+    }
+
+    // Con HTTP no hay una conexion continua: cada flujo manda una sola vez lo que responde el backend
+    override fun listenUsuarioById(id: String, currentUserId: String): Flow<UsuarioPerfilRetrofitDto> = callbackFlow {
+        trySend(getUsuarioById(id = id, currentUserId = currentUserId)).isSuccess
+
+        awaitClose { }
+    }
+
+    override fun listenReviewsDeUsuario(id: String, currentUserId: String): Flow<List<ReviewConAlbumDto>> = callbackFlow {
+        trySend(getReviewsDeUsuario(id = id, currentUserId = currentUserId)).isSuccess
+
+        awaitClose { }
+    }
+
+    // El backend no tiene seguidores: las listas llegan vacias
+    override fun listenSeguidores(id: String): Flow<List<UsuarioPerfilRetrofitDto>> = callbackFlow {
+        trySend(getSeguidores(id = id)).isSuccess
+
+        awaitClose { }
+    }
+
+    override fun listenSeguidos(id: String): Flow<List<UsuarioPerfilRetrofitDto>> = callbackFlow {
+        trySend(getSeguidos(id = id)).isSuccess
+
+        awaitClose { }
     }
 
     // Los ids del backend son numeros; el uid de Firebase no, asi que ese se cambia por el 1

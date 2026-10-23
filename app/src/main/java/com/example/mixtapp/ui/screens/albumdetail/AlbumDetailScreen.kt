@@ -30,9 +30,10 @@ fun AlbumDetailScreen(
 ) {
     val state by albumDetailViewModel.uiState.collectAsState()
 
-    // Necesita el id que llega por la ruta, asi que se pide en un LaunchedEffect
+    // Necesita el id que llega por la ruta, asi que empieza a escuchar en un LaunchedEffect. Al
+    // volver de escribir mi resena no hace falta pedir nada: el flujo ya la trae
     LaunchedEffect(Unit) {
-        albumDetailViewModel.getAlbumById(albumId = albumId)
+        albumDetailViewModel.escucharAlbum(albumId = albumId)
     }
 
     // Con una copia local, Kotlin sabe que no es nula despues de revisarla: no hace falta el !!

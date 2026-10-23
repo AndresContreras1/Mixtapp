@@ -1,5 +1,6 @@
 package com.example.mixtapp.ui.screens.userprofile
 
+import android.util.Log
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,6 +13,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -21,51 +23,57 @@ class UserProfileViewModel @Inject constructor(
     private val usuarioRepository: UsuarioRepository
 ) : ViewModel() {
 
-    private var profileSubscription: kotlinx.coroutines.Job? = null
-
-    private var reviewsSubscription: kotlinx.coroutines.Job? = null
-
     private val _uiState = MutableStateFlow(UserProfileState())
     val uiState: StateFlow<UserProfileState> = _uiState.asStateFlow()
 
-    // El perfil llega con sus contadores y con si ya lo sigo
+    // Los flujos se escuchan mientras exista el ViewModel: si se volvieran a pedir cada vez que la
+    // pantalla se muestra, se acumularian listeners
+    private var escuchandoPerfil = false
+    private var escuchandoResenas = false
+
+    // El perfil llega en vivo con sus contadores y con si ya lo sigo
     fun getUserProfile(userId: String) {
-        profileSubscription?.cancel()
-        profileSubscription = viewModelScope.launch {
+        if (escuchandoPerfil) return
+        escuchandoPerfil = true
+
+        viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
 
-            usuarioRepository.observeUsuario(userId).collect { result ->
-
-                if (result.isSuccess) {
-                    _uiState.update { it.copy(usuario = result.getOrNull(), isLoading = false) }
-                } else {
-                    _uiState.update {
-                        it.copy(isLoading = false, errorMessageRes = mensajeDeError(result.exceptionOrNull()))
-                    }
+            usuarioRepository.getUsuarioByIdLive(id = userId)
+                .catch { e ->
+                    Log.d("UserProfileViewModel", "getUserProfile: ${e.message}")
+                    escuchandoPerfil = false
+                    _uiState.update { it.copy(isLoading = false, errorMessageRes = mensajeDeError(e)) }
                 }
-            }
+                .collect { usuario ->
+                    _uiState.update { it.copy(usuario = usuario, isLoading = false, errorMessageRes = null) }
+                }
         }
     }
 
+    // Sus resenas en vivo: un like desde otro celular cambia el contador sin salir
     fun getUserReviews(userId: String) {
-        reviewsSubscription?.cancel()
-        reviewsSubscription = viewModelScope.launch {
-            _uiState.update { it.copy(cargandoResenas = true, errorResenasRes = null) }
-            usuarioRepository.observeReviews(userId).collect { result ->
+        if (escuchandoResenas) return
+        escuchandoResenas = true
 
-                if (result.isSuccess) {
-                    val reviews = (result.getOrNull() ?: emptyList()).sortedByDescending { it.date }
-                    _uiState.update { it.copy(reviews = reviews, cargandoResenas = false) }
-                } else {
-                    _uiState.update {
-                        it.copy(cargandoResenas = false, errorResenasRes = mensajeDeError(result.exceptionOrNull()))
-                    }
+        viewModelScope.launch {
+            _uiState.update { it.copy(cargandoResenas = true, errorResenasRes = null) }
+
+            usuarioRepository.getReviewsDeUsuarioLive(id = userId)
+                .catch { e ->
+                    Log.d("UserProfileViewModel", "getUserReviews: ${e.message}")
+                    escuchandoResenas = false
+                    _uiState.update { it.copy(cargandoResenas = false, errorResenasRes = mensajeDeError(e)) }
                 }
-            }
+                .collect { resenas ->
+                    val reviews = resenas.sortedByDescending { it.date }
+                    _uiState.update { it.copy(reviews = reviews, cargandoResenas = false, errorResenasRes = null) }
+                }
         }
     }
 
-    // El seguimiento confirmado llega por la suscripcion del perfil.
+    // No se copia el estado a mano: la transaccion cambia followersCount, eso dispara el flujo del
+    // perfil y llegan el boton y el contador al dia
     fun followOrUnfollow() {
         val usuario = _uiState.value.usuario ?: return
 
@@ -73,7 +81,7 @@ class UserProfileViewModel @Inject constructor(
             val result = usuarioRepository.followOrUnfollow(targetUserId = usuario.id)
 
             if (result.isSuccess) {
-                // El listener aplica el estado confirmado sin duplicar contadores.
+                _uiState.update { it.copy(errorSeguimientoRes = null) }
             } else {
                 val error = result.exceptionOrNull()
 

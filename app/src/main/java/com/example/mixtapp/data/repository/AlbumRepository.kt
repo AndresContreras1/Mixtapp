@@ -15,6 +15,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import retrofit2.HttpException
 import javax.inject.Inject
@@ -26,14 +27,10 @@ private const val CALIFICACION_PARA_RECOMENDAR = 4
 // Para volver al backend de Express basta con cambiar la implementacion a AlbumRetrofitDataSourceImpl.
 // Authentication dice quien es el usuario de la app: con eso se marca mi resena y mis likes
 class AlbumRepository @Inject constructor(
-    private val db: com.google.firebase.firestore.FirebaseFirestore,
     private val albumLocalDataSource: AlbumLocalDataSource,
     private val albumRemoteDataSource: AlbumFirestoreDataSourceImpl,
     private val authRemoteDataSource: AuthRemoteDataSource
 ) {
-    fun observeAlbum(albumId: String): kotlinx.coroutines.flow.Flow<Result<com.example.mixtapp.data.model.AlbumReviewsUi>> =
-        observeChanges(db.collection("reviews").whereEqualTo("albumId", albumId)) { getAlbumReviewsById(albumId) }
-
 
     // Cada album llega con sus resenas para calcular el promedio y cuantos lo recomiendan
     suspend fun getAlbumReviews(): Result<List<AlbumReviewsUi>> {
@@ -66,8 +63,6 @@ class AlbumRepository @Inject constructor(
         } catch (e: FirebaseFirestoreException) {
             Log.d("AlbumRepository", "getAlbumReviews: ${e.message}")
             Result.failure(errorDeFirestore(e))
-        } catch (e: kotlinx.coroutines.CancellationException) {
-            throw e
         } catch (e: Exception) {
             Log.d("AlbumRepository", "getAlbumReviews: ${e.message}")
             Result.failure(ErrorInesperadoException())
@@ -95,6 +90,33 @@ class AlbumRepository @Inject constructor(
                             .map { review -> review.toAlbumReviewItemUi(usuarioActualId = usuarioActualId) }
                     )
                 }
+            }
+            .catch { e ->
+                Log.d("AlbumRepository", "getAlbumReviewsLive: ${e.message}")
+                throw errorDelFlujo(e)
+            }
+    }
+
+    // El detalle en vivo: cada vez que cambia una resena del album (otra resena, un like en otro
+    // celular) llegan de nuevo sus estadisticas. Como en clase, retorna el flujo y no un Result
+    fun getAlbumReviewsByIdLive(albumId: String): Flow<AlbumReviewsUi> {
+        val usuarioActualId = authRemoteDataSource.currentUser?.uid ?: ""
+        // El album no cambia mientras se ve: se pide con la primera lista y no en cada cambio
+        var albumGuardado: Album? = null
+
+        return albumRemoteDataSource.listenReviewsDeAlbum(albumId, currentUserId = usuarioActualId)
+            .map { reviews ->
+                val album = albumGuardado ?: albumRemoteDataSource.getAlbumById(albumId).toAlbum()
+                albumGuardado = album
+
+                conEstadisticas(
+                    album = album,
+                    reviews = reviews.map { review -> review.toAlbumReviewItemUi(usuarioActualId = usuarioActualId) }
+                )
+            }
+            .catch { e ->
+                Log.d("AlbumRepository", "getAlbumReviewsByIdLive: ${e.message}")
+                throw errorDelFlujo(e)
             }
     }
 
@@ -126,8 +148,6 @@ class AlbumRepository @Inject constructor(
         } catch (e: NoSuchElementException) {
             Log.d("AlbumRepository", "getAlbumReviewsById: ${e.message}")
             Result.failure(ContenidoNoEncontradoException())
-        } catch (e: kotlinx.coroutines.CancellationException) {
-            throw e
         } catch (e: Exception) {
             Log.d("AlbumRepository", "getAlbumReviewsById: ${e.message}")
             Result.failure(ErrorInesperadoException())
@@ -137,8 +157,6 @@ class AlbumRepository @Inject constructor(
     suspend fun getSearchCategories(): Result<List<SearchCategoryUi>> {
         return try {
             Result.success(albumLocalDataSource.getSearchCategories())
-        } catch (e: kotlinx.coroutines.CancellationException) {
-            throw e
         } catch (e: Exception) {
             Log.d("AlbumRepository", "getSearchCategories: ${e.message}")
             Result.failure(ErrorDeDatosLocalesException())

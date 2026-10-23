@@ -7,6 +7,10 @@ import com.example.mixtapp.data.dtos.ReviewConAlbumDto
 import com.example.mixtapp.data.dtos.UsuarioPerfilFirestoreDto
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -111,6 +115,95 @@ class UsuarioFirestoreDataSourceImpl @Inject constructor(
 
     override suspend fun getSeguidos(id: String): List<UsuarioPerfilFirestoreDto> =
         usuariosDeLaSubcoleccion(id = id, subcoleccion = "following")
+
+    // El listener escucha el documento del usuario: seguir o dejar de seguir cambia sus contadores,
+    // asi que tambien llega por aqui. Si lo sigo se busca con exists() cada vez que llega
+    override fun listenUsuarioById(id: String, currentUserId: String): Flow<UsuarioPerfilFirestoreDto> = callbackFlow {
+        val listenerRegistration = db.collection("usuarios").document(id)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    close(error) // cierra el flujo con error
+                    return@addSnapshotListener
+                }
+                if (snapshot != null) {
+                    // Sin documento, toObject da null: el repositorio lo muestra como no encontrado
+                    val usuario = snapshot.toObject(UsuarioPerfilFirestoreDto::class.java)?.copy(id = snapshot.id)
+
+                    if (usuario == null) close(NoSuchElementException("No existe el usuario $id"))
+                    else trySend(usuario).isSuccess // envia el usuario al flujo
+                }
+            }
+
+        // Cuando se sale del perfil nadie escucha el flujo y se quita el listener
+        awaitClose { listenerRegistration.remove() }
+    }.map { usuario ->
+        if (currentUserId.isNotEmpty()) {
+            val followerDoc = db.collection("usuarios").document(usuario.id)
+                .collection("followers").document(currentUserId).get().await()
+            usuario.followed = followerDoc.exists()
+        }
+
+        usuario
+    }
+
+    // Un like en otro celular cambia likesCount en la resena, asi que la lista llega de nuevo
+    override fun listenReviewsDeUsuario(id: String, currentUserId: String): Flow<List<ReviewConAlbumDto>> = callbackFlow {
+        val listenerRegistration = db.collection("reviews").whereEqualTo("usuarioId", id)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    close(error) // cierra el flujo con error
+                    return@addSnapshotListener
+                }
+                if (snapshot != null) {
+                    val reviews = snapshot.documents.map { doc ->
+                        val review = doc.toObject(ReviewConAlbumDto::class.java)
+                        review?.copy(id = doc.id) ?: throw Exception("Review not found")
+                    }
+                    trySend(reviews).isSuccess // envia la lista al flujo
+                }
+            }
+
+        awaitClose { listenerRegistration.remove() }
+    }.map { reviews ->
+        reviews.map { review ->
+            if (currentUserId.isNotEmpty()) {
+                val likeSnapshot = db.collection("reviews").document(review.id)
+                    .collection("likes").document(currentUserId).get().await()
+                review.liked = likeSnapshot.exists()
+            }
+
+            review
+        }
+    }
+
+    override fun listenSeguidores(id: String): Flow<List<UsuarioPerfilFirestoreDto>> =
+        listenSubcoleccion(id = id, subcoleccion = "followers")
+
+    override fun listenSeguidos(id: String): Flow<List<UsuarioPerfilFirestoreDto>> =
+        listenSubcoleccion(id = id, subcoleccion = "following")
+
+    // El listener escucha la subcoleccion: llegan los ids y los datos de cada usuario salen de su
+    // documento, como en la lista sin vivo
+    private fun listenSubcoleccion(id: String, subcoleccion: String): Flow<List<UsuarioPerfilFirestoreDto>> = callbackFlow {
+        val listenerRegistration = db.collection("usuarios").document(id).collection(subcoleccion)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    close(error) // cierra el flujo con error
+                    return@addSnapshotListener
+                }
+                if (snapshot != null) {
+                    trySend(snapshot.documents.map { doc -> doc.id }).isSuccess // envia los ids al flujo
+                }
+            }
+
+        awaitClose { listenerRegistration.remove() }
+    }.map { ids ->
+        // Si alguno ya no tiene documento en usuarios, no se muestra
+        ids.mapNotNull { usuarioId ->
+            val respuesta = db.collection("usuarios").document(usuarioId).get().await()
+            respuesta.toObject(UsuarioPerfilFirestoreDto::class.java)?.copy(id = respuesta.id)
+        }
+    }
 
     private suspend fun usuariosDeLaSubcoleccion(id: String, subcoleccion: String): List<UsuarioPerfilFirestoreDto> {
         val snapshot = db.collection("usuarios").document(id).collection(subcoleccion).get().await()

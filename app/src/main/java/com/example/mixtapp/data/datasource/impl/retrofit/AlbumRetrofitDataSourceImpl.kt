@@ -36,6 +36,13 @@ class AlbumRetrofitDataSourceImpl @Inject constructor(
         awaitClose { }
     }
 
+    // Con HTTP no hay una conexion continua: el flujo manda una sola vez las resenas del album
+    override fun listenReviewsDeAlbum(id: String, currentUserId: String): Flow<List<ReviewConUsuarioDto>> = callbackFlow {
+        trySend(getReviewsDeAlbum(id = id, currentUserId = currentUserId)).isSuccess
+
+        awaitClose { }
+    }
+
     // En el backend el usuario de la app es el 1: sus resenas vuelven con el uid de la sesion para
     // que el repositorio las reconozca como mias
     private fun conMiUsuario(reviews: List<ReviewConUsuarioDto>, currentUserId: String): List<ReviewConUsuarioDto> =

@@ -1,5 +1,6 @@
 package com.example.mixtapp.ui.screens.following
 
+import android.util.Log
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -18,6 +19,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -28,55 +30,56 @@ class FollowingViewModel @Inject constructor(
     private val reviewRepository: ReviewRepository
 ) : ViewModel() {
 
-    private var followingSubscription: kotlinx.coroutines.Job? = null
-
     private val _uiState = MutableStateFlow(FollowingState())
     val uiState: StateFlow<FollowingState> = _uiState.asStateFlow()
 
-    // La pantalla la llama cada vez que se muestra: el init solo corre una vez al crear el
-    // ViewModel, y al volver de un perfil o de una discusion se seguirian viendo los datos viejos
+    // El flujo se escucha mientras exista el ViewModel: si se volviera a pedir cada vez que la
+    // pantalla se muestra, se acumularian listeners
+    private var escuchandoSeguidos = false
+
+    // Datos en vivo: una resena nueva, un like o seguir a alguien llegan solos, sin salir y volver
     fun getFollowing() {
-        followingSubscription?.cancel()
-        followingSubscription = viewModelScope.launch {
+        if (escuchandoSeguidos) return
+        escuchandoSeguidos = true
+
+        viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
 
-            socialRepository.observeFollowing().collect { result ->
-                val sharedIds = _uiState.value.following?.reviews.orEmpty().filter { it.isShared }.map { it.id }.toSet()
-                val following = result.getOrNull()?.let { value ->
-                    value.copy(reviews = value.reviews.map { it.copy(isShared = it.id in sharedIds) })
-                }
-
-                if (result.isSuccess && following != null) {
-                    // Al volver se conserva el filtro que estaba elegido
-                    val filtroInicial = _uiState.value.selectedFilterId.ifEmpty { followingFilters.first().id }
-                    val query = _uiState.value.friendQuery
-
+            socialRepository.getFollowingLive()
+                .catch { e ->
+                    Log.d("FollowingViewModel", "getFollowing: ${e.message}")
+                    escuchandoSeguidos = false
                     _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessageRes = mensajeDeError(error = e, generico = R.string.error_cargar_contenido),
+                        )
+                    }
+                }
+                .collect { llegada ->
+                    _uiState.update {
+                        // Compartir solo existe en esta pantalla: se conserva al llegar datos nuevos
+                        val compartidas = it.following?.reviews.orEmpty().filter { r -> r.isShared }.map { r -> r.id }
+                        val following = llegada.copy(
+                            reviews = llegada.reviews.map { r -> r.copy(isShared = r.id in compartidas) }
+                        )
+                        // Al llegar datos nuevos se conserva el filtro que estaba elegido
+                        val filtroId = it.selectedFilterId.ifEmpty { followingFilters.first().id }
+
                         it.copy(
                             following = following,
                             reviews = aplicarFiltros(
-                                friendQuery = query,
-                                filtroId = filtroInicial,
+                                friendQuery = it.friendQuery,
+                                filtroId = filtroId,
                                 todas = following.reviews,
                             ),
                             filters = followingFilters,
-                            selectedFilterId = filtroInicial,
+                            selectedFilterId = filtroId,
                             isLoading = false,
                             errorMessageRes = null,
                         )
                     }
-                } else {
-                    _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            errorMessageRes = mensajeDeError(
-                                error = result.exceptionOrNull(),
-                                generico = R.string.error_cargar_contenido,
-                            )
-                        )
-                    }
                 }
-            }
         }
     }
 
@@ -116,13 +119,14 @@ class FollowingViewModel @Inject constructor(
         _uiState.update { it.copy(selectedStoryId = storyId) }
     }
 
-    // Firestore confirma el like; la suscripcion actualiza el corazon y el contador.
+    // No se copia el estado a mano: la transaccion cambia likesCount, eso dispara el flujo y llega
+    // la resena con el corazon y el contador al dia
     fun sendOrDeleteLike(reviewId: String) {
         viewModelScope.launch {
             val result = reviewRepository.sendOrDeleteLike(reviewId = reviewId)
 
             if (result.isSuccess) {
-                // El listener aplica el estado confirmado sin duplicar contadores.
+                _uiState.update { it.copy(errorMessageRes = null) }
             } else {
                 _uiState.update {
                     it.copy(

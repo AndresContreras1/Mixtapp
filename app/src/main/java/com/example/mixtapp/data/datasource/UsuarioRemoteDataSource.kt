@@ -4,6 +4,7 @@ import com.example.mixtapp.data.dtos.ActualizarUsuarioDto
 import com.example.mixtapp.data.dtos.RegistrarUsuarioDto
 import com.example.mixtapp.data.dtos.ReviewConAlbumDto
 import com.example.mixtapp.data.dtos.UsuarioDtoGeneric
+import kotlinx.coroutines.flow.Flow
 
 // Contrato de los usuarios: cada implementacion retorna el DTO de su propia base.
 // currentUserId es opcional para que Retrofit no tenga que usarlo
@@ -20,4 +21,10 @@ interface UsuarioRemoteDataSource {
     suspend fun followOrUnfollow(currentUserId: String, targetUserId: String): Unit
     suspend fun getSeguidores(id: String): List<UsuarioDtoGeneric>
     suspend fun getSeguidos(id: String): List<UsuarioDtoGeneric>
+    // Datos en vivo: cada vez que cambia el documento, sus resenas o sus listas, llega todo de
+    // nuevo por el flujo
+    fun listenUsuarioById(id: String, currentUserId: String = ""): Flow<UsuarioDtoGeneric>
+    fun listenReviewsDeUsuario(id: String, currentUserId: String = ""): Flow<List<ReviewConAlbumDto>>
+    fun listenSeguidores(id: String): Flow<List<UsuarioDtoGeneric>>
+    fun listenSeguidos(id: String): Flow<List<UsuarioDtoGeneric>>
 }
