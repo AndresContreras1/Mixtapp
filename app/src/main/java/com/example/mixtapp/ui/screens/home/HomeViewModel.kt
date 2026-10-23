@@ -146,6 +146,7 @@ class HomeViewModel @Inject constructor(
                             quote = review.content,
                             authorId = review.authorId,
                             author = review.author,
+                            authorImage = review.authorImage,
                             date = review.fecha,
                         )
                     )

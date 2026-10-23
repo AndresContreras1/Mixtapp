@@ -52,6 +52,7 @@ fun FollowingReviewCard(
             ReviewAuthorRow(
                 reviewerName = review.reviewerName,
                 avatarText = review.reviewerInitials,
+                avatarImage = review.reviewerImage,
                 reviewedAt = review.reviewedAt,
                 avatarSize = 44.dp,
                 avatarBrush = Brush.linearGradient(

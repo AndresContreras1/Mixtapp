@@ -31,6 +31,8 @@ import com.example.mixtapp.ui.theme.MixtappTheme
 fun ReviewAuthorRow(
     reviewerName: String,
     avatarText: String,
+    // La foto de quien la escribio; sin foto se muestran las iniciales
+    avatarImage: String,
     reviewedAt: String,
     avatarSize: Dp,
     avatarBrush: Brush,
@@ -43,19 +45,27 @@ fun ReviewAuthorRow(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(
-            modifier = Modifier
-                .size(avatarSize)
-                .clip(CircleShape)
-                .background(avatarBrush),
-            contentAlignment = Alignment.Center,
-        ) {
-            Text(
-                text = avatarText,
-                color = avatarTextColor,
-                fontSize = nameFontSize,
-                fontWeight = FontWeight.Black,
+        if (avatarImage.isNotEmpty()) {
+            ProfileAsyncImage(
+                profileImage = avatarImage,
+                contentDescription = stringResource(R.string.foto_perfil),
+                modifier = Modifier.size(avatarSize)
             )
+        } else {
+            Box(
+                modifier = Modifier
+                    .size(avatarSize)
+                    .clip(CircleShape)
+                    .background(avatarBrush),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = avatarText,
+                    color = avatarTextColor,
+                    fontSize = nameFontSize,
+                    fontWeight = FontWeight.Black,
+                )
+            }
         }
 
         Spacer(modifier = Modifier.width(10.dp))
@@ -92,6 +102,7 @@ fun ReviewAuthorRowPreview() {
         ReviewAuthorRow(
             reviewerName = "Liz",
             avatarText = "Lz",
+            avatarImage = "",
             reviewedAt = "hace 4 h",
             avatarSize = 44.dp,
             avatarBrush = SolidColor(MaterialTheme.colorScheme.secondary),

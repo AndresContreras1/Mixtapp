@@ -22,6 +22,8 @@ data class FollowingReviewUi(
     val authorId: String,
     val reviewerName: String,
     val reviewerInitials: String,
+    // La foto de quien la escribio; si esta vacia se muestran las iniciales
+    val reviewerImage: String,
     val reviewedAt: String,
     val album: Album,
     val rating: Int,

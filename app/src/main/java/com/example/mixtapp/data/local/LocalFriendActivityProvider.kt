@@ -12,6 +12,7 @@ object LocalFriendActivityProvider {
         quote = "A masterpiece from start to finish.",
         authorId = "5",
         author = "Camila Herrera",
+        authorImage = "",
         date = "2026-08-07",
     )
 
@@ -25,6 +26,7 @@ object LocalFriendActivityProvider {
             quote = "Caótico y pegajoso de principio a fin.",
             authorId = "3",
             author = "Laura Pérez",
+            authorImage = "",
             date = "2026-08-01",
         ),
     )

@@ -3,10 +3,13 @@ package com.example.mixtapp.ui.screens.home.components
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
@@ -15,6 +18,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -25,6 +29,7 @@ import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalFriendActivityProvider
 import com.example.mixtapp.data.model.FriendActivityUi
 import com.example.mixtapp.ui.theme.MixtappTheme
+import com.example.mixtapp.ui.utils.ProfileAsyncImage
 import com.example.mixtapp.ui.utils.StarRating
 
 @Composable
@@ -77,13 +82,25 @@ fun FriendsActivity(
             Spacer(modifier = Modifier.height(8.dp))
 
             // Tocar el autor abre su perfil
-            Text(
-                text = stringResource(R.string.titulo_guion_subtitulo, activity.author, activity.date),
-                color = MaterialTheme.colorScheme.primary,
-                fontSize = 11.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.clickable { onAuthorClick(activity.authorId) }
-            )
+            Row(
+                modifier = Modifier.clickable { onAuthorClick(activity.authorId) },
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                ProfileAsyncImage(
+                    profileImage = activity.authorImage,
+                    contentDescription = stringResource(R.string.foto_perfil),
+                    modifier = Modifier.size(24.dp)
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Text(
+                    text = stringResource(R.string.titulo_guion_subtitulo, activity.author, activity.date),
+                    color = MaterialTheme.colorScheme.primary,
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
         }
     }
 }

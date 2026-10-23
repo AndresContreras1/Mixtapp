@@ -48,6 +48,7 @@ fun DiscussionReviewCard(
             ReviewAuthorRow(
                 reviewerName = review.reviewerName,
                 avatarText = review.reviewerAvatarText,
+                avatarImage = review.reviewerImage,
                 reviewedAt = review.reviewedAt,
                 avatarSize = 40.dp,
                 avatarBrush = SolidColor(MaterialTheme.colorScheme.secondary),
