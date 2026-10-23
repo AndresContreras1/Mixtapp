@@ -13,6 +13,7 @@ data class FollowingStoryUi(
     val label: String,
     val initials: String,
     val isAddAction: Boolean,
+    val fotoUrl: String? = null,
 )
 
 data class FollowingReviewUi(

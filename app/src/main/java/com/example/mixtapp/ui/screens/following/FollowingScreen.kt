@@ -25,7 +25,6 @@ import com.example.mixtapp.ui.theme.MixtappTheme
 @Composable
 fun FollowingScreen(
     followingViewModel: FollowingViewModel,
-    onCommentsClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val state by followingViewModel.uiState.collectAsState()
@@ -48,7 +47,6 @@ fun FollowingScreen(
             onStoryClick = { followingViewModel.updateSelectedStory(storyId = it) },
             onLikeClick = { followingViewModel.darQuitarLike(reviewId = it) },
             onShareClick = { followingViewModel.compartirQuitar(reviewId = it) },
-            onCommentsClick = onCommentsClick,
             modifier = modifier,
         )
     }
@@ -68,7 +66,6 @@ fun FollowingScreenContent(
     onStoryClick: (String) -> Unit,
     onLikeClick: (String) -> Unit,
     onShareClick: (String) -> Unit,
-    onCommentsClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -91,7 +88,6 @@ fun FollowingScreenContent(
             onStoryClick = onStoryClick,
             onLikeClick = onLikeClick,
             onShareClick = onShareClick,
-            onCommentsClick = onCommentsClick,
             modifier = Modifier.fillMaxSize(),
         )
     }
@@ -116,7 +112,6 @@ fun FollowingScreenPreview() {
             onStoryClick = {},
             onLikeClick = {},
             onShareClick = {},
-            onCommentsClick = {},
         )
     }
 }

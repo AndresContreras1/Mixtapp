@@ -255,10 +255,7 @@ fun AppNavigation(
             val followingViewModel: FollowingViewModel = hiltViewModel()
 
             FollowingScreen(
-                followingViewModel = followingViewModel,
-                onCommentsClick = { reviewId ->
-                    navController.navigate(Screen.Discussion.createRoute(reviewId = reviewId))
-                }
+                followingViewModel = followingViewModel
             )
         }
 

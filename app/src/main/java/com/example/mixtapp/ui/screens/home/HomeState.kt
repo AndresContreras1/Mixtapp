@@ -12,6 +12,7 @@ data class HomeState(
     val todos: List<SongReviewUi> = emptyList(),
     val trending: SongReviewUi? = null,
     val friendActivity: FriendActivityUi? = null,
+    val followedIds: Set<String> = emptySet(),
     val filters: List<HomeFilterUi> = emptyList(),
     val selectedFilterId: String = "",
     val profileImageUrl: String = "",

@@ -10,10 +10,10 @@ data class HomeFilterUi(
 
 const val FILTRO_PARA_TI = "paraTi"
 const val FILTRO_TENDENCIAS = "tendencias"
-const val FILTRO_AMIGOS = "amigos"
+const val FILTRO_SEGUIDOS = "seguidos"
 
 val homeFilters = listOf(
     HomeFilterUi(id = FILTRO_PARA_TI, label = R.string.for_you),
     HomeFilterUi(id = FILTRO_TENDENCIAS, label = R.string.trending),
-    HomeFilterUi(id = FILTRO_AMIGOS, label = R.string.friends)
+    HomeFilterUi(id = FILTRO_SEGUIDOS, label = R.string.friends)
 )

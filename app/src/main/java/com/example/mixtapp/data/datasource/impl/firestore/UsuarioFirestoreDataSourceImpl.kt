@@ -36,6 +36,15 @@ class UsuarioFirestoreDataSourceImpl @Inject constructor(
         return usuario?.copy(id = respuesta.id) ?: throw NoSuchElementException("No existe el usuario $id")
     }
 
+    // Obtiene una lista con todos los documentos de la colección 'usuarios' en Firestore.
+    override suspend fun getUsuarios(): List<UsuarioPerfilFirestoreDto> {
+        val snapshot = db.collection("usuarios").get().await()
+        return snapshot.documents.map { doc ->
+            val usuario = doc.toObject(UsuarioPerfilFirestoreDto::class.java)
+            usuario?.copy(id = doc.id) ?: throw Exception("Usuario not found")
+        }
+    }
+
     override suspend fun getReviewsDeUsuario(id: String): List<ReviewConAlbumDto> {
         val snapshot = db.collection("reviews").whereEqualTo("usuarioId", id).get().await()
 

@@ -3,10 +3,8 @@ package com.example.mixtapp.ui.utils
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.outlined.ChatBubbleOutline
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.Icon
@@ -28,8 +26,6 @@ fun ReviewActionsRow(
     likes: Int,
     isLiked: Boolean,
     onLikeClick: () -> Unit,
-    commentsLabel: String,
-    onCommentsClick: (() -> Unit)?,
     isShared: Boolean,
     onShareClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -51,34 +47,6 @@ fun ReviewActionsRow(
         }
         Text(
             text = likes.toString(),
-            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.55f),
-            fontSize = 12.sp,
-        )
-
-        Spacer(modifier = Modifier.width(8.dp))
-
-        if (onCommentsClick == null) {
-            Icon(
-                imageVector = Icons.Outlined.ChatBubbleOutline,
-                contentDescription = stringResource(R.string.comments),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.55f),
-                modifier = Modifier.size(15.dp),
-            )
-        } else {
-            IconButton(
-                onClick = onCommentsClick,
-                modifier = Modifier.size(15.dp),
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.ChatBubbleOutline,
-                    contentDescription = stringResource(R.string.open_discussion),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.55f),
-                    modifier = Modifier.size(15.dp),
-                )
-            }
-        }
-        Text(
-            text = commentsLabel,
             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.55f),
             fontSize = 12.sp,
         )
@@ -108,8 +76,6 @@ fun ReviewActionsRowPreview() {
             likes = 24,
             isLiked = false,
             onLikeClick = {},
-            commentsLabel = "4",
-            onCommentsClick = {},
             isShared = false,
             onShareClick = {}
         )
