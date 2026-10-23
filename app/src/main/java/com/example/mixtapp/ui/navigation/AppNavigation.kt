@@ -32,8 +32,8 @@ import com.example.mixtapp.ui.screens.selectalbum.SelectAlbumScreen
 import com.example.mixtapp.ui.screens.selectalbum.SelectAlbumViewModel
 import com.example.mixtapp.ui.screens.signup.SignUpScreen
 import com.example.mixtapp.ui.screens.signup.SignUpViewModel
-import com.example.mixtapp.ui.screens.songreview.SongReviewsScreen
-import com.example.mixtapp.ui.screens.songreview.SongReviewsViewModel
+import com.example.mixtapp.ui.screens.albumdetail.AlbumDetailScreen
+import com.example.mixtapp.ui.screens.albumdetail.AlbumDetailViewModel
 import com.example.mixtapp.ui.screens.splash.SplashScreen
 import com.example.mixtapp.ui.screens.splash.SplashViewModel
 import com.example.mixtapp.ui.screens.userprofile.UserProfileScreen
@@ -46,8 +46,8 @@ private fun NavHostController.navegarLimpiandoLaPila(ruta: String) {
 }
 
 // Abrir un album, el perfil de un usuario y escribir una resena se repite en varias pantallas
-private fun NavHostController.abrirAlbum(songId: String) {
-    navigate(Screen.SongDetail.createRoute(songId = songId))
+private fun NavHostController.abrirAlbum(albumId: String) {
+    navigate(Screen.AlbumDetail.createRoute(albumId = albumId))
 }
 
 private fun NavHostController.abrirPerfil(userId: String) {
@@ -114,8 +114,8 @@ fun AppNavigation(
 
             HomeScreen(
                 homeViewModel = homeViewModel,
-                onAlbumClick = { songId ->
-                    navController.abrirAlbum(songId = songId)
+                onAlbumClick = { albumId ->
+                    navController.abrirAlbum(albumId = albumId)
                 },
                 onAuthorClick = { userId ->
                     navController.abrirPerfil(userId = userId)
@@ -132,8 +132,8 @@ fun AppNavigation(
 
             SearchScreen(
                 searchViewModel = searchViewModel,
-                onAlbumClick = { songId ->
-                    navController.abrirAlbum(songId = songId)
+                onAlbumClick = { albumId ->
+                    navController.abrirAlbum(albumId = albumId)
                 }
             )
         }
@@ -175,8 +175,8 @@ fun AppNavigation(
 
             MyReviewsScreen(
                 myReviewsViewModel = myReviewsViewModel,
-                onReviewClick = { songId ->
-                    navController.abrirAlbum(songId = songId)
+                onReviewClick = { albumId ->
+                    navController.abrirAlbum(albumId = albumId)
                 },
                 onEditClick = { albumId ->
                     navController.abrirEscribirResena(albumId = albumId)
@@ -195,8 +195,8 @@ fun AppNavigation(
                 logoutButtonPressed = {
                     navController.navegarLimpiandoLaPila(Screen.Login.route)
                 },
-                onReviewClick = { songId ->
-                    navController.abrirAlbum(songId = songId)
+                onReviewClick = { albumId ->
+                    navController.abrirAlbum(albumId = albumId)
                 },
                 onUserClick = { userId ->
                     navController.abrirPerfil(userId = userId)
@@ -217,18 +217,18 @@ fun AppNavigation(
         }
 
         composable(
-            route = Screen.SongDetail.route,
-            arguments = listOf(navArgument(name = "songId") { type = NavType.StringType })
+            route = Screen.AlbumDetail.route,
+            arguments = listOf(navArgument(name = "albumId") { type = NavType.StringType })
         ) {
             // Solo se obtiene el id; buscar el album es tarea del ViewModel
-            val songId = it.arguments?.getString("songId") ?: ""
-            val songReviewsViewModel: SongReviewsViewModel = hiltViewModel()
+            val albumId = it.arguments?.getString("albumId") ?: ""
+            val albumDetailViewModel: AlbumDetailViewModel = hiltViewModel()
 
-            SongReviewsScreen(
-                songId = songId,
-                songReviewsViewModel = songReviewsViewModel,
+            AlbumDetailScreen(
+                albumId = albumId,
+                albumDetailViewModel = albumDetailViewModel,
                 onWriteReviewClick = {
-                    navController.abrirEscribirResena(albumId = songId)
+                    navController.abrirEscribirResena(albumId = albumId)
                 },
                 onBackClick = { navController.popBackStack() },
                 onAuthorClick = { userId ->
@@ -247,8 +247,8 @@ fun AppNavigation(
             UserProfileScreen(
                 userId = userId,
                 userProfileViewModel = userProfileViewModel,
-                onReviewClick = { songId ->
-                    navController.abrirAlbum(songId = songId)
+                onReviewClick = { albumId ->
+                    navController.abrirAlbum(albumId = albumId)
                 },
                 onUserClick = { otherUserId ->
                     navController.abrirPerfil(userId = otherUserId)

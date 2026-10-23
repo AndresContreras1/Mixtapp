@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
 import com.example.mixtapp.data.model.FriendActivityUi
-import com.example.mixtapp.data.model.SongReviewUi
+import com.example.mixtapp.data.model.AlbumReviewsUi
 import com.example.mixtapp.data.repository.AlbumRepository
 import com.example.mixtapp.data.repository.AuthRepository
 import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
@@ -43,7 +43,7 @@ class HomeViewModel @Inject constructor(
             _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
 
             // Cada album llega con sus resenas, y las mias ya vienen marcadas
-            val result = albumRepository.getSongReviews()
+            val result = albumRepository.getAlbumReviews()
             val followedResult = usuarioRepository.getUsuariosSeguidos()
 
             if (result.isSuccess) {
@@ -99,33 +99,33 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun aplicarFiltro(filtroId: String, todos: List<SongReviewUi>, followedIds: Set<String>): List<SongReviewUi> =
+    private fun aplicarFiltro(filtroId: String, todos: List<AlbumReviewsUi>, followedIds: Set<String>): List<AlbumReviewsUi> =
         when (filtroId) {
             FILTRO_TENDENCIAS -> todos.sortedByDescending { it.reviews.size }
 
             // Los albumes que reseno alguien a quien sigo
-            FILTRO_SEGUIDOS -> todos.filter { songReview ->
-                songReview.reviews.any { !it.esMia && it.authorId in followedIds }
+            FILTRO_SEGUIDOS -> todos.filter { albumReviews ->
+                albumReviews.reviews.any { !it.esMia && it.authorId in followedIds }
             }
 
             else -> todos
         }
 
     // El album con mas resenas
-    private fun enTendencia(todos: List<SongReviewUi>): SongReviewUi? =
+    private fun enTendencia(todos: List<AlbumReviewsUi>): AlbumReviewsUi? =
         todos.sortedByDescending { it.reviews.size }.firstOrNull()
 
     // De las resenas de usuarios seguidos, la del album que se escucho mas recientemente
-    private fun actividadDeSeguidos(todos: List<SongReviewUi>, followedIds: Set<String>): FriendActivityUi? {
+    private fun actividadDeSeguidos(todos: List<AlbumReviewsUi>, followedIds: Set<String>): FriendActivityUi? {
         val actividades = mutableListOf<FriendActivityUi>()
 
-        todos.forEach { songReview ->
-            songReview.reviews.forEach { review ->
+        todos.forEach { albumReviews ->
+            albumReviews.reviews.forEach { review ->
                 if (!review.esMia && review.authorId in followedIds) {
                     actividades.add(
                         FriendActivityUi(
                             id = review.id,
-                            album = songReview.album,
+                            album = albumReviews.album,
                             rating = review.rating,
                             quote = review.content,
                             authorId = review.authorId,

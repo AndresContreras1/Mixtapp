@@ -24,8 +24,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
-import com.example.mixtapp.data.local.LocalSongReviewProvider
-import com.example.mixtapp.data.model.SongReviewUi
+import com.example.mixtapp.data.local.LocalAlbumReviewsProvider
+import com.example.mixtapp.data.model.AlbumReviewsUi
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.theme.displayFontFamily
 import com.example.mixtapp.ui.utils.BackButton
@@ -64,7 +64,7 @@ fun SelectAlbumScreen(
 
 @Composable
 fun SelectAlbumScreenContent(
-    albums: List<SongReviewUi>,
+    albums: List<AlbumReviewsUi>,
     onAlbumClick: (String) -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -124,7 +124,7 @@ fun SelectAlbumScreenContent(
 fun SelectAlbumScreenPreview() {
     MixtappTheme(darkTheme = true) {
         SelectAlbumScreenContent(
-            albums = LocalSongReviewProvider.songs,
+            albums = LocalAlbumReviewsProvider.albumReviews,
             onAlbumClick = {},
             onBackClick = {}
         )

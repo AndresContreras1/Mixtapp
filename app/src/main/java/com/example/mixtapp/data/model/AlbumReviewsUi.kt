@@ -1,7 +1,7 @@
 package com.example.mixtapp.data.model
 
 // Las estadisticas se calculan con las resenas guardadas del album
-data class SongReviewUi(
+data class AlbumReviewsUi(
     val id: String,
     val album: Album,
     val rating: Double,
@@ -10,10 +10,10 @@ data class SongReviewUi(
     val ratingCount: String,
     val recommendRate: Int,
     val userRating: Int,
-    val reviews: List<SongReviewItemUi>,
+    val reviews: List<AlbumReviewItemUi>,
 )
 
-data class SongReviewItemUi(
+data class AlbumReviewItemUi(
     val id: String,
     val authorId: String,
     val author: String,

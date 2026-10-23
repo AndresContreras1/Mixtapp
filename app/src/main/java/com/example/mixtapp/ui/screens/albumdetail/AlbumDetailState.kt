@@ -1,11 +1,11 @@
-package com.example.mixtapp.ui.screens.songreview
+package com.example.mixtapp.ui.screens.albumdetail
 
 import androidx.annotation.StringRes
-import com.example.mixtapp.data.model.SongReviewUi
+import com.example.mixtapp.data.model.AlbumReviewsUi
 
 // El album es nulable porque puede que el id no exista
-data class SongReviewsState(
-    val song: SongReviewUi? = null,
+data class AlbumDetailState(
+    val albumReviews: AlbumReviewsUi? = null,
     // Mi resena de este album, si ya la escribi
     val miResenaId: String? = null,
     // Mientras se borra no se manda otro DELETE

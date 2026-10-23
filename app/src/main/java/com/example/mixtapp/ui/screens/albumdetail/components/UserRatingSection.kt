@@ -1,4 +1,4 @@
-package com.example.mixtapp.ui.screens.songreview.components
+package com.example.mixtapp.ui.screens.albumdetail.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column

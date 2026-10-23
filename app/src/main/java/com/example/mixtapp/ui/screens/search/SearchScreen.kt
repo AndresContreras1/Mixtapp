@@ -26,9 +26,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalSearchCategoriesProvider
-import com.example.mixtapp.data.local.LocalSongReviewProvider
+import com.example.mixtapp.data.local.LocalAlbumReviewsProvider
 import com.example.mixtapp.data.model.SearchCategoryUi
-import com.example.mixtapp.data.model.SongReviewUi
+import com.example.mixtapp.data.model.AlbumReviewsUi
 import com.example.mixtapp.ui.screens.search.components.BrowseByHeader
 import com.example.mixtapp.ui.screens.search.components.SearchCategoryRow
 import com.example.mixtapp.ui.screens.search.components.SearchHeader
@@ -82,7 +82,7 @@ fun SearchScreenContent(
     categories: List<SearchCategoryUi>,
     selectedCategoryId: String?,
     onCategoryClick: (String) -> Unit,
-    resultados: List<SongReviewUi>,
+    resultados: List<AlbumReviewsUi>,
     errorMessageRes: Int?,
     onAlbumClick: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -147,18 +147,18 @@ fun SearchScreenContent(
                 }
             }
 
-            items(resultados, key = { it.id }) { songReview ->
+            items(resultados, key = { it.id }) { albumReviews ->
                 ReviewAlbumRow(
-                    cover = songReview.album.cover,
-                    albumTitle = songReview.album.title,
-                    artistName = songReview.album.artist,
-                    rating = songReview.estrellas,
+                    cover = albumReviews.album.cover,
+                    albumTitle = albumReviews.album.title,
+                    artistName = albumReviews.album.artist,
+                    rating = albumReviews.estrellas,
                     coverSize = 64.dp,
                     coverCorner = 10.dp,
                     starSize = 14.dp,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { onAlbumClick(songReview.id) }
+                        .clickable { onAlbumClick(albumReviews.id) }
                         .padding(horizontal = 24.dp, vertical = 12.dp),
                 )
             }
@@ -180,7 +180,7 @@ fun SearchScreenPreview() {
             categories = LocalSearchCategoriesProvider.categories,
             selectedCategoryId = null,
             onCategoryClick = {},
-            resultados = LocalSongReviewProvider.songs,
+            resultados = LocalAlbumReviewsProvider.albumReviews,
             errorMessageRes = null,
             onAlbumClick = {},
         )

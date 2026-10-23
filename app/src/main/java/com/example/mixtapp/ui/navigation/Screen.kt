@@ -15,8 +15,8 @@ sealed class Screen(val route: String) {
     data object EditProfile : Screen(route = "editProfile")
 
     // Las pantallas de detalle reciben un id por la ruta
-    data object SongDetail : Screen(route = "songDetail/{songId}") {
-        fun createRoute(songId: String) = "songDetail/$songId"
+    data object AlbumDetail : Screen(route = "albumDetail/{albumId}") {
+        fun createRoute(albumId: String) = "albumDetail/$albumId"
     }
 
     data object Discussion : Screen(route = "discussion/{reviewId}") {

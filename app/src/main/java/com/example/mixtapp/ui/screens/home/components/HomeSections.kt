@@ -14,9 +14,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalFriendActivityProvider
-import com.example.mixtapp.data.local.LocalSongReviewProvider
+import com.example.mixtapp.data.local.LocalAlbumReviewsProvider
 import com.example.mixtapp.data.model.FriendActivityUi
-import com.example.mixtapp.data.model.SongReviewUi
+import com.example.mixtapp.data.model.AlbumReviewsUi
 import com.example.mixtapp.ui.screens.home.model.HomeFilterUi
 import com.example.mixtapp.ui.screens.home.model.homeFilters
 import com.example.mixtapp.ui.theme.MixtappTheme
@@ -25,9 +25,9 @@ import com.example.mixtapp.ui.utils.ReviewAlbumRow
 
 @Composable
 fun HomeSections(
-    albums: List<SongReviewUi>,
-    todos: List<SongReviewUi>,
-    trending: SongReviewUi?,
+    albums: List<AlbumReviewsUi>,
+    todos: List<AlbumReviewsUi>,
+    trending: AlbumReviewsUi?,
     friendActivity: FriendActivityUi?,
     filters: List<HomeFilterUi>,
     selectedFilterId: String,
@@ -71,7 +71,7 @@ fun HomeSections(
 
             if (trending != null) {
                 TrendingCard(
-                    songReview = trending,
+                    albumReviews = trending,
                     onClick = onAlbumClick
                 )
 
@@ -145,9 +145,9 @@ fun HomeSections(
 fun HomeSectionsPreview() {
     MixtappTheme(darkTheme = true) {
         HomeSections(
-            albums = LocalSongReviewProvider.popularSongs,
-            todos = LocalSongReviewProvider.songs,
-            trending = LocalSongReviewProvider.trendingSong,
+            albums = LocalAlbumReviewsProvider.popularAlbums,
+            todos = LocalAlbumReviewsProvider.albumReviews,
+            trending = LocalAlbumReviewsProvider.trendingAlbum,
             friendActivity = LocalFriendActivityProvider.friendActivity,
             filters = homeFilters,
             selectedFilterId = homeFilters.first().id,

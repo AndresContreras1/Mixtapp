@@ -28,20 +28,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
-import com.example.mixtapp.data.local.LocalSongReviewProvider
-import com.example.mixtapp.data.model.SongReviewUi
+import com.example.mixtapp.data.local.LocalAlbumReviewsProvider
+import com.example.mixtapp.data.model.AlbumReviewsUi
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AlbumAsyncImage
 import com.example.mixtapp.ui.utils.StarRating
 
 @Composable
 fun TrendingCard(
-    songReview: SongReviewUi,
+    albumReviews: AlbumReviewsUi,
     onClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Card(
-        onClick = { onClick(songReview.album.id) },
+        onClick = { onClick(albumReviews.album.id) },
         modifier = modifier
             .fillMaxWidth()
             .height(190.dp),
@@ -54,8 +54,8 @@ fun TrendingCard(
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             AlbumAsyncImage(
-                cover = songReview.album.cover,
-                contentDescription = stringResource(R.string.album_cover, songReview.album.title),
+                cover = albumReviews.album.cover,
+                contentDescription = stringResource(R.string.album_cover, albumReviews.album.title),
                 alpha = 0.4f,
                 modifier = Modifier.fillMaxSize()
             )
@@ -76,7 +76,7 @@ fun TrendingCard(
                     modifier = Modifier.align(Alignment.BottomStart)
                 ) {
                     Text(
-                        text = stringResource(R.string.titulo_guion_subtitulo, songReview.album.title, songReview.album.artist),
+                        text = stringResource(R.string.titulo_guion_subtitulo, albumReviews.album.title, albumReviews.album.artist),
                         color = MaterialTheme.colorScheme.onSurface,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold
@@ -84,7 +84,7 @@ fun TrendingCard(
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         StarRating(
-                            rating = songReview.estrellas,
+                            rating = albumReviews.estrellas,
                             starCount = 5,
                             starSize = 14.dp,
                             spacing = 0.dp,
@@ -97,10 +97,10 @@ fun TrendingCard(
                         Spacer(modifier = Modifier.width(10.dp))
 
                         Text(
-                            text = if (songReview.ratingCount == "1") {
+                            text = if (albumReviews.ratingCount == "1") {
                                 stringResource(R.string.una_resena)
                             } else {
-                                stringResource(R.string.n_resenas, songReview.ratingCount)
+                                stringResource(R.string.n_resenas, albumReviews.ratingCount)
                             },
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 12.sp
@@ -117,7 +117,7 @@ fun TrendingCard(
 fun TrendingCardPreview() {
     MixtappTheme(darkTheme = true) {
         TrendingCard(
-            songReview = LocalSongReviewProvider.trendingSong,
+            albumReviews = LocalAlbumReviewsProvider.trendingAlbum,
             onClick = {},
         )
     }

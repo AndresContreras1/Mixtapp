@@ -36,16 +36,16 @@ class WriteReviewViewModel @Inject constructor(
             _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
 
             // El album llega con sus resenas, y entre ellas la mia si ya lo califique
-            val result = albumRepository.getSongReviewById(songId = albumId)
-            val song = result.getOrNull()
+            val result = albumRepository.getAlbumReviewsById(albumId = albumId)
+            val albumReviews = result.getOrNull()
 
-            if (result.isSuccess && song != null) {
+            if (result.isSuccess && albumReviews != null) {
                 // Solo se permite una calificacion por album: si ya existe se edita
-                val yaCalificado = song.reviews.find { it.esMia }
+                val yaCalificado = albumReviews.reviews.find { it.esMia }
 
                 _uiState.update {
                     it.copy(
-                        album = song.album,
+                        album = albumReviews.album,
                         reviewId = yaCalificado?.id,
                         rating = yaCalificado?.rating ?: 0,
                         reviewText = yaCalificado?.content ?: "",

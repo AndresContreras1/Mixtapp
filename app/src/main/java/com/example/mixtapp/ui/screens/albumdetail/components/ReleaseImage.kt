@@ -1,4 +1,4 @@
-package com.example.mixtapp.ui.screens.songreview.components
+package com.example.mixtapp.ui.screens.albumdetail.components
 
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,7 +10,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
-import com.example.mixtapp.data.local.LocalSongReviewProvider
+import com.example.mixtapp.data.local.LocalAlbumReviewsProvider
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AlbumAsyncImage
 
@@ -34,12 +34,12 @@ fun ReleaseImage(
 @Composable
 @Preview(showBackground = true)
 fun ReleaseImagePreview() {
-    val song = LocalSongReviewProvider.songs.first()
+    val albumReviews = LocalAlbumReviewsProvider.albumReviews.first()
 
     MixtappTheme(darkTheme = true) {
         ReleaseImage(
-            cover = song.album.cover,
-            albumTitle = song.album.title,
+            cover = albumReviews.album.cover,
+            albumTitle = albumReviews.album.title,
         )
     }
 }

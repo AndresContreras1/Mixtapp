@@ -1,13 +1,13 @@
 package com.example.mixtapp.data.local
 
-import com.example.mixtapp.data.model.SongReviewItemUi
-import com.example.mixtapp.data.model.SongReviewUi
+import com.example.mixtapp.data.model.AlbumReviewItemUi
+import com.example.mixtapp.data.model.AlbumReviewsUi
 
 // Solo para las previews y las pruebas: la app lee los albumes y sus resenas de la base remota
-object LocalSongReviewProvider {
+object LocalAlbumReviewsProvider {
 
-    val songs = listOf(
-        SongReviewUi(
+    val albumReviews = listOf(
+        AlbumReviewsUi(
             id = "1",
             album = LocalAlbumProvider.teatroDira,
             rating = 5.0,
@@ -16,7 +16,7 @@ object LocalSongReviewProvider {
             recommendRate = 100,
             userRating = 0,
             reviews = listOf(
-                SongReviewItemUi(
+                AlbumReviewItemUi(
                     id = "review-1",
                     author = "Mateo Gómez",
                     authorId = "2",
@@ -28,7 +28,7 @@ object LocalSongReviewProvider {
                 )
             ),
         ),
-        SongReviewUi(
+        AlbumReviewsUi(
             id = "2",
             album = LocalAlbumProvider.rush,
             rating = 4.0,
@@ -37,7 +37,7 @@ object LocalSongReviewProvider {
             recommendRate = 100,
             userRating = 0,
             reviews = listOf(
-                SongReviewItemUi(
+                AlbumReviewItemUi(
                     id = "review-2",
                     author = "Valentina Torres",
                     authorId = "3",
@@ -49,7 +49,7 @@ object LocalSongReviewProvider {
                 )
             ),
         ),
-        SongReviewUi(
+        AlbumReviewsUi(
             id = "3",
             album = LocalAlbumProvider.finisterra,
             rating = 5.0,
@@ -58,7 +58,7 @@ object LocalSongReviewProvider {
             recommendRate = 100,
             userRating = 0,
             reviews = listOf(
-                SongReviewItemUi(
+                AlbumReviewItemUi(
                     id = "review-3",
                     author = "Santiago López",
                     authorId = "4",
@@ -70,7 +70,7 @@ object LocalSongReviewProvider {
                 )
             ),
         ),
-        SongReviewUi(
+        AlbumReviewsUi(
             id = "4",
             album = LocalAlbumProvider.fromZero,
             rating = 4.0,
@@ -79,7 +79,7 @@ object LocalSongReviewProvider {
             recommendRate = 100,
             userRating = 0,
             reviews = listOf(
-                SongReviewItemUi(
+                AlbumReviewItemUi(
                     id = "review-4",
                     author = "Camila Herrera",
                     authorId = "5",
@@ -91,7 +91,7 @@ object LocalSongReviewProvider {
                 )
             ),
         ),
-        SongReviewUi(
+        AlbumReviewsUi(
             id = "5",
             album = LocalAlbumProvider.theSharpestLives,
             rating = 5.0,
@@ -100,7 +100,7 @@ object LocalSongReviewProvider {
             recommendRate = 100,
             userRating = 0,
             reviews = listOf(
-                SongReviewItemUi(
+                AlbumReviewItemUi(
                     id = "review-5",
                     author = "Mateo Gómez",
                     authorId = "2",
@@ -112,7 +112,7 @@ object LocalSongReviewProvider {
                 )
             ),
         ),
-        SongReviewUi(
+        AlbumReviewsUi(
             id = "6",
             album = LocalAlbumProvider.toxicity,
             rating = 0.0,
@@ -122,7 +122,7 @@ object LocalSongReviewProvider {
             userRating = 0,
             reviews = emptyList(),
         ),
-        SongReviewUi(
+        AlbumReviewsUi(
             id = "7",
             album = LocalAlbumProvider.randomAccessMemories,
             rating = 0.0,
@@ -132,7 +132,7 @@ object LocalSongReviewProvider {
             userRating = 0,
             reviews = emptyList(),
         ),
-        SongReviewUi(
+        AlbumReviewsUi(
             id = "8",
             album = LocalAlbumProvider.theBlackParade,
             rating = 0.0,
@@ -145,10 +145,10 @@ object LocalSongReviewProvider {
     )
 
     // Los tres albumes que se muestran en la preview de la pantalla principal
-    val popularSongs: List<SongReviewUi>
-        get() = songs.take(3)
+    val popularAlbums: List<AlbumReviewsUi>
+        get() = albumReviews.take(3)
 
     // El album destacado de la preview de la pantalla principal
-    val trendingSong: SongReviewUi
-        get() = songs[2]
+    val trendingAlbum: AlbumReviewsUi
+        get() = albumReviews[2]
 }

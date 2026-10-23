@@ -1,4 +1,4 @@
-package com.example.mixtapp.ui.screens.songreview.components
+package com.example.mixtapp.ui.screens.albumdetail.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
@@ -32,8 +32,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
-import com.example.mixtapp.data.local.LocalSongReviewProvider
-import com.example.mixtapp.data.model.SongReviewItemUi
+import com.example.mixtapp.data.local.LocalAlbumReviewsProvider
+import com.example.mixtapp.data.model.AlbumReviewItemUi
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.ProfileAsyncImage
 import com.example.mixtapp.ui.utils.StarRating
@@ -41,7 +41,7 @@ import com.example.mixtapp.ui.utils.StarRating
 // La resena del usuario de la app (esMia) se marca y trae los botones de editar y eliminar
 @Composable
 fun ReviewItem(
-    review: SongReviewItemUi,
+    review: AlbumReviewItemUi,
     onLikeClick: () -> Unit = {},
     cambiandoLike: Boolean = false,
     onEditClick: () -> Unit,
@@ -143,7 +143,7 @@ fun ReviewItem(
 fun ReviewItemPreview() {
     MixtappTheme(darkTheme = true) {
         ReviewItem(
-            review = LocalSongReviewProvider.songs.first().reviews.first(),
+            review = LocalAlbumReviewsProvider.albumReviews.first().reviews.first(),
             onEditClick = {},
             onDeleteClick = {},
             onAuthorClick = {},

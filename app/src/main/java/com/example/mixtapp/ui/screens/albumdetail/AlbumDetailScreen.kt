@@ -1,4 +1,4 @@
-package com.example.mixtapp.ui.screens.songreview
+package com.example.mixtapp.ui.screens.albumdetail
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.CircularProgressIndicator
@@ -12,27 +12,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.mixtapp.R
-import com.example.mixtapp.data.local.LocalSongReviewProvider
-import com.example.mixtapp.data.model.SongReviewUi
-import com.example.mixtapp.ui.screens.songreview.components.SongReviewSections
+import com.example.mixtapp.data.local.LocalAlbumReviewsProvider
+import com.example.mixtapp.data.model.AlbumReviewsUi
+import com.example.mixtapp.ui.screens.albumdetail.components.AlbumDetailSections
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppBackground
 
 // Recibe solo el id; el ViewModel se encarga de buscar el album
 @Composable
-fun SongReviewsScreen(
-    songId: String,
-    songReviewsViewModel: SongReviewsViewModel,
+fun AlbumDetailScreen(
+    albumId: String,
+    albumDetailViewModel: AlbumDetailViewModel,
     onWriteReviewClick: () -> Unit,
     onBackClick: () -> Unit,
     onAuthorClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val state by songReviewsViewModel.uiState.collectAsState()
+    val state by albumDetailViewModel.uiState.collectAsState()
 
     // Necesita el id que llega por la ruta, asi que se pide en un LaunchedEffect
     LaunchedEffect(Unit) {
-        songReviewsViewModel.getSongById(songId = songId)
+        albumDetailViewModel.getAlbumById(albumId = albumId)
     }
 
     when {
@@ -41,19 +41,19 @@ fun SongReviewsScreen(
                 CircularProgressIndicator()
             }
         }
-        state.song == null -> {
+        state.albumReviews == null -> {
             Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(text = stringResource(state.errorMessageRes ?: R.string.album_no_encontrado))
             }
         }
-        else -> SongReviewsScreenContent(
-            songReview = state.song!!,
+        else -> AlbumDetailScreenContent(
+            albumReviews = state.albumReviews!!,
             miResenaId = state.miResenaId,
             likesPendientes = state.likesPendientes,
-            onLikeClick = songReviewsViewModel::darQuitarLike,
+            onLikeClick = albumDetailViewModel::darQuitarLike,
             errorMessageRes = state.errorMessageRes,
             onWriteReviewClick = onWriteReviewClick,
-            onDeleteMyReviewClick = { songReviewsViewModel.eliminarMiResena() },
+            onDeleteMyReviewClick = { albumDetailViewModel.eliminarMiResena() },
             onBackClick = onBackClick,
             onAuthorClick = onAuthorClick,
             modifier = modifier
@@ -62,8 +62,8 @@ fun SongReviewsScreen(
 }
 
 @Composable
-fun SongReviewsScreenContent(
-    songReview: SongReviewUi,
+fun AlbumDetailScreenContent(
+    albumReviews: AlbumReviewsUi,
     miResenaId: String?,
     likesPendientes: Set<String> = emptySet(),
     onLikeClick: (String) -> Unit = {},
@@ -77,8 +77,8 @@ fun SongReviewsScreenContent(
     Box(modifier = modifier.fillMaxSize()) {
         AppBackground()
 
-        SongReviewSections(
-            songReview = songReview,
+        AlbumDetailSections(
+            albumReviews = albumReviews,
             miResenaId = miResenaId,
             likesPendientes = likesPendientes,
             onLikeClick = onLikeClick,
@@ -94,12 +94,12 @@ fun SongReviewsScreenContent(
 
 @Preview(showBackground = true)
 @Composable
-fun SongReviewsScreenPreview() {
-    val song = LocalSongReviewProvider.songs.first()
+fun AlbumDetailScreenPreview() {
+    val albumReviews = LocalAlbumReviewsProvider.albumReviews.first()
 
     MixtappTheme(darkTheme = true) {
-        SongReviewsScreenContent(
-            songReview = song,
+        AlbumDetailScreenContent(
+            albumReviews = albumReviews,
             miResenaId = null,
             errorMessageRes = null,
             onWriteReviewClick = {},

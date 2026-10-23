@@ -1,7 +1,7 @@
 package com.example.mixtapp
 
 import com.example.mixtapp.data.local.LocalMyReviewsProvider
-import com.example.mixtapp.data.local.LocalSongReviewProvider
+import com.example.mixtapp.data.local.LocalAlbumReviewsProvider
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -17,14 +17,14 @@ class DatosLocalesTest {
 
     @Test
     fun cadaAlbumTieneUnIdUnico() {
-        val ids = LocalSongReviewProvider.songs.map { it.album.id }
+        val ids = LocalAlbumReviewsProvider.albumReviews.map { it.album.id }
 
         assertEquals(ids.size, ids.toSet().size)
     }
 
     @Test
     fun cadaResenaDeAlbumTieneUnIdUnico() {
-        val ids = LocalSongReviewProvider.songs.map { it.id }
+        val ids = LocalAlbumReviewsProvider.albumReviews.map { it.id }
 
         assertEquals(ids.size, ids.toSet().size)
     }
@@ -38,7 +38,7 @@ class DatosLocalesTest {
 
     @Test
     fun lasCalificacionesDeLosAlbumesVanDeCeroACinco() {
-        LocalSongReviewProvider.songs.forEach { album ->
+        LocalAlbumReviewsProvider.albumReviews.forEach { album ->
             assertTrue(album.rating >= 0.0 && album.rating <= 5.0)
 
             album.reviews.forEach { resena ->
@@ -49,7 +49,7 @@ class DatosLocalesTest {
 
     @Test
     fun cadaResenaAbreUnAlbumQueExiste() {
-        val idsDeAlbumes = LocalSongReviewProvider.songs.map { it.album.id }.toSet()
+        val idsDeAlbumes = LocalAlbumReviewsProvider.albumReviews.map { it.album.id }.toSet()
 
         LocalMyReviewsProvider.reviews.forEach { resena ->
             assertTrue(resena.album.id in idsDeAlbumes)
