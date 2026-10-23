@@ -23,42 +23,46 @@ class AlbumDetailViewModel @Inject constructor(
     private val reviewRepository: ReviewRepository
 ) : ViewModel() {
 
+    private var albumSubscription: kotlinx.coroutines.Job? = null
+
     private val _uiState = MutableStateFlow(AlbumDetailState())
     val uiState: StateFlow<AlbumDetailState> = _uiState.asStateFlow()
 
     // Buscar el album es responsabilidad del ViewModel, no de la navegacion
     fun getAlbumById(albumId: String) {
-        viewModelScope.launch {
+        albumSubscription?.cancel()
+        albumSubscription = viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
 
             // El album llega con todas sus resenas, y la mia ya viene marcada
-            val result = albumRepository.getAlbumReviewsById(albumId = albumId)
-            val albumReviews = result.getOrNull()
+            albumRepository.observeAlbum(albumId).collect { result ->
+                val albumReviews = result.getOrNull()
 
-            if (result.isSuccess && albumReviews != null) {
-                _uiState.update {
-                    it.copy(
-                        // De la escuchada mas reciente a la mas antigua, y mi resena primero
-                        // para que se vea apenas entro al album
-                        albumReviews = albumReviews.copy(
-                            reviews = albumReviews.reviews
+                if (result.isSuccess && albumReviews != null) {
+                    _uiState.update {
+                        it.copy(
+                            // De la escuchada mas reciente a la mas antigua, y mi resena primero
+                            // para que se vea apenas entro al album
+                            albumReviews = albumReviews.copy(
+                                reviews = albumReviews.reviews
                                 .sortedByDescending { review -> review.fecha }
                                 .sortedByDescending { review -> review.esMia }
-                        ),
-                        miResenaId = albumReviews.reviews.find { review -> review.esMia }?.id,
-                        isLoading = false,
-                        errorMessageRes = null,
-                    )
-                }
-            } else {
-                _uiState.update {
-                    it.copy(
-                        isLoading = false,
-                        errorMessageRes = mensajeDeError(
-                            error = result.exceptionOrNull(),
-                            generico = R.string.error_cargar_contenido,
+                            ),
+                            miResenaId = albumReviews.reviews.find { review -> review.esMia }?.id,
+                            isLoading = false,
+                            errorMessageRes = null,
                         )
-                    )
+                    }
+                } else {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessageRes = mensajeDeError(
+                                error = result.exceptionOrNull(),
+                                generico = R.string.error_cargar_contenido,
+                            )
+                        )
+                    }
                 }
             }
         }
@@ -102,30 +106,13 @@ class AlbumDetailViewModel @Inject constructor(
         }
     }
 
-    // Si el like sale bien se invierte el corazon y el contador sube o baja, sin volver a
-    // pedir el album
+    // Firestore confirma el like; la suscripcion actualiza el corazon y el contador.
     fun sendOrDeleteLike(reviewId: String) {
         viewModelScope.launch {
             val result = reviewRepository.sendOrDeleteLike(reviewId = reviewId)
 
             if (result.isSuccess) {
-                _uiState.update {
-                    it.copy(
-                        albumReviews = it.albumReviews?.copy(
-                            reviews = it.albumReviews.reviews.map { review ->
-                                if (review.id == reviewId) {
-                                    review.copy(
-                                        isLiked = !review.isLiked,
-                                        likes = if (review.isLiked) review.likes - 1 else review.likes + 1,
-                                    )
-                                } else {
-                                    review
-                                }
-                            }
-                        ),
-                        errorMessageRes = null,
-                    )
-                }
+                // El listener aplica el estado confirmado sin duplicar contadores.
             } else {
                 _uiState.update {
                     it.copy(

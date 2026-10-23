@@ -31,6 +31,8 @@ class MyReviewsViewModel @Inject constructor(
     private val usuarioRepository: UsuarioRepository
 ) : ViewModel() {
 
+    private var reviewsSubscription: kotlinx.coroutines.Job? = null
+
     private val _uiState = MutableStateFlow(MyReviewsState())
     val uiState: StateFlow<MyReviewsState> = _uiState.asStateFlow()
 
@@ -52,35 +54,37 @@ class MyReviewsViewModel @Inject constructor(
             }
         }
 
-        viewModelScope.launch {
+        reviewsSubscription?.cancel()
+        reviewsSubscription = viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
 
-            val resenas = reviewRepository.getMyReviews()
+            reviewRepository.observeMyReviews().collect { resenas ->
 
-            if (resenas.isSuccess) {
-                val todas = resenas.getOrNull() ?: emptyList()
+                if (resenas.isSuccess) {
+                    val todas = resenas.getOrNull() ?: emptyList()
 
-                _uiState.update {
-                    it.copy(
-                        todas = todas,
-                        filters = myReviewFilters,
-                        selectedFilterId = filtro,
-                        reviews = aplicarFiltro(filtroId = filtro, todas = todas),
-                        isLoading = false,
-                        errorMessageRes = null,
-                    )
-                }
-            } else {
-                _uiState.update {
-                    it.copy(
-                        filters = myReviewFilters,
-                        selectedFilterId = filtro,
-                        isLoading = false,
-                        errorMessageRes = mensajeDeError(
-                            error = resenas.exceptionOrNull(),
-                            generico = R.string.error_cargar_contenido,
+                    _uiState.update {
+                        it.copy(
+                            todas = todas,
+                            filters = myReviewFilters,
+                            selectedFilterId = it.selectedFilterId.ifEmpty { filtro },
+                            reviews = aplicarFiltro(filtroId = it.selectedFilterId.ifEmpty { filtro }, todas = todas),
+                            isLoading = false,
+                            errorMessageRes = null,
                         )
-                    )
+                    }
+                } else {
+                    _uiState.update {
+                        it.copy(
+                            filters = myReviewFilters,
+                            selectedFilterId = it.selectedFilterId.ifEmpty { filtro },
+                            isLoading = false,
+                            errorMessageRes = mensajeDeError(
+                                error = resenas.exceptionOrNull(),
+                                generico = R.string.error_cargar_contenido,
+                            )
+                        )
+                    }
                 }
             }
         }

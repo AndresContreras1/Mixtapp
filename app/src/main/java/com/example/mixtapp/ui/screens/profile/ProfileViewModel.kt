@@ -40,6 +40,10 @@ class ProfileViewModel @Inject constructor(
     private val usuarioRepository: UsuarioRepository
 ) : ViewModel() {
 
+    private var profileSubscription: kotlinx.coroutines.Job? = null
+
+    private var reviewsSubscription: kotlinx.coroutines.Job? = null
+
     private val _uiState = MutableStateFlow(ProfileState())
     val uiState: StateFlow<ProfileState> = _uiState.asStateFlow()
 
@@ -50,84 +54,88 @@ class ProfileViewModel @Inject constructor(
         val usuarioId = authRepository.currentUser?.uid ?: ""
 
         // Mis datos y mis resenas se usan por su lado, asi que cada uno va en su propio launch
-        viewModelScope.launch {
-            val perfil = usuarioRepository.getMiPerfil()
+        profileSubscription?.cancel()
+        profileSubscription = viewModelScope.launch {
+            usuarioRepository.observeMiPerfil().collect { perfil ->
 
-            if (perfil.isSuccess) {
-                val miPerfil = perfil.getOrNull()
+                if (perfil.isSuccess) {
+                    val miPerfil = perfil.getOrNull()
 
-                // Los contadores vienen del documento: no hace falta leer las listas
-                _uiState.update {
-                    it.copy(
-                        usuarioId = usuarioId,
-                        usuario = miPerfil?.username ?: usuarioDelCorreo,
-                        nombre = miPerfil?.nombre ?: "",
-                        bio = miPerfil?.bio ?: "",
-                        seguidores = miPerfil?.seguidores ?: 0,
-                        seguidos = miPerfil?.seguidos ?: 0,
-                        profileImageUrl = foto,
-                        avisoPerfilRes = null,
-                    )
-                }
-            } else {
-                val error = perfil.exceptionOrNull()
+                    // Los contadores vienen del documento: no hace falta leer las listas
+                    _uiState.update {
+                        it.copy(
+                            usuarioId = usuarioId,
+                            usuario = miPerfil?.username ?: usuarioDelCorreo,
+                            nombre = miPerfil?.nombre ?: "",
+                            bio = miPerfil?.bio ?: "",
+                            seguidores = miPerfil?.seguidores ?: 0,
+                            seguidos = miPerfil?.seguidos ?: 0,
+                            profileImageUrl = foto,
+                            avisoPerfilRes = null,
+                        )
+                    }
+                } else {
+                    val error = perfil.exceptionOrNull()
 
-                _uiState.update {
-                    it.copy(
-                        usuarioId = usuarioId,
-                        // Si mis datos ya estaban cargados se conservan; si no, sale la parte del correo
-                        usuario = it.usuario.ifEmpty { usuarioDelCorreo },
-                        profileImageUrl = foto,
-                        // Sin mi documento en Firestore se pide completar el perfil; otro error se avisa
-                        avisoPerfilRes = if (error is ContenidoNoEncontradoException) {
-                            R.string.completa_tu_perfil
-                        } else {
-                            mensajeDeError(error = error, generico = R.string.error_cargar_contenido)
-                        },
-                    )
+                    _uiState.update {
+                        it.copy(
+                            usuarioId = usuarioId,
+                            // Si mis datos ya estaban cargados se conservan; si no, sale la parte del correo
+                            usuario = it.usuario.ifEmpty { usuarioDelCorreo },
+                            profileImageUrl = foto,
+                            // Sin mi documento en Firestore se pide completar el perfil; otro error se avisa
+                            avisoPerfilRes = if (error is ContenidoNoEncontradoException) {
+                                R.string.completa_tu_perfil
+                            } else {
+                                mensajeDeError(error = error, generico = R.string.error_cargar_contenido)
+                            },
+                        )
+                    }
                 }
             }
         }
 
-        viewModelScope.launch {
+        reviewsSubscription?.cancel()
+        reviewsSubscription = viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
 
-            val result = reviewRepository.getMyReviews()
+            reviewRepository.observeMyReviews().collect { result ->
 
-            if (result.isSuccess) {
-                // La fecha va como AAAA-MM-DD: la escuchada mas reciente queda arriba
-                val misResenas = (result.getOrNull() ?: emptyList()).sortedByDescending { it.date }
+                if (result.isSuccess) {
+                    // La fecha va como AAAA-MM-DD: la escuchada mas reciente queda arriba
+                    val misResenas = (result.getOrNull() ?: emptyList()).sortedByDescending { it.date }
 
-                _uiState.update {
-                    it.copy(
-                        misResenas = misResenas,
-                        favoritos = favoritosDe(resenas = misResenas),
-                        barrasDeCalificacion = barrasDe(resenas = misResenas),
-                        isLoading = false,
-                        tabs = profileTabs,
-                        // Al volver se conserva la pestana elegida
-                        selectedTabId = it.selectedTabId.ifEmpty { profileTabs.first().id },
-                        // Si estaba editando una resena que sigue existiendo, la edicion no se pierde
-                        resenaEnEdicionId = if (misResenas.any { r -> r.id == it.resenaEnEdicionId }) {
-                            it.resenaEnEdicionId
-                        } else {
-                            null
-                        },
-                        errorMessageRes = null,
-                    )
-                }
-            } else {
-                _uiState.update {
-                    it.copy(
-                        isLoading = false,
-                        tabs = profileTabs,
-                        // Al volver se conserva la pestana elegida
-                        selectedTabId = it.selectedTabId.ifEmpty { profileTabs.first().id },
-                        errorMessageRes = mensajeDeError(
-                            error = result.exceptionOrNull(),
-                            generico = R.string.error_cargar_contenido,
-                        ),
-                    )
+                    _uiState.update {
+                        it.copy(
+                            misResenas = misResenas,
+                            favoritos = favoritosDe(resenas = misResenas),
+                            barrasDeCalificacion = barrasDe(resenas = misResenas),
+                            isLoading = false,
+                            tabs = profileTabs,
+                            // Al volver se conserva la pestana elegida
+                            selectedTabId = it.selectedTabId.ifEmpty { profileTabs.first().id },
+                            // Si estaba editando una resena que sigue existiendo, la edicion no se pierde
+                            resenaEnEdicionId = if (misResenas.any { r -> r.id == it.resenaEnEdicionId }) {
+                                it.resenaEnEdicionId
+                            } else {
+                                null
+                            },
+                            errorMessageRes = null,
+                        )
+                    }
+                } else {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            tabs = profileTabs,
+                            // Al volver se conserva la pestana elegida
+                            selectedTabId = it.selectedTabId.ifEmpty { profileTabs.first().id },
+                            errorMessageRes = mensajeDeError(
+                                error = result.exceptionOrNull(),
+                                generico = R.string.error_cargar_contenido,
+                            ),
+                        )
+                    }
                 }
             }
         }
@@ -291,7 +299,7 @@ class ProfileViewModel @Inject constructor(
 
     // Los favoritos son los albumes que califique con 5
     private fun favoritosDe(resenas: List<MyReviewUi>): List<Album> =
-        resenas.filter { it.rating == CALIFICACION_MAXIMA }.map { it.album }.take(FAVORITOS_EN_PERFIL)
+    resenas.filter { it.rating == CALIFICACION_MAXIMA }.map { it.album }.take(FAVORITOS_EN_PERFIL)
 
     // Cuantas resenas tengo con cada calificacion, de 0 a 5, como el alto de cada barra
     private fun barrasDe(resenas: List<MyReviewUi>): List<Float> {

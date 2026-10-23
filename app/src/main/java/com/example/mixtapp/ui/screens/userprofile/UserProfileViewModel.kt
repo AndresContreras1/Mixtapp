@@ -21,44 +21,51 @@ class UserProfileViewModel @Inject constructor(
     private val usuarioRepository: UsuarioRepository
 ) : ViewModel() {
 
+    private var profileSubscription: kotlinx.coroutines.Job? = null
+
+    private var reviewsSubscription: kotlinx.coroutines.Job? = null
+
     private val _uiState = MutableStateFlow(UserProfileState())
     val uiState: StateFlow<UserProfileState> = _uiState.asStateFlow()
 
     // El perfil llega con sus contadores y con si ya lo sigo
     fun getUserProfile(userId: String) {
-        viewModelScope.launch {
+        profileSubscription?.cancel()
+        profileSubscription = viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
 
-            val result = usuarioRepository.getUsuarioById(id = userId)
+            usuarioRepository.observeUsuario(userId).collect { result ->
 
-            if (result.isSuccess) {
-                _uiState.update { it.copy(usuario = result.getOrNull(), isLoading = false) }
-            } else {
-                _uiState.update {
-                    it.copy(isLoading = false, errorMessageRes = mensajeDeError(result.exceptionOrNull()))
+                if (result.isSuccess) {
+                    _uiState.update { it.copy(usuario = result.getOrNull(), isLoading = false) }
+                } else {
+                    _uiState.update {
+                        it.copy(isLoading = false, errorMessageRes = mensajeDeError(result.exceptionOrNull()))
+                    }
                 }
             }
         }
     }
 
     fun getUserReviews(userId: String) {
-        viewModelScope.launch {
+        reviewsSubscription?.cancel()
+        reviewsSubscription = viewModelScope.launch {
             _uiState.update { it.copy(cargandoResenas = true, errorResenasRes = null) }
-            val result = usuarioRepository.getReviewsDeUsuario(id = userId)
+            usuarioRepository.observeReviews(userId).collect { result ->
 
-            if (result.isSuccess) {
-                val reviews = (result.getOrNull() ?: emptyList()).sortedByDescending { it.date }
-                _uiState.update { it.copy(reviews = reviews, cargandoResenas = false) }
-            } else {
-                _uiState.update {
-                    it.copy(cargandoResenas = false, errorResenasRes = mensajeDeError(result.exceptionOrNull()))
+                if (result.isSuccess) {
+                    val reviews = (result.getOrNull() ?: emptyList()).sortedByDescending { it.date }
+                    _uiState.update { it.copy(reviews = reviews, cargandoResenas = false) }
+                } else {
+                    _uiState.update {
+                        it.copy(cargandoResenas = false, errorResenasRes = mensajeDeError(result.exceptionOrNull()))
+                    }
                 }
             }
         }
     }
 
-    // Si sale bien se invierte el boton y el contador de seguidores sube o baja, sin volver a
-    // pedir el perfil
+    // El seguimiento confirmado llega por la suscripcion del perfil.
     fun followOrUnfollow() {
         val usuario = _uiState.value.usuario ?: return
 
@@ -66,15 +73,7 @@ class UserProfileViewModel @Inject constructor(
             val result = usuarioRepository.followOrUnfollow(targetUserId = usuario.id)
 
             if (result.isSuccess) {
-                _uiState.update {
-                    it.copy(
-                        usuario = it.usuario?.copy(
-                            seguidores = if (it.usuario.siguiendo) it.usuario.seguidores - 1 else it.usuario.seguidores + 1,
-                            siguiendo = !it.usuario.siguiendo,
-                        ),
-                        errorSeguimientoRes = null,
-                    )
-                }
+                // El listener aplica el estado confirmado sin duplicar contadores.
             } else {
                 val error = result.exceptionOrNull()
 

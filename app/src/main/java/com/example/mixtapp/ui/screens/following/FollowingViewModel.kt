@@ -28,46 +28,53 @@ class FollowingViewModel @Inject constructor(
     private val reviewRepository: ReviewRepository
 ) : ViewModel() {
 
+    private var followingSubscription: kotlinx.coroutines.Job? = null
+
     private val _uiState = MutableStateFlow(FollowingState())
     val uiState: StateFlow<FollowingState> = _uiState.asStateFlow()
 
     // La pantalla la llama cada vez que se muestra: el init solo corre una vez al crear el
     // ViewModel, y al volver de un perfil o de una discusion se seguirian viendo los datos viejos
     fun getFollowing() {
-        viewModelScope.launch {
+        followingSubscription?.cancel()
+        followingSubscription = viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
 
-            val result = socialRepository.getFollowing()
-            val following = result.getOrNull()
-
-            if (result.isSuccess && following != null) {
-                // Al volver se conserva el filtro que estaba elegido
-                val filtroInicial = _uiState.value.selectedFilterId.ifEmpty { followingFilters.first().id }
-                val query = _uiState.value.friendQuery
-
-                _uiState.update {
-                    it.copy(
-                        following = following,
-                        reviews = aplicarFiltros(
-                            friendQuery = query,
-                            filtroId = filtroInicial,
-                            todas = following.reviews,
-                        ),
-                        filters = followingFilters,
-                        selectedFilterId = filtroInicial,
-                        isLoading = false,
-                        errorMessageRes = null,
-                    )
+            socialRepository.observeFollowing().collect { result ->
+                val sharedIds = _uiState.value.following?.reviews.orEmpty().filter { it.isShared }.map { it.id }.toSet()
+                val following = result.getOrNull()?.let { value ->
+                    value.copy(reviews = value.reviews.map { it.copy(isShared = it.id in sharedIds) })
                 }
-            } else {
-                _uiState.update {
-                    it.copy(
-                        isLoading = false,
-                        errorMessageRes = mensajeDeError(
-                            error = result.exceptionOrNull(),
-                            generico = R.string.error_cargar_contenido,
+
+                if (result.isSuccess && following != null) {
+                    // Al volver se conserva el filtro que estaba elegido
+                    val filtroInicial = _uiState.value.selectedFilterId.ifEmpty { followingFilters.first().id }
+                    val query = _uiState.value.friendQuery
+
+                    _uiState.update {
+                        it.copy(
+                            following = following,
+                            reviews = aplicarFiltros(
+                                friendQuery = query,
+                                filtroId = filtroInicial,
+                                todas = following.reviews,
+                            ),
+                            filters = followingFilters,
+                            selectedFilterId = filtroInicial,
+                            isLoading = false,
+                            errorMessageRes = null,
                         )
-                    )
+                    }
+                } else {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessageRes = mensajeDeError(
+                                error = result.exceptionOrNull(),
+                                generico = R.string.error_cargar_contenido,
+                            )
+                        )
+                    }
                 }
             }
         }
@@ -109,19 +116,13 @@ class FollowingViewModel @Inject constructor(
         _uiState.update { it.copy(selectedStoryId = storyId) }
     }
 
-    // Si el like sale bien se invierte el corazon y el contador sube o baja, sin volver a pedir
-    // las resenas
+    // Firestore confirma el like; la suscripcion actualiza el corazon y el contador.
     fun sendOrDeleteLike(reviewId: String) {
         viewModelScope.launch {
             val result = reviewRepository.sendOrDeleteLike(reviewId = reviewId)
 
             if (result.isSuccess) {
-                actualizarResena(reviewId = reviewId) { review ->
-                    review.copy(
-                        isLiked = !review.isLiked,
-                        likes = if (review.isLiked) review.likes - 1 else review.likes + 1,
-                    )
-                }
+                // El listener aplica el estado confirmado sin duplicar contadores.
             } else {
                 _uiState.update {
                     it.copy(

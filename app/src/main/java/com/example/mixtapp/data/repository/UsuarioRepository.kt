@@ -18,9 +18,28 @@ import javax.inject.Inject
 // El backend todavia no tiene rutas para guardar usuarios ni seguidores, asi que esas funciones
 // quedan como to-do en esa implementacion, como en clase
 class UsuarioRepository @Inject constructor(
+    private val db: com.google.firebase.firestore.FirebaseFirestore,
     private val usuarioRemoteDataSource: UsuarioFirestoreDataSourceImpl,
     private val authRemoteDataSource: AuthRemoteDataSource
 ) {
+    fun observeUsuario(id: String): kotlinx.coroutines.flow.Flow<Result<UsuarioUi>> =
+        observeChanges(db.collection("usuarios").whereEqualTo(com.google.firebase.firestore.FieldPath.documentId(), id)) { getUsuarioById(id) }
+
+    fun observeMiPerfil(): kotlinx.coroutines.flow.Flow<Result<UsuarioUi>> =
+        observeChanges(db.collection("usuarios").whereEqualTo(com.google.firebase.firestore.FieldPath.documentId(), authRemoteDataSource.currentUser?.uid ?: "sin-sesion")) { getMiPerfil() }
+
+    fun observeReviews(id: String): kotlinx.coroutines.flow.Flow<Result<List<MyReviewUi>>> =
+        observeChanges(db.collection("reviews").whereEqualTo("usuarioId", id)) { getReviewsDeUsuario(id) }
+
+    fun observeSeguidores(userId: String): kotlinx.coroutines.flow.Flow<Result<List<UsuarioUi>>> =
+        observeChanges(db.collection("usuarios").document(userId).collection("followers")) { getSeguidores(userId) }
+
+    fun observeSeguidos(userId: String): kotlinx.coroutines.flow.Flow<Result<List<UsuarioUi>>> =
+        observeChanges(db.collection("usuarios").document(userId).collection("following")) { getSeguidos(userId) }
+
+    fun observeMisSeguidos(): kotlinx.coroutines.flow.Flow<Result<List<UsuarioUi>>> =
+        observeChanges(db.collection("usuarios").document(authRemoteDataSource.currentUser?.uid ?: "sin-sesion").collection("following")) { getMisSeguidos() }
+
 
     // Con mi uid el data source dice si ya sigo a este usuario
     suspend fun getUsuarioById(id: String): Result<UsuarioUi> {
@@ -38,6 +57,8 @@ class UsuarioRepository @Inject constructor(
         } catch (e: NoSuchElementException) {
             Log.d("UsuarioRepository", "getUsuarioById: ${e.message}")
             Result.failure(ContenidoNoEncontradoException())
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            throw e
         } catch (e: Exception) {
             Log.d("UsuarioRepository", "getUsuarioById: ${e.message}")
             Result.failure(ErrorInesperadoException())
@@ -62,6 +83,8 @@ class UsuarioRepository @Inject constructor(
         } catch (e: FirebaseFirestoreException) {
             Log.d("UsuarioRepository", "followOrUnfollow: ${e.message}")
             Result.failure(errorDeFirestore(e))
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            throw e
         } catch (e: Exception) {
             Log.d("UsuarioRepository", "followOrUnfollow: ${e.message}")
             Result.failure(ErrorInesperadoException())
@@ -85,6 +108,8 @@ class UsuarioRepository @Inject constructor(
         } catch (e: NoSuchElementException) {
             Log.d("UsuarioRepository", "getMiPerfil: ${e.message}")
             Result.failure(ContenidoNoEncontradoException())
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            throw e
         } catch (e: Exception) {
             Log.d("UsuarioRepository", "getMiPerfil: ${e.message}")
             Result.failure(ErrorInesperadoException())
@@ -102,6 +127,8 @@ class UsuarioRepository @Inject constructor(
         } catch (e: FirebaseFirestoreException) {
             Log.d("UsuarioRepository", "getReviewsDeUsuario: ${e.message}")
             Result.failure(errorDeFirestore(e))
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            throw e
         } catch (e: Exception) {
             Log.d("UsuarioRepository", "getReviewsDeUsuario: ${e.message}")
             Result.failure(ErrorInesperadoException())
@@ -134,6 +161,8 @@ class UsuarioRepository @Inject constructor(
         } catch (e: FirebaseFirestoreException) {
             Log.d("UsuarioRepository", "registrarUsuario: ${e.message}")
             Result.failure(errorDeFirestore(e))
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            throw e
         } catch (e: Exception) {
             Log.d("UsuarioRepository", "registrarUsuario: ${e.message}")
             Result.failure(ErrorInesperadoException())
@@ -159,6 +188,8 @@ class UsuarioRepository @Inject constructor(
         } catch (e: FirebaseFirestoreException) {
             Log.d("UsuarioRepository", "actualizarPerfil: ${e.message}")
             Result.failure(errorDeFirestore(e))
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            throw e
         } catch (e: Exception) {
             Log.d("UsuarioRepository", "actualizarPerfil: ${e.message}")
             Result.failure(ErrorInesperadoException())
@@ -182,6 +213,8 @@ class UsuarioRepository @Inject constructor(
             // Sin documento todavia: la foto se copia cuando complete su perfil en Editar perfil
             if (e.code == FirebaseFirestoreException.Code.NOT_FOUND) Result.success(Unit)
             else Result.failure(errorDeFirestore(e))
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            throw e
         } catch (e: Exception) {
             Log.d("UsuarioRepository", "actualizarFotoDePerfil: ${e.message}")
             Result.failure(ErrorInesperadoException())
@@ -204,6 +237,8 @@ class UsuarioRepository @Inject constructor(
         } catch (e: FirebaseFirestoreException) {
             Log.d("UsuarioRepository", "actualizarToken: ${e.message}")
             Result.failure(errorDeFirestore(e))
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            throw e
         } catch (e: Exception) {
             Log.d("UsuarioRepository", "actualizarToken: ${e.message}")
             Result.failure(ErrorInesperadoException())
@@ -220,6 +255,8 @@ class UsuarioRepository @Inject constructor(
         } catch (e: FirebaseFirestoreException) {
             Log.d("UsuarioRepository", "getSeguidores: ${e.message}")
             Result.failure(errorDeFirestore(e))
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            throw e
         } catch (e: Exception) {
             Log.d("UsuarioRepository", "getSeguidores: ${e.message}")
             Result.failure(ErrorInesperadoException())
@@ -236,6 +273,8 @@ class UsuarioRepository @Inject constructor(
         } catch (e: FirebaseFirestoreException) {
             Log.d("UsuarioRepository", "getSeguidos: ${e.message}")
             Result.failure(errorDeFirestore(e))
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            throw e
         } catch (e: Exception) {
             Log.d("UsuarioRepository", "getSeguidos: ${e.message}")
             Result.failure(ErrorInesperadoException())

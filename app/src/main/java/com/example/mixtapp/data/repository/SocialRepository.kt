@@ -17,11 +17,21 @@ import javax.inject.Inject
 
 // La pestana Seguidos sale de la base remota; las notificaciones de la pantalla siguen locales
 class SocialRepository @Inject constructor(
+    private val db: com.google.firebase.firestore.FirebaseFirestore,
     private val socialLocalDataSource: SocialLocalDataSource,
     private val reviewLocalDataSource: ReviewLocalDataSource,
     private val usuarioRemoteDataSource: UsuarioFirestoreDataSourceImpl,
     private val authRemoteDataSource: AuthRemoteDataSource
 ) {
+    fun observeFollowing(): kotlinx.coroutines.flow.Flow<Result<FollowingUi>> =
+        kotlinx.coroutines.flow.combine(
+            observeChanges(db.collection("reviews")) { Result.success(Unit) },
+            observeChanges(db.collection("usuarios").whereEqualTo(com.google.firebase.firestore.FieldPath.documentId(), authRemoteDataSource.currentUser?.uid ?: "sin-sesion")) { Result.success(Unit) }
+        ) { reviews, profile ->
+            val error = reviews.exceptionOrNull() ?: profile.exceptionOrNull()
+            if (error != null) Result.failure(error) else getFollowing()
+        }
+
 
     // Las resenas de los usuarios que sigo, la mas reciente primero, con mis contadores. Si falla
     // una consulta falla todo: una lista a medias mostraria que alguien no ha escrito nada
@@ -82,6 +92,8 @@ class SocialRepository @Inject constructor(
         } catch (e: NoSuchElementException) {
             Log.d("SocialRepository", "getFollowing: ${e.message}")
             Result.failure(ContenidoNoEncontradoException())
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            throw e
         } catch (e: Exception) {
             Log.d("SocialRepository", "getFollowing: ${e.message}")
             Result.failure(ErrorInesperadoException())
@@ -91,6 +103,8 @@ class SocialRepository @Inject constructor(
     suspend fun getNotifications(): Result<List<NotificationUi>> {
         return try {
             Result.success(socialLocalDataSource.getNotifications())
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            throw e
         } catch (e: Exception) {
             Log.d("SocialRepository", "getNotifications: ${e.message}")
             Result.failure(ErrorDeDatosLocalesException())

@@ -24,12 +24,19 @@ import javax.inject.Inject
 // los comentarios locales y Authentication para saber quien es el usuario de la app.
 // Para volver al backend de Express basta con cambiar las implementaciones a las de Retrofit
 class ReviewRepository @Inject constructor(
+    private val db: com.google.firebase.firestore.FirebaseFirestore,
     private val reviewLocalDataSource: ReviewLocalDataSource,
     private val reviewRemoteDataSource: ReviewFirestoreDataSourceImpl,
     private val usuarioRemoteDataSource: UsuarioFirestoreDataSourceImpl,
     private val albumRemoteDataSource: AlbumFirestoreDataSourceImpl,
     private val authRemoteDataSource: AuthRemoteDataSource
 ) {
+    fun observeMyReviews(): kotlinx.coroutines.flow.Flow<Result<List<MyReviewUi>>> =
+        observeChanges(db.collection("reviews").whereEqualTo("usuarioId", authRemoteDataSource.currentUser?.uid ?: "")) { getMyReviews() }
+
+    fun observeDiscussion(reviewId: String): kotlinx.coroutines.flow.Flow<Result<DiscussionUi>> =
+        observeChanges(db.collection("reviews").whereEqualTo(com.google.firebase.firestore.FieldPath.documentId(), reviewId)) { getDiscussionByReviewId(reviewId) }
+
 
     // Da el like o lo quita: el data source decide segun si ya existe. La UI cambia el corazon
     // y el contador solo si esto sale bien
@@ -46,6 +53,8 @@ class ReviewRepository @Inject constructor(
         } catch (e: FirebaseFirestoreException) {
             Log.d("ReviewRepository", "sendOrDeleteLike: ${e.message}")
             Result.failure(errorDeFirestore(e))
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            throw e
         } catch (e: Exception) {
             Log.d("ReviewRepository", "sendOrDeleteLike: ${e.message}")
             Result.failure(ErrorInesperadoException())
@@ -66,6 +75,8 @@ class ReviewRepository @Inject constructor(
         } catch (e: FirebaseFirestoreException) {
             Log.d("ReviewRepository", "getMyReviews: ${e.message}")
             Result.failure(errorDeFirestore(e))
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            throw e
         } catch (e: Exception) {
             Log.d("ReviewRepository", "getMyReviews: ${e.message}")
             Result.failure(ErrorInesperadoException())
@@ -123,6 +134,8 @@ class ReviewRepository @Inject constructor(
         } catch (e: NoSuchElementException) {
             Log.d("ReviewRepository", "guardarResena: ${e.message}")
             Result.failure(ContenidoNoEncontradoException())
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            throw e
         } catch (e: Exception) {
             Log.d("ReviewRepository", "guardarResena: ${e.message}")
             Result.failure(ErrorInesperadoException())
@@ -139,6 +152,8 @@ class ReviewRepository @Inject constructor(
         } catch (e: FirebaseFirestoreException) {
             Log.d("ReviewRepository", "eliminarResena: ${e.message}")
             Result.failure(errorDeFirestore(e))
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            throw e
         } catch (e: Exception) {
             Log.d("ReviewRepository", "eliminarResena: ${e.message}")
             Result.failure(ErrorInesperadoException())
@@ -168,6 +183,8 @@ class ReviewRepository @Inject constructor(
         } catch (e: NoSuchElementException) {
             Log.d("ReviewRepository", "getDiscussionByReviewId: ${e.message}")
             Result.failure(ContenidoNoEncontradoException())
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            throw e
         } catch (e: Exception) {
             Log.d("ReviewRepository", "getDiscussionByReviewId: ${e.message}")
             Result.failure(ErrorInesperadoException())
@@ -227,6 +244,8 @@ class ReviewRepository @Inject constructor(
 
             reviewLocalDataSource.guardarComentarios(reviewId = reviewId, comentarios = actualizados)
             Result.success(actualizados)
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            throw e
         } catch (e: Exception) {
             Log.d("ReviewRepository", "actualizarComentarios: ${e.message}")
             Result.failure(ErrorDeDatosLocalesException())

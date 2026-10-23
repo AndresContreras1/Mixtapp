@@ -32,6 +32,8 @@ class HomeViewModel @Inject constructor(
     private val usuarioRepository: UsuarioRepository
 ) : ViewModel() {
 
+    private var followingSubscription: kotlinx.coroutines.Job? = null
+
     private val _uiState = MutableStateFlow(HomeState())
     val uiState: StateFlow<HomeState> = _uiState.asStateFlow()
 
@@ -48,56 +50,58 @@ class HomeViewModel @Inject constructor(
             _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
 
             albumRepository.getAlbumReviewsLive()
-                .catch { e ->
-                    Log.d("HomeViewModel", "escucharAlbumes: ${e.message}")
-                    _uiState.update { it.copy(isLoading = false, errorMessageRes = R.string.error_cargar_contenido) }
-                }
-                .collect { todos ->
-                    _uiState.update {
-                        // Al llegar datos nuevos se conserva el filtro que estaba elegido
-                        val filtroId = it.selectedFilterId.ifEmpty { homeFilters.first().id }
-                        val resenasDeSeguidos = resenasDeSeguidos(todos = todos, followedIds = it.followedIds)
+            .catch { e ->
+                Log.d("HomeViewModel", "escucharAlbumes: ${e.message}")
+                _uiState.update { it.copy(isLoading = false, errorMessageRes = R.string.error_cargar_contenido) }
+            }
+            .collect { todos ->
+                _uiState.update {
+                    // Al llegar datos nuevos se conserva el filtro que estaba elegido
+                    val filtroId = it.selectedFilterId.ifEmpty { homeFilters.first().id }
+                    val resenasDeSeguidos = resenasDeSeguidos(todos = todos, followedIds = it.followedIds)
 
-                        it.copy(
-                            albums = aplicarFiltro(filtroId = filtroId, todos = todos),
-                            todos = todos,
-                            trending = enTendencia(todos = todos),
-                            resenasDeSeguidos = resenasDeSeguidos,
-                            filters = homeFilters,
-                            selectedFilterId = filtroId,
-                            soloSeguidos = filtroId == FILTRO_SEGUIDOS,
-                            isLoading = false,
-                            errorMessageRes = null,
-                        )
-                    }
+                    it.copy(
+                        albums = aplicarFiltro(filtroId = filtroId, todos = todos),
+                        todos = todos,
+                        trending = enTendencia(todos = todos),
+                        resenasDeSeguidos = resenasDeSeguidos,
+                        filters = homeFilters,
+                        selectedFilterId = filtroId,
+                        soloSeguidos = filtroId == FILTRO_SEGUIDOS,
+                        isLoading = false,
+                        errorMessageRes = null,
+                    )
                 }
+            }
         }
     }
 
     // La pantalla la llama cada vez que se muestra: si segui o deje de seguir a alguien, al volver
     // ya cuenta en el filtro de seguidos
     fun cargarSeguidos() {
-        viewModelScope.launch {
-            val result = usuarioRepository.getMisSeguidos()
+        followingSubscription?.cancel()
+        followingSubscription = viewModelScope.launch {
+            usuarioRepository.observeMisSeguidos().collect { result ->
 
-            if (result.isSuccess) {
-                val followedIds = (result.getOrNull() ?: emptyList()).map { it.id }.toSet()
+                if (result.isSuccess) {
+                    val followedIds = (result.getOrNull() ?: emptyList()).map { it.id }.toSet()
 
-                _uiState.update {
-                    it.copy(
-                        followedIds = followedIds,
-                        resenasDeSeguidos = resenasDeSeguidos(todos = it.todos, followedIds = followedIds),
-                        errorMessageRes = null,
-                    )
-                }
-            } else {
-                _uiState.update {
-                    it.copy(
-                        errorMessageRes = mensajeDeError(
-                            error = result.exceptionOrNull(),
-                            generico = R.string.error_cargar_contenido,
+                    _uiState.update {
+                        it.copy(
+                            followedIds = followedIds,
+                            resenasDeSeguidos = resenasDeSeguidos(todos = it.todos, followedIds = followedIds),
+                            errorMessageRes = null,
                         )
-                    )
+                    }
+                } else {
+                    _uiState.update {
+                        it.copy(
+                            errorMessageRes = mensajeDeError(
+                                error = result.exceptionOrNull(),
+                                generico = R.string.error_cargar_contenido,
+                            )
+                        )
+                    }
                 }
             }
         }
@@ -122,14 +126,14 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun aplicarFiltro(filtroId: String, todos: List<AlbumReviewsUi>): List<AlbumReviewsUi> =
-        when (filtroId) {
-            FILTRO_TENDENCIAS -> todos.sortedByDescending { it.reviews.size }
-            else -> todos
-        }
+    when (filtroId) {
+        FILTRO_TENDENCIAS -> todos.sortedByDescending { it.reviews.size }
+        else -> todos
+    }
 
     // El album con mas resenas
     private fun enTendencia(todos: List<AlbumReviewsUi>): AlbumReviewsUi? =
-        todos.sortedByDescending { it.reviews.size }.firstOrNull()
+    todos.sortedByDescending { it.reviews.size }.firstOrNull()
 
     // Las resenas que escribieron los usuarios que sigo, de la escuchada mas reciente a la mas antigua
     private fun resenasDeSeguidos(todos: List<AlbumReviewsUi>, followedIds: Set<String>): List<FriendActivityUi> {

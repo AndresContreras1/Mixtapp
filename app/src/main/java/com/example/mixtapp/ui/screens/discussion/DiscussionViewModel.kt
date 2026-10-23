@@ -24,31 +24,39 @@ class DiscussionViewModel @Inject constructor(
     private val reviewRepository: ReviewRepository
 ) : ViewModel() {
 
+    private var discussionSubscription: kotlinx.coroutines.Job? = null
+
     private val _uiState = MutableStateFlow(DiscussionState())
     val uiState: StateFlow<DiscussionState> = _uiState.asStateFlow()
 
     // Buscar la discusion es responsabilidad del ViewModel, no de la navegacion
     fun getDiscussionByReviewId(reviewId: String) {
-        if (_uiState.value.discussion != null) return
 
-        viewModelScope.launch {
+        discussionSubscription?.cancel()
+        discussionSubscription = viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
 
-            val result = reviewRepository.getDiscussionByReviewId(reviewId = reviewId)
+            reviewRepository.observeDiscussion(reviewId).collect { result ->
 
-            if (result.isSuccess) {
-                _uiState.update {
-                    it.copy(discussion = result.getOrNull(), isLoading = false, errorMessageRes = null)
-                }
-            } else {
-                _uiState.update {
-                    it.copy(
-                        isLoading = false,
-                        errorMessageRes = mensajeDeError(
-                            error = result.exceptionOrNull(),
-                            generico = R.string.error_cargar_contenido,
+                if (result.isSuccess) {
+                    _uiState.update {
+                        val updated = result.getOrNull()
+                        it.copy(
+                            discussion = updated?.copy(review = updated.review.copy(isShared = it.discussion?.review?.isShared ?: false)),
+                            isLoading = false,
+                            errorMessageRes = null,
                         )
-                    )
+                    }
+                } else {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessageRes = mensajeDeError(
+                                error = result.exceptionOrNull(),
+                                generico = R.string.error_cargar_contenido,
+                            )
+                        )
+                    }
                 }
             }
         }
@@ -93,8 +101,7 @@ class DiscussionViewModel @Inject constructor(
         }
     }
 
-    // Si el like sale bien se invierte el corazon y el contador sube o baja, sin volver a pedir
-    // la resena
+    // Firestore confirma el like; la suscripcion actualiza el corazon y el contador.
     fun sendOrDeleteLike() {
         val reviewId = _uiState.value.discussion?.id ?: return
 
@@ -102,17 +109,7 @@ class DiscussionViewModel @Inject constructor(
             val result = reviewRepository.sendOrDeleteLike(reviewId = reviewId)
 
             if (result.isSuccess) {
-                _uiState.update {
-                    it.copy(
-                        discussion = it.discussion?.copy(
-                            review = it.discussion.review.copy(
-                                isLiked = !it.discussion.review.isLiked,
-                                likes = if (it.discussion.review.isLiked) it.discussion.review.likes - 1 else it.discussion.review.likes + 1,
-                            )
-                        ),
-                        errorMessageRes = null,
-                    )
-                }
+                // El listener aplica el estado confirmado sin duplicar contadores.
             } else {
                 _uiState.update {
                     it.copy(

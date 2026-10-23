@@ -20,27 +20,32 @@ class FollowListViewModel @Inject constructor(
     private val usuarioRepository: UsuarioRepository
 ) : ViewModel() {
 
+    private var subscription: kotlinx.coroutines.Job? = null
+
     private val _uiState = MutableStateFlow(FollowListState())
     val uiState: StateFlow<FollowListState> = _uiState.asStateFlow()
 
     // Buscar la lista es responsabilidad del ViewModel, no de la navegacion
     fun getUsuarios(userId: String, tipo: String) {
-        viewModelScope.launch {
+        subscription?.cancel()
+        subscription = viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
 
-            val result = if (tipo == LISTA_SEGUIDORES) {
-                usuarioRepository.getSeguidores(userId = userId)
+            val source = if (tipo == LISTA_SEGUIDORES) {
+                usuarioRepository.observeSeguidores(userId = userId)
             } else {
-                usuarioRepository.getSeguidos(userId = userId)
+                usuarioRepository.observeSeguidos(userId = userId)
             }
 
-            if (result.isSuccess) {
-                _uiState.update {
-                    it.copy(usuarios = result.getOrNull() ?: emptyList(), isLoading = false, errorMessageRes = null)
-                }
-            } else {
-                _uiState.update {
-                    it.copy(isLoading = false, errorMessageRes = mensajeDeError(result.exceptionOrNull()))
+            source.collect { result ->
+                if (result.isSuccess) {
+                    _uiState.update {
+                        it.copy(usuarios = result.getOrNull() ?: emptyList(), isLoading = false, errorMessageRes = null)
+                    }
+                } else {
+                    _uiState.update {
+                        it.copy(isLoading = false, errorMessageRes = mensajeDeError(result.exceptionOrNull()))
+                    }
                 }
             }
         }
