@@ -1,8 +1,8 @@
 package com.example.mixtapp.ui.screens.home
 
 import androidx.annotation.StringRes
-import com.example.mixtapp.data.model.FriendActivityUi
 import com.example.mixtapp.data.model.AlbumReviewsUi
+import com.example.mixtapp.data.model.FriendActivityUi
 import com.example.mixtapp.ui.screens.home.model.HomeFilterUi
 
 data class HomeState(
@@ -11,12 +11,15 @@ data class HomeState(
     // Todos los albumes guardados, sin filtrar
     val todos: List<AlbumReviewsUi> = emptyList(),
     val trending: AlbumReviewsUi? = null,
-    val friendActivity: FriendActivityUi? = null,
+    // Las resenas de los usuarios que sigo, la mas reciente primero
+    val resenasDeSeguidos: List<FriendActivityUi> = emptyList(),
     val followedIds: Set<String> = emptySet(),
     val filters: List<HomeFilterUi> = emptyList(),
     val selectedFilterId: String = "",
+    // Con el filtro de seguidos el inicio muestra solo las resenas de quienes sigo
+    val soloSeguidos: Boolean = false,
     val profileImageUrl: String = "",
-    // Arranca cargando porque lo primero que hace la pantalla es pedir los albumes
+    // Arranca cargando porque lo primero que hace el ViewModel es escuchar los albumes
     val isLoading: Boolean = true,
     @StringRes val errorMessageRes: Int? = null,
 )

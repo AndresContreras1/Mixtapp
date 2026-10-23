@@ -4,6 +4,9 @@ import com.example.mixtapp.data.datasource.AlbumRemoteDataSource
 import com.example.mixtapp.data.dtos.AlbumDto
 import com.example.mixtapp.data.dtos.ReviewConUsuarioDto
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -44,5 +47,27 @@ class AlbumFirestoreDataSourceImpl @Inject constructor(
 
             review
         }
+    }
+
+    // El listener escucha la coleccion reviews: cada cambio manda la lista completa por el flujo.
+    // Un like solo cambia likesCount en la resena, asi que tambien llega por aqui
+    override fun listenAllReviews(): Flow<List<ReviewConUsuarioDto>> = callbackFlow {
+        val listenerRegistration = db.collection("reviews")
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    close(error) // cierra el flujo con error
+                    return@addSnapshotListener
+                }
+                if (snapshot != null) {
+                    val reviews = snapshot.documents.map { doc ->
+                        val review = doc.toObject(ReviewConUsuarioDto::class.java)
+                        review?.copy(id = doc.id) ?: throw Exception("Review not found")
+                    }
+                    trySend(reviews).isSuccess // envia la lista al flujo
+                }
+            }
+
+        // Cuando nadie escucha el flujo, se quita el listener para no dejar la conexion activa
+        awaitClose { listenerRegistration.remove() }
     }
 }

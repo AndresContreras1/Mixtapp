@@ -4,6 +4,9 @@ import com.example.mixtapp.data.datasource.AlbumRemoteDataSource
 import com.example.mixtapp.data.datasource.services.AlbumRetrofitService
 import com.example.mixtapp.data.dtos.AlbumDto
 import com.example.mixtapp.data.dtos.ReviewConUsuarioDto
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import javax.inject.Inject
 
 class AlbumRetrofitDataSourceImpl @Inject constructor(
@@ -28,5 +31,13 @@ class AlbumRetrofitDataSourceImpl @Inject constructor(
                 review
             }
         }
+    }
+
+    // Con HTTP no hay una conexion continua: el flujo manda una sola vez lo que responde el backend
+    override fun listenAllReviews(): Flow<List<ReviewConUsuarioDto>> = callbackFlow {
+        val reviews = service.getAlbumes().flatMap { album -> service.getReviewsDeAlbum(album.id) }
+        trySend(reviews).isSuccess
+
+        awaitClose { }
     }
 }

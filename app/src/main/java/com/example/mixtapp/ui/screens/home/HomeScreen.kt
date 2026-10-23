@@ -35,9 +35,10 @@ fun HomeScreen(
 ) {
     val state by homeViewModel.uiState.collectAsState()
 
-    // Se pide cada vez que se muestra: al volver de escribir o borrar una resena ya sale al dia
+    // Los albumes llegan en vivo desde el ViewModel. Al mostrarse solo se piden los usuarios que
+    // sigo y mi foto, que pueden haber cambiado en otra pantalla
     LaunchedEffect(Unit) {
-        homeViewModel.getAlbums()
+        homeViewModel.cargarSeguidos()
         homeViewModel.refrescarFotoDePerfil()
     }
 
@@ -57,9 +58,10 @@ fun HomeScreen(
             albums = state.albums,
             todos = state.todos,
             trending = state.trending,
-            friendActivity = state.friendActivity,
+            resenasDeSeguidos = state.resenasDeSeguidos,
             filters = state.filters,
             selectedFilterId = state.selectedFilterId,
+            soloSeguidos = state.soloSeguidos,
             profileImageUrl = state.profileImageUrl,
             errorMessageRes = state.errorMessageRes,
             onFilterSelected = { homeViewModel.updateSelectedFilter(filtroId = it) },
@@ -79,9 +81,10 @@ fun HomeScreenContent(
     albums: List<AlbumReviewsUi>,
     todos: List<AlbumReviewsUi>,
     trending: AlbumReviewsUi?,
-    friendActivity: FriendActivityUi?,
+    resenasDeSeguidos: List<FriendActivityUi>,
     filters: List<HomeFilterUi>,
     selectedFilterId: String,
+    soloSeguidos: Boolean,
     profileImageUrl: String,
     errorMessageRes: Int?,
     onFilterSelected: (String) -> Unit,
@@ -100,9 +103,10 @@ fun HomeScreenContent(
             albums = albums,
             todos = todos,
             trending = trending,
-            friendActivity = friendActivity,
+            resenasDeSeguidos = resenasDeSeguidos,
             filters = filters,
             selectedFilterId = selectedFilterId,
+            soloSeguidos = soloSeguidos,
             profileImageUrl = profileImageUrl,
             errorMessageRes = errorMessageRes,
             onFilterSelected = onFilterSelected,
@@ -125,9 +129,10 @@ fun HomeScreenPreview() {
             albums = LocalAlbumReviewsProvider.popularAlbums,
             todos = LocalAlbumReviewsProvider.albumReviews,
             trending = LocalAlbumReviewsProvider.trendingAlbum,
-            friendActivity = LocalFriendActivityProvider.friendActivity,
+            resenasDeSeguidos = LocalFriendActivityProvider.friendActivities,
             filters = homeFilters,
             selectedFilterId = homeFilters.first().id,
+            soloSeguidos = false,
             profileImageUrl = "",
             errorMessageRes = null,
             onFilterSelected = {},

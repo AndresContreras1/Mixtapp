@@ -44,6 +44,7 @@
     <string name="friends_activity">Actividad de seguidos</string>
     <string name="sin_actividad_seguidos">Aún no hay reseñas de personas a quienes sigues</string>
     <string name="todos_los_albumes">Todos los álbumes</string>
+    <string name="resenas_de_seguidos">Reseñas de quienes sigues</string>
 
     <!-- Profile Extra -->
     <string name="user_stats">%1$s • %2$s</string>

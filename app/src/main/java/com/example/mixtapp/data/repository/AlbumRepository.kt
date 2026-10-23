@@ -13,6 +13,8 @@ import com.example.mixtapp.data.model.AlbumReviewsUi
 import com.google.firebase.firestore.FirebaseFirestoreException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import retrofit2.HttpException
 import javax.inject.Inject
 import kotlin.math.roundToInt
@@ -63,6 +65,27 @@ class AlbumRepository @Inject constructor(
             Log.d("AlbumRepository", "getAlbumReviews: ${e.message}")
             Result.failure(ErrorInesperadoException())
         }
+    }
+
+    // Datos en vivo para el inicio: cada vez que cambia una resena se arman de nuevo los albumes con
+    // sus estadisticas. Como en clase, retorna el flujo y no un Result: los errores los recibe el
+    // ViewModel en el catch
+    fun getAlbumReviewsLive(): Flow<List<AlbumReviewsUi>> {
+        val usuarioActualId = authRemoteDataSource.currentUser?.uid ?: ""
+
+        return albumRemoteDataSource.listenAllReviews()
+            .map { reviews ->
+                val albumes = albumRemoteDataSource.getAlbumes()
+
+                albumes.map { album ->
+                    conEstadisticas(
+                        album = album.toAlbum(),
+                        reviews = reviews
+                            .filter { review -> review.albumId == album.id }
+                            .map { review -> review.toAlbumReviewItemUi(usuarioActualId = usuarioActualId) }
+                    )
+                }
+            }
     }
 
     // El album con todas sus resenas; entre ellas va la mia si ya lo califique
