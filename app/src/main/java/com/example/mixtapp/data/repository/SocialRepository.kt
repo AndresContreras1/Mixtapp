@@ -1,11 +1,10 @@
 package com.example.mixtapp.data.repository
 
 import android.util.Log
+import com.example.mixtapp.data.datasource.AlbumRemoteDataSource
 import com.example.mixtapp.data.datasource.AuthRemoteDataSource
-import com.example.mixtapp.data.datasource.ReviewLocalDataSource
 import com.example.mixtapp.data.datasource.SocialLocalDataSource
-import com.example.mixtapp.data.datasource.impl.firestore.AlbumFirestoreDataSourceImpl
-import com.example.mixtapp.data.datasource.impl.firestore.UsuarioFirestoreDataSourceImpl
+import com.example.mixtapp.data.datasource.UsuarioRemoteDataSource
 import com.example.mixtapp.data.dtos.toFollowingReviewUi
 import com.example.mixtapp.data.model.FollowingStoryUi
 import com.example.mixtapp.data.model.FollowingUi
@@ -18,12 +17,12 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import javax.inject.Inject
 
-// La pestana Seguidos sale de la base remota; las notificaciones de la pantalla siguen locales
+// La pestana Seguidos sale de la base remota; las notificaciones de la pantalla siguen locales.
+// Recibe los contratos: Hilt entrega las implementaciones desde DataSourceModule
 class SocialRepository @Inject constructor(
     private val socialLocalDataSource: SocialLocalDataSource,
-    private val reviewLocalDataSource: ReviewLocalDataSource,
-    private val usuarioRemoteDataSource: UsuarioFirestoreDataSourceImpl,
-    private val albumRemoteDataSource: AlbumFirestoreDataSourceImpl,
+    private val usuarioRemoteDataSource: UsuarioRemoteDataSource,
+    private val albumRemoteDataSource: AlbumRemoteDataSource,
     private val authRemoteDataSource: AuthRemoteDataSource
 ) {
 
@@ -55,9 +54,7 @@ class SocialRepository @Inject constructor(
             }
 
             val reviews = pendientes.map { it.await() }.flatten()
-                .map { dto ->
-                    dto.toFollowingReviewUi(comentarios = reviewLocalDataSource.getComentarios(reviewId = dto.id).size)
-                }
+                .map { dto -> dto.toFollowingReviewUi() }
                 // La fecha va como AAAA-MM-DD, asi que ordenar el texto ordena las fechas
                 .sortedByDescending { it.reviewedAt }
 

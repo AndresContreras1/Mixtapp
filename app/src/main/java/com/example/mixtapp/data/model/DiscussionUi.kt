@@ -31,4 +31,6 @@ data class DiscussionCommentUi(
     val likes: Int,
     val isReply: Boolean,
     val isLiked: Boolean,
+    // El comentario principal al que responde; null si no es una respuesta
+    val parentId: String? = null,
 )

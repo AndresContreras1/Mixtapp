@@ -21,11 +21,15 @@ data class ReviewConUsuarioDto(
     val album: AlbumDeResenaDto?,
     // La tarjeta solo necesita cuantos likes tiene: quien los dio esta en la subcoleccion likes
     val likesCount: Int,
+    // Igual con los comentarios: estan en la subcoleccion comments. Se declara aunque esta lista no
+    // lo use, para que toObject no avise en el Logcat
+    val commentsCount: Int,
     // No esta en la base: el data source lo llena buscando mi uid en la subcoleccion likes
     var liked: Boolean = false,
 ) {
-    // Firestore necesita un constructor vacio para convertir el documento en el DTO
-    constructor() : this("", 0, null, null, "", "", null, null, null, null, 0)
+    // Firestore necesita un constructor vacio para convertir el documento en el DTO. Las resenas
+    // anteriores a los comentarios no tienen commentsCount y quedan en 0
+    constructor() : this("", 0, null, null, "", "", null, null, null, null, 0, 0)
 }
 
 // Resena de un usuario, con el album que resena
@@ -42,9 +46,10 @@ data class ReviewConAlbumDto(
     val usuario: UsuarioDto?,
     val album: AlbumDeResenaDto?,
     val likesCount: Int,
+    val commentsCount: Int,
     var liked: Boolean = false,
 ) {
-    constructor() : this("", 0, null, null, "", "", null, null, null, null, 0)
+    constructor() : this("", 0, null, null, "", "", null, null, null, null, 0, 0)
 }
 
 // El repositorio pasa el id del usuario de la app para marcar su resena
@@ -74,9 +79,9 @@ fun ReviewConAlbumDto.toMyReviewUi(): MyReviewUi {
     )
 }
 
-// Las iniciales y el nombre salen de la copia del usuario que guarda la resena; los comentarios
-// llegan aparte porque la discusion no esta en este documento
-fun ReviewConAlbumDto.toFollowingReviewUi(comentarios: Int): FollowingReviewUi {
+// Las iniciales y el nombre salen de la copia del usuario que guarda la resena; el total de
+// comentarios es el contador del documento
+fun ReviewConAlbumDto.toFollowingReviewUi(): FollowingReviewUi {
     val nombre = usuario?.nombre ?: ""
 
     return FollowingReviewUi(
@@ -90,14 +95,14 @@ fun ReviewConAlbumDto.toFollowingReviewUi(comentarios: Int): FollowingReviewUi {
         rating = calificacion,
         reviewText = comentario ?: "",
         likes = likesCount,
-        comments = comentarios,
+        comments = commentsCount,
         isLiked = liked,
         isShared = false,
     )
 }
 
 // La resena que encabeza su discusion
-fun ReviewConAlbumDto.toDiscussionReviewUi(comentarios: Int): DiscussionReviewUi {
+fun ReviewConAlbumDto.toDiscussionReviewUi(): DiscussionReviewUi {
     val nombre = usuario?.nombre ?: ""
 
     return DiscussionReviewUi(
@@ -110,7 +115,7 @@ fun ReviewConAlbumDto.toDiscussionReviewUi(comentarios: Int): DiscussionReviewUi
         rating = calificacion,
         reviewText = comentario ?: "",
         likes = likesCount,
-        commentsCount = comentarios,
+        commentsCount = commentsCount,
         isLiked = liked,
         isShared = false,
     )

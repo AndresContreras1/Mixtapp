@@ -1,9 +1,9 @@
 package com.example.mixtapp.data.datasource.impl.retrofit
 
 import com.example.mixtapp.data.datasource.ReviewRemoteDataSource
-import com.example.mixtapp.data.datasource.services.AlbumRetrofitService
 import com.example.mixtapp.data.datasource.services.ReviewRetrofitService
-import com.example.mixtapp.data.dtos.AlbumDeResenaDto
+import com.example.mixtapp.data.dtos.ComentarioDto
+import com.example.mixtapp.data.dtos.CreateComentarioDto
 import com.example.mixtapp.data.dtos.CreateReviewDto
 import com.example.mixtapp.data.dtos.ReviewConAlbumDto
 import kotlinx.coroutines.channels.awaitClose
@@ -12,24 +12,13 @@ import kotlinx.coroutines.flow.callbackFlow
 import javax.inject.Inject
 
 class ReviewRetrofitDataSourceImpl @Inject constructor(
-    private val service: ReviewRetrofitService,
-    private val albumService: AlbumRetrofitService
+    private val service: ReviewRetrofitService
 ) : ReviewRemoteDataSource {
 
-    // El backend no tiene likes. La resena trae al usuario en el include, pero no copia el album
-    // como Firestore: se pide aparte para que el DTO llegue igual por las dos bases
+    // El backend no tiene likes. La resena trae al usuario y al album en el include, en una sola
+    // consulta, asi que el DTO llega igual que desde Firestore
     override suspend fun getReviewById(id: String, currentUserId: String): ReviewConAlbumDto {
-        val review = service.getReviewById(id)
-        val album = albumService.getAlbumById(review.albumId)
-
-        return review.copy(
-            album = AlbumDeResenaDto(
-                id = album.id,
-                titulo = album.titulo,
-                artista = album.artista,
-                portadaUrl = album.portadaUrl,
-            )
-        )
+        return service.getReviewById(id)
     }
 
     // En el backend la resena siempre queda a nombre del usuario 1, y solo van los campos de su
@@ -53,6 +42,20 @@ class ReviewRetrofitDataSourceImpl @Inject constructor(
     // Con HTTP no hay una conexion continua: el flujo manda una sola vez lo que responde el backend
     override fun listenReviewById(id: String, currentUserId: String): Flow<ReviewConAlbumDto> = callbackFlow {
         trySend(getReviewById(id = id, currentUserId = currentUserId)).isSuccess
+
+        awaitClose { }
+    }
+
+    // to-do: el backend no tiene comentarios; como los likes, solo funcionan con Firestore
+    override suspend fun createComentario(reviewId: String, comentario: CreateComentarioDto) {
+    }
+
+    override suspend fun sendOrDeleteLikeComentario(reviewId: String, comentarioId: String, userId: String) {
+    }
+
+    // El backend no tiene comentarios: la lista llega vacia
+    override fun listenComentarios(reviewId: String, currentUserId: String): Flow<List<ComentarioDto>> = callbackFlow {
+        trySend(emptyList<ComentarioDto>()).isSuccess
 
         awaitClose { }
     }

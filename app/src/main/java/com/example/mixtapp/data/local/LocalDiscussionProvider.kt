@@ -6,11 +6,7 @@ import com.example.mixtapp.data.model.DiscussionUi
 
 object LocalDiscussionProvider {
 
-    // Los comentarios que se escriben en la app, por id de la resena. Viven mientras la app esta
-    // abierta; la resena de cada discusion sale de la base remota
-    val comentarios = mutableMapOf<String, List<DiscussionCommentUi>>()
-
-    // Discusiones de ejemplo para los previews
+    // Discusiones de ejemplo para los previews. Las de la app, con sus comentarios, salen de Firestore
     val discussions = listOf(
         DiscussionUi(
             id = "toxicity-liz",

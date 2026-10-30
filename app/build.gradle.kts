@@ -25,6 +25,10 @@ android {
     }
 
     buildTypes {
+        // Con Debug la app usa el emulador de Firebase (Firebase CLI); con Play, el Firebase real
+        debug {
+            isDebuggable = true
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
@@ -39,6 +43,8 @@ android {
     }
     buildFeatures {
         compose = true
+        // Genera BuildConfig.DEBUG para saber en que modo corre la app
+        buildConfig = true
     }
 }
 
@@ -71,6 +77,10 @@ dependencies {
     implementation(libs.retrofit.converter.scalars)
     implementation(libs.retrofit.converter.gson)
     testImplementation(libs.junit)
+    // Pruebas de integracion contra el emulador de Firebase: runTest para las funciones suspend y
+    // Truth para los asserts
+    androidTestImplementation(libs.kotlinx.coroutines.test)
+    androidTestImplementation(libs.truth)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
