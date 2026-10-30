@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application>
+        <!-- Solo existe en debug: segundo icono "Mixtapp Seed" para cargar datos falsos -->
+        <activity
+            android:name=".debug.DebugSeedActivity"
+            android:exported="true"
+            android:label="Mixtapp Seed"
+            android:theme="@style/Theme.Mixtapp">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>

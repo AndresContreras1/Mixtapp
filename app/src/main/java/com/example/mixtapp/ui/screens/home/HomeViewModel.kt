@@ -11,7 +11,6 @@ import com.example.mixtapp.data.repository.AuthRepository
 import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
 import com.example.mixtapp.data.repository.ErrorDelServidorException
 import com.example.mixtapp.data.repository.SinConexionException
-import com.example.mixtapp.ui.screens.home.model.FILTRO_AMIGOS
 import com.example.mixtapp.ui.screens.home.model.FILTRO_TENDENCIAS
 import com.example.mixtapp.ui.screens.home.model.homeFilters
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,6 +20,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.example.mixtapp.ui.screens.home.model.FILTRO_ALFABETICO
+import com.example.mixtapp.ui.screens.home.model.FILTRO_ANIO
+import com.example.mixtapp.ui.screens.home.model.FILTRO_TOP_RATING
+import kotlin.collections.sortedBy
+import kotlin.collections.sortedByDescending
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -94,12 +98,9 @@ class HomeViewModel @Inject constructor(
     private fun aplicarFiltro(filtroId: String, todos: List<SongReviewUi>): List<SongReviewUi> =
         when (filtroId) {
             FILTRO_TENDENCIAS -> todos.sortedByDescending { it.reviews.size }
-
-            // Los albumes que reseno alguien distinto a mi
-            FILTRO_AMIGOS -> todos.filter { songReview ->
-                songReview.reviews.any { !it.esMia }
-            }
-
+            FILTRO_TOP_RATING -> todos.sortedByDescending { it.rating }
+            FILTRO_ANIO -> todos.sortedByDescending { it.album.year.toIntOrNull() ?: 0 }
+            FILTRO_ALFABETICO -> todos.sortedBy { it.album.title.lowercase() }
             else -> todos
         }
 

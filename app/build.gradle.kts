@@ -25,7 +25,11 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField("boolean", "USE_FIREBASE_EMULATOR", "true")
+        }
         release {
+            buildConfigField("boolean", "USE_FIREBASE_EMULATOR", "false")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -39,11 +43,13 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
 dependencies {
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.junit.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.activity.compose)
@@ -74,5 +80,10 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+    debugImplementation(libs.java.faker) { exclude(group = "org.yaml", module = "snakeyaml") }
+    debugImplementation("org.yaml:snakeyaml:1.23:android")
+    androidTestImplementation(libs.java.faker) { exclude(group = "org.yaml", module = "snakeyaml") }
+    androidTestImplementation("org.yaml:snakeyaml:1.23:android")
+    androidTestImplementation(libs.kotlinx.coroutines.play.services)
 
 }
