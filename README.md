@@ -28,7 +28,7 @@ Universidad Javeriana.
 > Los álbumes, las reseñas, los perfiles, los likes y los seguidores viven en **Cloud Firestore**.
 > La capa de datos tiene una segunda implementación con **Retrofit** contra el backend de Express
 > ([mixtapp-backend](https://github.com/AndresContreras1/mixtapp-backend)): las dos cumplen el mismo
-> contrato y se cambia de una a otra con una línea en cada repositorio. Las funciones en línea
+> contrato y se cambia de una a otra con una línea por contrato en `DataSourceModule`. Las funciones en línea
 > (integridad de los datos y notificaciones) están en su propio proyecto,
 > [mixtapp-functions](https://github.com/AndresContreras1/mixtapp-functions).
 
@@ -51,10 +51,13 @@ Universidad Javeriana.
 | Dar y quitar like a una reseña, con el total de likes | Funcionando, Firestore |
 | Seguir y dejar de seguir, con el total de seguidores y seguidos | Funcionando, Firestore |
 | Lista de seguidores y de seguidos de cualquier perfil | Funcionando, Firestore |
-| Notificación cuando alguien le da like a mi reseña o me empieza a seguir | Funcionando, FCM y Cloud Functions |
+| Notificación cuando alguien le da like a mi reseña, la comenta, responde mi comentario o me empieza a seguir | Funcionando, FCM y Cloud Functions |
 | Foto de perfil subida a Firebase Storage | Funcionando |
 | Consumo del backend de Express con Retrofit | Implementado, intercambiable con Firestore |
-| Discusión de una reseña | La reseña sale de Firestore; los comentarios viven en memoria |
+| Discusión de una reseña: comentarios, respuestas y likes a cada comentario, **en tiempo real** | Funcionando, Firestore |
+| Modo debug contra el emulador de Firebase (Firebase CLI) | Funcionando |
+| Datos falsos con Faker para el emulador o el Firebase real | Script en [mixtapp-functions](https://github.com/AndresContreras1/mixtapp-functions) |
+| Pruebas de integración de los data sources y los repositorios contra el emulador | 16 + 15 pruebas |
 | Pantalla de notificaciones | Datos de prueba en `data/local/` |
 | Modo claro | Pendiente: falta diseñar cómo se ven las pantallas en claro |
 
@@ -80,7 +83,9 @@ flowchart LR
 
 **El data source** declara la petición y devuelve el DTO de su base. Cada contrato
 (`AlbumRemoteDataSource`, `ReviewRemoteDataSource`, `UsuarioRemoteDataSource`) tiene una
-implementación en `impl/firestore` y otra en `impl/retrofit`. **El repositorio** hace el
+implementación en `impl/firestore` y otra en `impl/retrofit`. Si el documento no existe, el data
+source retorna `null` y el repositorio decide el error. Los repositorios reciben el contrato y
+`DataSourceModule` dice con `@Binds` qué implementación entrega Hilt. **El repositorio** hace el
 `try`/`catch`, mapea el DTO al modelo de la pantalla, organiza varios data sources (por ejemplo, la
 reseña lleva una copia del usuario y del álbum) y devuelve un `Result<T>`. Para los datos en vivo
 devuelve un `Flow` y los errores llegan al `catch` del ViewModel. **El ViewModel** mira
@@ -93,8 +98,9 @@ lógica: filtrar, ordenar y decidir qué se muestra. **La pantalla** pinta y avi
 | Estado | ViewModel · `MutableStateFlow` · un `UiState` por pantalla |
 | Navegación | Navigation Compose · un `NavHost` · rutas en `sealed class` |
 | Datos | Firebase Auth · Storage · Cloud Firestore · Cloud Messaging · Retrofit · corrutinas con `suspend`, `viewModelScope` y `Flow` |
-| Inyección | Dagger Hilt con KSP: `FirebaseHiltModule` y `AppModule` |
-| Build | Gradle Kotlin DSL · `libs.versions.toml` |
+| Inyección | Dagger Hilt con KSP: `FirebaseHiltModule`, `AppModule` y `DataSourceModule` |
+| Build | Gradle Kotlin DSL · `libs.versions.toml` · `BuildConfig` para el modo debug |
+| Pruebas | JUnit · Truth · `runTest` · emulador de Firebase |
 
 ## Datos en Firestore
 
@@ -104,8 +110,10 @@ lógica: filtrar, ordenar y decidir qué se muestra. **La pantalla** pinta y avi
 | `usuarios/<uid>/followers` | el uid de quien me sigue | `timestamp` |
 | `usuarios/<uid>/following` | el uid de quien sigo | `timestamp` |
 | `albumes` | `1` a `8` | `titulo`, `artista`, `portadaUrl`, `genero` (texto) · `anio` (número) |
-| `reviews` | id aleatorio | `usuarioId`, `albumId` (texto) · `calificacion` (número) · `comentario` (texto) · `fechaEscucha` (texto `AAAA-MM-DD` o null) · `likesCount` (número) · `usuario` y `album` (mapas) |
+| `reviews` | id aleatorio | `usuarioId`, `albumId` (texto) · `calificacion` (número) · `comentario` (texto) · `fechaEscucha` (texto `AAAA-MM-DD` o null) · `likesCount`, `commentsCount` (número) · `usuario` y `album` (mapas) |
 | `reviews/<id>/likes` | el uid de quien dio like | `timestamp` |
+| `reviews/<id>/comments` | id aleatorio | `usuarioId`, `contenido` (texto) · `parentCommentId` (texto o null) · `likesCount` (número) · `createdAt` (texto ISO) · `usuario` (mapa) |
+| `reviews/<id>/comments/<id>/likes` | el uid de quien dio like | `timestamp` |
 
 Los tipos tienen que coincidir con los DTO: `toObject` falla si `anio` o `calificacion` no son
 número, y `whereEqualTo` no encuentra reseñas si `albumId` o `usuarioId` se guardan como número.
@@ -136,6 +144,23 @@ que la tarjeta no usa. La tarjeta solo necesita el número, que vive en el docum
 - **La lista de seguidores o de seguidos** es una segunda consulta a la subcolección. Se abre al
   tocar el contador en cualquier perfil.
 
+### Comentarios de la discusión
+
+Cada reseña tiene su discusión. Los comentarios van en la subcolección `reviews/<id>/comments` y
+la reseña guarda el total en `commentsCount`, igual que los likes.
+
+- **Comentar** es una transacción: crea el comentario y suma 1 a `commentsCount`. El comentario
+  guarda una copia de mi nombre y mi foto, como la reseña.
+- **Responder** guarda el id del comentario principal en `parentCommentId`. El repositorio arma el
+  hilo: cada comentario principal va seguido de sus respuestas.
+- **Dar like a un comentario** es la misma transacción que el like de la reseña, en
+  `comments/<id>/likes/<mi uid>` con su `likesCount`.
+- **En tiempo real:** la discusión escucha la reseña y sus comentarios con dos `callbackFlow`, y
+  `combine` la arma cada vez que llega cualquiera de los dos. Es como un chat: un comentario desde
+  otro celular aparece sin recargar.
+- **Borrar la reseña** borra a mano sus likes y sus comentarios (con los likes de cada uno), porque
+  Firestore no borra las subcolecciones.
+
 Para comprobarlo con dos cuentas:
 
 1. Dar like a una reseña: en la consola aparece `reviews/<id>/likes/<uid>` y `likesCount` sube.
@@ -144,6 +169,8 @@ Para comprobarlo con dos cuentas:
    contadores. Tocar el contador abre la lista.
 3. Con el filtro **Seguidos** del inicio, escribir una reseña desde la otra cuenta: aparece sola,
    sin recargar.
+4. Abrir la misma discusión en los dos celulares y comentar desde uno: el comentario y el total
+   aparecen en el otro. Responder un comentario lo deja debajo del que responde.
 
 ## Notificaciones
 
@@ -153,10 +180,12 @@ Android 13 o superior, `Mixtapp.kt` pide el permiso al abrir la app (solo si tod
 concedido). El token del celular se guarda en `usuarios/<uid>.fcmtoken` al registrarse y al iniciar
 sesión.
 
-Las notificaciones las envían dos Cloud Functions de
+Las notificaciones las envían tres Cloud Functions de
 [mixtapp-functions](https://github.com/AndresContreras1/mixtapp-functions):
-`sendLikeNotification` («Nuevo me gusta») y `sendFollowNotification` («Nuevo seguidor»). Para que
-llegue en las pruebas, la app debe estar en segundo plano o cerrada.
+`sendLikeNotification` («Nuevo me gusta»), `sendFollowNotification` («Nuevo seguidor») y
+`sendCommentNotification` («Nuevo comentario» al autor de la reseña y «Nueva respuesta» al autor
+del comentario que se responde). Para que llegue en las pruebas, la app debe estar en segundo plano
+o cerrada.
 
 ## Decisiones
 
@@ -204,8 +233,61 @@ emulador o dispositivo con **Android 8.0 o superior** (`minSdk 26`). El `google-
 git clone https://github.com/AndresContreras1/Mixtapp.git
 ```
 
-Abre la carpeta en Android Studio, espera a que Gradle sincronice y dale a **Run**. Desde la
-terminal, `./gradlew assembleDebug` (en Windows `gradlew.bat assembleDebug`).
+Abre la carpeta en Android Studio y espera a que Gradle sincronice. **Debug** usa el emulador de
+Firebase (ver abajo); **Play** con la variante *release* usa el Firebase real. Desde la terminal,
+`./gradlew assembleDebug` (en Windows `gradlew.bat assembleDebug`).
+
+<details>
+<summary>Modo debug: el emulador de Firebase (Firebase CLI)</summary>
+
+En debug, `BaseApplication` conecta Firestore y Authentication al emulador que corre en el
+computador (`10.0.2.2` desde el emulador de Android): `if (BuildConfig.DEBUG)` con
+`useEmulator("10.0.2.2", 8080)` y `useEmulator("10.0.2.2", 9099)`. Para eso el `build.gradle.kts`
+tiene el tipo `debug` y `buildConfig = true`.
+
+Hace falta Node.js. Desde [mixtapp-functions](https://github.com/AndresContreras1/mixtapp-functions),
+que tiene los puertos en su `firebase.json`:
+
+```bash
+npm install -g firebase-tools
+firebase emulators:start --only firestore,auth --project mixtapp-720eb
+```
+
+La interfaz queda en `http://127.0.0.1:4000/`, con las pestañas Authentication y Firestore. Los
+datos se borran al cerrar la CLI: hay que registrarse otra vez o cargar los datos con Faker.
+
+</details>
+
+<details>
+<summary>Datos falsos con Faker</summary>
+
+El script está en la carpeta `seed/` de
+[mixtapp-functions](https://github.com/AndresContreras1/mixtapp-functions). Crea usuarios, álbumes,
+reseñas y comentarios con los mismos campos de la tabla de arriba, y sube al emulador o al
+Firebase real cambiando dos líneas. Las instrucciones están en ese README. Estos datos son para ver
+la app llena, no para las pruebas.
+
+</details>
+
+<details>
+<summary>Pruebas de integración</summary>
+
+Están en `app/src/androidTest`, contra el emulador de Firebase: necesitan el emulador de Android
+prendido y la Firebase CLI corriendo (`firebase emulators:start --only firestore,auth`).
+
+| Clase | Pruebas | Qué revisa |
+|---|---|---|
+| `datasource/UsuarioFirestoreDataSourceTest` | 8 | leer por id (válido y que no existe → `null`), registrar, seguir, el contador de seguidores, dejar de seguir, la lista de seguidores y las reseñas de un usuario |
+| `datasource/ReviewFirestoreDataSourceTest` | 8 | leer por id, like y su contador, comentar y `commentsCount`, el orden de los comentarios, like a un comentario y borrar la reseña con sus comentarios |
+| `repository/ReviewRepositoryIntegrationTest` | 8 | guardar la reseña (`Result` bien y álbum que no existe), la copia del nombre, sin sesión, comentar, el hilo de respuestas y la discusión que no existe |
+| `repository/UsuarioRepositoryIntegrationTest` | 7 | mi perfil (con documento, sin documento, sin sesión), registrar, seguirme a mí mismo, seguir a otro y modificar el perfil |
+
+Cada clase tiene `@Before` (conecta al emulador dentro de un `try`, limpia y carga sus propios
+datos con `DatosDePrueba.kt`) y `@After` (borra las colecciones con sus subcolecciones; en los
+repositorios también borra la cuenta de Authentication y cierra la sesión). Se corren con clic
+derecho en la carpeta `androidTest` → **Run 'Tests in…'**.
+
+</details>
 
 <details>
 <summary>Firestore: crear la base y los datos iniciales</summary>
@@ -243,19 +325,20 @@ notificación de prueba desde **Messaging → Enviar mensaje de prueba**.
 <details>
 <summary>Usar el backend de Express en vez de Firestore</summary>
 
-En `AlbumRepository`, `ReviewRepository`, `UsuarioRepository` y `SocialRepository` cambia la
-implementación que reciben (`...FirestoreDataSourceImpl`) por la de Retrofit
-(`...RetrofitDataSourceImpl`) y corre `npm run dev` en `mixtapp-backend`. El emulador lo encuentra en
-`http://10.0.2.2:3000/`.
+En `data/injection/DataSourceModule.kt` cambia la implementación de cada `@Binds`
+(`...FirestoreDataSourceImpl`) por la de Retrofit (`...RetrofitDataSourceImpl`) y corre
+`npm run dev` en `mixtapp-backend`. Los repositorios no cambian: reciben el contrato. El emulador lo
+encuentra en `http://10.0.2.2:3000/`.
 
 - Los usuarios de Firebase no existen en el backend, así que la implementación de Retrofit trata
   al usuario `1` como el usuario de la app: guarda mis reseñas a su nombre y las devuelve con mi uid
   para que el repositorio sepa que son mías.
-- El backend no tiene rutas para crear ni modificar usuarios, ni likes ni seguidores. Igual que en
-  clase, esas funciones quedan como *to-do* en las implementaciones de Retrofit y las listas de
-  seguidores salen vacías: los likes y el seguimiento solo funcionan con Firestore.
+- El backend no tiene rutas para crear ni modificar usuarios, ni likes, seguidores o comentarios.
+  Igual que en clase, esas funciones quedan como *to-do* en las implementaciones de Retrofit y las
+  listas salen vacías: los likes, el seguimiento y los comentarios solo funcionan con Firestore.
 - Con HTTP no hay una conexión continua: el flujo del inicio manda una sola vez lo que responde
-  `GET /reviews`. La discusión de una reseña usa `GET /reviews/:id` y pide su álbum aparte.
+  `GET /reviews`. La discusión de una reseña usa `GET /reviews/:id`, que trae el usuario y el álbum
+  con `include` en la misma consulta.
 
 </details>
 
@@ -282,7 +365,7 @@ app/src/main/java/com/example/mixtapp/
 │   │   │   └── retrofit/    Album · Review · Usuario
 │   │   └── services/    servicios de Retrofit · MyFirebaseMessagingService
 │   ├── dtos/            DTO de cada base y sus funciones de mapeo
-│   ├── injection/       FirebaseHiltModule · AppModule
+│   ├── injection/       FirebaseHiltModule · AppModule · DataSourceModule
 │   ├── local/           proveedores de datos de prueba
 │   ├── model/           las entidades que usa la UI
 │   └── repository/      los repositorios y AppExceptions
@@ -291,9 +374,14 @@ app/src/main/java/com/example/mixtapp/
 │   ├── screens/<x>/     XScreen · XState · XViewModel · components/ · model/
 │   ├── theme/           Color · Theme · Type
 │   └── utils/           los componentes que comparten dos o más pantallas
-├── BaseApplication.kt   @HiltAndroidApp
+├── BaseApplication.kt   @HiltAndroidApp · en debug conecta Firebase al emulador
 ├── MainActivity.kt      @AndroidEntryPoint
 └── Mixtapp.kt           permiso de notificaciones + Scaffold + barra + botón flotante + AppNavigation
+
+app/src/androidTest/java/com/example/mixtapp/
+├── datasource/          pruebas de integración de los data sources de Firestore
+├── repository/          pruebas de integración de los repositorios
+└── DatosDePrueba.kt     los datos que crea cada prueba y la limpieza de la base
 ```
 
 Los diagramas de clases y de entidad-relación están en `Docs/`.
