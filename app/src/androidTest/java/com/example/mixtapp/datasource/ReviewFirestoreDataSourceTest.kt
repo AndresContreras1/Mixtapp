@@ -116,8 +116,9 @@ class ReviewFirestoreDataSourceTest {
         //Arrange
         dataSource.createComentario("review_1", generateComentario(3))
         dataSource.createComentario("review_1", generateComentario(2))
-        //Act
-        val comentarios = dataSource.listenComentarios("review_1").first()
+        //Act: el listener puede emitir primero la cache local, que no tiene lo escrito por la
+        // transaccion, asi que se espera la lista con los dos comentarios
+        val comentarios = dataSource.listenComentarios("review_1").first { it.size == 2 }
         //Assert
         Truth.assertThat(comentarios).hasSize(2)
         Truth.assertThat(comentarios.first().contenido).isEqualTo("Comentario 2")
@@ -128,11 +129,12 @@ class ReviewFirestoreDataSourceTest {
         //Arrange
         val usuario = generateUsuario(4)
         dataSource.createComentario("review_1", generateComentario(2))
-        val comentarioId = dataSource.listenComentarios("review_1").first().first().id
+        val comentarioId = dataSource.listenComentarios("review_1").first { it.isNotEmpty() }.first().id
         //Act
         dataSource.sendOrDeleteLikeComentario("review_1", comentarioId, usuario.id)
-        //Assert
-        val comentario = dataSource.listenComentarios("review_1", usuario.id).first().first()
+        //Assert: se espera a que llegue el contador del servidor y no el de la cache
+        val comentario = dataSource.listenComentarios("review_1", usuario.id)
+            .first { it.firstOrNull()?.likesCount == 1 }.first()
         Truth.assertThat(comentario.liked).isTrue()
         Truth.assertThat(comentario.likesCount).isEqualTo(1)
     }

@@ -112,7 +112,10 @@ class ReviewRepositoryIntegrationTest {
         val result = reviewRepository.publicarComentario("review_1", "Buen comentario", null)
         //Assert
         Truth.assertThat(result.isSuccess).isTrue()
-        val discussion = reviewRepository.getDiscussionLive("review_1").first()
+        // Los listeners pueden emitir primero la cache local, que no tiene lo escrito por la
+        // transaccion: se espera a que lleguen el comentario y el contador del servidor
+        val discussion = reviewRepository.getDiscussionLive("review_1")
+            .first { it.comments.isNotEmpty() && it.review.commentsCount > 0 }
         Truth.assertThat(discussion.comments.first().content).isEqualTo("Buen comentario")
         Truth.assertThat(discussion.review.commentsCount).isEqualTo(1)
     }
@@ -123,10 +126,11 @@ class ReviewRepositoryIntegrationTest {
         val dataSource = ReviewFirestoreDataSourceImpl(db)
         dataSource.createComentario("review_1", comentario("A", null, "2025-01-01T00:00:00Z"))
         dataSource.createComentario("review_1", comentario("B", null, "2025-01-02T00:00:00Z"))
-        val comentarioA = dataSource.listenComentarios("review_1").first().first { it.contenido == "A" }
+        val comentarioA = dataSource.listenComentarios("review_1")
+            .first { lista -> lista.any { it.contenido == "A" } }.first { it.contenido == "A" }
         dataSource.createComentario("review_1", comentario("Respuesta a A", comentarioA.id, "2025-01-03T00:00:00Z"))
-        //Act
-        val discussion = reviewRepository.getDiscussionLive("review_1").first()
+        //Act: se espera la discusion con los tres comentarios, no la que trae la cache local
+        val discussion = reviewRepository.getDiscussionLive("review_1").first { it.comments.size == 3 }
         //Assert
         Truth.assertThat(discussion.comments.map { it.content })
             .containsExactly("A", "Respuesta a A", "B").inOrder()
