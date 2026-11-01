@@ -1,14 +1,15 @@
 package com.example.mixtapp.ui.screens.followlist
 
 import android.util.Log
-import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
-import com.example.mixtapp.data.repository.ErrorDelServidorException
-import com.example.mixtapp.data.repository.SinConexionException
+import com.example.mixtapp.data.injection.IoDispatcher
 import com.example.mixtapp.data.repository.UsuarioRepository
+import com.example.mixtapp.ui.utils.mensajeDeError
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,7 +20,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FollowListViewModel @Inject constructor(
-    private val usuarioRepository: UsuarioRepository
+    private val usuarioRepository: UsuarioRepository,
+    // Las corrutinas se lanzan en este hilo; las pruebas pasan uno de prueba
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(FollowListState())
@@ -33,7 +36,7 @@ class FollowListViewModel @Inject constructor(
         if (escuchandoLista) return
         escuchandoLista = true
 
-        viewModelScope.launch {
+        viewModelScope.launch(ioDispatcher) {
             _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
 
             val usuarios = if (tipo == LISTA_SEGUIDORES) {
@@ -46,7 +49,7 @@ class FollowListViewModel @Inject constructor(
                 .catch { e ->
                     Log.d("FollowListViewModel", "getUsuarios: ${e.message}")
                     escuchandoLista = false
-                    _uiState.update { it.copy(isLoading = false, errorMessageRes = mensajeDeError(e)) }
+                    _uiState.update { it.copy(isLoading = false, errorMessageRes = mensajeDeError(error = e, generico = R.string.error_cargar_contenido)) }
                 }
                 .collect { lista ->
                     _uiState.update { it.copy(usuarios = lista, isLoading = false, errorMessageRes = null) }
@@ -54,10 +57,4 @@ class FollowListViewModel @Inject constructor(
         }
     }
 
-    @StringRes
-    private fun mensajeDeError(error: Throwable?): Int = when (error) {
-        is ErrorDelServidorException -> R.string.error_servidor
-        is SinConexionException -> R.string.error_sin_conexion
-        else -> R.string.error_cargar_contenido
-    }
 }

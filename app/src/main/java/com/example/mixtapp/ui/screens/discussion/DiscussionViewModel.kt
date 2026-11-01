@@ -1,15 +1,15 @@
 package com.example.mixtapp.ui.screens.discussion
 
 import android.util.Log
-import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
-import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
-import com.example.mixtapp.data.repository.ErrorDelServidorException
+import com.example.mixtapp.data.injection.IoDispatcher
 import com.example.mixtapp.data.repository.ReviewRepository
-import com.example.mixtapp.data.repository.SinConexionException
+import com.example.mixtapp.ui.utils.mensajeDeError
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,7 +20,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DiscussionViewModel @Inject constructor(
-    private val reviewRepository: ReviewRepository
+    private val reviewRepository: ReviewRepository,
+    // Las corrutinas se lanzan en este hilo; las pruebas pasan uno de prueba
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(DiscussionState())
@@ -35,7 +37,7 @@ class DiscussionViewModel @Inject constructor(
         if (escuchandoDiscusion) return
         escuchandoDiscusion = true
 
-        viewModelScope.launch {
+        viewModelScope.launch(ioDispatcher) {
             _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
 
             reviewRepository.getDiscussionLive(reviewId = reviewId)
@@ -45,7 +47,7 @@ class DiscussionViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            errorMessageRes = mensajeDeError(error = e, generico = R.string.error_cargar_contenido),
+                            errorMessageRes = mensajeDeError(error = e, generico = R.string.error_cargar_contenido, noEncontrado = R.string.discusion_no_encontrada),
                         )
                     }
                 }
@@ -82,7 +84,7 @@ class DiscussionViewModel @Inject constructor(
         val respondiendoA = discussion.comments.find { it.id == _uiState.value.replyingToCommentId }
         val parentCommentId = respondiendoA?.parentId ?: respondiendoA?.id
 
-        viewModelScope.launch {
+        viewModelScope.launch(ioDispatcher) {
             val result = reviewRepository.publicarComentario(
                 reviewId = discussion.id,
                 texto = texto,
@@ -96,7 +98,7 @@ class DiscussionViewModel @Inject constructor(
                     it.copy(
                         errorMessageRes = mensajeDeError(
                             error = result.exceptionOrNull(),
-                            generico = R.string.error_publicar_comentario,
+                            generico = R.string.error_publicar_comentario, noEncontrado = R.string.discusion_no_encontrada,
                         )
                     )
                 }
@@ -109,7 +111,7 @@ class DiscussionViewModel @Inject constructor(
     fun sendOrDeleteLike() {
         val reviewId = _uiState.value.discussion?.id ?: return
 
-        viewModelScope.launch {
+        viewModelScope.launch(ioDispatcher) {
             val result = reviewRepository.sendOrDeleteLike(reviewId = reviewId)
 
             if (result.isSuccess) {
@@ -119,7 +121,7 @@ class DiscussionViewModel @Inject constructor(
                     it.copy(
                         errorMessageRes = mensajeDeError(
                             error = result.exceptionOrNull(),
-                            generico = R.string.error_me_gusta,
+                            generico = R.string.error_me_gusta, noEncontrado = R.string.discusion_no_encontrada,
                         )
                     )
                 }
@@ -140,11 +142,11 @@ class DiscussionViewModel @Inject constructor(
 
     // Igual que el like de la resena: la transaccion cambia likesCount del comentario y el flujo
     // trae el corazon y el contador al dia
-    fun darQuitarLikeComentario(commentId: String) {
+    fun sendOrDeleteLikeComentario(commentId: String) {
         val reviewId = _uiState.value.discussion?.id ?: return
 
-        viewModelScope.launch {
-            val result = reviewRepository.darQuitarLikeComentario(
+        viewModelScope.launch(ioDispatcher) {
+            val result = reviewRepository.sendOrDeleteLikeComentario(
                 reviewId = reviewId,
                 commentId = commentId,
             )
@@ -156,7 +158,7 @@ class DiscussionViewModel @Inject constructor(
                     it.copy(
                         errorMessageRes = mensajeDeError(
                             error = result.exceptionOrNull(),
-                            generico = R.string.error_me_gusta,
+                            generico = R.string.error_me_gusta, noEncontrado = R.string.discusion_no_encontrada,
                         )
                     )
                 }
@@ -168,11 +170,4 @@ class DiscussionViewModel @Inject constructor(
         _uiState.update { it.copy(replyingToCommentId = commentId) }
     }
 
-    @StringRes
-    private fun mensajeDeError(error: Throwable?, @StringRes generico: Int): Int = when (error) {
-        is ContenidoNoEncontradoException -> R.string.discusion_no_encontrada
-        is ErrorDelServidorException -> R.string.error_servidor
-        is SinConexionException -> R.string.error_sin_conexion
-        else -> generico
-    }
 }

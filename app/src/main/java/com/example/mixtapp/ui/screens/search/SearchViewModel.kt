@@ -1,18 +1,18 @@
 package com.example.mixtapp.ui.screens.search
 
-import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
+import com.example.mixtapp.data.injection.IoDispatcher
+import com.example.mixtapp.data.model.AlbumReviewsUi
 import com.example.mixtapp.data.model.CATEGORIA_FECHA_LANZAMIENTO
 import com.example.mixtapp.data.model.CATEGORIA_MAS_POPULARES
 import com.example.mixtapp.data.model.CATEGORIA_MEJOR_CALIFICADOS
-import com.example.mixtapp.data.model.AlbumReviewsUi
 import com.example.mixtapp.data.repository.AlbumRepository
-import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
-import com.example.mixtapp.data.repository.ErrorDelServidorException
-import com.example.mixtapp.data.repository.SinConexionException
+import com.example.mixtapp.ui.utils.mensajeDeError
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,7 +22,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val albumRepository: AlbumRepository
+    private val albumRepository: AlbumRepository,
+    // Las corrutinas se lanzan en este hilo; las pruebas pasan uno de prueba
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SearchState())
@@ -34,7 +36,7 @@ class SearchViewModel @Inject constructor(
     }
 
     private fun getCategories() {
-        viewModelScope.launch {
+        viewModelScope.launch(ioDispatcher) {
             val result = albumRepository.getSearchCategories()
 
             if (result.isSuccess) {
@@ -56,7 +58,7 @@ class SearchViewModel @Inject constructor(
 
     // La pantalla la llama cada vez que se muestra; buscar y ordenar trabajan sobre esta lista
     fun getAlbumes() {
-        viewModelScope.launch {
+        viewModelScope.launch(ioDispatcher) {
             _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
 
             val result = albumRepository.getAlbumReviews()
@@ -144,11 +146,4 @@ class SearchViewModel @Inject constructor(
         else -> todos
     }
 
-    @StringRes
-    private fun mensajeDeError(error: Throwable?, @StringRes generico: Int): Int = when (error) {
-        is ContenidoNoEncontradoException -> R.string.contenido_no_encontrado
-        is ErrorDelServidorException -> R.string.error_servidor
-        is SinConexionException -> R.string.error_sin_conexion
-        else -> generico
-    }
 }

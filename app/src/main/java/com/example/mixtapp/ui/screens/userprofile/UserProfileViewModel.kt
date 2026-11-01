@@ -1,15 +1,16 @@
 package com.example.mixtapp.ui.screens.userprofile
 
 import android.util.Log
-import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
-import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
-import com.example.mixtapp.data.repository.ErrorDelServidorException
+import com.example.mixtapp.data.injection.IoDispatcher
 import com.example.mixtapp.data.repository.SinConexionException
 import com.example.mixtapp.data.repository.UsuarioRepository
+import com.example.mixtapp.ui.utils.mensajeDeError
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,7 +21,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class UserProfileViewModel @Inject constructor(
-    private val usuarioRepository: UsuarioRepository
+    private val usuarioRepository: UsuarioRepository,
+    // Las corrutinas se lanzan en este hilo; las pruebas pasan uno de prueba
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(UserProfileState())
@@ -36,14 +39,14 @@ class UserProfileViewModel @Inject constructor(
         if (escuchandoPerfil) return
         escuchandoPerfil = true
 
-        viewModelScope.launch {
+        viewModelScope.launch(ioDispatcher) {
             _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
 
             usuarioRepository.getUsuarioByIdLive(id = userId)
                 .catch { e ->
                     Log.d("UserProfileViewModel", "getUserProfile: ${e.message}")
                     escuchandoPerfil = false
-                    _uiState.update { it.copy(isLoading = false, errorMessageRes = mensajeDeError(e)) }
+                    _uiState.update { it.copy(isLoading = false, errorMessageRes = mensajeDeError(error = e, generico = R.string.error_cargar_contenido, noEncontrado = R.string.perfil_no_encontrado)) }
                 }
                 .collect { usuario ->
                     _uiState.update { it.copy(usuario = usuario, isLoading = false, errorMessageRes = null) }
@@ -56,14 +59,14 @@ class UserProfileViewModel @Inject constructor(
         if (escuchandoResenas) return
         escuchandoResenas = true
 
-        viewModelScope.launch {
+        viewModelScope.launch(ioDispatcher) {
             _uiState.update { it.copy(cargandoResenas = true, errorResenasRes = null) }
 
             usuarioRepository.getReviewsDeUsuarioLive(id = userId)
                 .catch { e ->
                     Log.d("UserProfileViewModel", "getUserReviews: ${e.message}")
                     escuchandoResenas = false
-                    _uiState.update { it.copy(cargandoResenas = false, errorResenasRes = mensajeDeError(e)) }
+                    _uiState.update { it.copy(cargandoResenas = false, errorResenasRes = mensajeDeError(error = e, generico = R.string.error_cargar_contenido, noEncontrado = R.string.perfil_no_encontrado)) }
                 }
                 .collect { resenas ->
                     val reviews = resenas.sortedByDescending { it.date }
@@ -77,7 +80,7 @@ class UserProfileViewModel @Inject constructor(
     fun followOrUnfollow() {
         val usuario = _uiState.value.usuario ?: return
 
-        viewModelScope.launch {
+        viewModelScope.launch(ioDispatcher) {
             val result = usuarioRepository.followOrUnfollow(targetUserId = usuario.id)
 
             if (result.isSuccess) {
@@ -98,11 +101,4 @@ class UserProfileViewModel @Inject constructor(
         }
     }
 
-    @StringRes
-    private fun mensajeDeError(error: Throwable?): Int = when (error) {
-        is ContenidoNoEncontradoException -> R.string.perfil_no_encontrado
-        is ErrorDelServidorException -> R.string.error_servidor
-        is SinConexionException -> R.string.error_sin_conexion
-        else -> R.string.error_cargar_contenido
-    }
 }

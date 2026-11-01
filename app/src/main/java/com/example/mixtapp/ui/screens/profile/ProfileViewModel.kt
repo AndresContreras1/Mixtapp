@@ -2,26 +2,24 @@ package com.example.mixtapp.ui.screens.profile
 
 import android.net.Uri
 import android.util.Log
-import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
+import com.example.mixtapp.data.injection.IoDispatcher
 import com.example.mixtapp.data.model.Album
 import com.example.mixtapp.data.model.FAVORITOS_EN_PERFIL
 import com.example.mixtapp.data.model.MAX_REVIEW_LENGTH
 import com.example.mixtapp.data.model.MyReviewUi
 import com.example.mixtapp.data.repository.AuthRepository
 import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
-import com.example.mixtapp.data.repository.CuotaExcedidaException
-import com.example.mixtapp.data.repository.ErrorDelServidorException
-import com.example.mixtapp.data.repository.PermisoDenegadoException
 import com.example.mixtapp.data.repository.ReviewRepository
-import com.example.mixtapp.data.repository.SinConexionException
-import com.example.mixtapp.data.repository.SinSesionException
 import com.example.mixtapp.data.repository.StorageRepository
 import com.example.mixtapp.data.repository.UsuarioRepository
 import com.example.mixtapp.ui.screens.profile.model.profileTabs
+import com.example.mixtapp.ui.utils.mensajeDeError
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -38,7 +36,9 @@ class ProfileViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val storageRepository: StorageRepository,
     private val reviewRepository: ReviewRepository,
-    private val usuarioRepository: UsuarioRepository
+    private val usuarioRepository: UsuarioRepository,
+    // Las corrutinas se lanzan en este hilo; las pruebas pasan uno de prueba
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfileState())
@@ -62,7 +62,7 @@ class ProfileViewModel @Inject constructor(
         if (!escuchandoPerfil) {
             escuchandoPerfil = true
 
-            viewModelScope.launch {
+            viewModelScope.launch(ioDispatcher) {
                 usuarioRepository.getMiPerfilLive()
                     .catch { e ->
                         Log.d("ProfileViewModel", "getProfile: ${e.message}")
@@ -100,7 +100,7 @@ class ProfileViewModel @Inject constructor(
         if (!escuchandoResenas) {
             escuchandoResenas = true
 
-            viewModelScope.launch {
+            viewModelScope.launch(ioDispatcher) {
                 _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
 
                 reviewRepository.getMyReviewsLive()
@@ -148,7 +148,7 @@ class ProfileViewModel @Inject constructor(
     fun eliminarResena(reviewId: String) {
         if (_uiState.value.eliminando) return
 
-        viewModelScope.launch {
+        viewModelScope.launch(ioDispatcher) {
             _uiState.update { it.copy(eliminando = true, errorMessageRes = null) }
 
             val result = reviewRepository.eliminarResena(reviewId = reviewId)
@@ -220,7 +220,7 @@ class ProfileViewModel @Inject constructor(
             return
         }
 
-        viewModelScope.launch {
+        viewModelScope.launch(ioDispatcher) {
             _uiState.update { it.copy(guardandoEdicion = true, errorEdicionRes = null) }
 
             val result = reviewRepository.guardarResena(
@@ -268,7 +268,7 @@ class ProfileViewModel @Inject constructor(
     fun subirFotoDePerfil(uri: Uri) {
         Log.d("ProfileViewModel", uri.toString())
 
-        viewModelScope.launch {
+        viewModelScope.launch(ioDispatcher) {
             _uiState.update { it.copy(subiendoImagen = true, errorImagenRes = null) }
 
             val result = storageRepository.uploadProfileImage(uri = uri)
@@ -293,7 +293,7 @@ class ProfileViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         subiendoImagen = false,
-                        errorImagenRes = mensajeDeImagen(result.exceptionOrNull()),
+                        errorImagenRes = mensajeDeError(error = result.exceptionOrNull(), generico = R.string.error_subir_imagen),
                     )
                 }
             }
@@ -316,23 +316,7 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    @StringRes
-    private fun mensajeDeError(error: Throwable?, @StringRes generico: Int): Int = when (error) {
-        is ContenidoNoEncontradoException -> R.string.contenido_no_encontrado
-        is ErrorDelServidorException -> R.string.error_servidor
-        is SinConexionException -> R.string.error_sin_conexion
-        is SinSesionException -> R.string.error_sin_sesion
-        else -> generico
-    }
 
-    @StringRes
-    private fun mensajeDeImagen(error: Throwable?): Int = when (error) {
-        is SinSesionException -> R.string.error_sin_sesion
-        is SinConexionException -> R.string.error_sin_conexion
-        is CuotaExcedidaException -> R.string.error_cuota_excedida
-        is PermisoDenegadoException -> R.string.error_permiso_denegado
-        else -> R.string.error_subir_imagen
-    }
 
     fun updateSelectedTab(tabId: String) {
         _uiState.update { it.copy(selectedTabId = tabId) }

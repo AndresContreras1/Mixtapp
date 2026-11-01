@@ -1,19 +1,17 @@
 package com.example.mixtapp.ui.screens.login
 
 import android.util.Log
-import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
+import com.example.mixtapp.data.injection.IoDispatcher
 import com.example.mixtapp.data.model.MIN_PASSWORD_LENGTH
 import com.example.mixtapp.data.repository.AuthRepository
-import com.example.mixtapp.data.repository.CorreoNoRegistradoException
-import com.example.mixtapp.data.repository.CredencialesInvalidasException
-import com.example.mixtapp.data.repository.DemasiadosIntentosException
-import com.example.mixtapp.data.repository.ErrorDeInicioSesionException
-import com.example.mixtapp.data.repository.SinConexionException
 import com.example.mixtapp.data.repository.UsuarioRepository
+import com.example.mixtapp.ui.utils.mensajeDeError
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,7 +22,9 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val authRepository: AuthRepository,
-    private val usuarioRepository: UsuarioRepository
+    private val usuarioRepository: UsuarioRepository,
+    // Las corrutinas se lanzan en este hilo; las pruebas pasan uno de prueba
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(LoginState())
@@ -74,7 +74,7 @@ class LoginViewModel @Inject constructor(
 
     // signIn es suspend, asi que se lanza la corrutina donde se necesita
     private fun signIn(email: String, contrasena: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(ioDispatcher) {
             _uiState.update { it.copy(cargando = true, errorMessageRes = null) }
 
             val result = authRepository.signIn(email = email, password = contrasena)
@@ -97,7 +97,7 @@ class LoginViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         cargando = false,
-                        errorMessageRes = mensajeDeError(result.exceptionOrNull()),
+                        errorMessageRes = mensajeDeError(error = result.exceptionOrNull(), generico = R.string.error_inicio_sesion),
                         navigate = false,
                     )
                 }
@@ -105,13 +105,4 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    @StringRes
-    private fun mensajeDeError(error: Throwable?): Int = when (error) {
-        is CredencialesInvalidasException -> R.string.error_credenciales
-        is CorreoNoRegistradoException -> R.string.error_correo_no_registrado
-        is SinConexionException -> R.string.error_sin_conexion
-        is DemasiadosIntentosException -> R.string.error_demasiados_intentos
-        is ErrorDeInicioSesionException -> R.string.error_inicio_sesion
-        else -> R.string.error_inicio_sesion
-    }
 }

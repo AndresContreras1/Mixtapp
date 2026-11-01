@@ -1,21 +1,21 @@
 package com.example.mixtapp.ui.screens.following
 
 import android.util.Log
-import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
+import com.example.mixtapp.data.injection.IoDispatcher
 import com.example.mixtapp.data.model.FollowingReviewUi
-import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
-import com.example.mixtapp.data.repository.ErrorDelServidorException
 import com.example.mixtapp.data.repository.ReviewRepository
-import com.example.mixtapp.data.repository.SinConexionException
 import com.example.mixtapp.data.repository.SocialRepository
 import com.example.mixtapp.ui.screens.following.model.FILTRO_CALIFICACIONES
 import com.example.mixtapp.ui.screens.following.model.FILTRO_LISTAS
 import com.example.mixtapp.ui.screens.following.model.FILTRO_RESENAS
 import com.example.mixtapp.ui.screens.following.model.followingFilters
+import com.example.mixtapp.ui.utils.mensajeDeError
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,7 +27,9 @@ import javax.inject.Inject
 @HiltViewModel
 class FollowingViewModel @Inject constructor(
     private val socialRepository: SocialRepository,
-    private val reviewRepository: ReviewRepository
+    private val reviewRepository: ReviewRepository,
+    // Las corrutinas se lanzan en este hilo; las pruebas pasan uno de prueba
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(FollowingState())
@@ -42,7 +44,7 @@ class FollowingViewModel @Inject constructor(
         if (escuchandoSeguidos) return
         escuchandoSeguidos = true
 
-        viewModelScope.launch {
+        viewModelScope.launch(ioDispatcher) {
             _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
 
             socialRepository.getFollowingLive()
@@ -122,7 +124,7 @@ class FollowingViewModel @Inject constructor(
     // No se copia el estado a mano: la transaccion cambia likesCount, eso dispara el flujo y llega
     // la resena con el corazon y el contador al dia
     fun sendOrDeleteLike(reviewId: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(ioDispatcher) {
             val result = reviewRepository.sendOrDeleteLike(reviewId = reviewId)
 
             if (result.isSuccess) {
@@ -177,11 +179,4 @@ class FollowingViewModel @Inject constructor(
         }
     }
 
-    @StringRes
-    private fun mensajeDeError(error: Throwable?, @StringRes generico: Int): Int = when (error) {
-        is ContenidoNoEncontradoException -> R.string.contenido_no_encontrado
-        is ErrorDelServidorException -> R.string.error_servidor
-        is SinConexionException -> R.string.error_sin_conexion
-        else -> generico
-    }
 }
