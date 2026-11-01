@@ -2,13 +2,15 @@ package com.example.mixtapp.repository
 
 import com.example.mixtapp.cargarDatosDePrueba
 import com.example.mixtapp.data.datasource.AuthRemoteDataSource
-import com.example.mixtapp.data.datasource.impl.firestore.AlbumFirestoreDataSourceImpl
 import com.example.mixtapp.data.datasource.impl.firestore.ReviewFirestoreDataSourceImpl
 import com.example.mixtapp.data.datasource.impl.firestore.UsuarioFirestoreDataSourceImpl
 import com.example.mixtapp.data.dtos.CreateComentarioDto
+import com.example.mixtapp.data.dtos.toItemUi
+import com.example.mixtapp.data.model.TIPO_ALBUM
 import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
 import com.example.mixtapp.data.repository.ReviewRepository
 import com.example.mixtapp.data.repository.SinSesionException
+import com.example.mixtapp.generateAlbum
 import com.example.mixtapp.limpiarBase
 import com.google.common.truth.Truth
 import com.google.firebase.Firebase
@@ -47,7 +49,6 @@ class ReviewRepositoryIntegrationTest {
         reviewRepository = ReviewRepository(
             ReviewFirestoreDataSourceImpl(db),
             UsuarioFirestoreDataSourceImpl(db),
-            AlbumFirestoreDataSourceImpl(db),
             AuthRemoteDataSource(auth),
         )
         limpiarBase(db)
@@ -72,29 +73,32 @@ class ReviewRepositoryIntegrationTest {
     @Test
     fun guardarResena_validAlbum_success() = runTest {
         //Act
-        val result = reviewRepository.guardarResena("album_1", 5, "Muy bueno", "2025-01-01", null)
+        val result = reviewRepository.guardarResena(generateAlbum(1).toItemUi(), 5, "Muy bueno", "2025-01-01", null)
         //Assert
         Truth.assertThat(result.isSuccess).isTrue()
     }
 
     @Test
-    fun guardarResena_invalidAlbum_contenidoNoEncontrado() = runTest {
+    fun guardarResena_sinSesion_sinSesionException() = runTest {
+        //Arrange
+        auth.signOut()
         //Act
-        val result = reviewRepository.guardarResena("album_999", 5, "Muy bueno", "2025-01-01", null)
+        val result = reviewRepository.guardarResena(generateAlbum(1).toItemUi(), 5, "Muy bueno", "2025-01-01", null)
         //Assert
-        Truth.assertThat(result.isFailure).isTrue()
-        Truth.assertThat(result.exceptionOrNull()).isInstanceOf(ContenidoNoEncontradoException::class.java)
+        Truth.assertThat(result.exceptionOrNull()).isInstanceOf(SinSesionException::class.java)
     }
 
     @Test
-    fun guardarResena_usuarioSinDocumento_copiaElCorreo() = runTest {
+    fun guardarResena_usuarioSinDocumento_copiaElCorreoYElItem() = runTest {
         //Arrange
         val usuarioId = auth.currentUser?.uid ?: ""
         //Act
-        reviewRepository.guardarResena("album_1", 5, "Muy bueno", "2025-01-01", null)
+        reviewRepository.guardarResena(generateAlbum(1).toItemUi(), 5, "Muy bueno", "2025-01-01", null)
         //Assert
-        val reviews = UsuarioFirestoreDataSourceImpl(db).getReviewsDeUsuario(usuarioId)
-        Truth.assertThat(reviews.first().usuario?.nombre).isEqualTo(correo.substringBefore("@"))
+        val review = UsuarioFirestoreDataSourceImpl(db).getReviewsDeUsuario(usuarioId).first()
+        Truth.assertThat(review.usuario?.nombre).isEqualTo(correo.substringBefore("@"))
+        Truth.assertThat(review.tipo).isEqualTo(TIPO_ALBUM)
+        Truth.assertThat(review.item?.titulo).isEqualTo("Album 1")
     }
 
     @Test
@@ -117,9 +121,9 @@ class ReviewRepositoryIntegrationTest {
         // Los listeners pueden emitir primero la cache local, que no tiene lo escrito por la
         // transaccion: se espera a que lleguen el comentario y el contador del servidor
         val discussion = reviewRepository.getDiscussionLive("review_1")
-            .first { it.comments.isNotEmpty() && it.review.commentsCount > 0 }
+            .first { it.comments.isNotEmpty() && it.review.comments > 0 }
         Truth.assertThat(discussion.comments.first().content).isEqualTo("Buen comentario")
-        Truth.assertThat(discussion.review.commentsCount).isEqualTo(1)
+        Truth.assertThat(discussion.review.comments).isEqualTo(1)
     }
 
     @Test

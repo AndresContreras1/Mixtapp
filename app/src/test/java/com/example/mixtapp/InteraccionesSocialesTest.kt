@@ -1,23 +1,22 @@
 package com.example.mixtapp
 
-import com.example.mixtapp.data.dtos.ReviewConAlbumDto
-import com.example.mixtapp.data.dtos.ReviewConUsuarioDto
+import com.example.mixtapp.data.dtos.ReviewDto
 import com.example.mixtapp.data.dtos.UsuarioPerfilFirestoreDto
-import com.example.mixtapp.data.dtos.toAlbumReviewItemUi
-import com.example.mixtapp.data.dtos.toMyReviewUi
+import com.example.mixtapp.data.dtos.toReviewUi
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
+// Los contadores y las marcas de likes y seguidores salen del documento al mapear
 class InteraccionesSocialesTest {
 
     @Test
-    fun documentosAnterioresSinContadoresMuestranCero() {
-        val review = ReviewConUsuarioDto().toAlbumReviewItemUi("usuario")
+    fun documentoSinContadores_mapeo_muestraCero() {
+        val review = ReviewDto().toReviewUi(usuarioActualId = "usuario")
         assertEquals(0, review.likes)
+        assertEquals("0", review.likesText)
         assertFalse(review.isLiked)
-        assertEquals(0, ReviewConAlbumDto().toMyReviewUi().likes)
 
         val perfil = UsuarioPerfilFirestoreDto().toUsuarioUi()
         assertEquals(0, perfil.seguidores)
@@ -26,21 +25,26 @@ class InteraccionesSocialesTest {
     }
 
     @Test
-    fun elTotalDeLikesSaleDelContadorDelDocumento() {
-        val detalle = ReviewConUsuarioDto().copy(likesCount = 3).toAlbumReviewItemUi("ana")
-        val perfil = ReviewConAlbumDto().copy(likesCount = 3).toMyReviewUi()
-        assertEquals(3, detalle.likes)
-        assertEquals(detalle.likes, perfil.likes)
+    fun likesCount_mapeo_esElTotalDeLikes() {
+        val review = ReviewDto().copy(likesCount = 3).toReviewUi(usuarioActualId = "ana")
+
+        assertEquals(3, review.likes)
     }
 
     @Test
-    fun elLikeDelUsuarioQueInicioSesionSeMarca() {
-        assertTrue(ReviewConUsuarioDto().copy(liked = true).toAlbumReviewItemUi("ana").isLiked)
-        assertFalse(ReviewConUsuarioDto().toAlbumReviewItemUi("ana").isLiked)
+    fun likeDelUsuario_mapeo_quedaMarcado() {
+        assertTrue(ReviewDto().copy(liked = true).toReviewUi(usuarioActualId = "ana").isLiked)
+        assertFalse(ReviewDto().toReviewUi(usuarioActualId = "ana").isLiked)
     }
 
     @Test
-    fun losContadoresDeSeguidoresSalenDelDocumento() {
+    fun resenaDelUsuarioDeLaApp_mapeo_esMia() {
+        assertTrue(ReviewDto().copy(usuarioId = "ana").toReviewUi(usuarioActualId = "ana").isMine)
+        assertFalse(ReviewDto().copy(usuarioId = "luis").toReviewUi(usuarioActualId = "ana").isMine)
+    }
+
+    @Test
+    fun contadoresDeSeguidores_mapeo_salenDelDocumento() {
         val perfil = UsuarioPerfilFirestoreDto()
             .copy(followersCount = 2, followingCount = 5, followed = true)
             .toUsuarioUi()
