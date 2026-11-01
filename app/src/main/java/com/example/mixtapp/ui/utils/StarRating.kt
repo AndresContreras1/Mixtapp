@@ -6,12 +6,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -19,39 +18,29 @@ import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.theme.MixtappTheme
 
-/**
- * Fila de estrellas de una calificacion. Antes estaba copiada en nueve componentes
- * distintos, cada uno con su propio tamano y sus propios colores.
- *
- * Todos los parametros son obligatorios salvo [modifier]: asi ninguna pantalla puede
- * olvidarse de pasar el callback y quedarse con estrellas que no responden.
- */
+// La calificacion es de 0 a 5 estrellas, como pide el cliente
+private const val MAX_ESTRELLAS = 5
+
+// Las cinco estrellas: llenas hasta la calificacion y el contorno en las demas
 @Composable
 fun StarRating(
     // Cuantas estrellas se pintan llenas
     rating: Int,
-    // Cuantas ranuras se dibujan en total. Normalmente 5, que es el maximo del cliente
-    starCount: Int,
-    starSize: Dp,
-    spacing: Dp,
-    filledTint: Color,
-    emptyTint: Color,
-    // Icono de la ranura vacia: la misma estrella atenuada, o el contorno
-    emptyIcon: ImageVector,
-    // null cuando la calificacion solo se muestra y no se puede tocar
-    onRatingChange: ((Int) -> Unit)?,
     modifier: Modifier = Modifier,
+    starSize: Dp = 18.dp,
+    // null cuando la calificacion solo se muestra y no se puede tocar
+    onRatingChange: ((Int) -> Unit)? = null,
 ) {
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(spacing)
+        horizontalArrangement = Arrangement.spacedBy(starSize / 4)
     ) {
-        repeat(starCount) { index ->
+        repeat(MAX_ESTRELLAS) { index ->
             val starValue = index + 1
             val isFilled = starValue <= rating
 
             Icon(
-                imageVector = if (isFilled) Icons.Filled.Star else emptyIcon,
+                imageVector = if (isFilled) Icons.Filled.Star else Icons.Outlined.StarOutline,
                 // Si solo se muestra dice si esta llena; si se puede tocar, cuantas estrellas pone
                 contentDescription = when {
                     onRatingChange == null && isFilled -> stringResource(R.string.estrella_llena)
@@ -59,17 +48,12 @@ fun StarRating(
                     starValue == 1 -> stringResource(R.string.una_estrella)
                     else -> stringResource(R.string.star_rating_format, starValue)
                 },
-                tint = if (isFilled) filledTint else emptyTint,
+                tint = if (isFilled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier
                     .size(starSize)
                     .then(
-                        if (onRatingChange == null) {
-                            Modifier
-                        } else {
-                            Modifier.clickable {
-                                onRatingChange(starValue)
-                            }
-                        }
+                        if (onRatingChange == null) Modifier
+                        else Modifier.clickable { onRatingChange(starValue) }
                     )
             )
         }
@@ -80,15 +64,6 @@ fun StarRating(
 @Preview(showBackground = true)
 fun StarRatingPreview() {
     MixtappTheme(darkTheme = true) {
-        StarRating(
-            rating = 3,
-            starCount = 5,
-            starSize = 24.dp,
-            spacing = 6.dp,
-            filledTint = MaterialTheme.colorScheme.primary,
-            emptyTint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.32f),
-            emptyIcon = Icons.Filled.Star,
-            onRatingChange = null
-        )
+        StarRating(rating = 3, starSize = 28.dp, onRatingChange = {})
     }
 }

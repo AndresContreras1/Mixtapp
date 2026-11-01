@@ -14,7 +14,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            MixtappTheme(darkTheme = true) {
+            // Sin darkTheme fijo: el tema sigue el modo claro u oscuro del celular
+            MixtappTheme {
                 Mixtapp()
             }
         }
