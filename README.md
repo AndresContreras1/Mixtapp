@@ -51,13 +51,13 @@ Universidad Javeriana.
 | Dar y quitar like a una reseña, con el total de likes | Funcionando, Firestore |
 | Seguir y dejar de seguir, con el total de seguidores y seguidos | Funcionando, Firestore |
 | Lista de seguidores y de seguidos de cualquier perfil | Funcionando, Firestore |
-| Notificación cuando alguien le da like a mi reseña, la comenta, responde mi comentario o me empieza a seguir | Funcionando, FCM y Cloud Functions |
+| Notificación cuando alguien le da like a mi reseña, la comenta, responde mi comentario o me empieza a seguir | FCM y Cloud Functions, con el Firebase real (en modo debug las funciones no corren) |
 | Foto de perfil subida a Firebase Storage | Funcionando |
 | Consumo del backend de Express con Retrofit | Implementado, intercambiable con Firestore |
-| Discusión de una reseña: comentarios, respuestas y likes a cada comentario, **en tiempo real** | Funcionando, Firestore |
+| Discusión de una reseña: comentarios, respuestas y likes a cada comentario, **en tiempo real**. Se abre desde cualquier tarjeta de reseña, aunque no sigas a quien la escribió | Funcionando, Firestore |
 | Modo debug contra el emulador de Firebase (Firebase CLI) | Funcionando |
 | Datos falsos con Faker para el emulador o el Firebase real | Script en [mixtapp-functions](https://github.com/AndresContreras1/mixtapp-functions) |
-| Pruebas de integración de los data sources y los repositorios contra el emulador | 16 + 15 pruebas |
+| Pruebas de integración de los data sources y los repositorios contra el emulador | 16 + 17 pruebas |
 | Pantalla de notificaciones | Datos de prueba en `data/local/` |
 | Modo claro | Pendiente: falta diseñar cómo se ven las pantallas en claro |
 
@@ -110,7 +110,7 @@ lógica: filtrar, ordenar y decidir qué se muestra. **La pantalla** pinta y avi
 | `usuarios/<uid>/followers` | el uid de quien me sigue | `timestamp` |
 | `usuarios/<uid>/following` | el uid de quien sigo | `timestamp` |
 | `albumes` | `1` a `8` | `titulo`, `artista`, `portadaUrl`, `genero` (texto) · `anio` (número) |
-| `reviews` | id aleatorio | `usuarioId`, `albumId` (texto) · `calificacion` (número) · `comentario` (texto) · `fechaEscucha` (texto `AAAA-MM-DD` o null) · `likesCount`, `commentsCount` (número) · `usuario` y `album` (mapas) |
+| `reviews` | id aleatorio | `usuarioId`, `albumId` (texto) · `calificacion` (número) · `comentario` (texto) · `fechaEscucha` (texto `AAAA-MM-DD` o null) · `createdAt`, `updatedAt` (texto ISO) · `likesCount`, `commentsCount` (número) · `usuario` y `album` (mapas) |
 | `reviews/<id>/likes` | el uid de quien dio like | `timestamp` |
 | `reviews/<id>/comments` | id aleatorio | `usuarioId`, `contenido` (texto) · `parentCommentId` (texto o null) · `likesCount` (número) · `createdAt` (texto ISO) · `usuario` (mapa) |
 | `reviews/<id>/comments/<id>/likes` | el uid de quien dio like | `timestamp` |
@@ -139,10 +139,14 @@ que la tarjeta no usa. La tarjeta solo necesita el número, que vive en el docum
   `followers/<A>` en B, `followingCount` de A y `followersCount` de B.
 - **Si ya di like o ya lo sigo** sale de buscar mi uid en la subcolección con `exists()`. El data
   source recibe `currentUserId` como parámetro opcional, para que Retrofit no lo tenga que usar.
-- **La UI** invierte el corazón o el botón y sube o baja el contador solo si la transacción sale
-  bien, sin volver a leer la base.
-- **La lista de seguidores o de seguidos** es una segunda consulta a la subcolección. Se abre al
-  tocar el contador en cualquier perfil.
+- **La UI no copia el estado a mano.** La transacción cambia el contador del documento, eso
+  dispara el listener de la pantalla y llegan el corazón o el botón y el contador ya confirmados,
+  en este celular y en los demás.
+- **Si la cuenta no tiene documento** en `usuarios` (el registro entró aunque falló Firestore, o
+  el emulador se reinició y la sesión siguió en el celular), el repositorio lo crea antes de seguir
+  y al iniciar sesión, con la parte del correo antes de la arroba como usuario.
+- **La lista de seguidores o de seguidos** escucha la subcolección y trae el documento de cada
+  usuario a la vez. Se abre al tocar el contador en cualquier perfil.
 
 ### Comentarios de la discusión
 
@@ -204,10 +208,13 @@ o cerrada.
   guardadas de cada álbum; las de todos los álbumes se piden a la vez con `async`.
 - **Mi reseña la marca el repositorio.** Cada reseña llega con `esMia` (su `usuarioId` es mi uid),
   así el inicio, el detalle y la pantalla de escribir saben cuál es la mía sin otra petición.
-- **Solo el inicio está en tiempo real.** Escucha la colección `reviews` con `callbackFlow` y
-  `addSnapshotListener`, y el ViewModel empieza a escuchar una sola vez en su `init`. Cada cambio en
-  Firestore es una lectura que se cobra, así que Buscar, el perfil, Mis reseñas y el detalle se
-  vuelven a pedir al mostrarse, como antes.
+- **Las reseñas, los perfiles y la discusión están en tiempo real.** Cada data source escucha
+  con `callbackFlow` y `addSnapshotListener`, el repositorio mapea el flujo y el ViewModel lo
+  recolecta una sola vez con `catch` y `collect`. Están en vivo el inicio, el detalle del álbum, la
+  discusión, Siguiendo, mi perfil, el perfil de otro usuario, Mis reseñas y las listas de seguidores.
+  Los formularios (escribir reseña, editar perfil) leen una sola vez.
+- **Las corrutinas de cada ViewModel se lanzan en un dispatcher inyectado** (`@IoDispatcher`, que
+  entrega `CoroutineModule`), así las pruebas pueden pasar uno de prueba.
 - **El color sale del `MaterialTheme`.** No hay colores quemados fuera de `Color.kt`, salvo el
   fondo de la ventana en `themes.xml` y los drawables XML (icono y marcadores de imagen), que se
   pintan sin Compose y repiten a mano los colores de la paleta.
@@ -273,19 +280,23 @@ la app llena, no para las pruebas.
 <summary>Pruebas de integración</summary>
 
 Están en `app/src/androidTest`, contra el emulador de Firebase: necesitan el emulador de Android
-prendido y la Firebase CLI corriendo (`firebase emulators:start --only firestore,auth`).
+prendido y la Firebase CLI corriendo (`firebase emulators:start --only firestore,auth --project mixtapp-720eb`).
 
 | Clase | Pruebas | Qué revisa |
 |---|---|---|
 | `datasource/UsuarioFirestoreDataSourceTest` | 8 | leer por id (válido y que no existe → `null`), registrar, seguir, el contador de seguidores, dejar de seguir, la lista de seguidores y las reseñas de un usuario |
 | `datasource/ReviewFirestoreDataSourceTest` | 8 | leer por id, like y su contador, comentar y `commentsCount`, el orden de los comentarios, like a un comentario y borrar la reseña con sus comentarios |
 | `repository/ReviewRepositoryIntegrationTest` | 8 | guardar la reseña (`Result` bien y álbum que no existe), la copia del nombre, sin sesión, comentar, el hilo de respuestas y la discusión que no existe |
-| `repository/UsuarioRepositoryIntegrationTest` | 7 | mi perfil (con documento, sin documento, sin sesión), registrar, seguirme a mí mismo, seguir a otro y modificar el perfil |
+| `repository/UsuarioRepositoryIntegrationTest` | 9 | mi perfil (con documento, sin documento, sin sesión), registrar, seguirme a mí mismo, seguir a otro, seguir sin tener documento (se crea), seguir a alguien que no existe y modificar el perfil |
 
 Cada clase tiene `@Before` (conecta al emulador dentro de un `try`, limpia y carga sus propios
 datos con `DatosDePrueba.kt`) y `@After` (borra las colecciones con sus subcolecciones; en los
-repositorios también borra la cuenta de Authentication y cierra la sesión). Se corren con clic
-derecho en la carpeta `androidTest` → **Run 'Tests in…'**.
+repositorios también borra la cuenta de Authentication, aunque la prueba haya cerrado la sesión,
+y la cierra). Se corren con clic derecho en la carpeta `androidTest` → **Run 'Tests in…'**.
+
+Las pruebas usan el mismo emulador que la app en debug y lo dejan vacío. Después de correrlas hay
+que volver a cargar el seed; la cuenta con la que se entra a la app recupera su documento sola al
+iniciar sesión o al seguir a alguien.
 
 </details>
 
@@ -349,8 +360,8 @@ Sin ellos, dos de los mensajes de error nunca salen:
 
 1. **Authentication → Settings → Protección contra enumeración de correos: desactivada.** Mientras
    esté activa, Firebase no distingue "no existe la cuenta" de "contraseña incorrecta".
-2. **Authentication → Settings → Política de contraseñas → Exigir aplicación**, con mayúscula y
-   número. En modo *Notificar* el registro se acepta igual.
+2. **Authentication → Settings → Política de contraseñas**: mínimo 6 caracteres, sin exigir
+   mayúscula ni número. Es la misma regla que valida la app antes de registrar.
 
 </details>
 
