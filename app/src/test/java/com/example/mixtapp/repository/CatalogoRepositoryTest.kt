@@ -5,11 +5,16 @@ import com.example.mixtapp.data.datasource.ArtistaRemoteDataSource
 import com.example.mixtapp.data.datasource.AuthRemoteDataSource
 import com.example.mixtapp.data.datasource.BusquedaLocalDataSource
 import com.example.mixtapp.data.datasource.CancionRemoteDataSource
+import com.example.mixtapp.data.datasource.HistoriaRemoteDataSource
 import com.example.mixtapp.data.datasource.ReviewRemoteDataSource
 import com.example.mixtapp.data.datasource.UsuarioRemoteDataSource
 import com.example.mixtapp.data.dtos.AlbumDto
+import com.example.mixtapp.data.dtos.ArtistaDto
 import com.example.mixtapp.data.dtos.CancionDto
+import com.example.mixtapp.data.dtos.HistoriaDto
+import com.example.mixtapp.data.dtos.ItemDeUsuarioDto
 import com.example.mixtapp.data.dtos.ReviewDto
+import com.example.mixtapp.data.dtos.SeccionDto
 import com.example.mixtapp.data.local.LocalPreviewProvider
 import com.example.mixtapp.data.model.TIPO_ALBUM
 import com.example.mixtapp.data.model.TIPO_ARTISTA
@@ -36,6 +41,7 @@ class CatalogoRepositoryTest {
     private val artistaDataSource = mockk<ArtistaRemoteDataSource>()
     private val reviewDataSource = mockk<ReviewRemoteDataSource>()
     private val usuarioDataSource = mockk<UsuarioRemoteDataSource>()
+    private val historiaDataSource = mockk<HistoriaRemoteDataSource>()
     private val authDataSource = mockk<AuthRemoteDataSource>()
 
     private val repository = CatalogoRepository(
@@ -45,6 +51,7 @@ class CatalogoRepositoryTest {
         artistaDataSource,
         reviewDataSource,
         usuarioDataSource,
+        historiaDataSource,
         authDataSource,
     )
 
@@ -147,5 +154,57 @@ class CatalogoRepositoryTest {
         Truth.assertThat(catalogo[0].ratingCount).isEqualTo(2)
         Truth.assertThat(catalogo[0].rating).isEqualTo(3.0)
         Truth.assertThat(catalogo[1].ratingCount).isEqualTo(1)
+    }
+
+    @Test
+    fun getHistoria_sinDocumento_contenidoNoEncontrado() = runTest {
+        //Arrange
+        coEvery { historiaDataSource.getHistoria("album_1") } returns null
+        //Act
+        val result = repository.getHistoria("album_1")
+        //Assert
+        Truth.assertThat(result.exceptionOrNull()).isInstanceOf(ContenidoNoEncontradoException::class.java)
+    }
+
+    @Test
+    fun getHistoria_seccionVacia_noSeMuestra() = runTest {
+        //Arrange
+        coEvery { historiaDataSource.getHistoria("album_1") } returns HistoriaDto(
+            tipo = TIPO_ALBUM,
+            secciones = listOf(
+                SeccionDto(titulo = "Historia", texto = "Salio en 2024."),
+                SeccionDto(titulo = "Cómo se hizo", texto = ""),
+            ),
+        )
+        //Act
+        val historia = repository.getHistoria("album_1").getOrNull()
+        //Assert
+        Truth.assertThat(historia?.secciones?.map { it.titulo }).containsExactly("Historia")
+    }
+
+    @Test
+    fun getLanzamientosLive_meGustaUnArtista_susAlbumesYCancionesDelMasNuevo() = runTest {
+        //Arrange: me gusta Mike Shinoda (de Linkin Park): salen los albumes y las canciones de la
+        // banda, del mas nuevo al mas viejo; Metallica no
+        coEvery { authDataSource.currentUser?.uid } returns "yo"
+        coEvery { albumDataSource.listenAlbumes() } returns flowOf(
+            listOf(
+                fromZero.copy(fechaLanzamiento = "2024-11-15"),
+                AlbumDto().copy(id = "album_2", titulo = "Hybrid Theory", artista = "Linkin Park", fechaLanzamiento = "2000-10-24"),
+                AlbumDto().copy(id = "album_3", titulo = "Master of Puppets", artista = "Metallica", fechaLanzamiento = "1986-03-03"),
+            )
+        )
+        coEvery { cancionDataSource.listenCanciones() } returns flowOf(
+            listOf(CancionDto().copy(id = "cancion_1", titulo = "Numb", artista = "Linkin Park", fechaLanzamiento = "2003-03-25"))
+        )
+        coEvery { artistaDataSource.listenArtistas() } returns flowOf(
+            listOf(ArtistaDto().copy(id = "artista_1", nombre = "Mike Shinoda", grupo = "Linkin Park"))
+        )
+        coEvery { usuarioDataSource.listenLikes("yo") } returns flowOf(listOf(ItemDeUsuarioDto().copy(id = "artista_1")))
+        coEvery { usuarioDataSource.listenGuardados("yo") } returns flowOf(emptyList())
+        //Act
+        val lanzamientos = repository.getLanzamientosLive().first()
+        //Assert
+        Truth.assertThat(lanzamientos.map { it.id }).containsExactly("album_1", "cancion_1", "album_2").inOrder()
     }
 }

@@ -45,14 +45,19 @@ class ProfileViewModel @Inject constructor(
     // Ningun flujo de mi perfil necesita datos de la ruta, asi que todos se escuchan aqui una sola
     // vez, mientras exista el ViewModel. Cada uno va en su propio launch porque collect no termina
     init {
-        // La foto de la cuenta se muestra mientras llega la de mi documento
-        _uiState.update { it.copy(profileImageUrl = authRepository.currentUser?.photoUrl?.toString() ?: "") }
+        // Mi uid abre mis listas de seguidores y seguidos aunque mi documento no exista. La foto de
+        // la cuenta se muestra mientras llega la de mi documento
+        _uiState.update {
+            it.copy(
+                miId = authRepository.currentUser?.uid ?: "",
+                profileImageUrl = authRepository.currentUser?.photoUrl?.toString() ?: "",
+            )
+        }
 
         escucharMiPerfil()
         escucharMisResenas()
         escucharMisFavoritos()
         escucharMisGuardados()
-        escucharMisListas()
     }
 
     // Mis datos en vivo: si alguien me sigue desde otro celular, el contador cambia solo. Si mi
@@ -94,6 +99,8 @@ class ProfileViewModel @Inject constructor(
                             usuario = miPerfil.username,
                             nombre = miPerfil.nombre,
                             bio = miPerfil.bio,
+                            instagram = miPerfil.instagram,
+                            instagramUrl = miPerfil.instagramUrl,
                             seguidores = miPerfil.seguidores,
                             seguidos = miPerfil.seguidos,
                             // La del documento es la que ven los demas; sin ella queda la de la cuenta
@@ -145,34 +152,6 @@ class ProfileViewModel @Inject constructor(
                 }
                 .collect { guardados ->
                     _uiState.update { it.copy(guardados = guardados, errorGuardadosRes = null) }
-                }
-        }
-    }
-
-    // Mis seguidores y a quienes sigo, con mi uid: si alguien me sigue desde otro celular, aparece
-    // sin salir. Son dos flujos, asi que cada uno va en su launch
-    private fun escucharMisListas() {
-        val miId = authRepository.currentUser?.uid ?: ""
-
-        viewModelScope.launch(ioDispatcher) {
-            usuarioRepository.getSeguidoresLive(userId = miId)
-                .catch { e ->
-                    Log.d("ProfileViewModel", "escucharMisListas: ${e.message}")
-                    _uiState.update { it.copy(errorSeguidoresRes = mensajeDeError(error = e, generico = R.string.error_cargar_contenido)) }
-                }
-                .collect { seguidores ->
-                    _uiState.update { it.copy(listaSeguidores = seguidores, errorSeguidoresRes = null) }
-                }
-        }
-
-        viewModelScope.launch(ioDispatcher) {
-            usuarioRepository.getSeguidosLive(userId = miId)
-                .catch { e ->
-                    Log.d("ProfileViewModel", "escucharMisListas: ${e.message}")
-                    _uiState.update { it.copy(errorSeguidosRes = mensajeDeError(error = e, generico = R.string.error_cargar_contenido)) }
-                }
-                .collect { seguidos ->
-                    _uiState.update { it.copy(listaSeguidos = seguidos, errorSeguidosRes = null) }
                 }
         }
     }

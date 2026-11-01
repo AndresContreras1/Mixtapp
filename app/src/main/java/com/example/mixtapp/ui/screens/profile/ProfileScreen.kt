@@ -30,16 +30,14 @@ import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalPreviewProvider
 import com.example.mixtapp.data.model.ItemResumenUi
 import com.example.mixtapp.data.model.ReviewUi
-import com.example.mixtapp.data.model.UsuarioUi
+import com.example.mixtapp.ui.screens.followlist.LISTA_SEGUIDORES
+import com.example.mixtapp.ui.screens.followlist.LISTA_SEGUIDOS
 import com.example.mixtapp.ui.screens.profile.components.GUARDADOS_POR_FILA
 import com.example.mixtapp.ui.screens.profile.components.LogoutButton
-import com.example.mixtapp.ui.screens.profile.components.PickImageButton
 import com.example.mixtapp.ui.screens.profile.components.ProfileTabs
 import com.example.mixtapp.ui.screens.profile.components.SavedItemsRow
 import com.example.mixtapp.ui.screens.profile.model.PESTANA_GUARDADOS
 import com.example.mixtapp.ui.screens.profile.model.PESTANA_PERFIL
-import com.example.mixtapp.ui.screens.profile.model.PESTANA_SEGUIDORES
-import com.example.mixtapp.ui.screens.profile.model.PESTANA_SIGUIENDO
 import com.example.mixtapp.ui.screens.profile.model.ProfileTabUi
 import com.example.mixtapp.ui.screens.profile.model.profileTabs
 import com.example.mixtapp.ui.theme.MixtappTheme
@@ -53,7 +51,6 @@ import com.example.mixtapp.ui.utils.ProfileHeader
 import com.example.mixtapp.ui.utils.ReviewCard
 import com.example.mixtapp.ui.utils.ScreenTitle
 import com.example.mixtapp.ui.utils.SectionTitle
-import com.example.mixtapp.ui.utils.UserRow
 
 @Composable
 fun ProfileScreen(
@@ -63,7 +60,7 @@ fun ProfileScreen(
     onItemClick: (String, String) -> Unit,
     onCommentsClick: (String) -> Unit,
     onEditReviewClick: (String, String) -> Unit,
-    onUserClick: (String) -> Unit,
+    onFollowListClick: (userId: String, tipo: String) -> Unit,
     onSeeAllReviewsClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -108,6 +105,8 @@ fun ProfileScreen(
                 usuario = state.usuario,
                 nombre = state.nombre,
                 bio = state.bio,
+                instagram = state.instagram,
+                instagramUrl = state.instagramUrl,
                 seguidores = state.seguidores,
                 seguidos = state.seguidos,
                 profileImageUrl = state.profileImageUrl,
@@ -124,11 +123,10 @@ fun ProfileScreen(
                 errorAccionRes = state.errorAccionRes,
                 guardados = state.guardados,
                 errorGuardadosRes = state.errorGuardadosRes,
-                listaSeguidores = state.listaSeguidores,
-                errorSeguidoresRes = state.errorSeguidoresRes,
-                listaSeguidos = state.listaSeguidos,
-                errorSeguidosRes = state.errorSeguidosRes,
                 onSettingsClick = onSettingsClick,
+                // Mis contadores abren mi lista de seguidores o de seguidos con mi uid
+                onSeguidoresClick = { onFollowListClick(state.miId, LISTA_SEGUIDORES) },
+                onSeguidosClick = { onFollowListClick(state.miId, LISTA_SEGUIDOS) },
                 onImagePicked = { profileViewModel.subirFotoDePerfil(uri = it) },
                 onTabSelected = { profileViewModel.updateSelectedTab(tabId = it) },
                 onItemClick = { item -> onItemClick(item.tipo, item.id) },
@@ -138,7 +136,6 @@ fun ProfileScreen(
                 onEditClick = { review -> onEditReviewClick(review.item.tipo, review.item.id) },
                 onDeleteClick = { profileViewModel.eliminarResena(reviewId = it) },
                 onSeeAllReviewsClick = onSeeAllReviewsClick,
-                onUserClick = onUserClick,
                 onLogoutClick = onLogoutClick,
             )
         }
@@ -150,6 +147,8 @@ fun ProfileScreenContent(
     usuario: String,
     nombre: String,
     bio: String,
+    instagram: String,
+    instagramUrl: String,
     seguidores: Int,
     seguidos: Int,
     profileImageUrl: String,
@@ -165,11 +164,9 @@ fun ProfileScreenContent(
     @StringRes errorAccionRes: Int?,
     guardados: List<ItemResumenUi>,
     @StringRes errorGuardadosRes: Int?,
-    listaSeguidores: List<UsuarioUi>,
-    @StringRes errorSeguidoresRes: Int?,
-    listaSeguidos: List<UsuarioUi>,
-    @StringRes errorSeguidosRes: Int?,
     onSettingsClick: () -> Unit,
+    onSeguidoresClick: () -> Unit,
+    onSeguidosClick: () -> Unit,
     onImagePicked: (Uri) -> Unit,
     onTabSelected: (String) -> Unit,
     onItemClick: (ItemResumenUi) -> Unit,
@@ -178,7 +175,6 @@ fun ProfileScreenContent(
     onEditClick: (ReviewUi) -> Unit,
     onDeleteClick: (String) -> Unit,
     onSeeAllReviewsClick: () -> Unit,
-    onUserClick: (String) -> Unit,
     onLogoutClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -214,21 +210,11 @@ fun ProfileScreenContent(
                 fotoUrl = profileImageUrl,
                 seguidores = seguidores,
                 seguidos = seguidos,
-                // En mi perfil los contadores abren la pestana de esa lista
-                onSeguidoresClick = { onTabSelected(PESTANA_SEGUIDORES) },
-                onSeguidosClick = { onTabSelected(PESTANA_SIGUIENDO) },
+                instagram = instagram,
+                instagramUrl = instagramUrl,
+                onSeguidoresClick = onSeguidoresClick,
+                onSeguidosClick = onSeguidosClick,
             ) {
-                PickImageButton(
-                    action = onImagePicked,
-                    cargando = subiendoImagen,
-                    modifier = Modifier.padding(top = 12.dp)
-                )
-
-                ErrorMessage(
-                    messageRes = errorImagenRes,
-                    modifier = Modifier.padding(top = 8.dp)
-                )
-
                 ErrorMessage(
                     messageRes = avisoRes,
                     modifier = Modifier.padding(top = 8.dp)
@@ -237,11 +223,21 @@ fun ProfileScreenContent(
         }
 
         item {
-            ProfileTabs(
-                tabs = tabs,
-                selectedTabId = selectedTabId,
-                onTabSelected = onTabSelected
-            )
+            Column {
+                ProfileTabs(
+                    tabs = tabs,
+                    selectedTabId = selectedTabId,
+                    onTabSelected = onTabSelected,
+                    subiendoImagen = subiendoImagen,
+                    onImagePicked = onImagePicked
+                )
+
+                // La foto que no se pudo subir, debajo de la pestana de Cambiar foto
+                ErrorMessage(
+                    messageRes = errorImagenRes,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
         }
 
         when (selectedTabId) {
@@ -256,27 +252,6 @@ fun ProfileScreenContent(
                     // La cuadricula se arma con filas de tres: cada fila es un item de la lista
                     else -> items(guardados.chunked(GUARDADOS_POR_FILA)) { fila ->
                         SavedItemsRow(items = fila, onItemClick = onItemClick)
-                    }
-                }
-            }
-            PESTANA_SEGUIDORES, PESTANA_SIGUIENDO -> {
-                // Las dos listas se pintan igual: solo cambian los usuarios, el error y el texto vacio
-                val esSeguidores = selectedTabId == PESTANA_SEGUIDORES
-                val usuarios = if (esSeguidores) listaSeguidores else listaSeguidos
-                val errorListaRes = if (esSeguidores) errorSeguidoresRes else errorSeguidosRes
-
-                when {
-                    errorListaRes != null -> item {
-                        ErrorMessage(messageRes = errorListaRes)
-                    }
-                    usuarios.isEmpty() -> item {
-                        EmptyMessage(
-                            messageRes = if (esSeguidores) R.string.sin_mis_seguidores else R.string.sin_mis_seguidos,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
-                    else -> items(usuarios) { persona ->
-                        UserRow(usuario = persona, onUserClick = onUserClick)
                     }
                 }
             }
@@ -349,6 +324,8 @@ fun ProfileScreenPreview() {
                 usuario = usuario.username,
                 nombre = usuario.nombre,
                 bio = usuario.bio,
+                instagram = usuario.instagram,
+                instagramUrl = usuario.instagramUrl,
                 seguidores = usuario.seguidores,
                 seguidos = usuario.seguidos,
                 profileImageUrl = usuario.fotoUrl,
@@ -364,11 +341,9 @@ fun ProfileScreenPreview() {
                 errorAccionRes = null,
                 guardados = LocalPreviewProvider.favoritos,
                 errorGuardadosRes = null,
-                listaSeguidores = listOf(LocalPreviewProvider.otroUsuario),
-                errorSeguidoresRes = null,
-                listaSeguidos = LocalPreviewProvider.following.seguidos,
-                errorSeguidosRes = null,
                 onSettingsClick = {},
+                onSeguidoresClick = {},
+                onSeguidosClick = {},
                 onImagePicked = {},
                 onTabSelected = {},
                 onItemClick = {},
@@ -377,7 +352,6 @@ fun ProfileScreenPreview() {
                 onEditClick = {},
                 onDeleteClick = {},
                 onSeeAllReviewsClick = {},
-                onUserClick = {},
                 onLogoutClick = {},
             )
         }

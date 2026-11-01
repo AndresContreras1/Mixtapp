@@ -20,7 +20,7 @@ class DatosLocalesTest {
     fun categorias_generos_sonLosDelCatalogo() {
         val generos = LocalSearchCategoriesProvider.categories.filter { it.esGenero }.map { it.id }
 
-        assertEquals(listOf("Rock", "Metal", "Reggaetón", "Música popular"), generos)
+        assertEquals(listOf("Rock", "Metal", "Nu metal", "Reggaetón", "Música popular"), generos)
     }
 
     @Test

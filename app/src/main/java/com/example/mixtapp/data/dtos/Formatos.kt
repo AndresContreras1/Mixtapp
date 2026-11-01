@@ -1,5 +1,6 @@
 package com.example.mixtapp.data.dtos
 
+import java.net.URLEncoder
 import java.time.Duration
 import java.time.Instant
 
@@ -36,3 +37,16 @@ fun haceCuanto(fechaIso: String?, ahora: Instant): String {
         else -> fechaIso.take(10)
     }
 }
+
+// Los links para abrir el item afuera de la app. No se guardan en la base: salen del titulo y el
+// artista. URLEncoder deja los espacios como +, y en estos links van como %20
+fun busquedaEnYoutube(texto: String): String =
+    "https://www.youtube.com/results?search_query=${codificar(texto)}"
+
+fun busquedaEnSpotify(texto: String): String = "https://open.spotify.com/search/${codificar(texto)}"
+
+// "metallica" -> "https://www.instagram.com/metallica/"; sin usuario queda vacio
+fun perfilDeInstagram(usuario: String?): String =
+    if (usuario.isNullOrEmpty()) "" else "https://www.instagram.com/$usuario/"
+
+private fun codificar(texto: String): String = URLEncoder.encode(texto, "UTF-8").replace("+", "%20")

@@ -1,8 +1,9 @@
 package com.example.mixtapp.ui.screens.home.components
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -15,7 +16,7 @@ import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppChip
 
 // Los filtros del inicio: el elegido cambia lo que muestran las tres filas. Cada chip lleva su
-// testTag para las pruebas e2e
+// testTag para las pruebas e2e. Son cuatro: en una LazyRow, si no caben se deslizan
 @Composable
 fun HomeFilters(
     filters: List<HomeFilterUi>,
@@ -23,11 +24,11 @@ fun HomeFilters(
     onFilterSelected: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Row(
+    LazyRow(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        filters.forEach { filter ->
+        items(filters) { filter ->
             AppChip(
                 text = stringResource(filter.label),
                 isSelected = filter.id == selectedId,

@@ -29,7 +29,8 @@ class DatosCuriososViewModel @Inject constructor(
     // Se pide una sola vez aunque la pantalla se vuelva a mostrar
     private var cargado = false
 
-    // Los datos curiosos no cambian mientras se leen: basta con pedir el item una vez, sin listener
+    // Los datos curiosos no cambian mientras se leen: basta con pedir el item y su historia una
+    // vez, sin listener
     fun getItem(tipo: String, itemId: String) {
         if (cargado) return
         cargado = true
@@ -41,8 +42,21 @@ class DatosCuriososViewModel @Inject constructor(
             val itemConResenas = result.getOrNull()
 
             if (result.isSuccess && itemConResenas != null) {
+                // El encabezado sale con el item; si la historia falla, el error va debajo
+                val historiaResult = catalogoRepository.getHistoria(itemId = itemId)
+
                 _uiState.update {
-                    it.copy(item = itemConResenas.item, isLoading = false, errorMessageRes = null)
+                    it.copy(
+                        item = itemConResenas.item,
+                        historia = historiaResult.getOrNull(),
+                        isLoading = false,
+                        errorMessageRes = null,
+                        errorHistoriaRes = if (historiaResult.isSuccess) null else mensajeDeError(
+                            error = historiaResult.exceptionOrNull(),
+                            generico = R.string.error_cargar_datos_curiosos,
+                            noEncontrado = R.string.sin_datos_curiosos,
+                        ),
+                    )
                 }
             } else {
                 // Si fallo se puede volver a pedir

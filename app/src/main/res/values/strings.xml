@@ -30,6 +30,7 @@
 
     <!-- Home Extra -->
     <string name="for_you">Para ti</string>
+    <string name="descubre">Descubre</string>
     <string name="trending">Tendencias</string>
     <string name="friends">Seguidos</string>
     <string name="now_trending">En tendencia</string>
@@ -114,8 +115,6 @@
 
     <!-- Notifications -->
     <string name="notifications_title">Notificaciones</string>
-    <string name="notifications_tab_all">Todas</string>
-    <string name="notifications_tab_unread">Sin leer (%1$d)</string>
 
     <!-- Profile -->
     <string name="cerrar_sesion">Cerrar sesión</string>
@@ -129,7 +128,6 @@
     <string name="cancel">Cancelar</string>
     <string name="write_review">Escribir reseña</string>
     <string name="your_rating">Tu calificación</string>
-    <string name="tap_to_rate">Toca para calificar</string>
     <string name="post">Publicar</string>
 
     <!-- Edit profile -->
@@ -189,6 +187,7 @@
     <string name="categoria_mejor_calificados">Mejor calificados</string>
     <string name="genero_rock">Rock</string>
     <string name="genero_metal">Metal</string>
+    <string name="genero_nu_metal">Nu metal</string>
     <string name="genero_reggaeton">Reggaetón</string>
     <string name="genero_musica_popular">Música popular</string>
 
@@ -200,6 +199,12 @@
     <string name="likes_label">me gusta</string>
     <string name="datos_curiosos">Datos curiosos</string>
     <string name="sin_datos_curiosos">Todavía no hay datos curiosos de esto</string>
+    <string name="error_cargar_datos_curiosos">No se pudieron cargar los datos curiosos. Inténtalo de nuevo</string>
+    <string name="video_original">Video original</string>
+    <string name="escuchalo">Escúchalo</string>
+    <string name="ver_en_youtube">Ver en YouTube</string>
+    <string name="escuchar_en_spotify">Escuchar en Spotify</string>
+    <string name="enlace_instagram_artista">\@%1$s en Instagram</string>
     <string name="error_guardar_item">No se pudieron actualizar tus guardados. Inténtalo de nuevo</string>
     <string name="anio_genero">%1$s · %2$s</string>
     <string name="comentarios_total">Comentarios (%1$d)</string>
@@ -217,12 +222,20 @@
     <string name="notificacion_respuesta">%1$s respondió tu comentario</string>
     <string name="notificacion_seguidor">%1$s empezó a seguirte</string>
     <string name="sin_notificaciones">Todavía no tienes notificaciones</string>
-    <string name="sin_notificaciones_sin_leer">No tienes notificaciones sin leer</string>
+
+    <!-- notificaciones: pestañas, discusiones y lanzamientos -->
+    <string name="notifications_tab_mias">Mías</string>
+    <string name="notifications_tab_discusiones">Discusiones</string>
+    <string name="notifications_tab_lanzamientos">Lanzamientos</string>
+    <string name="notificacion_like_comentario">A %1$s le gustó tu comentario en %2$s</string>
+    <string name="notificacion_like_comentario_sin_item">A %1$s le gustó tu comentario</string>
+    <string name="discusion_abierta_sobre">abrió una discusión sobre %1$s</string>
+    <string name="sin_lanzamientos">Dale like o guarda artistas, álbumes y canciones para ver aquí lo nuevo de ellos</string>
 
     <!-- inicio, buscar y elegir que calificar -->
     <string name="canciones_populares">Canciones populares</string>
     <string name="artistas_populares">Artistas populares</string>
-    <string name="puesto_en_colombia">#%1$d en Colombia</string>
+    <string name="puesto_en_genero">#%1$d en %2$s</string>
     <string name="sin_items_filtro">Todavía no hay nada para mostrar aquí</string>
     <string name="generos">Géneros</string>
     <string name="personas">Personas</string>
@@ -237,11 +250,14 @@
     <string name="elegir_item_placeholder">Busca lo que quieres calificar</string>
 
     <!-- mi perfil, perfil de otro usuario y listas de seguidores -->
-    <string name="sin_mis_seguidores">Todavía nadie te sigue</string>
-    <string name="sin_mis_seguidos">Todavía no sigues a nadie</string>
     <string name="profile_tab_guardados">Guardados</string>
     <string name="actividad_reciente">Actividad reciente</string>
     <string name="sin_guardados">Guarda álbumes, canciones o artistas desde su detalle</string>
     <string name="sin_favoritos_usuario">Todavía no le ha dado me gusta a nada</string>
     <string name="sin_resenas_usuario">Todavía no ha escrito reseñas</string>
+
+    <!-- perfil: encabezado, pestañas e Instagram -->
+    <string name="label_instagram">Instagram</string>
+    <string name="instagram_placeholder">Tu usuario de Instagram, sin la @</string>
+    <string name="error_instagram_invalido">El Instagram solo puede tener hasta 30 letras, números, puntos o guiones bajos</string>
 </resources>

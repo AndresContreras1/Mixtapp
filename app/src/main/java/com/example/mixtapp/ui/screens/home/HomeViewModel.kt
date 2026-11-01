@@ -15,6 +15,7 @@ import com.example.mixtapp.data.model.TIPO_CANCION
 import com.example.mixtapp.data.repository.CatalogoRepository
 import com.example.mixtapp.data.repository.ReviewRepository
 import com.example.mixtapp.data.repository.UsuarioRepository
+import com.example.mixtapp.ui.screens.home.model.FILTRO_DESCUBRE
 import com.example.mixtapp.ui.screens.home.model.FILTRO_SEGUIDOS
 import com.example.mixtapp.ui.screens.home.model.FILTRO_TENDENCIAS
 import com.example.mixtapp.ui.utils.mensajeDeError
@@ -33,6 +34,8 @@ import kotlin.math.roundToInt
 // Cada fila del inicio y la lista de resenas de seguidos muestran hasta 10
 private const val ITEMS_POR_FILA = 10
 private const val RESENAS_DE_SEGUIDOS = 10
+// Desde esta calificacion mi resena cuenta como que el item me gusta
+private const val CALIFICACION_QUE_ME_GUSTA = 3
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -76,7 +79,8 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    // Mis likes dicen que generos me gustan: con ellos se arma Para ti
+    // Mis likes dicen que generos me gustan (junto con mis resenas, que llegan con el catalogo): con
+    // ellos se arman Para ti, Descubre y Tendencias
     private fun escucharFavoritos() {
         viewModelScope.launch(ioDispatcher) {
             usuarioRepository.getMisFavoritosLive()
@@ -139,41 +143,91 @@ class HomeViewModel @Inject constructor(
 
     // Con el catalogo, mis favoritos, mis seguidos y el filtro se arman la tarjeta, las tres filas
     // y las resenas. Se llama cada vez que cambia cualquiera de los cuatro
-    private fun armarInicio(estado: HomeState): HomeState =
-        estado.copy(
-            enTendencia = enTendencia(catalogo = estado.catalogo),
-            canciones = armarFila(tipo = TIPO_CANCION, estado = estado),
-            albumes = armarFila(tipo = TIPO_ALBUM, estado = estado),
-            artistas = armarFila(tipo = TIPO_ARTISTA, estado = estado),
+    private fun armarInicio(estado: HomeState): HomeState {
+        val meGustan = loQueMeGusta(catalogo = estado.catalogo, favoritos = estado.favoritos)
+        // Cuanto pesa cada genero y cada subgenero: cuantos items de el me gustan
+        val pesos = meGustan.groupBy { it.genero }.mapValues { (_, delGenero) -> delGenero.size }
+        val afinidad = meGustan.groupBy { it.subgenero }.mapValues { (_, delSubgenero) -> delSubgenero.size }
+
+        return estado.copy(
+            enTendencia = enTendencia(catalogo = estado.catalogo, pesos = pesos),
+            canciones = armarFila(tipo = TIPO_CANCION, estado = estado, pesos = pesos, afinidad = afinidad),
+            albumes = armarFila(tipo = TIPO_ALBUM, estado = estado, pesos = pesos, afinidad = afinidad),
+            artistas = armarFila(tipo = TIPO_ARTISTA, estado = estado, pesos = pesos, afinidad = afinidad),
             resenasDeSeguidos = resenasDeSeguidos(catalogo = estado.catalogo, seguidosIds = estado.seguidosIds),
         )
-
-    // El album en el puesto mas alto del Top Colombia (el numero mas bajo); si ninguno esta en el
-    // top, el album mas popular
-    private fun enTendencia(catalogo: List<ItemConResenasUi>): ItemUi? {
-        val albumes = catalogo.filter { it.item.tipo == TIPO_ALBUM }
-        val delTop = albumes.filter { it.item.tendencia != null }.minByOrNull { it.item.tendencia ?: Int.MAX_VALUE }
-
-        return (delTop ?: albumes.maxByOrNull { it.popularidad })?.item
     }
 
-    // Una fila tiene solo un tipo; el filtro elegido decide cuales y en que orden
-    private fun armarFila(tipo: String, estado: HomeState): List<ItemUi> {
+    // Lo que me gusta: lo que tiene mi like y lo que resene con 3 estrellas o mas. Una resena con
+    // mala nota no cuenta como que el genero me gusta
+    private fun loQueMeGusta(catalogo: List<ItemConResenasUi>, favoritos: List<ItemResumenUi>): List<ItemUi> {
+        val idsConMiLike = favoritos.map { it.id }.toSet()
+        val conMiLike = catalogo.filter { it.item.id in idsConMiLike }
+        val conMiResena = catalogo.filter { conResenas ->
+            conResenas.reviews.any { it.isMine && it.rating >= CALIFICACION_QUE_ME_GUSTA }
+        }
+
+        return (conMiLike + conMiResena).map { it.item }.filter { it.genero.isNotEmpty() }
+    }
+
+    // El album en el puesto mas alto de la lista de mi genero favorito (el numero mas bajo); sin
+    // generos, de todos. Si ninguno esta en la lista, el album mas popular
+    private fun enTendencia(catalogo: List<ItemConResenasUi>, pesos: Map<String, Int>): ItemUi? {
+        val albumes = catalogo.filter { it.item.tipo == TIPO_ALBUM }
+        val generoFavorito = pesos.maxByOrNull { it.value }?.key
+        val deMiGenero = albumes.filter { generoFavorito == null || it.item.genero == generoFavorito }
+        val delTop = deMiGenero.filter { it.item.tendencia != null }.minByOrNull { it.item.tendencia ?: Int.MAX_VALUE }
+
+        return (delTop ?: deMiGenero.maxByOrNull { it.popularidad } ?: albumes.maxByOrNull { it.popularidad })?.item
+    }
+
+    // Una fila tiene solo un tipo; el filtro elegido decide cuales y en que orden. Para ti, Descubre
+    // y Tendencias ordenan a su manera y despues reparten los cupos entre mis generos
+    private fun armarFila(
+        tipo: String,
+        estado: HomeState,
+        pesos: Map<String, Int>,
+        afinidad: Map<String, Int>,
+    ): List<ItemUi> {
         val delTipo = estado.catalogo.filter { it.item.tipo == tipo }
 
         return when (estado.selectedFilterId) {
-            FILTRO_TENDENCIAS -> deTendencias(items = delTipo)
             FILTRO_SEGUIDOS -> deSeguidos(items = delTipo, seguidosIds = estado.seguidosIds)
-            else -> paraTi(items = delTipo, favoritos = estado.favoritos)
+            FILTRO_TENDENCIAS -> repartirPorGenero(ordenados = deTendencias(items = delTipo), pesos = pesos)
+            FILTRO_DESCUBRE -> repartirPorGenero(
+                ordenados = porDescubrir(items = delTipo, favoritos = estado.favoritos, afinidad = afinidad),
+                pesos = pesos,
+            )
+            else -> repartirPorGenero(ordenados = delTipo.sortedByDescending { it.popularidad }, pesos = pesos)
         }
     }
 
-    // Solo los que estan en el Top Colombia, del puesto 1 hacia abajo
-    private fun deTendencias(items: List<ItemConResenasUi>): List<ItemUi> =
-        items.filter { it.item.tendencia != null }
-            .sortedBy { it.item.tendencia ?: Int.MAX_VALUE }
-            .take(ITEMS_POR_FILA)
-            .map { it.item }
+    // Primero los que estan en la lista de su genero, del puesto 1 hacia abajo; despues los demas
+    // por popularidad, para completar si mis generos tienen pocos en la lista
+    private fun deTendencias(items: List<ItemConResenasUi>): List<ItemConResenasUi> {
+        val enLaLista = items.filter { it.item.tendencia != null }.sortedBy { it.item.tendencia ?: Int.MAX_VALUE }
+        val demas = items.filter { it.item.tendencia == null }.sortedByDescending { it.popularidad }
+
+        return enLaLista + demas
+    }
+
+    // Lo que todavia no conozco: sin mi like ni mi resena. Primero mi subgenero (el que mas me
+    // gusta), despues lo mas nuevo y despues lo mas popular. sortedByDescending conserva el orden
+    // de los empates, asi que se ordena de la regla menos importante a la mas importante
+    private fun porDescubrir(
+        items: List<ItemConResenasUi>,
+        favoritos: List<ItemResumenUi>,
+        afinidad: Map<String, Int>,
+    ): List<ItemConResenasUi> {
+        val idsConMiLike = favoritos.map { it.id }.toSet()
+
+        return items.filter { conResenas ->
+            conResenas.item.id !in idsConMiLike && conResenas.reviews.none { it.isMine }
+        }
+            .sortedByDescending { it.popularidad }
+            .sortedByDescending { it.item.fechaLanzamiento }
+            .sortedByDescending { afinidad[it.item.subgenero] ?: 0 }
+    }
 
     // Los que resenaron los usuarios que sigo, el de la resena mas reciente primero. Las fechas van
     // en formato ISO, asi que comparar el texto compara las fechas
@@ -185,35 +239,31 @@ class HomeViewModel @Inject constructor(
             .take(ITEMS_POR_FILA)
             .map { it.item }
 
-    // Para ti: cada genero de mis favoritos pesa cuantos favoritos tengo de el y recibe una parte de
-    // los 10 cupos segun su peso (minimo 1). La fila intercala los generos, el de mas peso primero,
-    // y si sobran cupos se completa con los demas items por popularidad. Sin favoritos, todo va
-    // por popularidad
-    private fun paraTi(items: List<ItemConResenasUi>, favoritos: List<ItemResumenUi>): List<ItemUi> {
-        val porPopularidad = items.sortedByDescending { it.popularidad }
-        val pesos = favoritos.filter { it.genero.isNotEmpty() }
-            .groupBy { it.genero }
-            .mapValues { (_, delGenero) -> delGenero.size }
+    // Cada genero que me gusta recibe una parte de los 10 cupos segun su peso. La fila intercala
+    // los generos, el de mas peso primero, cada uno en el orden que llega. Si sobran cupos se
+    // completa primero con mas de mis generos y solo despues con los demas. Sin generos, la fila
+    // es el orden que llega
+    private fun repartirPorGenero(ordenados: List<ItemConResenasUi>, pesos: Map<String, Int>): List<ItemUi> {
+        if (pesos.isEmpty()) return ordenados.take(ITEMS_POR_FILA).map { it.item }
 
-        if (pesos.isEmpty()) return porPopularidad.take(ITEMS_POR_FILA).map { it.item }
-
-        // groupBy conserva el orden: cada genero queda del mas popular al menos popular
-        val porGenero = porPopularidad.groupBy { it.item.genero }
+        // groupBy conserva el orden: cada genero queda en el orden que llego
+        val porGenero = ordenados.groupBy { it.item.genero }
         val generos = pesos.keys.sortedByDescending { pesos[it] ?: 0 }
         val elegidos = intercalarGeneros(generos = generos, porGenero = porGenero, cupos = cuposPorGenero(pesos = pesos))
         val idsElegidos = elegidos.map { it.item.id }.toSet()
-        val demas = porPopularidad.filter { it.item.id !in idsElegidos }
+        val demasDeMisGeneros = ordenados.filter { it.item.id !in idsElegidos && it.item.genero in pesos }
+        val otros = ordenados.filter { it.item.id !in idsElegidos && it.item.genero !in pesos }
 
-        return (elegidos + demas).take(ITEMS_POR_FILA).map { it.item }
+        return (elegidos + demasDeMisGeneros + otros).take(ITEMS_POR_FILA).map { it.item }
     }
 
-    // Los 10 cupos se reparten en proporcion al peso de cada genero, redondeando y con minimo 1
+    // Los 10 cupos se reparten en proporcion al peso de cada genero, redondeando. Sin minimo: si
+    // casi todo lo que me gusta es metal y una sola cosa es reggaeton, el reggaeton puede quedar
+    // con uno o con ninguno
     private fun cuposPorGenero(pesos: Map<String, Int>): Map<String, Int> {
         val total = pesos.values.sum()
 
-        return pesos.mapValues { (_, peso) ->
-            maxOf(1, (peso * ITEMS_POR_FILA.toDouble() / total).roundToInt())
-        }
+        return pesos.mapValues { (_, peso) -> (peso * ITEMS_POR_FILA.toDouble() / total).roundToInt() }
     }
 
     // En cada vuelta entra el siguiente item de cada genero, mientras le queden cupo e items

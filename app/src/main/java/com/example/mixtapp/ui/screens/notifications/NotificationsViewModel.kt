@@ -6,8 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
 import com.example.mixtapp.data.injection.IoDispatcher
 import com.example.mixtapp.data.model.NotificationUi
+import com.example.mixtapp.data.repository.CatalogoRepository
 import com.example.mixtapp.data.repository.SocialRepository
-import com.example.mixtapp.ui.screens.notifications.model.TAB_SIN_LEER
 import com.example.mixtapp.ui.utils.mensajeDeError
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -23,6 +23,7 @@ import javax.inject.Inject
 @HiltViewModel
 class NotificationsViewModel @Inject constructor(
     private val socialRepository: SocialRepository,
+    private val catalogoRepository: CatalogoRepository,
     // Las corrutinas se lanzan en este hilo; las pruebas pasan uno de prueba
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
@@ -30,14 +31,18 @@ class NotificationsViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(NotificationsState())
     val uiState: StateFlow<NotificationsState> = _uiState.asStateFlow()
 
-    // Las notificaciones son en vivo y no dependen de la ruta: se escuchan una sola vez al crear el
-    // ViewModel. Si se pidieran en cada LaunchedEffect se acumularian listeners
+    // Los tres flujos son en vivo y no dependen de la ruta: se escuchan una sola vez al crear el
+    // ViewModel. Si se pidieran en cada LaunchedEffect se acumularian listeners. Cada uno va en su
+    // propio launch porque collect no termina
     init {
         escucharNotificaciones()
+        escucharDiscusiones()
+        escucharLanzamientos()
     }
 
-    // La app no crea notificaciones: las crean las Cloud Functions cuando alguien da like, comenta,
-    // responde o empieza a seguirme. Cada una nueva, o la marca de leida, llega sola por el listener
+    // La app no crea notificaciones: las crean las Cloud Functions cuando alguien da like a mi resena
+    // o a mi comentario, comenta, responde o empieza a seguirme. Cada una nueva, o la marca de leida,
+    // llega sola por el listener
     private fun escucharNotificaciones() {
         viewModelScope.launch(ioDispatcher) {
             socialRepository.getNotificacionesLive()
@@ -51,15 +56,11 @@ class NotificationsViewModel @Inject constructor(
                     }
                 }
                 .collect { todas ->
+                    // Separarlas en Hoy y Antes es logica de negocio, no de la pantalla
                     _uiState.update {
-                        // Al llegar datos nuevos se conserva la pestana que estaba elegida
-                        val visibles = aplicarFiltro(tabId = it.selectedTabId, todas = todas)
-
                         it.copy(
-                            todas = todas,
-                            hoy = visibles.filter { notificacion -> notificacion.isToday },
-                            antes = visibles.filter { notificacion -> !notificacion.isToday },
-                            unreadCount = todas.count { notificacion -> !notificacion.isRead },
+                            hoy = todas.filter { notificacion -> notificacion.isToday },
+                            antes = todas.filter { notificacion -> !notificacion.isToday },
                             isLoading = false,
                             errorMessageRes = null,
                         )
@@ -68,17 +69,61 @@ class NotificationsViewModel @Inject constructor(
         }
     }
 
-    // Las notificaciones ya estan cargadas: cambiar de pestana no las vuelve a pedir
-    fun selectTab(id: String) {
-        _uiState.update {
-            val visibles = aplicarFiltro(tabId = id, todas = it.todas)
-
-            it.copy(
-                selectedTabId = id,
-                hoy = visibles.filter { notificacion -> notificacion.isToday },
-                antes = visibles.filter { notificacion -> !notificacion.isToday },
-            )
+    // Las discusiones son las resenas de quienes sigo: salen del mismo flujo de Siguiendo, que ya
+    // las trae de la ultima publicada o editada a la mas vieja. Una nueva llega sola
+    private fun escucharDiscusiones() {
+        viewModelScope.launch(ioDispatcher) {
+            socialRepository.getFollowingLive()
+                .catch { e ->
+                    Log.d("NotificationsViewModel", "escucharDiscusiones: ${e.message}")
+                    _uiState.update {
+                        it.copy(
+                            cargandoDiscusiones = false,
+                            errorDiscusionesRes = mensajeDeError(error = e, generico = R.string.error_cargar_contenido),
+                        )
+                    }
+                }
+                .collect { following ->
+                    _uiState.update {
+                        it.copy(
+                            discusiones = following.reviews,
+                            cargandoDiscusiones = false,
+                            errorDiscusionesRes = null,
+                        )
+                    }
+                }
         }
+    }
+
+    // Lo nuevo de los artistas que me gustan: el repositorio ya los filtra y los ordena. Si doy like
+    // o guardo algo de otro artista, sus lanzamientos aparecen sin salir
+    private fun escucharLanzamientos() {
+        viewModelScope.launch(ioDispatcher) {
+            catalogoRepository.getLanzamientosLive()
+                .catch { e ->
+                    Log.d("NotificationsViewModel", "escucharLanzamientos: ${e.message}")
+                    _uiState.update {
+                        it.copy(
+                            cargandoLanzamientos = false,
+                            errorLanzamientosRes = mensajeDeError(error = e, generico = R.string.error_cargar_contenido),
+                        )
+                    }
+                }
+                .collect { lanzamientos ->
+                    _uiState.update {
+                        it.copy(
+                            lanzamientos = lanzamientos,
+                            cargandoLanzamientos = false,
+                            errorLanzamientosRes = null,
+                        )
+                    }
+                }
+        }
+    }
+
+    // Los tres flujos ya estan cargados: cambiar de pestana no vuelve a pedir nada
+    fun selectTab(id: String) {
+        _uiState.update { it.copy(selectedTabId = id) }
     }
 
     // Abrir una notificacion la marca leida. No se cambia el estado a mano: el punto se quita
@@ -101,15 +146,6 @@ class NotificationsViewModel @Inject constructor(
                     )
                 }
             }
-        }
-    }
-
-    // Filtrar es logica de negocio, no de la pantalla
-    private fun aplicarFiltro(tabId: String, todas: List<NotificationUi>): List<NotificationUi> {
-        return if (tabId == TAB_SIN_LEER) {
-            todas.filter { !it.isRead }
-        } else {
-            todas
         }
     }
 }

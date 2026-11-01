@@ -31,6 +31,7 @@ import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalPreviewProvider
 import com.example.mixtapp.data.model.NOTIFICACION_COMENTARIO
 import com.example.mixtapp.data.model.NOTIFICACION_LIKE
+import com.example.mixtapp.data.model.NOTIFICACION_LIKE_COMENTARIO
 import com.example.mixtapp.data.model.NOTIFICACION_RESPUESTA
 import com.example.mixtapp.data.model.NotificationUi
 import com.example.mixtapp.ui.theme.MixtappTheme
@@ -70,11 +71,13 @@ fun NotificationRow(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = buildAnnotatedString {
-                    // Todos los textos empiezan con el nombre de quien la genero: ese pedazo va en negrita
+                    // El nombre de quien la genero va en negrita. Casi todos los textos empiezan con
+                    // el; el del like a un comentario empieza con "A", asi que se parte en el nombre
+                    append(texto.substringBefore(notification.actorName))
                     withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
                         append(notification.actorName)
                     }
-                    append(texto.removePrefix(notification.actorName))
+                    append(texto.substringAfter(notification.actorName))
                 },
                 color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.bodyMedium,
@@ -115,7 +118,7 @@ fun NotificationRow(
     }
 }
 
-// El texto segun el tipo. Si la resena no tiene titulo se usa la variante sin "de ..."
+// El texto segun el tipo. Si la resena no tiene titulo se usa la variante sin "de ..." o "en ..."
 @Composable
 private fun textoDeNotificacion(notification: NotificationUi): String {
     val nombre = notification.actorName
@@ -126,6 +129,11 @@ private fun textoDeNotificacion(notification: NotificationUi): String {
             stringResource(R.string.notificacion_like_sin_item, nombre)
         } else {
             stringResource(R.string.notificacion_like, nombre, titulo)
+        }
+        NOTIFICACION_LIKE_COMENTARIO -> if (titulo.isEmpty()) {
+            stringResource(R.string.notificacion_like_comentario_sin_item, nombre)
+        } else {
+            stringResource(R.string.notificacion_like_comentario, nombre, titulo)
         }
         NOTIFICACION_COMENTARIO -> if (titulo.isEmpty()) {
             stringResource(R.string.notificacion_comentario_sin_item, nombre)
@@ -144,6 +152,17 @@ fun NotificationRowPreview() {
     MixtappTheme(darkTheme = true) {
         NotificationRow(
             notification = LocalPreviewProvider.notifications.first(),
+            onClick = {},
+        )
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun NotificationRowLikeComentarioPreview() {
+    MixtappTheme(darkTheme = true) {
+        NotificationRow(
+            notification = LocalPreviewProvider.notifications.first().copy(tipo = NOTIFICACION_LIKE_COMENTARIO),
             onClick = {},
         )
     }

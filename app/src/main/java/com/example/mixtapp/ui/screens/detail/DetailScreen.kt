@@ -22,10 +22,10 @@ import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalPreviewProvider
 import com.example.mixtapp.data.model.ItemConResenasUi
 import com.example.mixtapp.ui.screens.detail.components.DatosCuriososButton
+import com.example.mixtapp.ui.screens.detail.components.EnlacesDelItem
 import com.example.mixtapp.ui.screens.detail.components.ItemActions
 import com.example.mixtapp.ui.screens.detail.components.ItemHeader
 import com.example.mixtapp.ui.screens.detail.components.ItemStats
-import com.example.mixtapp.ui.screens.detail.components.MyRatingSection
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppBackground
 import com.example.mixtapp.ui.utils.EmptyMessage
@@ -143,21 +143,18 @@ fun DetailScreenContent(
                         }
                     }
 
-                    // No todos los items tienen datos curiosos
-                    if (item.datosCuriosos.isNotEmpty()) {
-                        item {
-                            DatosCuriososButton(
-                                onClick = onDatosCuriososClick,
-                                modifier = Modifier.padding(top = 16.dp),
-                            )
-                        }
+                    // Los datos curiosos estan aparte: su pantalla los lee y avisa si el item no tiene
+                    item {
+                        DatosCuriososButton(
+                            onClick = onDatosCuriososClick,
+                            modifier = Modifier.padding(top = 16.dp),
+                        )
                     }
 
                     item {
-                        MyRatingSection(
-                            userRating = itemConResenas.userRating,
-                            onClick = onRateClick,
-                            modifier = Modifier.padding(top = 16.dp),
+                        EnlacesDelItem(
+                            item = item,
+                            modifier = Modifier.padding(top = 24.dp),
                         )
                     }
 

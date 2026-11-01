@@ -47,7 +47,7 @@ class AlbumFirestoreDataSourceTest {
         //Assert
         Truth.assertThat(album?.titulo).isEqualTo("Album 1")
         Truth.assertThat(album?.subgenero).isEqualTo("Rock alternativo")
-        Truth.assertThat(album?.datosCuriosos).containsExactly("Dato curioso del album 1")
+        Truth.assertThat(album?.fechaLanzamiento).isEqualTo("2001-01-01")
     }
 
     @Test

@@ -140,6 +140,8 @@ fun UserProfileScreenContent(
                 fotoUrl = usuario.fotoUrl,
                 seguidores = usuario.seguidores,
                 seguidos = usuario.seguidos,
+                instagram = usuario.instagram,
+                instagramUrl = usuario.instagramUrl,
                 onSeguidoresClick = onSeguidoresClick,
                 onSeguidosClick = onSeguidosClick,
             ) {

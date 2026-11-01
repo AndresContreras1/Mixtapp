@@ -2,6 +2,7 @@ package com.example.mixtapp.data.model
 
 // Lo que la Cloud Function guarda en el campo tipo de cada notificacion
 const val NOTIFICACION_LIKE = "like"
+const val NOTIFICACION_LIKE_COMENTARIO = "like_comentario"
 const val NOTIFICACION_COMENTARIO = "comentario"
 const val NOTIFICACION_RESPUESTA = "respuesta"
 const val NOTIFICACION_SEGUIDOR = "seguidor"

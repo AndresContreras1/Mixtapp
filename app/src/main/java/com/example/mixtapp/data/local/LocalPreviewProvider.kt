@@ -3,6 +3,7 @@ package com.example.mixtapp.data.local
 import com.example.mixtapp.data.model.DiscussionCommentUi
 import com.example.mixtapp.data.model.DiscussionUi
 import com.example.mixtapp.data.model.FollowingUi
+import com.example.mixtapp.data.model.HistoriaUi
 import com.example.mixtapp.data.model.ItemConResenasUi
 import com.example.mixtapp.data.model.ItemResumenUi
 import com.example.mixtapp.data.model.ItemUi
@@ -11,6 +12,7 @@ import com.example.mixtapp.data.model.NOTIFICACION_LIKE
 import com.example.mixtapp.data.model.NOTIFICACION_SEGUIDOR
 import com.example.mixtapp.data.model.NotificationUi
 import com.example.mixtapp.data.model.ReviewUi
+import com.example.mixtapp.data.model.SeccionUi
 import com.example.mixtapp.data.model.TIPO_ALBUM
 import com.example.mixtapp.data.model.TIPO_ARTISTA
 import com.example.mixtapp.data.model.TIPO_CANCION
@@ -29,18 +31,16 @@ object LocalPreviewProvider {
         detalle = "",
         imagenUrl = "https://cdn-images.dzcdn.net/images/cover/1e8ffbd401303b5693226c12ee0b84fb/1000x1000-000000-80-0-0.jpg",
         anio = "2024",
-        genero = "Rock",
+        fechaLanzamiento = "2024-11-15",
+        artista = "Linkin Park",
+        genero = "Nu metal",
         subgenero = "Rock alternativo",
-        datosCuriosos = listOf(
-            "Primer álbum con Emily Armstrong en la voz, después de la muerte de Chester Bennington en 2017.",
-            "Primer álbum de estudio de Linkin Park desde One More Light (2017).",
-            "El nombre recuerda a Xero, como se llamaba la banda en sus comienzos.",
-        ),
-        tendencia = null,
+        tendencia = 12,
         likes = 1240,
         likesText = "1.2K",
         isLiked = true,
         isSaved = false,
+        spotifyUrl = "https://open.spotify.com/search/Linkin%20Park%20From%20Zero",
     )
 
     val emptinessMachine = ItemUi(
@@ -51,15 +51,15 @@ object LocalPreviewProvider {
         detalle = "Linkin Park",
         imagenUrl = "https://cdn-images.dzcdn.net/images/cover/1e8ffbd401303b5693226c12ee0b84fb/1000x1000-000000-80-0-0.jpg",
         anio = "2024",
-        genero = "Rock",
+        fechaLanzamiento = "2024-11-15",
+        artista = "Linkin Park",
+        genero = "Nu metal",
         subgenero = "Rock alternativo",
-        datosCuriosos = listOf(
-            "Primer sencillo con Emily Armstrong en la voz, lanzado en septiembre de 2024.",
-            "Es la canción 2 de From Zero y dura 3:10.",
-        ),
         tendencia = null,
         likes = 86,
         likesText = "86",
+        youtubeUrl = "https://www.youtube.com/results?search_query=Linkin%20Park%20The%20Emptiness%20Machine%20video%20oficial",
+        spotifyUrl = "https://open.spotify.com/search/Linkin%20Park%20The%20Emptiness%20Machine",
     )
 
     val mikeShinoda = ItemUi(
@@ -70,15 +70,16 @@ object LocalPreviewProvider {
         detalle = "",
         imagenUrl = "https://cdn-images.dzcdn.net/images/artist/83893b115ac94cfa93fc8ba94bdc91f8/1000x1000-000000-80-0-0.jpg",
         anio = "",
-        genero = "Rock",
-        subgenero = "Rock alternativo",
-        datosCuriosos = listOf(
-            "Cofundador de Linkin Park: rapea, canta, toca y produce.",
-            "Tiene un proyecto propio de hip hop: Fort Minor.",
-        ),
+        fechaLanzamiento = "",
+        artista = "Linkin Park",
+        genero = "Nu metal",
+        subgenero = "Nu metal",
         tendencia = null,
         likes = 40,
         likesText = "40",
+        spotifyUrl = "https://open.spotify.com/search/Linkin%20Park",
+        instagram = "linkinpark",
+        instagramUrl = "https://www.instagram.com/linkinpark/",
     )
 
     val karolG = ItemUi(
@@ -89,12 +90,27 @@ object LocalPreviewProvider {
         detalle = "",
         imagenUrl = "https://cdn-images.dzcdn.net/images/cover/f794dd1931dac42fc13f938850b686c6/1000x1000-000000-80-0-0.jpg",
         anio = "2026",
+        fechaLanzamiento = "2026-10-16",
+        artista = "KAROL G",
         genero = "Reggaetón",
         subgenero = "Reggaetón",
-        datosCuriosos = emptyList(),
         tendencia = 1,
         likes = 15400,
         likesText = "15K",
+    )
+
+    val historiaFromZero = HistoriaUi(
+        secciones = listOf(
+            SeccionUi(
+                titulo = "Historia",
+                texto = "Es el primer álbum de Linkin Park con Emily Armstrong en la voz, siete años " +
+                    "después de la muerte de Chester Bennington.",
+            ),
+            SeccionUi(
+                titulo = "Dato curioso",
+                texto = "El nombre recuerda a Xero, como se llamaba la banda en sus comienzos.",
+            ),
+        ),
     )
 
     val usuario = UsuarioUi(
@@ -107,6 +123,8 @@ object LocalPreviewProvider {
         username = "emilia_guerrero",
         bio = "Escucho de todo, pero el rock siempre gana.",
         fotoUrl = "",
+        instagram = "emilia_guerrero",
+        instagramUrl = "https://www.instagram.com/emilia_guerrero/",
     )
 
     val otroUsuario = UsuarioUi(

@@ -6,6 +6,8 @@ data class EditProfileState(
     val nombre: String = "",
     val username: String = "",
     val bio: String = "",
+    // Mi usuario de Instagram como lo escribo; al guardar se le quita la @
+    val instagram: String = "",
     // Una cuenta creada antes del sprint 10 no tiene documento: al guardar se crea en vez de modificarse
     val sinDocumento: Boolean = false,
     val isLoading: Boolean = false,

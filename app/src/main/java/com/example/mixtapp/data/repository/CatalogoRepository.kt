@@ -6,11 +6,14 @@ import com.example.mixtapp.data.datasource.ArtistaRemoteDataSource
 import com.example.mixtapp.data.datasource.AuthRemoteDataSource
 import com.example.mixtapp.data.datasource.BusquedaLocalDataSource
 import com.example.mixtapp.data.datasource.CancionRemoteDataSource
+import com.example.mixtapp.data.datasource.HistoriaRemoteDataSource
 import com.example.mixtapp.data.datasource.ReviewRemoteDataSource
 import com.example.mixtapp.data.datasource.UsuarioRemoteDataSource
 import com.example.mixtapp.data.dtos.toCopiaDeItemDto
+import com.example.mixtapp.data.dtos.toHistoriaUi
 import com.example.mixtapp.data.dtos.toItemUi
 import com.example.mixtapp.data.dtos.toReviewUi
+import com.example.mixtapp.data.model.HistoriaUi
 import com.example.mixtapp.data.model.ItemConResenasUi
 import com.example.mixtapp.data.model.ItemUi
 import com.example.mixtapp.data.model.ReviewUi
@@ -32,6 +35,8 @@ import kotlin.math.roundToInt
 
 // Desde esta calificacion se cuenta que la resena recomienda el item
 private const val CALIFICACION_PARA_RECOMENDAR = 4
+// Cuantos lanzamientos muestra la pestana de notificaciones
+private const val MAX_LANZAMIENTOS = 20
 
 // Organiza el catalogo: albumes, canciones y artistas, cada uno con su data source, y las resenas
 // de cada item. Recibe los contratos: para volver al backend de Express basta con cambiar los
@@ -44,6 +49,7 @@ class CatalogoRepository @Inject constructor(
     private val artistaRemoteDataSource: ArtistaRemoteDataSource,
     private val reviewRemoteDataSource: ReviewRemoteDataSource,
     private val usuarioRemoteDataSource: UsuarioRemoteDataSource,
+    private val historiaRemoteDataSource: HistoriaRemoteDataSource,
     private val authRemoteDataSource: AuthRemoteDataSource
 ) {
 
@@ -101,6 +107,58 @@ class CatalogoRepository @Inject constructor(
                 Log.d("CatalogoRepository", "getItemLive: ${e.message}")
                 throw errorDelFlujo(e)
             }
+    }
+
+    // Lanzamientos de lo que me gusta: los albumes y las canciones de los artistas que estan en mis
+    // likes o mis guardados, del mas nuevo al mas viejo. Son cinco listeners: los tres del catalogo
+    // (para saber de quien es cada item que me gusta) y mis dos listas. Sin sesion llega vacia
+    fun getLanzamientosLive(): Flow<List<ItemUi>> {
+        val usuarioActualId = authRemoteDataSource.currentUser?.uid ?: ""
+        if (usuarioActualId.isEmpty()) return flowOf(emptyList())
+
+        return combine(
+            albumRemoteDataSource.listenAlbumes(),
+            cancionRemoteDataSource.listenCanciones(),
+            artistaRemoteDataSource.listenArtistas(),
+            usuarioRemoteDataSource.listenLikes(usuarioActualId),
+            usuarioRemoteDataSource.listenGuardados(usuarioActualId),
+        ) { albumes, canciones, artistas, likes, guardados ->
+            val items = albumes.map { it.toItemUi() } +
+                canciones.map { it.toItemUi() } +
+                artistas.map { it.toItemUi() }
+            val idsQueMeGustan = (likes + guardados).map { it.id }.toSet()
+            val artistasQueMeGustan = items.filter { it.id in idsQueMeGustan }.map { it.artista }.toSet()
+
+            // Las fechas van en formato AAAA-MM-DD, asi que ordenar el texto ordena las fechas
+            items.filter { it.tipo != TIPO_ARTISTA && it.artista in artistasQueMeGustan }
+                .sortedByDescending { it.fechaLanzamiento }
+                .take(MAX_LANZAMIENTOS)
+        }
+            .catch { e ->
+                Log.d("CatalogoRepository", "getLanzamientosLive: ${e.message}")
+                throw errorDelFlujo(e)
+            }
+    }
+
+    // Los datos curiosos por secciones, una sola vez: no cambian mientras se usa la app
+    suspend fun getHistoria(itemId: String): Result<HistoriaUi> {
+        return try {
+            val historia = historiaRemoteDataSource.getHistoria(itemId)
+            // El data source retorna null si no existe o si no tiene secciones: el repositorio
+            // decide el error
+            val historiaUi = historia?.toHistoriaUi()
+            if (historiaUi == null || historiaUi.secciones.isEmpty()) {
+                return Result.failure(ContenidoNoEncontradoException())
+            }
+
+            Result.success(historiaUi)
+        } catch (e: FirebaseFirestoreException) {
+            Log.d("CatalogoRepository", "getHistoria: ${e.message}")
+            Result.failure(errorDeFirestore(e))
+        } catch (e: Exception) {
+            Log.d("CatalogoRepository", "getHistoria: ${e.message}")
+            Result.failure(ErrorInesperadoException())
+        }
     }
 
     // Escribir resena: el item y sus resenas una sola vez, para saber si ya lo califique

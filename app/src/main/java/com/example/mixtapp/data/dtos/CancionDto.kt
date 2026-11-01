@@ -13,9 +13,10 @@ data class CancionDto(
     val artista: String,
     val portadaUrl: String,
     val anio: Int,
+    // AAAA-MM-DD, la del album
+    val fechaLanzamiento: String?,
     val genero: String,
     val subgenero: String,
-    val datosCuriosos: List<String>,
     val tendencia: Int?,
     val likesCount: Int,
     val createdAt: String?,
@@ -24,10 +25,11 @@ data class CancionDto(
     var liked: Boolean = false,
 ) {
     // Firestore necesita un constructor vacio para convertir el documento en el DTO
-    constructor() : this("", "", "", "", "", "", 0, "", "", emptyList(), null, 0, null, null)
+    constructor() : this("", "", "", "", "", "", 0, null, "", "", null, 0, null, null)
 }
 
-// La cancion se muestra en tres lineas: titulo, album y artista
+// La cancion se muestra en tres lineas: titulo, album y artista. El video se busca en YouTube con
+// el artista y el titulo
 fun CancionDto.toItemUi(): ItemUi {
     return ItemUi(
         id = id,
@@ -37,12 +39,15 @@ fun CancionDto.toItemUi(): ItemUi {
         detalle = artista,
         imagenUrl = portadaUrl,
         anio = anio.toString(),
+        fechaLanzamiento = fechaLanzamiento ?: "",
+        artista = artista,
         genero = genero,
         subgenero = subgenero,
-        datosCuriosos = datosCuriosos,
         tendencia = tendencia,
         likes = likesCount,
         likesText = formatoCantidad(likesCount),
         isLiked = liked,
+        youtubeUrl = busquedaEnYoutube("$artista $titulo video oficial"),
+        spotifyUrl = busquedaEnSpotify("$artista $titulo"),
     )
 }

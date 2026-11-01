@@ -2,32 +2,35 @@ package com.example.mixtapp.ui.utils
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.PhotoCamera
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalPreviewProvider
 import com.example.mixtapp.ui.theme.MixtappTheme
 
-// El encabezado de un perfil: la foto, el nombre, el @usuario, la biografia y los contadores. Lo
-// usan mi perfil y el de otro usuario; cada uno pone debajo su accion (cambiar la foto o seguir)
+// El encabezado de un perfil: la foto pequena a la izquierda y a su derecha el nombre, el @usuario y
+// los contadores; debajo, la biografia y el Instagram. Lo usan mi perfil y el de otro usuario; cada
+// uno pone debajo su accion (los avisos de mi perfil o el boton de seguir)
 @Composable
 fun ProfileHeader(
     nombre: String,
@@ -36,73 +39,103 @@ fun ProfileHeader(
     fotoUrl: String,
     seguidores: Int,
     seguidos: Int,
+    instagram: String,
+    instagramUrl: String,
     onSeguidoresClick: () -> Unit,
     onSeguidosClick: () -> Unit,
     modifier: Modifier = Modifier,
     accion: @Composable () -> Unit = {},
 ) {
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        ProfileAsyncImage(
-            profileImage = fotoUrl,
-            contentDescription = stringResource(R.string.foto_perfil),
-            size = 104,
-            modifier = Modifier.border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
-        )
+    // LocalUriHandler abre el link en el navegador o en la app de Instagram si la tiene
+    val uriHandler = LocalUriHandler.current
 
-        Spacer(modifier = Modifier.height(12.dp))
-
-        // Sin documento todavia no hay nombre: solo sale el usuario del correo
-        if (nombre.isNotEmpty()) {
-            Text(
-                text = nombre,
-                color = MaterialTheme.colorScheme.onBackground,
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.testTag("nombrePerfil")
+    Column(modifier = modifier.fillMaxWidth()) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            ProfileAsyncImage(
+                profileImage = fotoUrl,
+                contentDescription = stringResource(R.string.foto_perfil),
+                size = 80,
+                modifier = Modifier.border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
             )
-        }
 
-        Text(
-            text = stringResource(R.string.arroba_usuario, username),
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            style = MaterialTheme.typography.bodyMedium
-        )
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Column(modifier = Modifier.weight(1f)) {
+                // Sin documento todavia no hay nombre: solo sale el usuario del correo
+                if (nombre.isNotEmpty()) {
+                    Text(
+                        text = nombre,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.testTag("nombrePerfil")
+                    )
+                }
+
+                Text(
+                    text = stringResource(R.string.arroba_usuario, username),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+
+                // Tocar un contador abre esa lista
+                ProfileCounter(
+                    texto = stringResource(R.string.cantidad_seguidores, seguidores),
+                    onClick = onSeguidoresClick,
+                    modifier = Modifier
+                        .padding(top = 4.dp)
+                        .testTag("contadorSeguidores")
+                )
+                ProfileCounter(
+                    texto = stringResource(R.string.cantidad_seguidos, seguidos),
+                    onClick = onSeguidosClick,
+                    modifier = Modifier.testTag("contadorSeguidos")
+                )
+            }
+        }
 
         if (bio.isNotEmpty()) {
             Text(
                 text = bio,
                 color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.bodyMedium,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(top = 8.dp, start = 16.dp, end = 16.dp)
+                modifier = Modifier.padding(top = 12.dp)
             )
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
+        // Solo sale si puso su Instagram; la camara lo distingue del @usuario de Mixtapp
+        if (instagramUrl.isNotEmpty()) {
+            Row(
+                modifier = Modifier
+                    .padding(top = 8.dp)
+                    .clickable { uriHandler.openUri(instagramUrl) }
+                    .padding(vertical = 4.dp)
+                    .testTag("linkInstagram"),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.PhotoCamera,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(18.dp)
+                )
 
-        // Tocar un contador abre esa lista
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            ProfileCounter(
-                texto = stringResource(R.string.cantidad_seguidores, seguidores),
-                onClick = onSeguidoresClick,
-                modifier = Modifier.testTag("contadorSeguidores")
-            )
-            ProfileCounter(
-                texto = stringResource(R.string.cantidad_seguidos, seguidos),
-                onClick = onSeguidosClick,
-                modifier = Modifier.testTag("contadorSeguidos")
-            )
+                Spacer(modifier = Modifier.width(6.dp))
+
+                Text(
+                    text = stringResource(R.string.arroba_usuario, instagram),
+                    color = MaterialTheme.colorScheme.primary,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Bold
+                )
+            }
         }
 
         accion()
     }
 }
 
-// Un contador del encabezado, ovalado como los filtros, para que se note que se puede tocar
+// Un contador del encabezado, en negrilla para que se note que se puede tocar
 @Composable
 fun ProfileCounter(
     texto: String,
@@ -115,9 +148,8 @@ fun ProfileCounter(
         style = MaterialTheme.typography.labelLarge,
         fontWeight = FontWeight.Bold,
         modifier = modifier
-            .clip(CircleShape)
             .clickable { onClick() }
-            .padding(horizontal = 12.dp, vertical = 6.dp)
+            .padding(vertical = 2.dp)
     )
 }
 
@@ -134,6 +166,8 @@ fun ProfileHeaderPreview() {
             fotoUrl = usuario.fotoUrl,
             seguidores = usuario.seguidores,
             seguidos = usuario.seguidos,
+            instagram = usuario.instagram,
+            instagramUrl = usuario.instagramUrl,
             onSeguidoresClick = {},
             onSeguidosClick = {},
         )

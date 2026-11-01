@@ -3,7 +3,6 @@ package com.example.mixtapp.ui.screens.profile
 import androidx.annotation.StringRes
 import com.example.mixtapp.data.model.ItemResumenUi
 import com.example.mixtapp.data.model.ReviewUi
-import com.example.mixtapp.data.model.UsuarioUi
 import com.example.mixtapp.ui.screens.profile.model.PESTANA_PERFIL
 import com.example.mixtapp.ui.screens.profile.model.ProfileTabUi
 import com.example.mixtapp.ui.screens.profile.model.profileTabs
@@ -11,10 +10,15 @@ import com.example.mixtapp.ui.screens.profile.model.profileTabs
 data class ProfileState(
     // Arranca cargando hasta que llegan mis datos
     val isLoading: Boolean = true,
+    // Mi uid de Authentication: con el se abren mis listas de seguidores y seguidos
+    val miId: String = "",
     // Mis datos de Firestore; sin mi documento, el usuario sale del correo antes de la arroba
     val usuario: String = "",
     val nombre: String = "",
     val bio: String = "",
+    // Mi Instagram sin la @ y su link; vacios si no lo puse
+    val instagram: String = "",
+    val instagramUrl: String = "",
     val seguidores: Int = 0,
     val seguidos: Int = 0,
     val profileImageUrl: String = "",
@@ -33,10 +37,6 @@ data class ProfileState(
     @StringRes val errorResenasRes: Int? = null,
     val guardados: List<ItemResumenUi> = emptyList(),
     @StringRes val errorGuardadosRes: Int? = null,
-    val listaSeguidores: List<UsuarioUi> = emptyList(),
-    @StringRes val errorSeguidoresRes: Int? = null,
-    val listaSeguidos: List<UsuarioUi> = emptyList(),
-    @StringRes val errorSeguidosRes: Int? = null,
     // El like o el borrado de una resena que no se pudo hacer
     @StringRes val errorAccionRes: Int? = null,
     // Mientras se borra no se manda otro borrado

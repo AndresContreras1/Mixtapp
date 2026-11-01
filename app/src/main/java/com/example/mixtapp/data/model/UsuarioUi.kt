@@ -10,4 +10,7 @@ data class UsuarioUi(
     val username: String,
     val bio: String,
     val fotoUrl: String,
+    // Su usuario de Instagram sin la @ y el link a su perfil; vacios si no lo puso
+    val instagram: String = "",
+    val instagramUrl: String = "",
 )

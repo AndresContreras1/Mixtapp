@@ -4,6 +4,8 @@ import com.example.mixtapp.data.dtos.AlbumDto
 import com.example.mixtapp.data.dtos.CreateReviewDto
 import com.example.mixtapp.data.dtos.CreateReviewItemDto
 import com.example.mixtapp.data.dtos.CreateReviewUsuarioDto
+import com.example.mixtapp.data.dtos.HistoriaDto
+import com.example.mixtapp.data.dtos.SeccionDto
 import com.example.mixtapp.data.dtos.UsuarioPerfilFirestoreDto
 import com.example.mixtapp.data.model.TIPO_ALBUM
 import com.google.firebase.Firebase
@@ -48,13 +50,22 @@ fun generateAlbum(i: Int): AlbumDto = AlbumDto(
     artista = "Artista $i",
     portadaUrl = "https://picsum.photos/600/600?random=$i",
     anio = 2000 + i,
+    fechaLanzamiento = "${2000 + i}-01-01",
     genero = "Rock",
     subgenero = "Rock alternativo",
-    datosCuriosos = listOf("Dato curioso del album $i"),
     tendencia = null,
     likesCount = 0,
     createdAt = "2025-01-01T00:00:00Z",
     updatedAt = "2025-01-01T00:00:00Z",
+)
+
+// Los datos curiosos del album i: dos secciones, como las que carga el seed
+fun generateHistoria(i: Int): HistoriaDto = HistoriaDto(
+    tipo = TIPO_ALBUM,
+    secciones = listOf(
+        SeccionDto(titulo = "Historia", texto = "Historia del album $i"),
+        SeccionDto(titulo = "Dato curioso", texto = "Dato curioso del album $i"),
+    ),
 )
 
 // La resena de un usuario a un album, con las copias que guarda la app
@@ -73,7 +84,8 @@ fun generateReview(usuario: UsuarioPerfilFirestoreDto, album: AlbumDto): CreateR
     item = CreateReviewItemDto(titulo = album.titulo, subtitulo = album.artista, imagenUrl = album.portadaUrl),
 )
 
-// Carga 10 usuarios, 5 albumes y la resena "review_i" del usuario i al album i (i de 1 a 5)
+// Carga 10 usuarios, 5 albumes con sus datos curiosos y la resena "review_i" del usuario i al
+// album i (i de 1 a 5)
 suspend fun cargarDatosDePrueba(db: FirebaseFirestore) {
     val batch = db.batch()
 
@@ -85,6 +97,7 @@ suspend fun cargarDatosDePrueba(db: FirebaseFirestore) {
     for (i in 1..5) {
         val album = generateAlbum(i)
         batch.set(db.collection("albumes").document(album.id), album)
+        batch.set(db.collection("historias").document(album.id), generateHistoria(i))
         batch.set(db.collection("reviews").document("review_$i"), generateReview(generateUsuario(i), album))
     }
 
@@ -120,7 +133,7 @@ suspend fun limpiarBase(db: FirebaseFirestore) {
         reviewDoc.reference.delete().await()
     }
 
-    for (coleccion in listOf("albumes", "canciones", "artistas")) {
+    for (coleccion in listOf("albumes", "canciones", "artistas", "historias")) {
         val items = db.collection(coleccion).get().await()
         for (itemDoc in items) {
             val likes = itemDoc.reference.collection("likes").get().await()

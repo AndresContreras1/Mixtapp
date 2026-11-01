@@ -31,13 +31,19 @@ object LocalSearchCategoriesProvider {
         SearchCategoryUi(
             id = "Rock",
             titleRes = R.string.genero_rock,
-            imagenUrl = "https://cdn-images.dzcdn.net/images/cover/1e8ffbd401303b5693226c12ee0b84fb/1000x1000-000000-80-0-0.jpg",
+            imagenUrl = "https://cdn-images.dzcdn.net/images/cover/f0282817b697279e56df13909962a54a/1000x1000-000000-80-0-0.jpg",
             esGenero = true,
         ),
         SearchCategoryUi(
             id = "Metal",
             titleRes = R.string.genero_metal,
             imagenUrl = "https://cdn-images.dzcdn.net/images/cover/291e2af9295ca885b154eee75dfa0432/1000x1000-000000-80-0-0.jpg",
+            esGenero = true,
+        ),
+        SearchCategoryUi(
+            id = "Nu metal",
+            titleRes = R.string.genero_nu_metal,
+            imagenUrl = "https://cdn-images.dzcdn.net/images/cover/033a271b5ec10842c287827c39244fb5/1000x1000-000000-80-0-0.jpg",
             esGenero = true,
         ),
         SearchCategoryUi(
