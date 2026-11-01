@@ -1,6 +1,8 @@
 package com.example.mixtapp.data.injection
 
 import com.example.mixtapp.data.datasource.services.AlbumRetrofitService
+import com.example.mixtapp.data.datasource.services.ArtistaRetrofitService
+import com.example.mixtapp.data.datasource.services.CancionRetrofitService
 import com.example.mixtapp.data.datasource.services.ReviewRetrofitService
 import com.example.mixtapp.data.datasource.services.UsuarioRetrofitService
 import dagger.Module
@@ -33,6 +35,18 @@ object AppModule {
     @Provides
     fun providesAlbumRetrofitService(retrofit: Retrofit): AlbumRetrofitService {
         return retrofit.create(AlbumRetrofitService::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun providesCancionRetrofitService(retrofit: Retrofit): CancionRetrofitService {
+        return retrofit.create(CancionRetrofitService::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun providesArtistaRetrofitService(retrofit: Retrofit): ArtistaRetrofitService {
+        return retrofit.create(ArtistaRetrofitService::class.java)
     }
 
     @Singleton

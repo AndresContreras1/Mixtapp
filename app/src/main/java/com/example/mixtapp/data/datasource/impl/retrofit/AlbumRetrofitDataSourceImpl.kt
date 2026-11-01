@@ -2,50 +2,35 @@ package com.example.mixtapp.data.datasource.impl.retrofit
 
 import com.example.mixtapp.data.datasource.AlbumRemoteDataSource
 import com.example.mixtapp.data.datasource.services.AlbumRetrofitService
-import com.example.mixtapp.data.datasource.services.ReviewRetrofitService
 import com.example.mixtapp.data.dtos.AlbumDto
-import com.example.mixtapp.data.dtos.ReviewConUsuarioDto
+import com.example.mixtapp.data.dtos.CopiaDeItemDto
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class AlbumRetrofitDataSourceImpl @Inject constructor(
-    private val service: AlbumRetrofitService,
-    private val reviewService: ReviewRetrofitService
+    private val service: AlbumRetrofitService
 ) : AlbumRemoteDataSource {
 
     override suspend fun getAlbumes(): List<AlbumDto> {
         return service.getAlbumes()
     }
 
-    override suspend fun getAlbumById(id: String): AlbumDto {
+    // El backend no tiene likes: el corazon queda vacio
+    override suspend fun getAlbumById(id: String, currentUserId: String): AlbumDto {
         return service.getAlbumById(id)
     }
 
-    // El backend no tiene likes
-    override suspend fun getReviewsDeAlbum(id: String, currentUserId: String): List<ReviewConUsuarioDto> {
-        return conMiUsuario(reviews = service.getReviewsDeAlbum(id), currentUserId = currentUserId)
-    }
-
     // Con HTTP no hay una conexion continua: flow { emit() } manda una sola vez lo que responde el backend
-    override fun listenAllReviews(currentUserId: String): Flow<List<ReviewConUsuarioDto>> = flow {
-        val reviews = reviewService.getReviews()
-        emit(conMiUsuario(reviews = reviews, currentUserId = currentUserId))
+    override fun listenAlbumes(): Flow<List<AlbumDto>> = flow {
+        emit(getAlbumes())
     }
 
-    // Con HTTP no hay una conexion continua: flow { emit() } manda una sola vez las resenas del album
-    override fun listenReviewsDeAlbum(id: String, currentUserId: String): Flow<List<ReviewConUsuarioDto>> = flow {
-        emit(getReviewsDeAlbum(id = id, currentUserId = currentUserId))
+    override fun listenAlbumById(id: String, currentUserId: String): Flow<AlbumDto> = flow {
+        emit(getAlbumById(id = id, currentUserId = currentUserId))
     }
 
-    // En el backend el usuario de la app es el 1: sus resenas vuelven con el uid de la sesion para
-    // que el repositorio las reconozca como mias
-    private fun conMiUsuario(reviews: List<ReviewConUsuarioDto>, currentUserId: String): List<ReviewConUsuarioDto> =
-        reviews.map { review ->
-            if (currentUserId.isNotEmpty() && review.usuarioId == USUARIO_DE_LA_APP_EN_EL_BACKEND) {
-                review.copy(usuarioId = currentUserId)
-            } else {
-                review
-            }
-        }
+    // to-do: el backend no tiene likes; como en clase, solo funcionan con Firestore
+    override suspend fun sendOrDeleteLike(albumId: String, userId: String, copia: CopiaDeItemDto) {
+    }
 }

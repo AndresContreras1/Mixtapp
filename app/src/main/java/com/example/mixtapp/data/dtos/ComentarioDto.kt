@@ -1,6 +1,7 @@
 package com.example.mixtapp.data.dtos
 
 import com.example.mixtapp.data.model.DiscussionCommentUi
+import java.time.Instant
 
 // Comentario de la discusion de una resena: vive en la subcoleccion reviews/{id}/comments
 data class ComentarioDto(
@@ -32,17 +33,16 @@ data class CreateComentarioDto(
     val usuario: CreateReviewUsuarioDto? = null,
 )
 
-fun ComentarioDto.toDiscussionCommentUi(): DiscussionCommentUi {
-    val nombre = usuario?.nombre ?: ""
-
+fun ComentarioDto.toDiscussionCommentUi(ahora: Instant = Instant.now()): DiscussionCommentUi {
     return DiscussionCommentUi(
         id = id,
-        author = nombre,
-        initials = nombre.take(2).lowercase(),
-        // Solo la fecha AAAA-MM-DD; si no hay, la pantalla muestra "ahora"
-        timeAgo = createdAt?.take(10) ?: "",
+        authorId = usuarioId,
+        author = usuario?.nombre ?: "",
+        authorImage = usuario?.fotoUrl ?: "",
+        timeAgo = haceCuanto(fechaIso = createdAt, ahora = ahora),
         content = contenido,
         likes = likesCount,
+        likesText = formatoCantidad(likesCount),
         isReply = parentCommentId != null,
         isLiked = liked,
         parentId = parentCommentId,

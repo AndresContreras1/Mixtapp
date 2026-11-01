@@ -1,124 +1,70 @@
 package com.example.mixtapp.data.dtos
 
-import com.example.mixtapp.data.model.AlbumReviewItemUi
-import com.example.mixtapp.data.model.DiscussionReviewUi
-import com.example.mixtapp.data.model.FollowingReviewUi
-import com.example.mixtapp.data.model.MyReviewUi
+import com.example.mixtapp.data.model.ItemResumenUi
+import com.example.mixtapp.data.model.ReviewUi
+import com.example.mixtapp.data.model.TIPO_ALBUM
+import java.time.Instant
 
-// Resena de un album, con el usuario que la escribio
-data class ReviewConUsuarioDto(
+// Una resena de un album, una cancion o un artista, igual al documento de la coleccion reviews.
+// Trae la copia del usuario y del item que se muestran: en Firestore no hay joins
+data class ReviewDto(
     val id: String,
     val calificacion: Int,
     val comentario: String?,
     val fechaEscucha: String?,
     val usuarioId: String,
-    val albumId: String,
+    // El id del album, la cancion o el artista; tipo dice cual de los tres es
+    val itemId: String,
+    val tipo: String,
     val createdAt: String?,
     val updatedAt: String?,
     val usuario: UsuarioDto?,
-    // El documento de Firestore tambien guarda la copia del album; se declara aunque esta lista
-    // no la use, para que toObject no avise en el Logcat "No setter/field for album"
-    val album: AlbumDeResenaDto?,
-    // La tarjeta solo necesita cuantos likes tiene: quien los dio esta en la subcoleccion likes
+    val item: ItemDeResenaDto?,
+    // Las tarjetas solo necesitan cuantos likes y comentarios tiene: quien los dio esta en las
+    // subcolecciones likes y comments
     val likesCount: Int,
-    // Igual con los comentarios: estan en la subcoleccion comments. Se declara aunque esta lista no
-    // lo use, para que toObject no avise en el Logcat
     val commentsCount: Int,
     // No esta en la base: el data source lo llena buscando mi uid en la subcoleccion likes
     var liked: Boolean = false,
 ) {
-    // Firestore necesita un constructor vacio para convertir el documento en el DTO. Las resenas
-    // anteriores a los comentarios no tienen commentsCount y quedan en 0
-    constructor() : this("", 0, null, null, "", "", null, null, null, null, 0, 0)
+    // Firestore necesita un constructor vacio para convertir el documento en el DTO
+    constructor() : this("", 0, null, null, "", "", TIPO_ALBUM, null, null, null, null, 0, 0)
 }
 
-// Resena de un usuario, con el album que resena
-data class ReviewConAlbumDto(
-    val id: String,
-    val calificacion: Int,
-    val comentario: String?,
-    val fechaEscucha: String?,
-    val usuarioId: String,
-    val albumId: String,
-    val createdAt: String?,
-    val updatedAt: String?,
-    // Igual que arriba: la copia del usuario tambien esta en el documento
-    val usuario: UsuarioDto?,
-    val album: AlbumDeResenaDto?,
-    val likesCount: Int,
-    val commentsCount: Int,
-    var liked: Boolean = false,
+// La copia del item que guarda la resena: lo que se ve en la tarjeta
+data class ItemDeResenaDto(
+    val titulo: String,
+    val subtitulo: String,
+    val imagenUrl: String,
 ) {
-    constructor() : this("", 0, null, null, "", "", null, null, null, null, 0, 0)
+    constructor() : this("", "", "")
 }
 
-// El repositorio pasa el id del usuario de la app para marcar su resena
-fun ReviewConUsuarioDto.toAlbumReviewItemUi(usuarioActualId: String): AlbumReviewItemUi {
-    return AlbumReviewItemUi(
+// El repositorio pasa el id del usuario de la app para marcar su resena. ahora tiene un valor por
+// defecto para que las pruebas puedan pasar una fecha fija
+fun ReviewDto.toReviewUi(usuarioActualId: String, ahora: Instant = Instant.now()): ReviewUi {
+    return ReviewUi(
         id = id,
         authorId = usuarioId,
         author = usuario?.nombre ?: "",
         authorImage = usuario?.fotoUrl ?: "",
-        fecha = fechaEscucha ?: "",
+        // Solo AAAA-MM-DD: si no puso la fecha de escucha, el dia en que la publico
+        date = fechaEscucha ?: createdAt?.take(10) ?: "",
         rating = calificacion,
         content = comentario ?: "",
-        esMia = usuarioId == usuarioActualId,
+        timeAgo = haceCuanto(fechaIso = updatedAt ?: createdAt, ahora = ahora),
+        isMine = usuarioId == usuarioActualId,
         likes = likesCount,
+        likesText = formatoCantidad(likesCount),
         isLiked = liked,
         comments = commentsCount,
-    )
-}
-
-fun ReviewConAlbumDto.toMyReviewUi(): MyReviewUi {
-    return MyReviewUi(
-        id = id,
-        album = (album ?: AlbumDeResenaDto()).toAlbum(albumId = albumId),
-        rating = calificacion,
-        excerpt = comentario ?: "",
-        likes = likesCount,
-        comments = commentsCount,
-        date = fechaEscucha ?: "",
-    )
-}
-
-// Las iniciales y el nombre salen de la copia del usuario que guarda la resena; el total de
-// comentarios es el contador del documento
-fun ReviewConAlbumDto.toFollowingReviewUi(): FollowingReviewUi {
-    val nombre = usuario?.nombre ?: ""
-
-    return FollowingReviewUi(
-        id = id,
-        authorId = usuarioId,
-        reviewerName = nombre,
-        reviewerInitials = nombre.take(2).uppercase(),
-        reviewerImage = usuario?.fotoUrl ?: "",
-        reviewedAt = fechaEscucha ?: createdAt ?: "",
-        album = (album ?: AlbumDeResenaDto()).toAlbum(albumId = albumId),
-        rating = calificacion,
-        reviewText = comentario ?: "",
-        likes = likesCount,
-        comments = commentsCount,
-        isLiked = liked,
-        isShared = false,
-    )
-}
-
-// La resena que encabeza su discusion
-fun ReviewConAlbumDto.toDiscussionReviewUi(): DiscussionReviewUi {
-    val nombre = usuario?.nombre ?: ""
-
-    return DiscussionReviewUi(
-        id = id,
-        reviewerName = nombre,
-        reviewerAvatarText = nombre.take(2).uppercase(),
-        reviewerImage = usuario?.fotoUrl ?: "",
-        reviewedAt = fechaEscucha ?: createdAt ?: "",
-        album = (album ?: AlbumDeResenaDto()).toAlbum(albumId = albumId),
-        rating = calificacion,
-        reviewText = comentario ?: "",
-        likes = likesCount,
-        commentsCount = commentsCount,
-        isLiked = liked,
-        isShared = false,
+        item = ItemResumenUi(
+            id = itemId,
+            tipo = tipo,
+            titulo = item?.titulo ?: "",
+            subtitulo = item?.subtitulo ?: "",
+            imagenUrl = item?.imagenUrl ?: "",
+        ),
+        updatedAt = updatedAt ?: createdAt ?: "",
     )
 }

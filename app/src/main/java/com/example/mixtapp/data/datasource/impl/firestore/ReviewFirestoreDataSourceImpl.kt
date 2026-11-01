@@ -4,7 +4,7 @@ import com.example.mixtapp.data.datasource.ReviewRemoteDataSource
 import com.example.mixtapp.data.dtos.ComentarioDto
 import com.example.mixtapp.data.dtos.CreateComentarioDto
 import com.example.mixtapp.data.dtos.CreateReviewDto
-import com.example.mixtapp.data.dtos.ReviewConAlbumDto
+import com.example.mixtapp.data.dtos.ReviewDto
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.async
@@ -20,15 +20,26 @@ class ReviewFirestoreDataSourceImpl @Inject constructor(
     private val db: FirebaseFirestore
 ) : ReviewRemoteDataSource {
 
-    override suspend fun getReviewById(id: String, currentUserId: String): ReviewConAlbumDto? {
+    override suspend fun getReviewById(id: String, currentUserId: String): ReviewDto? {
         val reviewRef = db.collection("reviews").document(id)
         val respuesta = reviewRef.get().await()
         // Si el documento no existe se retorna null: el repositorio decide el error
-        val review = respuesta.toObject(ReviewConAlbumDto::class.java)?.copy(id = respuesta.id)
+        val review = respuesta.toObject(ReviewDto::class.java)?.copy(id = respuesta.id)
             ?: return null
 
         review.liked = reviewRef.tieneMiLike(currentUserId)
         return review
+    }
+
+    // Los ids de los items llevan su tipo adelante (album_, cancion_, artista_), asi que en Firestore
+    // basta con el itemId para no mezclar resenas de un album con las de una cancion
+    override suspend fun getReviewsDeItem(tipo: String, itemId: String, currentUserId: String): List<ReviewDto> {
+        val snapshot = db.collection("reviews").whereEqualTo("itemId", itemId).get().await()
+        val reviews = snapshot.documents.mapNotNull { doc ->
+            doc.toObject(ReviewDto::class.java)?.copy(id = doc.id)
+        }
+
+        return db.conMisLikes(reviews = reviews, currentUserId = currentUserId)
     }
 
     // add crea el documento con un id aleatorio
@@ -36,8 +47,8 @@ class ReviewFirestoreDataSourceImpl @Inject constructor(
         db.collection("reviews").add(review).await()
     }
 
-    // Solo se cambia lo que se edita, la fecha de la edicion y la copia de quien la escribe: el
-    // contador de likes y la subcoleccion se conservan
+    // Solo se cambia lo que se edita, la fecha de la edicion y la copia de quien la escribe: los
+    // contadores, la copia del item y las subcolecciones se conservan
     override suspend fun updateReview(id: String, review: CreateReviewDto) {
         db.collection("reviews").document(id).update(
             mapOf(
@@ -45,8 +56,8 @@ class ReviewFirestoreDataSourceImpl @Inject constructor(
                 "comentario" to review.comentario,
                 "fechaEscucha" to review.fechaEscucha,
                 "updatedAt" to review.updatedAt,
-                "usuario.nombre" to review.usuario?.nombre,
-                "usuario.fotoUrl" to review.usuario?.fotoUrl,
+                "usuario.nombre" to review.usuario.nombre,
+                "usuario.fotoUrl" to review.usuario.fotoUrl,
             )
         ).await()
     }
@@ -91,10 +102,53 @@ class ReviewFirestoreDataSourceImpl @Inject constructor(
         }.await()
     }
 
+    // El listener escucha la coleccion reviews: cada cambio manda la lista completa por el flujo.
+    // Un like solo cambia likesCount en la resena, asi que tambien llega por aqui. El inicio no
+    // pinta corazones: mi like solo se busca si llega el usuario
+    override fun listenAllReviews(currentUserId: String): Flow<List<ReviewDto>> = callbackFlow {
+        val listenerRegistration = db.collection("reviews")
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    close(error) // cierra el flujo con error
+                    return@addSnapshotListener
+                }
+                if (snapshot != null) {
+                    val reviews = snapshot.documents.mapNotNull { doc ->
+                        doc.toObject(ReviewDto::class.java)?.copy(id = doc.id)
+                    }
+                    trySend(reviews).isSuccess // envia la lista al flujo
+                }
+            }
+
+        // Cuando nadie escucha el flujo, se quita el listener para no dejar la conexion activa
+        awaitClose { listenerRegistration.remove() }
+    }.map { reviews -> db.conMisLikes(reviews = reviews, currentUserId = currentUserId) }
+
+    // Escucha solo las resenas de este item. El listener no puede esperar otra consulta, asi que
+    // mi like de cada resena se busca con exists() cada vez que llega la lista
+    override fun listenReviewsDeItem(tipo: String, itemId: String, currentUserId: String): Flow<List<ReviewDto>> = callbackFlow {
+        val listenerRegistration = db.collection("reviews").whereEqualTo("itemId", itemId)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    close(error) // cierra el flujo con error
+                    return@addSnapshotListener
+                }
+                if (snapshot != null) {
+                    val reviews = snapshot.documents.mapNotNull { doc ->
+                        doc.toObject(ReviewDto::class.java)?.copy(id = doc.id)
+                    }
+                    trySend(reviews).isSuccess // envia la lista al flujo
+                }
+            }
+
+        // Cuando se sale del detalle nadie escucha el flujo y se quita el listener
+        awaitClose { listenerRegistration.remove() }
+    }.map { reviews -> db.conMisLikes(reviews = reviews, currentUserId = currentUserId) }
+
     // El listener escucha el documento de la resena. Si la borran mientras se ve, toObject da null
     // y se envia null: el repositorio decide el error. Mi like no esta en el documento, asi que se
     // busca con exists() cada vez que llega
-    override fun listenReviewById(id: String, currentUserId: String): Flow<ReviewConAlbumDto?> = callbackFlow {
+    override fun listenReviewById(id: String, currentUserId: String): Flow<ReviewDto?> = callbackFlow {
         val listenerRegistration = db.collection("reviews").document(id)
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
@@ -102,7 +156,7 @@ class ReviewFirestoreDataSourceImpl @Inject constructor(
                     return@addSnapshotListener
                 }
                 if (snapshot != null) {
-                    val review = snapshot.toObject(ReviewConAlbumDto::class.java)?.copy(id = snapshot.id)
+                    val review = snapshot.toObject(ReviewDto::class.java)?.copy(id = snapshot.id)
                     trySend(review).isSuccess // envia la resena (o null) al flujo
                 }
             }

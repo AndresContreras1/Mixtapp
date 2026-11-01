@@ -1,7 +1,7 @@
 package com.example.mixtapp.data.datasource.services
 
 import com.example.mixtapp.data.dtos.AlbumDto
-import com.example.mixtapp.data.dtos.ReviewConUsuarioDto
+import com.example.mixtapp.data.dtos.ReviewRetrofitDto
 import retrofit2.http.GET
 import retrofit2.http.Path
 
@@ -18,5 +18,5 @@ interface AlbumRetrofitService {
 
     // Las resenas de un album, con el usuario que las escribio (include)
     @GET("albumes/{id}/reviews")
-    suspend fun getReviewsDeAlbum(@Path("id") id: String): List<ReviewConUsuarioDto>
+    suspend fun getReviewsDeAlbum(@Path("id") id: String): List<ReviewRetrofitDto>
 }

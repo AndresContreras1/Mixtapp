@@ -6,8 +6,10 @@ import com.example.mixtapp.data.datasource.MessagingRemoteDataSource
 import com.example.mixtapp.data.datasource.UsuarioRemoteDataSource
 import com.example.mixtapp.data.dtos.ActualizarUsuarioDto
 import com.example.mixtapp.data.dtos.RegistrarUsuarioDto
-import com.example.mixtapp.data.dtos.toMyReviewUi
-import com.example.mixtapp.data.model.MyReviewUi
+import com.example.mixtapp.data.dtos.toItemResumenUi
+import com.example.mixtapp.data.dtos.toReviewUi
+import com.example.mixtapp.data.model.ItemResumenUi
+import com.example.mixtapp.data.model.ReviewUi
 import com.example.mixtapp.data.model.UsuarioUi
 import com.google.firebase.firestore.FirebaseFirestoreException
 import kotlinx.coroutines.flow.Flow
@@ -113,13 +115,63 @@ class UsuarioRepository @Inject constructor(
         }
     }
 
-    fun getReviewsDeUsuarioLive(id: String): Flow<List<MyReviewUi>> =
-        usuarioRemoteDataSource.listenReviewsDeUsuario(id)
-            .map { reviews -> reviews.map { it.toMyReviewUi() } }
+    // Sus resenas en vivo, la ultima publicada o editada primero, con mis likes
+    fun getReviewsDeUsuarioLive(id: String): Flow<List<ReviewUi>> {
+        val usuarioActualId = authRemoteDataSource.currentUser?.uid ?: ""
+
+        return usuarioRemoteDataSource.listenReviewsDeUsuario(id, currentUserId = usuarioActualId)
+            .map { reviews ->
+                // Las fechas van en formato ISO, asi que ordenar el texto ordena las fechas
+                reviews.map { it.toReviewUi(usuarioActualId = usuarioActualId) }.sortedByDescending { it.updatedAt }
+            }
             .catch { e ->
                 Log.d("UsuarioRepository", "getReviewsDeUsuarioLive: ${e.message}")
                 throw errorDelFlujo(e)
             }
+    }
+
+    // Los favoritos son los items a los que le dio like, el mas nuevo primero: albumes, canciones y
+    // artistas mezclados. Tambien alimentan el For you del inicio
+    fun getFavoritosLive(userId: String): Flow<List<ItemResumenUi>> =
+        usuarioRemoteDataSource.listenLikes(userId)
+            .map { likes -> likes.map { it.toItemResumenUi() } }
+            .catch { e ->
+                Log.d("UsuarioRepository", "getFavoritosLive: ${e.message}")
+                throw errorDelFlujo(e)
+            }
+
+    fun getMisFavoritosLive(): Flow<List<ItemResumenUi>> =
+        getFavoritosLive(userId = authRemoteDataSource.currentUser?.uid ?: "")
+
+    // Lo que guarde con el boton de guardar del detalle, el mas nuevo primero
+    fun getMisGuardadosLive(): Flow<List<ItemResumenUi>> =
+        usuarioRemoteDataSource.listenGuardados(authRemoteDataSource.currentUser?.uid ?: "")
+            .map { guardados -> guardados.map { it.toItemResumenUi() } }
+            .catch { e ->
+                Log.d("UsuarioRepository", "getMisGuardadosLive: ${e.message}")
+                throw errorDelFlujo(e)
+            }
+
+    // Los usuarios cuyo nombre empieza por el texto. Yo no salgo en la busqueda
+    suspend fun buscarUsuarios(texto: String): Result<List<UsuarioUi>> {
+        return try {
+            val usuarioActualId = authRemoteDataSource.currentUser?.uid ?: ""
+
+            val usuarios = usuarioRemoteDataSource.searchUsuarios(texto)
+                .map { it.toUsuarioUi() }
+                .filter { it.id != usuarioActualId }
+            Result.success(usuarios)
+        } catch (e: HttpException) {
+            Log.d("UsuarioRepository", "buscarUsuarios: ${e.message}")
+            Result.failure(errorDelBackend(e))
+        } catch (e: FirebaseFirestoreException) {
+            Log.d("UsuarioRepository", "buscarUsuarios: ${e.message}")
+            Result.failure(errorDeFirestore(e))
+        } catch (e: Exception) {
+            Log.d("UsuarioRepository", "buscarUsuarios: ${e.message}")
+            Result.failure(ErrorInesperadoException())
+        }
+    }
 
     // Primero se crea la cuenta en Authentication y despues, con su uid, se guardan los demas datos.
     // Tambien completa el perfil de una cuenta creada antes del sprint 10, que no tiene documento

@@ -3,10 +3,13 @@ package com.example.mixtapp.data.datasource.impl.firestore
 import com.example.mixtapp.data.datasource.UsuarioRemoteDataSource
 import com.example.mixtapp.data.dtos.ActualizarUsuarioDto
 import com.example.mixtapp.data.dtos.RegistrarUsuarioDto
-import com.example.mixtapp.data.dtos.ReviewConAlbumDto
+import com.example.mixtapp.data.dtos.CopiaDeItemDto
+import com.example.mixtapp.data.dtos.ItemDeUsuarioDto
+import com.example.mixtapp.data.dtos.ReviewDto
 import com.example.mixtapp.data.dtos.UsuarioPerfilFirestoreDto
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.coroutineScope
@@ -33,13 +36,30 @@ class UsuarioFirestoreDataSourceImpl @Inject constructor(
     }
 
     // Las resenas que escribio un usuario, con mi like en cada una
-    override suspend fun getReviewsDeUsuario(id: String, currentUserId: String): List<ReviewConAlbumDto> {
+    override suspend fun getReviewsDeUsuario(id: String, currentUserId: String): List<ReviewDto> {
         val snapshot = db.collection("reviews").whereEqualTo("usuarioId", id).get().await()
         val reviews = snapshot.documents.mapNotNull { doc ->
-            doc.toObject(ReviewConAlbumDto::class.java)?.copy(id = doc.id)
+            doc.toObject(ReviewDto::class.java)?.copy(id = doc.id)
         }
 
-        return conMisLikes(reviews = reviews, currentUserId = currentUserId)
+        return db.conMisLikes(reviews = reviews, currentUserId = currentUserId)
+    }
+
+    // Como en la busqueda de clase: orderBy por el nombre y el rango que empieza por el texto. El
+    // ultimo caracter de Unicode cierra el rango, asi que entran todos los nombres que empiezan asi.
+    // Distingue mayusculas: los nombres se guardan con la primera en mayuscula
+    override suspend fun searchUsuarios(texto: String): List<UsuarioPerfilFirestoreDto> {
+        val snapshot = db.collection("usuarios")
+            .orderBy("nombre")
+            .startAt(texto)
+            .endAt(texto + "\uf8ff")
+            .limit(10)
+            .get()
+            .await()
+
+        return snapshot.documents.mapNotNull { doc ->
+            doc.toObject(UsuarioPerfilFirestoreDto::class.java)?.copy(id = doc.id)
+        }
     }
 
     // El documento se crea con el mismo id del usuario de Authentication
@@ -101,6 +121,20 @@ class UsuarioFirestoreDataSourceImpl @Inject constructor(
         }.await()
     }
 
+    // Guardar o quitar de mis guardados: si ya esta se borra, si no se crea con la copia del item.
+    // Solo cambia un documento, pero leer y escribir en la transaccion evita guardarlo dos veces
+    // con dos toques seguidos
+    override suspend fun sendOrDeleteGuardado(usuarioId: String, itemId: String, copia: CopiaDeItemDto) {
+        val guardadoRef = db.collection("usuarios").document(usuarioId).collection("guardados").document(itemId)
+
+        db.runTransaction { transaction ->
+            val guardadoDoc = transaction.get(guardadoRef)
+
+            if (guardadoDoc.exists()) transaction.delete(guardadoRef)
+            else transaction.set(guardadoRef, copia)
+        }.await()
+    }
+
     // La lista completa es una segunda consulta: los ids salen de la subcoleccion y los datos de
     // cada usuario de su documento
     override suspend fun getSeguidores(id: String): List<UsuarioPerfilFirestoreDto> {
@@ -140,7 +174,7 @@ class UsuarioFirestoreDataSourceImpl @Inject constructor(
     }
 
     // Un like en otro celular cambia likesCount en la resena, asi que la lista llega de nuevo
-    override fun listenReviewsDeUsuario(id: String, currentUserId: String): Flow<List<ReviewConAlbumDto>> = callbackFlow {
+    override fun listenReviewsDeUsuario(id: String, currentUserId: String): Flow<List<ReviewDto>> = callbackFlow {
         val listenerRegistration = db.collection("reviews").whereEqualTo("usuarioId", id)
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
@@ -149,20 +183,65 @@ class UsuarioFirestoreDataSourceImpl @Inject constructor(
                 }
                 if (snapshot != null) {
                     val reviews = snapshot.documents.mapNotNull { doc ->
-                        doc.toObject(ReviewConAlbumDto::class.java)?.copy(id = doc.id)
+                        doc.toObject(ReviewDto::class.java)?.copy(id = doc.id)
                     }
                     trySend(reviews).isSuccess // envia la lista al flujo
                 }
             }
 
         awaitClose { listenerRegistration.remove() }
-    }.map { reviews -> conMisLikes(reviews = reviews, currentUserId = currentUserId) }
+    }.map { reviews -> db.conMisLikes(reviews = reviews, currentUserId = currentUserId) }
 
     override fun listenSeguidores(id: String): Flow<List<UsuarioPerfilFirestoreDto>> =
         listenSubcoleccion(id = id, subcoleccion = "followers")
 
     override fun listenSeguidos(id: String): Flow<List<UsuarioPerfilFirestoreDto>> =
         listenSubcoleccion(id = id, subcoleccion = "following")
+
+    override fun listenLikes(id: String): Flow<List<ItemDeUsuarioDto>> =
+        listenItemsDeUsuario(id = id, subcoleccion = "likes")
+
+    override fun listenGuardados(id: String): Flow<List<ItemDeUsuarioDto>> =
+        listenItemsDeUsuario(id = id, subcoleccion = "guardados")
+
+    // El listener escucha el documento del guardado: al tocar guardar se crea o se borra y llega
+    // si existe o no
+    override fun listenGuardado(usuarioId: String, itemId: String): Flow<Boolean> = callbackFlow {
+        val listenerRegistration = db.collection("usuarios").document(usuarioId)
+            .collection("guardados").document(itemId)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    close(error) // cierra el flujo con error
+                    return@addSnapshotListener
+                }
+                if (snapshot != null) {
+                    trySend(snapshot.exists()).isSuccess // envia si esta guardado
+                }
+            }
+
+        awaitClose { listenerRegistration.remove() }
+    }
+
+    // Los likes y los guardados son copias del item: llegan completos en la subcoleccion, del mas
+    // nuevo al mas viejo, sin otra consulta
+    private fun listenItemsDeUsuario(id: String, subcoleccion: String): Flow<List<ItemDeUsuarioDto>> = callbackFlow {
+        val listenerRegistration = db.collection("usuarios").document(id).collection(subcoleccion)
+            .orderBy("createdAt", Query.Direction.DESCENDING)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    close(error) // cierra el flujo con error
+                    return@addSnapshotListener
+                }
+                if (snapshot != null) {
+                    val items = snapshot.documents.mapNotNull { doc ->
+                        doc.toObject(ItemDeUsuarioDto::class.java)?.copy(id = doc.id)
+                    }
+                    trySend(items).isSuccess // envia la lista al flujo
+                }
+            }
+
+        awaitClose { listenerRegistration.remove() }
+    }
 
     // El listener escucha la subcoleccion: llegan los ids y los datos de cada usuario salen de su
     // documento, como en la lista sin vivo
@@ -200,20 +279,5 @@ class UsuarioFirestoreDataSourceImpl @Inject constructor(
 
         return db.collection("usuarios").document(usuarioId)
             .collection("followers").document(currentUserId).get().await().exists()
-    }
-
-    // Mi like de cada resena se pide a la vez y se espera el mas lento, en vez de uno por uno
-    private suspend fun conMisLikes(
-        reviews: List<ReviewConAlbumDto>,
-        currentUserId: String,
-    ): List<ReviewConAlbumDto> = coroutineScope {
-        val pendientes = reviews.map { review ->
-            async {
-                review.liked = db.collection("reviews").document(review.id).tieneMiLike(currentUserId)
-                review
-            }
-        }
-
-        pendientes.map { it.await() }
     }
 }
