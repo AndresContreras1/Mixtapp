@@ -18,6 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalPreviewProvider
+import com.example.mixtapp.data.model.HistoriaUi
 import com.example.mixtapp.data.model.ItemUi
 import com.example.mixtapp.ui.screens.datoscuriosos.components.DatoCuriosoCard
 import com.example.mixtapp.ui.screens.detail.components.ItemHeader
@@ -28,7 +29,8 @@ import com.example.mixtapp.ui.utils.ErrorBox
 import com.example.mixtapp.ui.utils.LoadingBox
 import com.example.mixtapp.ui.utils.SectionTitle
 
-// Los datos curiosos de un album, una cancion o un artista, debajo del mismo encabezado del detalle
+// Los datos curiosos de un album, una cancion o un artista, por secciones, debajo del mismo
+// encabezado del detalle
 @Composable
 fun DatosCuriososScreen(
     tipo: String,
@@ -47,7 +49,9 @@ fun DatosCuriososScreen(
     DatosCuriososScreenContent(
         isLoading = state.isLoading,
         item = state.item,
+        historia = state.historia,
         errorMessageRes = state.errorMessageRes,
+        errorHistoriaRes = state.errorHistoriaRes,
         onBackClick = onBackClick,
         modifier = modifier,
     )
@@ -57,7 +61,9 @@ fun DatosCuriososScreen(
 fun DatosCuriososScreenContent(
     isLoading: Boolean,
     item: ItemUi?,
+    historia: HistoriaUi?,
     @StringRes errorMessageRes: Int?,
+    @StringRes errorHistoriaRes: Int?,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -82,20 +88,22 @@ fun DatosCuriososScreenContent(
                     )
                 }
 
-                if (item.datosCuriosos.isEmpty()) {
+                // Sin historia: el item no tiene datos curiosos o no se pudieron cargar
+                if (historia == null) {
                     item {
                         EmptyMessage(
-                            messageRes = R.string.sin_datos_curiosos,
+                            messageRes = errorHistoriaRes ?: R.string.sin_datos_curiosos,
                             modifier = Modifier.fillMaxWidth(),
                         )
                     }
-                }
-
-                items(item.datosCuriosos) { dato ->
-                    DatoCuriosoCard(
-                        texto = dato,
-                        modifier = Modifier.padding(bottom = 12.dp),
-                    )
+                } else {
+                    items(historia.secciones) { seccion ->
+                        DatoCuriosoCard(
+                            titulo = seccion.titulo,
+                            texto = seccion.texto,
+                            modifier = Modifier.padding(bottom = 12.dp),
+                        )
+                    }
                 }
             }
         }
@@ -109,7 +117,9 @@ fun DatosCuriososScreenPreview() {
         DatosCuriososScreenContent(
             isLoading = false,
             item = LocalPreviewProvider.fromZero,
+            historia = LocalPreviewProvider.historiaFromZero,
             errorMessageRes = null,
+            errorHistoriaRes = null,
             onBackClick = {},
         )
     }

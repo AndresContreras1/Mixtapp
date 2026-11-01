@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AlternateEmail
 import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.PhotoCamera
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -19,8 +20,8 @@ import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppTextArea
 import com.example.mixtapp.ui.utils.AppTextField
 
-// Los campos del perfil: nombre y usuario ovalados como en el registro, y la biografia en el area
-// de texto con el contador, porque puede ocupar varias lineas
+// Los campos del perfil: nombre y usuario ovalados como en el registro, la biografia en el area
+// de texto con el contador, porque puede ocupar varias lineas, y el Instagram ovalado al final
 @Composable
 fun EditProfileForm(
     nombre: String,
@@ -29,6 +30,8 @@ fun EditProfileForm(
     onUsernameChange: (String) -> Unit,
     bio: String,
     onBioChange: (String) -> Unit,
+    instagram: String,
+    onInstagramChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
@@ -59,6 +62,16 @@ fun EditProfileForm(
             placeholder = stringResource(R.string.biografia_placeholder),
             maxLength = MAX_BIO_LENGTH
         )
+
+        Spacer(modifier = Modifier.height(14.dp))
+
+        AppTextField(
+            value = instagram,
+            onValueChange = onInstagramChange,
+            placeholder = stringResource(R.string.instagram_placeholder),
+            label = stringResource(R.string.label_instagram),
+            leadingIcon = Icons.Outlined.PhotoCamera,
+        )
     }
 }
 
@@ -75,6 +88,8 @@ fun EditProfileFormPreview() {
             onUsernameChange = {},
             bio = usuario.bio,
             onBioChange = {},
+            instagram = usuario.instagram,
+            onInstagramChange = {},
         )
     }
 }

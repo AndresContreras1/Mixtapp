@@ -76,6 +76,7 @@ class UsuarioFirestoreDataSourceImpl @Inject constructor(
                 "nombre" to actualizarUsuarioDto.nombre,
                 "username" to actualizarUsuarioDto.username,
                 "bio" to actualizarUsuarioDto.bio,
+                "instagram" to actualizarUsuarioDto.instagram,
             )
         ).await()
     }

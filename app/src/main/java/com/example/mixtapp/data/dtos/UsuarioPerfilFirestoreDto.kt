@@ -16,6 +16,8 @@ data class UsuarioPerfilFirestoreDto(
     // El documento tambien guarda el token de notificaciones; se declara aunque el perfil no lo
     // muestre, para que toObject no avise en el Logcat "No setter/field for fcmtoken"
     val fcmtoken: String?,
+    // Su usuario de Instagram sin la @; null si no lo puso
+    val instagram: String? = null,
     // No esta en la base: el data source lo llena buscando mi uid en la subcoleccion followers
     var followed: Boolean = false,
 ) : UsuarioDtoGeneric() {
@@ -34,6 +36,8 @@ data class UsuarioPerfilFirestoreDto(
             username = username,
             bio = bio ?: "",
             fotoUrl = fotoUrl ?: "",
+            instagram = instagram ?: "",
+            instagramUrl = perfilDeInstagram(instagram),
         )
     }
 }

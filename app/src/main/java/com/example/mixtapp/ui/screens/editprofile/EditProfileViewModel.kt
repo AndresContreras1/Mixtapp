@@ -21,6 +21,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+// El limite de Instagram para el nombre de usuario
+private const val MAX_INSTAGRAM_LENGTH = 30
+
 @HiltViewModel
 class EditProfileViewModel @Inject constructor(
     private val authRepository: AuthRepository,
@@ -53,6 +56,7 @@ class EditProfileViewModel @Inject constructor(
                         nombre = perfil?.nombre ?: "",
                         username = perfil?.username ?: usuarioDelCorreo,
                         bio = perfil?.bio ?: "",
+                        instagram = perfil?.instagram ?: "",
                         isLoading = false,
                     )
                 }
@@ -83,17 +87,28 @@ class EditProfileViewModel @Inject constructor(
         _uiState.update { it.copy(bio = bio.take(MAX_BIO_LENGTH), errorMessageRes = null) }
     }
 
+    // No se corta: si pasa del limite, el error lo explica al guardar
+    fun updateInstagram(instagram: String) {
+        _uiState.update { it.copy(instagram = instagram, errorMessageRes = null) }
+    }
+
     // Decidir si se puede guardar es responsabilidad del ViewModel, no de la pantalla
     fun guardarCambios() {
         val estado = _uiState.value
         val nombre = estado.nombre.trim()
         val username = estado.username.trim()
+        // Se guarda sin la @, aunque la escriban; vacio es que no tiene Instagram
+        val instagram = estado.instagram.trim().removePrefix("@")
 
         if (estado.guardando) return
 
         val errorRes = when {
             nombre.isBlank() || username.isBlank() -> R.string.error_campos_obligatorios
             username.contains(" ") -> R.string.error_username_espacios
+            // Instagram solo acepta letras sin tilde, numeros, puntos y guiones bajos
+            instagram.length > MAX_INSTAGRAM_LENGTH ||
+                    !instagram.all { it in 'a'..'z' || it in 'A'..'Z' || it in '0'..'9' || it == '.' || it == '_' } ->
+                R.string.error_instagram_invalido
             else -> null
         }
 
@@ -107,9 +122,9 @@ class EditProfileViewModel @Inject constructor(
             _uiState.update { it.copy(guardando = true, errorMessageRes = null) }
 
             val result = if (estado.sinDocumento) {
-                usuarioRepository.registrarUsuario(username = username, nombre = nombre, bio = estado.bio.trim())
+                usuarioRepository.registrarUsuario(username = username, nombre = nombre, bio = estado.bio.trim(), instagram = instagram)
             } else {
-                usuarioRepository.actualizarPerfil(nombre = nombre, username = username, bio = estado.bio.trim())
+                usuarioRepository.actualizarPerfil(nombre = nombre, username = username, bio = estado.bio.trim(), instagram = instagram)
             }
 
             if (result.isSuccess) {

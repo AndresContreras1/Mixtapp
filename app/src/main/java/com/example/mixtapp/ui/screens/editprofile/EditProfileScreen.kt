@@ -32,7 +32,7 @@ import com.example.mixtapp.ui.utils.ErrorMessage
 import com.example.mixtapp.ui.utils.LoadingBox
 import com.example.mixtapp.ui.utils.ScreenTitle
 
-// Modificar mis datos de Firestore: nombre, nombre de usuario y biografia
+// Modificar mis datos de Firestore: nombre, nombre de usuario, biografia e Instagram
 @Composable
 fun EditProfileScreen(
     editProfileViewModel: EditProfileViewModel,
@@ -58,6 +58,8 @@ fun EditProfileScreen(
         onUsernameChange = { editProfileViewModel.updateUsername(username = it) },
         bio = state.bio,
         onBioChange = { editProfileViewModel.updateBio(bio = it) },
+        instagram = state.instagram,
+        onInstagramChange = { editProfileViewModel.updateInstagram(instagram = it) },
         guardando = state.guardando,
         errorMessageRes = state.errorMessageRes,
         onGuardarClick = { editProfileViewModel.guardarCambios() },
@@ -76,6 +78,8 @@ fun EditProfileScreenContent(
     onUsernameChange: (String) -> Unit,
     bio: String,
     onBioChange: (String) -> Unit,
+    instagram: String,
+    onInstagramChange: (String) -> Unit,
     guardando: Boolean,
     @StringRes errorMessageRes: Int?,
     onGuardarClick: () -> Unit,
@@ -122,7 +126,9 @@ fun EditProfileScreenContent(
                         username = username,
                         onUsernameChange = onUsernameChange,
                         bio = bio,
-                        onBioChange = onBioChange
+                        onBioChange = onBioChange,
+                        instagram = instagram,
+                        onInstagramChange = onInstagramChange
                     )
 
                     Spacer(modifier = Modifier.height(24.dp))
@@ -160,6 +166,8 @@ fun EditProfileScreenPreview() {
             onUsernameChange = {},
             bio = usuario.bio,
             onBioChange = {},
+            instagram = usuario.instagram,
+            onInstagramChange = {},
             guardando = false,
             errorMessageRes = null,
             onGuardarClick = {},

@@ -17,13 +17,23 @@ data class ItemUi(
     val imagenUrl: String,
     // Vacio en los artistas
     val anio: String,
+    // Album y cancion: la fecha de salida AAAA-MM-DD, para ordenar lo mas nuevo. Vacia en los artistas
+    val fechaLanzamiento: String,
+    // Quien lo hizo: el artista del album o la cancion, o la banda del artista (el mismo si es
+    // solista). Con el se arman los lanzamientos de lo que me gusta
+    val artista: String,
     val genero: String,
     val subgenero: String,
-    val datosCuriosos: List<String>,
-    // Puesto en el Top Colombia; null si no esta en el top
+    // Puesto en la lista de Deezer de su genero; null si no esta en la lista
     val tendencia: Int?,
     val likes: Int,
     val likesText: String,
+    // Para abrirlo afuera de la app: la busqueda en YouTube (solo canciones) y en Spotify, y el
+    // Instagram del artista con su link. Vacios si no tiene
+    val youtubeUrl: String = "",
+    val spotifyUrl: String = "",
+    val instagram: String = "",
+    val instagramUrl: String = "",
     // No estan en el documento del item: el like lo busca el data source con mi uid y el
     // guardado sale de mis guardados
     val isLiked: Boolean = false,

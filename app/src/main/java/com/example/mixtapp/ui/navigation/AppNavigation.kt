@@ -233,8 +233,9 @@ fun AppNavigation(
                 onEditReviewClick = { tipo, itemId ->
                     navController.abrirEscribirResena(tipo = tipo, itemId = itemId)
                 },
-                onUserClick = { userId ->
-                    navController.abrirPerfil(userId = userId)
+                // Mis seguidores y mis seguidos se abren desde los contadores del encabezado
+                onFollowListClick = { userId, tipo ->
+                    navController.abrirLista(userId = userId, tipo = tipo)
                 },
                 onSeeAllReviewsClick = { navController.navigate(Screen.MyReviews.route) }
             )
@@ -374,12 +375,16 @@ fun AppNavigation(
 
             NotificationsScreen(
                 notificationsViewModel = notificationsViewModel,
-                // Un like o un comentario abre la discusion de la resena; un seguidor, su perfil
+                // Un like, un comentario o una discusion abren la resena; un seguidor, su perfil;
+                // un lanzamiento, su detalle
                 onReviewClick = { reviewId ->
                     navController.abrirDiscusion(reviewId = reviewId)
                 },
                 onUserClick = { userId ->
                     navController.abrirPerfil(userId = userId)
+                },
+                onItemClick = { tipo, itemId ->
+                    navController.abrirItem(tipo = tipo, itemId = itemId)
                 },
                 onBackClick = { navController.popBackStack() }
             )

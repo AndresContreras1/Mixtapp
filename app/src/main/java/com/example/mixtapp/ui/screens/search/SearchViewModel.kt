@@ -180,9 +180,9 @@ class SearchViewModel @Inject constructor(
             // En los generos el id es el mismo texto que guarda la base en el campo genero
             categoria.esGenero -> catalogo.filter { it.item.genero == categoria.id }
                 .sortedByDescending { it.popularidad }
-            // Los artistas no tienen anio. El anio va con cuatro cifras: ordenar el texto ordena los anios
+            // Los artistas no tienen fecha. Va como AAAA-MM-DD: ordenar el texto ordena las fechas
             categoria.id == CATEGORIA_FECHA_LANZAMIENTO -> catalogo.filter { it.item.tipo != TIPO_ARTISTA }
-                .sortedByDescending { it.item.anio }
+                .sortedByDescending { it.item.fechaLanzamiento }
             categoria.id == CATEGORIA_MAS_POPULARES -> catalogo.sortedByDescending { it.popularidad }
             // Sin resenas no hay promedio que comparar
             categoria.id == CATEGORIA_MEJOR_CALIFICADOS -> catalogo.filter { it.ratingCount > 0 }

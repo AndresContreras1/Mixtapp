@@ -12,7 +12,8 @@ data class ArtistaDto(
     val fotoUrl: String,
     val genero: String,
     val subgenero: String,
-    val datosCuriosos: List<String>,
+    // El usuario de Instagram sin la @: el de su banda si es integrante. null si no tiene
+    val instagram: String?,
     val tendencia: Int?,
     val likesCount: Int,
     val createdAt: String?,
@@ -21,10 +22,10 @@ data class ArtistaDto(
     var liked: Boolean = false,
 ) {
     // Firestore necesita un constructor vacio para convertir el documento en el DTO
-    constructor() : this("", "", null, "", "", "", emptyList(), null, 0, null, null)
+    constructor() : this("", "", null, "", "", "", null, null, 0, null, null)
 }
 
-// Debajo del nombre va su banda; si es solista, su genero. Los artistas no tienen anio
+// Debajo del nombre va su banda; si es solista, su genero. Los artistas no tienen anio ni fecha
 fun ArtistaDto.toItemUi(): ItemUi {
     return ItemUi(
         id = id,
@@ -34,12 +35,16 @@ fun ArtistaDto.toItemUi(): ItemUi {
         detalle = "",
         imagenUrl = fotoUrl,
         anio = "",
+        fechaLanzamiento = "",
+        artista = grupo ?: nombre,
         genero = genero,
         subgenero = subgenero,
-        datosCuriosos = datosCuriosos,
         tendencia = tendencia,
         likes = likesCount,
         likesText = formatoCantidad(likesCount),
         isLiked = liked,
+        spotifyUrl = busquedaEnSpotify(grupo ?: nombre),
+        instagram = instagram ?: "",
+        instagramUrl = perfilDeInstagram(instagram),
     )
 }

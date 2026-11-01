@@ -175,7 +175,8 @@ class UsuarioRepository @Inject constructor(
 
     // Primero se crea la cuenta en Authentication y despues, con su uid, se guardan los demas datos.
     // Tambien completa el perfil de una cuenta creada antes del sprint 10, que no tiene documento
-    suspend fun registrarUsuario(username: String, nombre: String, bio: String): Result<Unit> {
+    // (desde Editar perfil, que tambien manda el Instagram)
+    suspend fun registrarUsuario(username: String, nombre: String, bio: String, instagram: String = ""): Result<Unit> {
         return try {
             val usuarioId = authRemoteDataSource.currentUser?.uid
                 ?: return Result.failure(SinSesionException())
@@ -184,6 +185,7 @@ class UsuarioRepository @Inject constructor(
                 username = username,
                 nombre = nombre,
                 bio = if (bio.isEmpty()) null else bio,
+                instagram = if (instagram.isEmpty()) null else instagram,
                 // La foto se sube a Storage y queda en Authentication; se copia para que otros la vean
                 fotoUrl = authRemoteDataSource.currentUser?.photoUrl?.toString(),
                 FCMToken = tokenDelCelular(),
@@ -202,8 +204,9 @@ class UsuarioRepository @Inject constructor(
         }
     }
 
-    // Solo cambian el nombre, el usuario y la biografia: los contadores y la foto se conservan
-    suspend fun actualizarPerfil(nombre: String, username: String, bio: String): Result<Unit> {
+    // Solo cambian el nombre, el usuario, la biografia y el Instagram: los contadores y la foto se
+    // conservan. Lo que queda vacio se guarda como null
+    suspend fun actualizarPerfil(nombre: String, username: String, bio: String, instagram: String = ""): Result<Unit> {
         return try {
             val usuarioId = authRemoteDataSource.currentUser?.uid
                 ?: return Result.failure(SinSesionException())
@@ -212,6 +215,7 @@ class UsuarioRepository @Inject constructor(
                 nombre = nombre,
                 username = username,
                 bio = if (bio.isEmpty()) null else bio,
+                instagram = if (instagram.isEmpty()) null else instagram,
             )
             usuarioRemoteDataSource.actualizarPerfil(usuarioId, actualizarUsuarioDto)
             Result.success(Unit)

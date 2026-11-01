@@ -10,6 +10,8 @@ data class RegistrarUsuarioDto(
     val bio: String? = null,
     val fotoUrl: String? = null,
     val FCMToken: String,
+    // Sin la @; null si no lo puso
+    val instagram: String? = null,
 )
 
 // Lo que se puede cambiar en Editar perfil; los contadores y la foto no se tocan
@@ -17,4 +19,6 @@ data class ActualizarUsuarioDto(
     val nombre: String,
     val username: String,
     val bio: String?,
+    // Sin la @
+    val instagram: String?,
 )

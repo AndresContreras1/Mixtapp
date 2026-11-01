@@ -26,7 +26,7 @@ import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.ItemAsyncImage
 
 // La tarjeta grande del inicio: la portada del album en tendencia a todo el ancho y, sobre una
-// franja translucida, su titulo, el artista y su puesto en el Top Colombia
+// franja translucida, su titulo, el artista y su puesto en la lista de su genero
 @Composable
 fun TrendingCard(
     item: ItemUi,
@@ -75,11 +75,11 @@ fun TrendingCard(
                     overflow = TextOverflow.Ellipsis,
                 )
 
-                // Si ningun album esta en el top, la tarjeta muestra el mas popular sin puesto
+                // Si ningun album esta en la lista, la tarjeta muestra el mas popular sin puesto
                 val puesto = item.tendencia
                 if (puesto != null) {
                     Text(
-                        text = stringResource(R.string.puesto_en_colombia, puesto),
+                        text = stringResource(R.string.puesto_en_genero, puesto, item.genero),
                         color = MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.labelLarge,
                         fontWeight = FontWeight.Bold,
