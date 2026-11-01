@@ -65,6 +65,7 @@ fun ReviewConUsuarioDto.toAlbumReviewItemUi(usuarioActualId: String): AlbumRevie
         esMia = usuarioId == usuarioActualId,
         likes = likesCount,
         isLiked = liked,
+        comments = commentsCount,
     )
 }
 
@@ -75,6 +76,7 @@ fun ReviewConAlbumDto.toMyReviewUi(): MyReviewUi {
         rating = calificacion,
         excerpt = comentario ?: "",
         likes = likesCount,
+        comments = commentsCount,
         date = fechaEscucha ?: "",
     )
 }

@@ -35,6 +35,7 @@ fun UserProfileScreen(
     userId: String,
     userProfileViewModel: UserProfileViewModel,
     onReviewClick: (String) -> Unit,
+    onCommentsClick: (String) -> Unit,
     onSeguidoresClick: (String) -> Unit,
     onSeguidosClick: (String) -> Unit,
     onBackClick: () -> Unit,
@@ -70,6 +71,7 @@ fun UserProfileScreen(
             cargandoResenas = state.cargandoResenas,
             errorMessageRes = state.errorSeguimientoRes ?: state.errorResenasRes ?: state.errorMessageRes,
             onReviewClick = onReviewClick,
+            onCommentsClick = onCommentsClick,
             onBackClick = onBackClick,
             modifier = modifier
         )
@@ -86,6 +88,7 @@ fun UserProfileScreenContent(
     cargandoResenas: Boolean,
     errorMessageRes: Int?,
     onReviewClick: (String) -> Unit,
+    onCommentsClick: (String) -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -133,6 +136,7 @@ fun UserProfileScreenContent(
                 MyReviewCard(
                     review = reviews[index],
                     onReviewClick = onReviewClick,
+                    onCommentsClick = onCommentsClick,
                     showEditButton = false,
                     onEditClick = {},
                     onDeleteClick = {},
@@ -156,6 +160,7 @@ fun UserProfileScreenPreview() {
             cargandoResenas = false,
             errorMessageRes = null,
             onReviewClick = {},
+            onCommentsClick = {},
             onBackClick = {}
         )
     }

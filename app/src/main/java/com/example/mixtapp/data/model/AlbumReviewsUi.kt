@@ -25,4 +25,6 @@ data class AlbumReviewItemUi(
     val esMia: Boolean,
     val likes: Int = 0,
     val isLiked: Boolean = false,
+    // Cuantos comentarios tiene su discusion
+    val comments: Int = 0,
 )

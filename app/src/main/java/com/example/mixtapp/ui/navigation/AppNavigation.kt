@@ -66,6 +66,12 @@ private fun NavHostController.abrirLista(userId: String, tipo: String) {
     navigate(Screen.FollowList.createRoute(userId = userId, tipo = tipo))
 }
 
+// La discusion se abre desde cualquier tarjeta de resena: el detalle del album, el inicio, los
+// perfiles, Mis resenas y Siguiendo
+private fun NavHostController.abrirDiscusion(reviewId: String) {
+    navigate(Screen.Discussion.createRoute(reviewId = reviewId))
+}
+
 @Composable
 fun AppNavigation(
     navController: NavHostController,
@@ -128,6 +134,9 @@ fun AppNavigation(
                 onAuthorClick = { userId ->
                     navController.abrirPerfil(userId = userId)
                 },
+                onCommentsClick = { reviewId ->
+                    navController.abrirDiscusion(reviewId = reviewId)
+                },
                 onSearchClick = { navController.navigate(Screen.Search.route) },
                 onProfileClick = { navController.navigate(Screen.Profile.route) },
                 onFollowingClick = { navController.navigate(Screen.Following.route) },
@@ -172,7 +181,7 @@ fun AppNavigation(
             WriteReviewScreen(
                 albumId = albumId,
                 writeReviewViewModel = writeReviewViewModel,
-                // Al volver, la pantalla anterior pide sus datos de nuevo y la resena ya aparece
+                // Al volver, la pantalla anterior ya tiene la resena: le llega por su listener
                 onPublicada = { navController.popBackStack() },
                 onCancel = { navController.popBackStack() }
             )
@@ -185,6 +194,9 @@ fun AppNavigation(
                 myReviewsViewModel = myReviewsViewModel,
                 onReviewClick = { albumId ->
                     navController.abrirAlbum(albumId = albumId)
+                },
+                onCommentsClick = { reviewId ->
+                    navController.abrirDiscusion(reviewId = reviewId)
                 },
                 onEditClick = { albumId ->
                     navController.abrirEscribirResena(albumId = albumId)
@@ -206,6 +218,9 @@ fun AppNavigation(
                 onReviewClick = { albumId ->
                     navController.abrirAlbum(albumId = albumId)
                 },
+                onCommentsClick = { reviewId ->
+                    navController.abrirDiscusion(reviewId = reviewId)
+                },
                 onSeguidoresClick = { userId ->
                     navController.abrirLista(userId = userId, tipo = LISTA_SEGUIDORES)
                 },
@@ -221,7 +236,7 @@ fun AppNavigation(
 
             EditProfileScreen(
                 editProfileViewModel = editProfileViewModel,
-                // El perfil vuelve a pedir sus datos al mostrarse, asi que ya sale con los cambios
+                // El perfil escucha su documento en vivo, asi que ya sale con los cambios
                 onGuardado = { navController.popBackStack() },
                 onBackClick = { navController.popBackStack() }
             )
@@ -244,6 +259,9 @@ fun AppNavigation(
                 onBackClick = { navController.popBackStack() },
                 onAuthorClick = { userId ->
                     navController.abrirPerfil(userId = userId)
+                },
+                onCommentsClick = { reviewId ->
+                    navController.abrirDiscusion(reviewId = reviewId)
                 }
             )
         }
@@ -260,6 +278,9 @@ fun AppNavigation(
                 userProfileViewModel = userProfileViewModel,
                 onReviewClick = { albumId ->
                     navController.abrirAlbum(albumId = albumId)
+                },
+                onCommentsClick = { reviewId ->
+                    navController.abrirDiscusion(reviewId = reviewId)
                 },
                 onSeguidoresClick = { otherUserId ->
                     navController.abrirLista(userId = otherUserId, tipo = LISTA_SEGUIDORES)
@@ -306,7 +327,7 @@ fun AppNavigation(
                     navController.abrirAlbum(albumId = albumId)
                 },
                 onCommentsClick = { reviewId ->
-                    navController.navigate(Screen.Discussion.createRoute(reviewId = reviewId))
+                    navController.abrirDiscusion(reviewId = reviewId)
                 },
                 onBackClick = { navController.popBackStack() }
             )

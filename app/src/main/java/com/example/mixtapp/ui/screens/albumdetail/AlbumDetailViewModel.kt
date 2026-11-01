@@ -1,16 +1,16 @@
 package com.example.mixtapp.ui.screens.albumdetail
 
 import android.util.Log
-import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
+import com.example.mixtapp.data.injection.IoDispatcher
 import com.example.mixtapp.data.repository.AlbumRepository
-import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
-import com.example.mixtapp.data.repository.ErrorDelServidorException
 import com.example.mixtapp.data.repository.ReviewRepository
-import com.example.mixtapp.data.repository.SinConexionException
+import com.example.mixtapp.ui.utils.mensajeDeError
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,7 +22,9 @@ import javax.inject.Inject
 @HiltViewModel
 class AlbumDetailViewModel @Inject constructor(
     private val albumRepository: AlbumRepository,
-    private val reviewRepository: ReviewRepository
+    private val reviewRepository: ReviewRepository,
+    // Las corrutinas se lanzan en este hilo; las pruebas pasan uno de prueba
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AlbumDetailState())
@@ -38,7 +40,7 @@ class AlbumDetailViewModel @Inject constructor(
         if (escuchandoAlbum) return
         escuchandoAlbum = true
 
-        viewModelScope.launch {
+        viewModelScope.launch(ioDispatcher) {
             _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
 
             albumRepository.getAlbumReviewsByIdLive(albumId = albumId)
@@ -49,7 +51,7 @@ class AlbumDetailViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            errorMessageRes = mensajeDeError(error = e, generico = R.string.error_cargar_contenido),
+                            errorMessageRes = mensajeDeError(error = e, generico = R.string.error_cargar_contenido, noEncontrado = R.string.album_no_encontrado),
                         )
                     }
                 }
@@ -72,29 +74,21 @@ class AlbumDetailViewModel @Inject constructor(
         }
     }
 
-    // Quitar mi resena filtra la lista y recalcula el promedio, sin volver a pedir el album
+    // Al quitar mi resena no se toca la lista a mano: el listener del detalle trae las resenas sin
+    // ella y el promedio recalculado, en este celular y en los demas
     fun eliminarMiResena() {
-        val albumReviews = _uiState.value.albumReviews ?: return
         val miResenaId = _uiState.value.miResenaId ?: return
 
         if (_uiState.value.eliminando) return
 
-        viewModelScope.launch {
+        viewModelScope.launch(ioDispatcher) {
             _uiState.update { it.copy(eliminando = true, errorMessageRes = null) }
 
             val result = reviewRepository.eliminarResena(reviewId = miResenaId)
 
             if (result.isSuccess) {
-                // Se filtra la lista que hay ahora en el estado
-                val restantes = (_uiState.value.albumReviews?.reviews ?: emptyList()).filter { it.id != miResenaId }
-
                 _uiState.update {
-                    it.copy(
-                        albumReviews = albumRepository.conEstadisticas(album = albumReviews.album, reviews = restantes),
-                        miResenaId = null,
-                        eliminando = false,
-                        errorMessageRes = null,
-                    )
+                    it.copy(miResenaId = null, eliminando = false, errorMessageRes = null)
                 }
             } else {
                 _uiState.update {
@@ -102,7 +96,7 @@ class AlbumDetailViewModel @Inject constructor(
                         eliminando = false,
                         errorMessageRes = mensajeDeError(
                             error = result.exceptionOrNull(),
-                            generico = R.string.error_eliminar_resena,
+                            generico = R.string.error_eliminar_resena, noEncontrado = R.string.album_no_encontrado,
                         )
                     )
                 }
@@ -114,7 +108,7 @@ class AlbumDetailViewModel @Inject constructor(
     // dispara el flujo y llega la resena con el corazon y el contador al dia, en este celular y
     // en los demas que tengan el album abierto
     fun sendOrDeleteLike(reviewId: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(ioDispatcher) {
             val result = reviewRepository.sendOrDeleteLike(reviewId = reviewId)
 
             if (result.isSuccess) {
@@ -124,7 +118,7 @@ class AlbumDetailViewModel @Inject constructor(
                     it.copy(
                         errorMessageRes = mensajeDeError(
                             error = result.exceptionOrNull(),
-                            generico = R.string.error_actualizar_like,
+                            generico = R.string.error_actualizar_like, noEncontrado = R.string.album_no_encontrado,
                         )
                     )
                 }
@@ -132,11 +126,4 @@ class AlbumDetailViewModel @Inject constructor(
         }
     }
 
-    @StringRes
-    private fun mensajeDeError(error: Throwable?, @StringRes generico: Int): Int = when (error) {
-        is ContenidoNoEncontradoException -> R.string.contenido_no_encontrado
-        is ErrorDelServidorException -> R.string.error_servidor
-        is SinConexionException -> R.string.error_sin_conexion
-        else -> generico
-    }
 }

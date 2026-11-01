@@ -29,6 +29,7 @@ import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalFriendActivityProvider
 import com.example.mixtapp.data.model.FriendActivityUi
 import com.example.mixtapp.ui.theme.MixtappTheme
+import com.example.mixtapp.ui.utils.CommentsButton
 import com.example.mixtapp.ui.utils.ProfileAsyncImage
 import com.example.mixtapp.ui.utils.StarRating
 
@@ -37,6 +38,7 @@ fun FriendsActivity(
     activity: FriendActivityUi,
     onClick: (String) -> Unit,
     onAuthorClick: (String) -> Unit,
+    onCommentsClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Card(
@@ -83,7 +85,9 @@ fun FriendsActivity(
 
             // Tocar el autor abre su perfil
             Row(
-                modifier = Modifier.clickable { onAuthorClick(activity.authorId) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onAuthorClick(activity.authorId) },
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 ProfileAsyncImage(
@@ -99,7 +103,11 @@ fun FriendsActivity(
                     color = MaterialTheme.colorScheme.primary,
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Bold,
+                    modifier = Modifier.weight(1f),
                 )
+
+                // Abre la discusion de la resena aunque no siga a quien la escribio
+                CommentsButton(comments = activity.comments, onCommentsClick = { onCommentsClick(activity.id) })
             }
         }
     }
@@ -139,6 +147,7 @@ fun FriendsActivityPreview() {
             activity = LocalFriendActivityProvider.friendActivity,
             onClick = {},
             onAuthorClick = {},
+            onCommentsClick = {},
         )
     }
 }

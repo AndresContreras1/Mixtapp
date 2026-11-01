@@ -31,6 +31,7 @@ import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalAlbumReviewsProvider
 import com.example.mixtapp.data.model.AlbumReviewItemUi
 import com.example.mixtapp.ui.theme.MixtappTheme
+import com.example.mixtapp.ui.utils.CommentsButton
 import com.example.mixtapp.ui.utils.EditDeleteButtons
 import com.example.mixtapp.ui.utils.LikeButton
 import com.example.mixtapp.ui.utils.ProfileAsyncImage
@@ -44,6 +45,7 @@ fun ReviewItem(
     onEditClick: () -> Unit,
     onDeleteClick: () -> Unit,
     onAuthorClick: () -> Unit,
+    onCommentsClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     OutlinedCard(
@@ -102,12 +104,15 @@ fun ReviewItem(
                 lineHeight = 18.sp
             )
 
-            LikeButton(
-                likes = review.likes,
-                isLiked = review.isLiked,
-                onLikeClick = onLikeClick,
-                contentDescriptionRes = R.string.like_review,
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                LikeButton(
+                    likes = review.likes,
+                    isLiked = review.isLiked,
+                    onLikeClick = onLikeClick,
+                    contentDescriptionRes = R.string.like_review,
+                )
+                CommentsButton(comments = review.comments, onCommentsClick = onCommentsClick)
+            }
 
             if (review.esMia) {
                 EditDeleteButtons(
@@ -129,6 +134,7 @@ fun ReviewItemPreview() {
             onEditClick = {},
             onDeleteClick = {},
             onAuthorClick = {},
+            onCommentsClick = {},
         )
     }
 }

@@ -28,6 +28,7 @@ import com.example.mixtapp.ui.theme.MixtappTheme
 fun MyReviewCard(
     review: MyReviewUi,
     onReviewClick: (String) -> Unit,
+    onCommentsClick: (String) -> Unit,
     showEditButton: Boolean,
     // Recibe la resena completa: el perfil la edita ahi mismo y Mis resenas abre su album
     onEditClick: (MyReviewUi) -> Unit,
@@ -85,6 +86,7 @@ fun MyReviewCardPreview() {
         MyReviewCard(
             review = LocalMyReviewsProvider.reviews.first(),
             onReviewClick = {},
+            onCommentsClick = {},
             showEditButton = true,
             onEditClick = {},
             onDeleteClick = {}
