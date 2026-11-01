@@ -11,6 +11,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,7 +38,7 @@ fun HomeHeader(
             modifier = Modifier.weight(1f),
         )
 
-        IconButton(onClick = onFollowingClick) {
+        IconButton(onClick = onFollowingClick, modifier = Modifier.testTag("btnSiguiendo")) {
             Icon(
                 imageVector = Icons.Outlined.People,
                 contentDescription = stringResource(R.string.following_title),

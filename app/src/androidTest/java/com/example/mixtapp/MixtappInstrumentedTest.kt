@@ -10,7 +10,7 @@ import org.junit.runner.RunWith
 class MixtappInstrumentedTest {
 
     @Test
-    fun elContextoDeLaAppEsElDeMixtapp() {
+    fun contextoDeLaApp_paquete_esMixtapp() {
         val contexto = InstrumentationRegistry.getInstrumentation().targetContext
 
         assertEquals("com.example.mixtapp", contexto.packageName)

@@ -28,12 +28,15 @@ fun LikeButton(
     // Que se marca con like: la resena, el comentario o el item
     @StringRes contentDescriptionRes: Int,
     modifier: Modifier = Modifier,
+    // Para las pruebas e2e: el corazon se toca y el contador se lee por separado
+    botonModifier: Modifier = Modifier,
+    contadorModifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        IconButton(onClick = onLikeClick) {
+        IconButton(onClick = onLikeClick, modifier = botonModifier) {
             Icon(
                 imageVector = if (isLiked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
                 contentDescription = stringResource(if (isLiked) R.string.quitar_like else contentDescriptionRes),
@@ -45,6 +48,7 @@ fun LikeButton(
             text = likesText,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             style = MaterialTheme.typography.labelMedium,
+            modifier = contadorModifier,
         )
     }
 }
