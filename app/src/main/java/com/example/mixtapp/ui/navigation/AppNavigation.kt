@@ -8,6 +8,11 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.mixtapp.data.model.TIPO_ALBUM
+import com.example.mixtapp.ui.screens.datoscuriosos.DatosCuriososScreen
+import com.example.mixtapp.ui.screens.datoscuriosos.DatosCuriososViewModel
+import com.example.mixtapp.ui.screens.detail.DetailScreen
+import com.example.mixtapp.ui.screens.detail.DetailViewModel
 import com.example.mixtapp.ui.screens.discussion.DiscussionScreen
 import com.example.mixtapp.ui.screens.discussion.DiscussionViewModel
 import com.example.mixtapp.ui.screens.editprofile.EditProfileScreen
@@ -32,12 +37,10 @@ import com.example.mixtapp.ui.screens.review.WriteReviewScreen
 import com.example.mixtapp.ui.screens.review.WriteReviewViewModel
 import com.example.mixtapp.ui.screens.search.SearchScreen
 import com.example.mixtapp.ui.screens.search.SearchViewModel
-import com.example.mixtapp.ui.screens.selectalbum.SelectAlbumScreen
-import com.example.mixtapp.ui.screens.selectalbum.SelectAlbumViewModel
+import com.example.mixtapp.ui.screens.selectitem.SelectItemScreen
+import com.example.mixtapp.ui.screens.selectitem.SelectItemViewModel
 import com.example.mixtapp.ui.screens.signup.SignUpScreen
 import com.example.mixtapp.ui.screens.signup.SignUpViewModel
-import com.example.mixtapp.ui.screens.albumdetail.AlbumDetailScreen
-import com.example.mixtapp.ui.screens.albumdetail.AlbumDetailViewModel
 import com.example.mixtapp.ui.screens.splash.SplashScreen
 import com.example.mixtapp.ui.screens.splash.SplashViewModel
 import com.example.mixtapp.ui.screens.userprofile.UserProfileScreen
@@ -49,25 +52,26 @@ private fun NavHostController.navegarLimpiandoLaPila(ruta: String) {
     }
 }
 
-// Abrir un album, el perfil de un usuario y escribir una resena se repite en varias pantallas
-private fun NavHostController.abrirAlbum(albumId: String) {
-    navigate(Screen.AlbumDetail.createRoute(albumId = albumId))
+// Abrir un item, el perfil de un usuario, escribir una resena y abrir la discusion se repite en
+// varias pantallas
+private fun NavHostController.abrirItem(tipo: String, itemId: String) {
+    navigate(Screen.Detail.createRoute(tipo = tipo, itemId = itemId))
 }
 
 private fun NavHostController.abrirPerfil(userId: String) {
     navigate(Screen.UserProfile.createRoute(userId = userId))
 }
 
-private fun NavHostController.abrirEscribirResena(albumId: String) {
-    navigate(Screen.WriteReview.createRoute(albumId = albumId))
+private fun NavHostController.abrirEscribirResena(tipo: String, itemId: String) {
+    navigate(Screen.WriteReview.createRoute(tipo = tipo, itemId = itemId))
 }
 
 private fun NavHostController.abrirLista(userId: String, tipo: String) {
     navigate(Screen.FollowList.createRoute(userId = userId, tipo = tipo))
 }
 
-// La discusion se abre desde cualquier tarjeta de resena: el detalle del album, el inicio, los
-// perfiles, Mis resenas y Siguiendo
+// La discusion se abre desde cualquier tarjeta de resena: el detalle, el inicio, los perfiles,
+// Mis resenas, Siguiendo y las notificaciones
 private fun NavHostController.abrirDiscusion(reviewId: String) {
     navigate(Screen.Discussion.createRoute(reviewId = reviewId))
 }
@@ -128,8 +132,8 @@ fun AppNavigation(
 
             HomeScreen(
                 homeViewModel = homeViewModel,
-                onAlbumClick = { albumId ->
-                    navController.abrirAlbum(albumId = albumId)
+                onItemClick = { tipo, itemId ->
+                    navController.abrirItem(tipo = tipo, itemId = itemId)
                 },
                 onAuthorClick = { userId ->
                     navController.abrirPerfil(userId = userId)
@@ -137,8 +141,6 @@ fun AppNavigation(
                 onCommentsClick = { reviewId ->
                     navController.abrirDiscusion(reviewId = reviewId)
                 },
-                onSearchClick = { navController.navigate(Screen.Search.route) },
-                onProfileClick = { navController.navigate(Screen.Profile.route) },
                 onFollowingClick = { navController.navigate(Screen.Following.route) },
                 onNotificationsClick = { navController.navigate(Screen.Notifications.route) }
             )
@@ -149,21 +151,24 @@ fun AppNavigation(
 
             SearchScreen(
                 searchViewModel = searchViewModel,
-                onAlbumClick = { albumId ->
-                    navController.abrirAlbum(albumId = albumId)
+                onItemClick = { tipo, itemId ->
+                    navController.abrirItem(tipo = tipo, itemId = itemId)
+                },
+                onUserClick = { userId ->
+                    navController.abrirPerfil(userId = userId)
                 }
             )
         }
 
-        composable(route = Screen.SelectAlbum.route) {
-            val selectAlbumViewModel: SelectAlbumViewModel = hiltViewModel()
+        composable(route = Screen.SelectItem.route) {
+            val selectItemViewModel: SelectItemViewModel = hiltViewModel()
 
-            SelectAlbumScreen(
-                selectAlbumViewModel = selectAlbumViewModel,
+            SelectItemScreen(
+                selectItemViewModel = selectItemViewModel,
                 // Esta pantalla sale de la pila: al publicar se vuelve a donde se toco el +
-                onAlbumClick = { albumId ->
-                    navController.navigate(Screen.WriteReview.createRoute(albumId = albumId)) {
-                        popUpTo(Screen.SelectAlbum.route) { inclusive = true }
+                onItemClick = { tipo, itemId ->
+                    navController.navigate(Screen.WriteReview.createRoute(tipo = tipo, itemId = itemId)) {
+                        popUpTo(Screen.SelectItem.route) { inclusive = true }
                     }
                 },
                 onBackClick = { navController.popBackStack() }
@@ -172,14 +177,19 @@ fun AppNavigation(
 
         composable(
             route = Screen.WriteReview.route,
-            arguments = listOf(navArgument(name = "albumId") { type = NavType.StringType })
+            arguments = listOf(
+                navArgument(name = "tipo") { type = NavType.StringType },
+                navArgument(name = "itemId") { type = NavType.StringType }
+            )
         ) {
-            // Solo se obtiene el id; buscar el album es tarea del ViewModel
-            val albumId = it.arguments?.getString("albumId") ?: ""
+            // Solo se obtienen el tipo y el id; buscar el item es tarea del ViewModel
+            val tipo = it.arguments?.getString("tipo") ?: TIPO_ALBUM
+            val itemId = it.arguments?.getString("itemId") ?: ""
             val writeReviewViewModel: WriteReviewViewModel = hiltViewModel()
 
             WriteReviewScreen(
-                albumId = albumId,
+                tipo = tipo,
+                itemId = itemId,
                 writeReviewViewModel = writeReviewViewModel,
                 // Al volver, la pantalla anterior ya tiene la resena: le llega por su listener
                 onPublicada = { navController.popBackStack() },
@@ -192,14 +202,14 @@ fun AppNavigation(
 
             MyReviewsScreen(
                 myReviewsViewModel = myReviewsViewModel,
-                onReviewClick = { albumId ->
-                    navController.abrirAlbum(albumId = albumId)
+                onItemClick = { tipo, itemId ->
+                    navController.abrirItem(tipo = tipo, itemId = itemId)
                 },
                 onCommentsClick = { reviewId ->
                     navController.abrirDiscusion(reviewId = reviewId)
                 },
-                onEditClick = { albumId ->
-                    navController.abrirEscribirResena(albumId = albumId)
+                onEditClick = { tipo, itemId ->
+                    navController.abrirEscribirResena(tipo = tipo, itemId = itemId)
                 },
                 onBackClick = { navController.popBackStack() }
             )
@@ -211,21 +221,20 @@ fun AppNavigation(
             ProfileScreen(
                 profileViewModel = profileViewModel,
                 onSettingsClick = { navController.navigate(Screen.EditProfile.route) },
-                onMoreClick = {},
                 logoutButtonPressed = {
                     navController.navegarLimpiandoLaPila(Screen.Login.route)
                 },
-                onReviewClick = { albumId ->
-                    navController.abrirAlbum(albumId = albumId)
+                onItemClick = { tipo, itemId ->
+                    navController.abrirItem(tipo = tipo, itemId = itemId)
                 },
                 onCommentsClick = { reviewId ->
                     navController.abrirDiscusion(reviewId = reviewId)
                 },
-                onSeguidoresClick = { userId ->
-                    navController.abrirLista(userId = userId, tipo = LISTA_SEGUIDORES)
+                onEditReviewClick = { tipo, itemId ->
+                    navController.abrirEscribirResena(tipo = tipo, itemId = itemId)
                 },
-                onSeguidosClick = { userId ->
-                    navController.abrirLista(userId = userId, tipo = LISTA_SEGUIDOS)
+                onUserClick = { userId ->
+                    navController.abrirPerfil(userId = userId)
                 },
                 onSeeAllReviewsClick = { navController.navigate(Screen.MyReviews.route) }
             )
@@ -243,18 +252,26 @@ fun AppNavigation(
         }
 
         composable(
-            route = Screen.AlbumDetail.route,
-            arguments = listOf(navArgument(name = "albumId") { type = NavType.StringType })
+            route = Screen.Detail.route,
+            arguments = listOf(
+                navArgument(name = "tipo") { type = NavType.StringType },
+                navArgument(name = "itemId") { type = NavType.StringType }
+            )
         ) {
-            // Solo se obtiene el id; buscar el album es tarea del ViewModel
-            val albumId = it.arguments?.getString("albumId") ?: ""
-            val albumDetailViewModel: AlbumDetailViewModel = hiltViewModel()
+            // Solo se obtienen el tipo y el id; buscar el item es tarea del ViewModel
+            val tipo = it.arguments?.getString("tipo") ?: TIPO_ALBUM
+            val itemId = it.arguments?.getString("itemId") ?: ""
+            val detailViewModel: DetailViewModel = hiltViewModel()
 
-            AlbumDetailScreen(
-                albumId = albumId,
-                albumDetailViewModel = albumDetailViewModel,
-                onWriteReviewClick = {
-                    navController.abrirEscribirResena(albumId = albumId)
+            DetailScreen(
+                tipo = tipo,
+                itemId = itemId,
+                detailViewModel = detailViewModel,
+                onRateClick = {
+                    navController.abrirEscribirResena(tipo = tipo, itemId = itemId)
+                },
+                onDatosCuriososClick = {
+                    navController.navigate(Screen.DatosCuriosos.createRoute(tipo = tipo, itemId = itemId))
                 },
                 onBackClick = { navController.popBackStack() },
                 onAuthorClick = { userId ->
@@ -263,6 +280,25 @@ fun AppNavigation(
                 onCommentsClick = { reviewId ->
                     navController.abrirDiscusion(reviewId = reviewId)
                 }
+            )
+        }
+
+        composable(
+            route = Screen.DatosCuriosos.route,
+            arguments = listOf(
+                navArgument(name = "tipo") { type = NavType.StringType },
+                navArgument(name = "itemId") { type = NavType.StringType }
+            )
+        ) {
+            val tipo = it.arguments?.getString("tipo") ?: TIPO_ALBUM
+            val itemId = it.arguments?.getString("itemId") ?: ""
+            val datosCuriososViewModel: DatosCuriososViewModel = hiltViewModel()
+
+            DatosCuriososScreen(
+                tipo = tipo,
+                itemId = itemId,
+                datosCuriososViewModel = datosCuriososViewModel,
+                onBackClick = { navController.popBackStack() }
             )
         }
 
@@ -276,8 +312,8 @@ fun AppNavigation(
             UserProfileScreen(
                 userId = userId,
                 userProfileViewModel = userProfileViewModel,
-                onReviewClick = { albumId ->
-                    navController.abrirAlbum(albumId = albumId)
+                onItemClick = { tipo, itemId ->
+                    navController.abrirItem(tipo = tipo, itemId = itemId)
                 },
                 onCommentsClick = { reviewId ->
                     navController.abrirDiscusion(reviewId = reviewId)
@@ -323,8 +359,8 @@ fun AppNavigation(
                 onAuthorClick = { userId ->
                     navController.abrirPerfil(userId = userId)
                 },
-                onAlbumClick = { albumId ->
-                    navController.abrirAlbum(albumId = albumId)
+                onItemClick = { tipo, itemId ->
+                    navController.abrirItem(tipo = tipo, itemId = itemId)
                 },
                 onCommentsClick = { reviewId ->
                     navController.abrirDiscusion(reviewId = reviewId)
@@ -338,6 +374,13 @@ fun AppNavigation(
 
             NotificationsScreen(
                 notificationsViewModel = notificationsViewModel,
+                // Un like o un comentario abre la discusion de la resena; un seguidor, su perfil
+                onReviewClick = { reviewId ->
+                    navController.abrirDiscusion(reviewId = reviewId)
+                },
+                onUserClick = { userId ->
+                    navController.abrirPerfil(userId = userId)
+                },
                 onBackClick = { navController.popBackStack() }
             )
         }
@@ -353,6 +396,12 @@ fun AppNavigation(
             DiscussionScreen(
                 reviewId = reviewId,
                 discussionViewModel = discussionViewModel,
+                onAuthorClick = { userId ->
+                    navController.abrirPerfil(userId = userId)
+                },
+                onItemClick = { tipo, itemId ->
+                    navController.abrirItem(tipo = tipo, itemId = itemId)
+                },
                 onBackClick = { navController.popBackStack() }
             )
         }

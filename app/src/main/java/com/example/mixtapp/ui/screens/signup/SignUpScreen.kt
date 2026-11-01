@@ -1,9 +1,19 @@
 package com.example.mixtapp.ui.screens.signup
 
-import androidx.compose.foundation.layout.*
+import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -11,8 +21,9 @@ import androidx.compose.ui.unit.dp
 import com.example.mixtapp.ui.screens.signup.components.SignUpFooter
 import com.example.mixtapp.ui.screens.signup.components.SignUpForm
 import com.example.mixtapp.ui.screens.signup.components.SignUpHeader
-import com.example.mixtapp.ui.theme.*
-import com.example.mixtapp.ui.utils.*
+import com.example.mixtapp.ui.theme.MixtappTheme
+import com.example.mixtapp.ui.utils.AppBackground
+import com.example.mixtapp.ui.utils.ErrorMessage
 
 @Composable
 fun SignUpScreen(
@@ -75,28 +86,27 @@ fun SignUpScreenContent(
     onConfirmarVisibleChange: () -> Unit,
     terminos: Boolean,
     onTerminosClick: () -> Unit,
-    errorMessageRes: Int?,
+    @StringRes errorMessageRes: Int?,
     cargando: Boolean,
     onSignUpClick: () -> Unit,
     onLoginClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-    ) {
+    Box(modifier = modifier.fillMaxSize()) {
         AppBackground()
 
+        // Son cinco campos: en pantallas pequenas o con el teclado abierto la columna se desplaza
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .imePadding()
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 31.dp),
+                .padding(horizontal = 28.dp, vertical = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            SignUpHeader()
 
-            SignUpHeader(modifier = Modifier.padding(bottom = 16.dp))
+            Spacer(modifier = Modifier.height(28.dp))
 
             SignUpForm(
                 nombre = nombre,
@@ -117,22 +127,24 @@ fun SignUpScreenContent(
                 onTerminosClick = onTerminosClick,
                 cargando = cargando,
                 onSignUpClick = onSignUpClick,
-                modifier = Modifier.padding(bottom = 12.dp)
             )
 
-            ErrorMessage(messageRes = errorMessageRes)
-
-            SignUpFooter(
-                onLoginClick = onLoginClick,
-                modifier = Modifier.padding(bottom = 80.dp)
+            // Error de las validaciones o del registro, calculado por el ViewModel
+            ErrorMessage(
+                messageRes = errorMessageRes,
+                modifier = Modifier.padding(top = 16.dp)
             )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            SignUpFooter(onLoginClick = onLoginClick)
         }
     }
 }
 
-@Preview(showBackground = true, widthDp = 393, heightDp = 852, name = "SignUp Dark")
 @Composable
-fun SignUpScreenDarkPreview() {
+@Preview(showBackground = true, widthDp = 393, heightDp = 852)
+fun SignUpScreenPreview() {
     MixtappTheme(darkTheme = true) {
         SignUpScreenContent(
             nombre = "",

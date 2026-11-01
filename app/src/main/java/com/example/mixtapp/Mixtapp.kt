@@ -78,9 +78,9 @@ fun Mixtapp(modifier: Modifier = Modifier) {
         },
         floatingActionButton = {
             if (mostrarBarra) {
-                // El + abre la lista de albumes para elegir cual resenar
+                // El + abre la lista del catalogo para elegir que calificar
                 WriteReviewFab(
-                    onClick = { navController.navigate(Screen.SelectAlbum.route) }
+                    onClick = { navController.navigate(Screen.SelectItem.route) }
                 )
             }
         }

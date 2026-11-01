@@ -1,18 +1,13 @@
 <resources>
     <string name="app_name">Mixtapp</string>
     <string name="ingresar">Ingresar</string>
-    <string name="descripcion_login">Ingresa a tu cuenta para seguir calificando álbumes o para seguir a tus amigos.</string>
+    <string name="descripcion_login">¿Quieres conocer música nueva?</string>
     <string name="no_tienes_cuenta">¿No tienes cuenta?</string>
     <string name="email">Correo</string>
     <string name="enter_your_email">Ingresa tu correo</string>
     <string name="contrasena">Contraseña</string>
     <string name="enter_your_password">Ingresa tu contraseña</string>
-    <string name="o">O</string>
-    <string name="profile_tab_diary">Diario</string>
-    <string name="profile_tab_lists">Listas</string>
-    <string name="profile_tab_library">Biblioteca</string>
     <string name="favoritos">Favoritos</string>
-    <string name="calificaciones">Calificaciones</string>
 
     <!-- SignUp / Login Extra -->
     <string name="create_account">Crear cuenta</string>
@@ -25,7 +20,6 @@
     <string name="confirm_password">Confirmar</string>
     <string name="repeat_password">Repite tu contraseña</string>
     <string name="agree_terms">Acepto los términos y condiciones de Mixtapp</string>
-    <string name="privacy">privacidad</string>
     <string name="sign_up_btn">Registrarse</string>
     <string name="already_have_account">¿Ya tienes una cuenta?</string>
     <string name="log_in">Iniciar sesión</string>
@@ -40,28 +34,16 @@
     <string name="friends">Seguidos</string>
     <string name="now_trending">En tendencia</string>
     <string name="popular_albums">Álbumes populares</string>
-    <string name="see_all">Ver todo</string>
-    <string name="friends_activity">Actividad de seguidos</string>
     <string name="sin_actividad_seguidos">Aún no hay reseñas de personas a quienes sigues</string>
-    <string name="todos_los_albumes">Todos los álbumes</string>
     <string name="resenas_de_seguidos">Reseñas de quienes sigues</string>
 
     <!-- Profile Extra -->
-    <string name="user_stats">%1$s • %2$s</string>
-    <string name="una_resena">1 reseña</string>
-    <string name="n_resenas">%1$s reseñas</string>
-    <string name="un_favorito">1 favorito</string>
-    <string name="n_favoritos">%1$s favoritos</string>
-    <string name="more_activity">Más actividad</string>
     <string name="star_rating_format">%d estrellas</string>
     <string name="una_estrella">1 estrella</string>
     <string name="estrella_llena">Estrella llena</string>
     <string name="estrella_vacia">Estrella vacía</string>
 
     <!-- Validacion -->
-    <string name="label_buscar">Buscar</string>
-    <string name="label_buscar_amigos">Seguidos</string>
-    <string name="label_comentario">Comentario</string>
     <string name="label_fecha_escucha">Fecha (AAAA-MM-DD)</string>
     <string name="label_resena">Reseña</string>
     <string name="error_campos_obligatorios">Todos los campos son obligatorios</string>
@@ -70,8 +52,7 @@
     <string name="error_contrasena_corta">La contraseña debe tener al menos 6 caracteres</string>
     <string name="error_contrasenas_no_coinciden">Las contraseñas no coinciden</string>
     <string name="discusion_no_encontrada">No se encontró la discusión</string>
-    <string name="album_no_encontrado">No se encontró el álbum</string>
-    <string name="resenas_no_encontradas">No se encontraron las reseñas</string>
+    <string name="album_no_encontrado">No se encontró lo que buscas</string>
     <string name="contenido_no_encontrado">No se encontró el contenido</string>
     <string name="perfil_no_encontrado">No se encontró el perfil</string>
     <string name="reply">Responder</string>
@@ -93,7 +74,6 @@
     <string name="error_cargar_contenido">No se pudo cargar el contenido. Inténtalo de nuevo</string>
     <string name="error_actualizar_lista">No se pudo actualizar la lista. Inténtalo de nuevo</string>
     <string name="error_me_gusta">No se pudo registrar tu me gusta</string>
-    <string name="error_compartir">No se pudo compartir la reseña</string>
     <string name="error_publicar_resena">No se pudo publicar la reseña</string>
     <string name="error_eliminar_resena">No se pudo eliminar la reseña</string>
     <string name="error_publicar_comentario">No se pudo publicar el comentario</string>
@@ -101,40 +81,29 @@
     <string name="error_fecha_invalida">La fecha debe tener el formato AAAA-MM-DD</string>
     <string name="error_comentario_vacio">Escribe tu comentario antes de publicar</string>
     <string name="ajustes">Ajustes</string>
-    <string name="mas_opciones">Más opciones</string>
-    <string name="cero_estrellas">Cero estrellas</string>
     <string name="cambiar_foto">Cambiar foto</string>
     <string name="foto_perfil">Foto de perfil</string>
 
     <!-- Discussion -->
-    <string name="comments">Comentarios</string>
     <string name="discussion">Discusión</string>
-    <string name="comments_count">%1$d comentarios</string>
-    <string name="un_comentario">1 comentario</string>
     <string name="replying">Respondiendo</string>
     <string name="comentario_placeholder">Escribe un comentario...</string>
     <string name="publicar_comentario">Publicar</string>
     <string name="ahora">ahora</string>
-    <string name="reviewed">" reseñó"</string>
 
     <!-- Descripciones de los iconos, para lectores de pantalla -->
     <string name="like_comment">Me gusta el comentario</string>
     <string name="back">Volver</string>
     <string name="like_review">Me gusta la reseña</string>
-    <string name="share_review">Compartir la reseña</string>
     <string name="open_discussion">Abrir la discusión</string>
 
     <!-- Following -->
     <string name="following_title">Siguiendo</string>
     <string name="following_followers_count">%1$d siguiendo • %2$d seguidores</string>
     <string name="find_friends">Buscar seguidos</string>
-    <string name="following_filtro_todo">Todo</string>
-    <string name="tu_historia">Tu historia</string>
 
     <!-- Home -->
-    <string name="titulo_guion_subtitulo">%1$s - %2$s</string>
     <string name="arroba_usuario">@%1$s</string>
-    <string name="cita_entre_comillas">\"%1$s\"</string>
 
     <!-- My reviews -->
     <string name="my_reviews">Mis reseñas</string>
@@ -142,34 +111,26 @@
     <string name="sin_mis_resenas">Todavía no has escrito reseñas</string>
     <string name="editar_resena">Editar reseña</string>
     <string name="eliminar_resena">Eliminar reseña</string>
-    <string name="filtro_recientes">Recientes</string>
-    <string name="filtro_mejor_calificadas">Mejor calificadas</string>
-    <string name="filtro_a_z">A-Z</string>
-    <string name="filtro_calificacion_5">5</string>
-    <string name="filtro_calificacion_4">4</string>
 
     <!-- Notifications -->
     <string name="notifications_title">Notificaciones</string>
     <string name="notifications_tab_all">Todas</string>
     <string name="notifications_tab_unread">Sin leer (%1$d)</string>
-    <string name="notification_thumbnail">Carátula del álbum</string>
 
     <!-- Profile -->
     <string name="cerrar_sesion">Cerrar sesión</string>
     <string name="completa_tu_perfil">Completa tu nombre y tu biografía en Ajustes</string>
-    <string name="sin_favoritos">Califica un álbum con 5 estrellas para verlo aquí</string>
+    <string name="sin_favoritos">Dale me gusta a un álbum, una canción o un artista para verlo aquí</string>
 
     <!-- Write review -->
-    <string name="album_meta">%1$s · %2$s · %3$s</string>
-    <string name="date_listened">Fecha de escucha</string>
     <string name="when_did_you_listen">¿Cuándo lo escuchaste?</string>
-    <string name="review_placeholder">¿Qué te hizo sentir este álbum? ¿Alguna canción que destaque?\n¿Lo recomendarías?</string>
+    <string name="review_placeholder">¿Qué te hizo sentir? ¿Lo recomendarías?</string>
     <string name="contador_caracteres">%1$d/%2$d</string>
     <string name="cancel">Cancelar</string>
     <string name="write_review">Escribir reseña</string>
     <string name="your_rating">Tu calificación</string>
     <string name="tap_to_rate">Toca para calificar</string>
-    <string name="post">PUBLICAR</string>
+    <string name="post">Publicar</string>
 
     <!-- Edit profile -->
     <string name="editar_perfil">Editar perfil</string>
@@ -181,21 +142,18 @@
     <string name="error_username_espacios">El nombre de usuario no puede tener espacios</string>
 
     <!-- Select album -->
-    <string name="elegir_album_titulo">¿Qué álbum vas a reseñar?</string>
-    <string name="elegir_album_descripcion">Elige un álbum para escribir tu reseña</string>
+    <string name="elegir_album_titulo">¿Qué vas a calificar?</string>
+    <string name="elegir_album_descripcion">Elige un álbum, una canción o un artista para escribir tu reseña</string>
 
     <!-- Search -->
     <string name="browse_by">Explorar por</string>
     <string name="search_title">Buscar</string>
-    <string name="search_placeholder">Busca álbumes, artistas, amigos...</string>
-    <string name="sin_resultados">No se encontraron álbumes</string>
+    <string name="search_placeholder">Busca canciones, álbumes, artistas o amigos</string>
+    <string name="sin_resultados">No se encontró nada</string>
 
     <!-- Song review -->
     <string name="reviews">Reseñas</string>
-    <string name="write_one">Escribe una</string>
-    <string name="editar_la_tuya">Edita la tuya</string>
-    <string name="marca_propia">%1$s (tú)</string>
-    <string name="sin_resenas_album">Todavía nadie reseña este álbum. ¡Escribe la primera!</string>
+    <string name="sin_resenas_album">Todavía nadie califica esto. ¡Escribe la primera reseña!</string>
     <string name="ratings_label">calificaciones</string>
     <string name="calificacion_label">calificación</string>
     <string name="recommend_label">recomiendan</string>
@@ -216,7 +174,6 @@
     <string name="nav_home">Inicio</string>
     <string name="nav_profile">Perfil</string>
     <string name="quitar_like">Quitar me gusta</string>
-    <string name="cantidad_likes">%1$d Me gusta</string>
     <string name="cantidad_seguidores">%1$d seguidores</string>
     <string name="cantidad_seguidos">%1$d seguidos</string>
     <string name="titulo_seguidores">Seguidores</string>
@@ -225,4 +182,66 @@
     <string name="dejar_de_seguir">Dejar de seguir</string>
     <string name="error_actualizar_like">No se pudo actualizar el me gusta. Inténtalo de nuevo.</string>
     <string name="error_actualizar_seguimiento">No se pudo actualizar el seguimiento. Inténtalo de nuevo.</string>
+
+    <!-- Buscar: tarjetas de orden y de genero -->
+    <string name="categoria_fecha_lanzamiento">Fecha de lanzamiento</string>
+    <string name="categoria_mas_populares">Más populares</string>
+    <string name="categoria_mejor_calificados">Mejor calificados</string>
+    <string name="genero_rock">Rock</string>
+    <string name="genero_metal">Metal</string>
+    <string name="genero_reggaeton">Reggaetón</string>
+    <string name="genero_musica_popular">Música popular</string>
+
+    <!-- detalle, datos curiosos, escribir resena y discusion -->
+    <string name="calificar">Calificar</string>
+    <string name="editar_calificacion">Editar calificación</string>
+    <string name="quitar_de_guardados">Quitar de guardados</string>
+    <string name="like_item">Me gusta</string>
+    <string name="likes_label">me gusta</string>
+    <string name="datos_curiosos">Datos curiosos</string>
+    <string name="sin_datos_curiosos">Todavía no hay datos curiosos de esto</string>
+    <string name="error_guardar_item">No se pudieron actualizar tus guardados. Inténtalo de nuevo</string>
+    <string name="anio_genero">%1$s · %2$s</string>
+    <string name="comentarios_total">Comentarios (%1$d)</string>
+    <string name="sin_comentarios">Todavía no hay comentarios. ¡Escribe el primero!</string>
+    <string name="respondiendo_a">Respondiendo a %1$s</string>
+    <string name="cancelar_respuesta">Cancelar respuesta</string>
+
+    <!-- notificaciones -->
+    <string name="notificaciones_hoy">Hoy</string>
+    <string name="notificaciones_antes">Antes</string>
+    <string name="notificacion_like">%1$s le dio me gusta a tu reseña de %2$s</string>
+    <string name="notificacion_like_sin_item">%1$s le dio me gusta a tu reseña</string>
+    <string name="notificacion_comentario">%1$s comentó tu reseña de %2$s</string>
+    <string name="notificacion_comentario_sin_item">%1$s comentó tu reseña</string>
+    <string name="notificacion_respuesta">%1$s respondió tu comentario</string>
+    <string name="notificacion_seguidor">%1$s empezó a seguirte</string>
+    <string name="sin_notificaciones">Todavía no tienes notificaciones</string>
+    <string name="sin_notificaciones_sin_leer">No tienes notificaciones sin leer</string>
+
+    <!-- inicio, buscar y elegir que calificar -->
+    <string name="canciones_populares">Canciones populares</string>
+    <string name="artistas_populares">Artistas populares</string>
+    <string name="puesto_en_colombia">#%1$d en Colombia</string>
+    <string name="sin_items_filtro">Todavía no hay nada para mostrar aquí</string>
+    <string name="generos">Géneros</string>
+    <string name="personas">Personas</string>
+    <string name="tipo_album">Álbum</string>
+    <string name="tipo_cancion">Canción</string>
+    <string name="tipo_artista">Artista</string>
+    <string name="quitar_categoria">Quitar la categoría</string>
+    <string name="filtro_todos">Todos</string>
+    <string name="filtro_albumes">Álbumes</string>
+    <string name="filtro_canciones">Canciones</string>
+    <string name="filtro_artistas">Artistas</string>
+    <string name="elegir_item_placeholder">Busca lo que quieres calificar</string>
+
+    <!-- mi perfil, perfil de otro usuario y listas de seguidores -->
+    <string name="sin_mis_seguidores">Todavía nadie te sigue</string>
+    <string name="sin_mis_seguidos">Todavía no sigues a nadie</string>
+    <string name="profile_tab_guardados">Guardados</string>
+    <string name="actividad_reciente">Actividad reciente</string>
+    <string name="sin_guardados">Guarda álbumes, canciones o artistas desde su detalle</string>
+    <string name="sin_favoritos_usuario">Todavía no le ha dado me gusta a nada</string>
+    <string name="sin_resenas_usuario">Todavía no ha escrito reseñas</string>
 </resources>

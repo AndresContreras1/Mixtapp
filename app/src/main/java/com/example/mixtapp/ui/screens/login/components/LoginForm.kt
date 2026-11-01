@@ -9,19 +9,19 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppButton
 import com.example.mixtapp.ui.utils.AppTextField
 
+// El formulario del login: los campos ovalados de correo y contrasena (con el ojo para verla) y el
+// boton de ingresar. Los testTags son para las pruebas e2e
 @Composable
 fun LoginForm(
     email: String,
@@ -33,49 +33,42 @@ fun LoginForm(
     cargando: Boolean,
     onLoginClick: () -> Unit,
     modifier: Modifier = Modifier
-){
-
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+) {
+    Column(modifier = modifier.fillMaxWidth()) {
         AppTextField(
-            label = stringResource(R.string.email),
-            placeholder = stringResource(R.string.enter_your_email),
             value = email,
             onValueChange = onEmailChange,
+            placeholder = stringResource(R.string.enter_your_email),
+            label = stringResource(R.string.email),
+            leadingIcon = Icons.Outlined.Email,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            icon = Icons.Outlined.Email,
-            esContrasena = false,
-            contrasenaVisible = false,
-            onContrasenaVisibleChange = {}
+            modifier = Modifier.testTag("txtEmail"),
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         AppTextField(
-            label = stringResource(R.string.contrasena),
-            placeholder = stringResource(R.string.enter_your_password),
             value = contrasena,
             onValueChange = onContrasenaChange,
+            placeholder = stringResource(R.string.enter_your_password),
+            label = stringResource(R.string.contrasena),
+            leadingIcon = Icons.Outlined.Lock,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            icon = Icons.Outlined.Lock,
             esContrasena = true,
             contrasenaVisible = contrasenaVisible,
-            onContrasenaVisibleChange = onContrasenaVisibleChange
+            onContrasenaVisibleChange = onContrasenaVisibleChange,
+            modifier = Modifier.testTag("txtPassword"),
         )
 
         Spacer(modifier = Modifier.height(28.dp))
 
         AppButton(
-            texto = stringResource(R.string.ingresar).uppercase(),
+            texto = stringResource(R.string.ingresar),
             onClick = onLoginClick,
             cargando = cargando,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Black,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(82.dp)
+                .testTag("btnLogin"),
         )
     }
 }

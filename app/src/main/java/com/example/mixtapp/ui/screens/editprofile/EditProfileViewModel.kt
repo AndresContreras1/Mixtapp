@@ -16,6 +16,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -29,7 +30,7 @@ class EditProfileViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(EditProfileState())
-    val uiState: StateFlow<EditProfileState> = _uiState
+    val uiState: StateFlow<EditProfileState> = _uiState.asStateFlow()
 
     // No recibe parametros, asi que los datos actuales se cargan al crear el ViewModel
     init {
@@ -66,14 +67,18 @@ class EditProfileViewModel @Inject constructor(
         }
     }
 
+    // Cada campo se corta en el limite del perfil (el mismo del registro) y escribir borra el
+    // error anterior
     fun updateNombre(nombre: String) {
         _uiState.update { it.copy(nombre = nombre.take(MAX_NOMBRE_LENGTH), errorMessageRes = null) }
     }
 
+    // Igual que el nombre, con su propio limite
     fun updateUsername(username: String) {
         _uiState.update { it.copy(username = username.take(MAX_USERNAME_LENGTH), errorMessageRes = null) }
     }
 
+    // Igual que el nombre; el contador del area de texto muestra cuanto queda
     fun updateBio(bio: String) {
         _uiState.update { it.copy(bio = bio.take(MAX_BIO_LENGTH), errorMessageRes = null) }
     }
@@ -118,6 +123,4 @@ class EditProfileViewModel @Inject constructor(
             }
         }
     }
-
-
 }

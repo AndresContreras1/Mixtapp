@@ -1,20 +1,22 @@
 package com.example.mixtapp.ui.screens.profile
 
 import android.net.Uri
-import androidx.compose.foundation.background
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -25,249 +27,309 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
-import com.example.mixtapp.data.local.LocalAlbumProvider
-import com.example.mixtapp.data.local.LocalMyReviewsProvider
-import com.example.mixtapp.data.model.Album
-import com.example.mixtapp.data.model.MyReviewUi
-import com.example.mixtapp.ui.screens.profile.components.EditReviewCard
-import com.example.mixtapp.ui.screens.profile.components.FavoriteSection
+import com.example.mixtapp.data.local.LocalPreviewProvider
+import com.example.mixtapp.data.model.ItemResumenUi
+import com.example.mixtapp.data.model.ReviewUi
+import com.example.mixtapp.data.model.UsuarioUi
+import com.example.mixtapp.ui.screens.profile.components.GUARDADOS_POR_FILA
 import com.example.mixtapp.ui.screens.profile.components.LogoutButton
-import com.example.mixtapp.ui.screens.profile.components.MyReviewsTitle
-import com.example.mixtapp.ui.screens.profile.components.ProfileAvatarSection
-import com.example.mixtapp.ui.screens.profile.components.ProfileHeader
-import com.example.mixtapp.ui.screens.profile.components.RatingsSection
+import com.example.mixtapp.ui.screens.profile.components.PickImageButton
+import com.example.mixtapp.ui.screens.profile.components.ProfileTabs
+import com.example.mixtapp.ui.screens.profile.components.SavedItemsRow
+import com.example.mixtapp.ui.screens.profile.model.PESTANA_GUARDADOS
+import com.example.mixtapp.ui.screens.profile.model.PESTANA_PERFIL
+import com.example.mixtapp.ui.screens.profile.model.PESTANA_SEGUIDORES
+import com.example.mixtapp.ui.screens.profile.model.PESTANA_SIGUIENDO
 import com.example.mixtapp.ui.screens.profile.model.ProfileTabUi
 import com.example.mixtapp.ui.screens.profile.model.profileTabs
 import com.example.mixtapp.ui.theme.MixtappTheme
+import com.example.mixtapp.ui.utils.AppBackground
+import com.example.mixtapp.ui.utils.EmptyMessage
+import com.example.mixtapp.ui.utils.ErrorBox
 import com.example.mixtapp.ui.utils.ErrorMessage
+import com.example.mixtapp.ui.utils.FavoriteSection
 import com.example.mixtapp.ui.utils.LoadingBox
-import com.example.mixtapp.ui.utils.MyReviewCard
+import com.example.mixtapp.ui.utils.ProfileHeader
+import com.example.mixtapp.ui.utils.ReviewCard
+import com.example.mixtapp.ui.utils.ScreenTitle
+import com.example.mixtapp.ui.utils.SectionTitle
+import com.example.mixtapp.ui.utils.UserRow
 
 @Composable
 fun ProfileScreen(
     profileViewModel: ProfileViewModel,
     onSettingsClick: () -> Unit,
-    onMoreClick: () -> Unit,
     logoutButtonPressed: () -> Unit,
-    onReviewClick: (String) -> Unit,
+    onItemClick: (String, String) -> Unit,
     onCommentsClick: (String) -> Unit,
-    onSeguidoresClick: (String) -> Unit,
-    onSeguidosClick: (String) -> Unit,
+    onEditReviewClick: (String, String) -> Unit,
+    onUserClick: (String) -> Unit,
     onSeeAllReviewsClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val state by profileViewModel.uiState.collectAsState()
 
-    // Cerrar sesion esta en el perfil y tambien en el error, para que nadie quede atrapado
+    // Cerrar sesion esta al final del perfil y tambien en el error, para que nadie quede atrapado
     val onLogoutClick = {
         profileViewModel.cerrarSesion()
         logoutButtonPressed()
     }
 
-    // Se pide cada vez que se muestra: al volver de escribir una resena, ya aparece aqui
+    // Los flujos se escuchan desde el init del ViewModel. Mis datos se piden otra vez al volver (por
+    // ejemplo de Ajustes) por si mi documento no existia; la bandera evita un segundo listener
     LaunchedEffect(Unit) {
-        profileViewModel.getProfile()
+        profileViewModel.escucharMiPerfil()
     }
 
-    when {
-        state.isLoading -> {
-            LoadingBox(modifier = modifier)
-        }
-        // Sin resenas cargadas solo se muestra el motivo del error y la salida para cerrar sesion
-        state.errorMessageRes != null && state.misResenas.isEmpty() -> {
-            Column(
-                modifier = modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(text = stringResource(state.errorMessageRes ?: R.string.error_cargar_contenido))
+    // Con una copia local, Kotlin sabe que no es nulo despues de revisarlo: no hace falta el !!
+    val errorMessageRes = state.errorMessageRes
 
-                LogoutButton(onLogoutClick = onLogoutClick)
+    Box(modifier = modifier.fillMaxSize()) {
+        AppBackground()
+
+        when {
+            state.isLoading -> {
+                LoadingBox()
             }
+            // Sin mis datos solo se muestra el motivo del error y la salida para cerrar sesion
+            errorMessageRes != null && state.usuario.isEmpty() -> {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    ErrorBox(messageRes = errorMessageRes, modifier = Modifier.weight(1f))
+
+                    LogoutButton(onLogoutClick = onLogoutClick)
+                }
+            }
+            else -> ProfileScreenContent(
+                usuario = state.usuario,
+                nombre = state.nombre,
+                bio = state.bio,
+                seguidores = state.seguidores,
+                seguidos = state.seguidos,
+                profileImageUrl = state.profileImageUrl,
+                subiendoImagen = state.subiendoImagen,
+                errorImagenRes = state.errorImagenRes,
+                // Si ya habia datos que mostrar, el error de mis datos sale como aviso
+                avisoRes = state.avisoPerfilRes ?: errorMessageRes,
+                tabs = state.tabs,
+                selectedTabId = state.selectedTabId,
+                favoritos = state.favoritos,
+                errorFavoritosRes = state.errorFavoritosRes,
+                resenasRecientes = state.resenasRecientes,
+                errorResenasRes = state.errorResenasRes,
+                errorAccionRes = state.errorAccionRes,
+                guardados = state.guardados,
+                errorGuardadosRes = state.errorGuardadosRes,
+                listaSeguidores = state.listaSeguidores,
+                errorSeguidoresRes = state.errorSeguidoresRes,
+                listaSeguidos = state.listaSeguidos,
+                errorSeguidosRes = state.errorSeguidosRes,
+                onSettingsClick = onSettingsClick,
+                onImagePicked = { profileViewModel.subirFotoDePerfil(uri = it) },
+                onTabSelected = { profileViewModel.updateSelectedTab(tabId = it) },
+                onItemClick = { item -> onItemClick(item.tipo, item.id) },
+                onLikeClick = { profileViewModel.sendOrDeleteLike(reviewId = it) },
+                onCommentsClick = onCommentsClick,
+                // Editar abre Escribir resena con lo que califique
+                onEditClick = { review -> onEditReviewClick(review.item.tipo, review.item.id) },
+                onDeleteClick = { profileViewModel.eliminarResena(reviewId = it) },
+                onSeeAllReviewsClick = onSeeAllReviewsClick,
+                onUserClick = onUserClick,
+                onLogoutClick = onLogoutClick,
+            )
         }
-        else -> ProfileScreenContent(
-            misResenas = state.misResenas,
-            favoritos = state.favoritos,
-            barrasDeCalificacion = state.barrasDeCalificacion,
-            usuario = state.usuario,
-            nombre = state.nombre,
-            bio = state.bio,
-            seguidores = state.seguidores,
-            seguidos = state.seguidos,
-            onSeguidoresClick = { onSeguidoresClick(state.usuarioId) },
-            onSeguidosClick = { onSeguidosClick(state.usuarioId) },
-            profileImageUrl = state.profileImageUrl,
-            subiendoImagen = state.subiendoImagen,
-            errorImagenRes = state.errorImagenRes,
-            errorMessageRes = state.errorMessageRes,
-            avisoPerfilRes = state.avisoPerfilRes,
-            onImagePicked = { profileViewModel.subirFotoDePerfil(uri = it) },
-            tabs = state.tabs,
-            selectedTabId = state.selectedTabId,
-            onTabSelected = { profileViewModel.updateSelectedTab(tabId = it) },
-            onSettingsClick = onSettingsClick,
-            onMoreClick = onMoreClick,
-            onLogoutClick = onLogoutClick,
-            onReviewClick = onReviewClick,
-            onCommentsClick = onCommentsClick,
-            onSeeAllReviewsClick = onSeeAllReviewsClick,
-            resenaEnEdicionId = state.resenaEnEdicionId,
-            calificacionEditada = state.calificacionEditada,
-            textoEditado = state.textoEditado,
-            guardandoEdicion = state.guardandoEdicion,
-            errorEdicionRes = state.errorEdicionRes,
-            onEditClick = { profileViewModel.empezarEdicion(resena = it) },
-            onDeleteClick = { profileViewModel.eliminarResena(reviewId = it) },
-            onCalificacionEditadaChange = { profileViewModel.updateCalificacionEditada(rating = it) },
-            onTextoEditadoChange = { profileViewModel.updateTextoEditado(texto = it) },
-            onGuardarEdicionClick = { profileViewModel.guardarEdicion() },
-            onCancelarEdicionClick = { profileViewModel.cancelarEdicion() },
-            modifier = modifier
-        )
     }
 }
 
 @Composable
 fun ProfileScreenContent(
-    misResenas: List<MyReviewUi>,
-    favoritos: List<Album>,
-    barrasDeCalificacion: List<Float>,
     usuario: String,
     nombre: String,
     bio: String,
     seguidores: Int,
     seguidos: Int,
-    onSeguidoresClick: () -> Unit,
-    onSeguidosClick: () -> Unit,
     profileImageUrl: String,
     subiendoImagen: Boolean,
-    errorImagenRes: Int?,
-    errorMessageRes: Int?,
-    avisoPerfilRes: Int?,
-    onImagePicked: (Uri) -> Unit,
+    @StringRes errorImagenRes: Int?,
+    @StringRes avisoRes: Int?,
     tabs: List<ProfileTabUi>,
     selectedTabId: String,
-    onTabSelected: (String) -> Unit,
+    favoritos: List<ItemResumenUi>,
+    @StringRes errorFavoritosRes: Int?,
+    resenasRecientes: List<ReviewUi>,
+    @StringRes errorResenasRes: Int?,
+    @StringRes errorAccionRes: Int?,
+    guardados: List<ItemResumenUi>,
+    @StringRes errorGuardadosRes: Int?,
+    listaSeguidores: List<UsuarioUi>,
+    @StringRes errorSeguidoresRes: Int?,
+    listaSeguidos: List<UsuarioUi>,
+    @StringRes errorSeguidosRes: Int?,
     onSettingsClick: () -> Unit,
-    onMoreClick: () -> Unit,
-    onLogoutClick: () -> Unit,
-    onReviewClick: (String) -> Unit,
+    onImagePicked: (Uri) -> Unit,
+    onTabSelected: (String) -> Unit,
+    onItemClick: (ItemResumenUi) -> Unit,
+    onLikeClick: (String) -> Unit,
     onCommentsClick: (String) -> Unit,
-    onSeeAllReviewsClick: () -> Unit,
-    // Si coincide con una resena, esa tarjeta se muestra como formulario de edicion
-    resenaEnEdicionId: String?,
-    calificacionEditada: Int,
-    textoEditado: String,
-    guardandoEdicion: Boolean,
-    errorEdicionRes: Int?,
-    onEditClick: (MyReviewUi) -> Unit,
+    onEditClick: (ReviewUi) -> Unit,
     onDeleteClick: (String) -> Unit,
-    onCalificacionEditadaChange: (Int) -> Unit,
-    onTextoEditadoChange: (String) -> Unit,
-    onGuardarEdicionClick: () -> Unit,
-    onCancelarEdicionClick: () -> Unit,
-    modifier: Modifier = Modifier
+    onSeeAllReviewsClick: () -> Unit,
+    onUserClick: (String) -> Unit,
+    onLogoutClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+    // Toda la pantalla es una sola lista: el encabezado y las pestanas suben con el contenido
+    LazyColumn(
+        modifier = modifier.fillMaxSize(),
+        // Abajo queda espacio para que el boton + no tape el ultimo elemento
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 96.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Column(modifier = Modifier.fillMaxSize()) {
+        item {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                ScreenTitle(
+                    title = stringResource(R.string.nav_profile),
+                    modifier = Modifier.weight(1f)
+                )
 
+                IconButton(onClick = onSettingsClick) {
+                    Icon(
+                        imageVector = Icons.Filled.Settings,
+                        contentDescription = stringResource(R.string.ajustes),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        }
+
+        item {
             ProfileHeader(
-                usuario = usuario,
+                nombre = nombre,
+                username = usuario,
+                bio = bio,
+                fotoUrl = profileImageUrl,
+                seguidores = seguidores,
+                seguidos = seguidos,
+                // En mi perfil los contadores abren la pestana de esa lista
+                onSeguidoresClick = { onTabSelected(PESTANA_SEGUIDORES) },
+                onSeguidosClick = { onTabSelected(PESTANA_SIGUIENDO) },
+            ) {
+                PickImageButton(
+                    action = onImagePicked,
+                    cargando = subiendoImagen,
+                    modifier = Modifier.padding(top = 12.dp)
+                )
+
+                ErrorMessage(
+                    messageRes = errorImagenRes,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+
+                ErrorMessage(
+                    messageRes = avisoRes,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
+        }
+
+        item {
+            ProfileTabs(
                 tabs = tabs,
                 selectedTabId = selectedTabId,
-                onTabSelected = onTabSelected,
-                onSettingsClick = onSettingsClick,
-                onMoreClick = onMoreClick
+                onTabSelected = onTabSelected
             )
+        }
 
-            // Mis resenas son una lista dinamica: cada una es un item de la LazyColumn
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                contentPadding = PaddingValues(horizontal = 16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
+        when (selectedTabId) {
+            PESTANA_GUARDADOS -> {
+                when {
+                    errorGuardadosRes != null -> item {
+                        ErrorMessage(messageRes = errorGuardadosRes)
+                    }
+                    guardados.isEmpty() -> item {
+                        EmptyMessage(messageRes = R.string.sin_guardados, modifier = Modifier.fillMaxWidth())
+                    }
+                    // La cuadricula se arma con filas de tres: cada fila es un item de la lista
+                    else -> items(guardados.chunked(GUARDADOS_POR_FILA)) { fila ->
+                        SavedItemsRow(items = fila, onItemClick = onItemClick)
+                    }
+                }
+            }
+            PESTANA_SEGUIDORES, PESTANA_SIGUIENDO -> {
+                // Las dos listas se pintan igual: solo cambian los usuarios, el error y el texto vacio
+                val esSeguidores = selectedTabId == PESTANA_SEGUIDORES
+                val usuarios = if (esSeguidores) listaSeguidores else listaSeguidos
+                val errorListaRes = if (esSeguidores) errorSeguidoresRes else errorSeguidosRes
+
+                when {
+                    errorListaRes != null -> item {
+                        ErrorMessage(messageRes = errorListaRes)
+                    }
+                    usuarios.isEmpty() -> item {
+                        EmptyMessage(
+                            messageRes = if (esSeguidores) R.string.sin_mis_seguidores else R.string.sin_mis_seguidos,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                    else -> items(usuarios) { persona ->
+                        UserRow(usuario = persona, onUserClick = onUserClick)
+                    }
+                }
+            }
+            else -> {
                 item {
-                    ProfileAvatarSection(
-                        nombre = nombre,
-                        bio = bio,
-                        seguidores = seguidores,
-                        seguidos = seguidos,
-                        onSeguidoresClick = onSeguidoresClick,
-                        onSeguidosClick = onSeguidosClick,
-                        profileImageUrl = profileImageUrl,
-                        subiendoImagen = subiendoImagen,
-                        errorImagenRes = errorImagenRes,
-                        onImagePicked = onImagePicked,
-                        reviewsCount = misResenas.size,
-                        favoritosCount = favoritos.size,
-                        modifier = Modifier.padding(bottom = 32.dp)
-                    )
-
-                    ErrorMessage(
-                        messageRes = errorMessageRes,
-                        modifier = Modifier.padding(bottom = 16.dp)
-                    )
-
-                    ErrorMessage(
-                        messageRes = avisoPerfilRes,
-                        modifier = Modifier.padding(bottom = 16.dp)
-                    )
-
-                    FavoriteSection(favoriteAlbums = favoritos)
-
-                    MyReviewsTitle(
-                        sinResenas = misResenas.isEmpty(),
-                        onSeeAllClick = onSeeAllReviewsClick
+                    FavoriteSection(
+                        favoritos = favoritos,
+                        errorMessageRes = errorFavoritosRes,
+                        vaciaRes = R.string.sin_favoritos,
+                        onItemClick = onItemClick
                     )
                 }
 
-                items(misResenas.size) { index ->
-                    val review = misResenas[index]
-
-                    if (review.id == resenaEnEdicionId) {
-                        EditReviewCard(
-                            review = review,
-                            rating = calificacionEditada,
-                            texto = textoEditado,
-                            guardando = guardandoEdicion,
-                            errorMessageRes = errorEdicionRes,
-                            onRatingChange = onCalificacionEditadaChange,
-                            onTextoChange = onTextoEditadoChange,
-                            onGuardarClick = onGuardarEdicionClick,
-                            onCancelarClick = onCancelarEdicionClick,
-                            modifier = Modifier.padding(bottom = 16.dp)
+                item {
+                    Column {
+                        SectionTitle(
+                            title = stringResource(R.string.actividad_reciente),
+                            actionText = stringResource(R.string.ver_todas),
+                            onActionClick = onSeeAllReviewsClick
                         )
-                    } else {
-                        MyReviewCard(
+
+                        // Un like o un borrado que fallo
+                        ErrorMessage(messageRes = errorAccionRes)
+                    }
+                }
+
+                when {
+                    errorResenasRes != null -> item {
+                        ErrorMessage(messageRes = errorResenasRes)
+                    }
+                    resenasRecientes.isEmpty() -> item {
+                        EmptyMessage(messageRes = R.string.sin_mis_resenas, modifier = Modifier.fillMaxWidth())
+                    }
+                    else -> items(resenasRecientes) { review ->
+                        ReviewCard(
                             review = review,
-                            onReviewClick = onReviewClick,
+                            // Soy yo: tocar mi nombre no abre nada
+                            onAuthorClick = {},
+                            onLikeClick = onLikeClick,
                             onCommentsClick = onCommentsClick,
-                            showEditButton = true,
+                            mostrarItem = true,
+                            onItemClick = onItemClick,
                             onEditClick = onEditClick,
                             onDeleteClick = onDeleteClick,
-                            modifier = Modifier.padding(bottom = 16.dp)
                         )
                     }
                 }
 
                 item {
-                    Spacer(modifier = Modifier.height(40.dp))
-
-                    HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f))
-
-                    RatingsSection(
-                        ratingBars = barrasDeCalificacion,
-                        onMasActividadClick = onSeeAllReviewsClick,
-                        modifier = Modifier.padding(top = 24.dp, bottom = 80.dp)
+                    LogoutButton(
+                        onLogoutClick = onLogoutClick,
+                        modifier = Modifier.padding(top = 8.dp)
                     )
-
-                    LogoutButton(onLogoutClick = onLogoutClick)
                 }
             }
         }
@@ -278,43 +340,46 @@ fun ProfileScreenContent(
 @Preview(showBackground = true, device = "spec:width=393dp,height=852dp")
 fun ProfileScreenPreview() {
     MixtappTheme(darkTheme = true) {
-        ProfileScreenContent(
-            misResenas = LocalMyReviewsProvider.reviews,
-            favoritos = LocalAlbumProvider.albums.take(2),
-            barrasDeCalificacion = listOf(0f, 0f, 0f, 0f, 1f, 0.5f),
-            usuario = "usuario",
-            nombre = "Usuario de Mixtapp",
-            bio = "Escucho rock y metal todo el dia",
-            seguidores = 12,
-            seguidos = 34,
-            onSeguidoresClick = {},
-            onSeguidosClick = {},
-            profileImageUrl = "",
-            subiendoImagen = false,
-            errorImagenRes = null,
-            errorMessageRes = null,
-            avisoPerfilRes = null,
-            onImagePicked = {},
-            tabs = profileTabs,
-            selectedTabId = profileTabs.first().id,
-            onTabSelected = {},
-            onSettingsClick = {},
-            onMoreClick = {},
-            onLogoutClick = {},
-            onReviewClick = {},
-            onCommentsClick = {},
-            onSeeAllReviewsClick = {},
-            resenaEnEdicionId = null,
-            calificacionEditada = 0,
-            textoEditado = "",
-            guardandoEdicion = false,
-            errorEdicionRes = null,
-            onEditClick = {},
-            onDeleteClick = {},
-            onCalificacionEditadaChange = {},
-            onTextoEditadoChange = {},
-            onGuardarEdicionClick = {},
-            onCancelarEdicionClick = {}
-        )
+        val usuario = LocalPreviewProvider.usuario
+
+        Box {
+            AppBackground()
+
+            ProfileScreenContent(
+                usuario = usuario.username,
+                nombre = usuario.nombre,
+                bio = usuario.bio,
+                seguidores = usuario.seguidores,
+                seguidos = usuario.seguidos,
+                profileImageUrl = usuario.fotoUrl,
+                subiendoImagen = false,
+                errorImagenRes = null,
+                avisoRes = null,
+                tabs = profileTabs,
+                selectedTabId = PESTANA_PERFIL,
+                favoritos = LocalPreviewProvider.favoritos,
+                errorFavoritosRes = null,
+                resenasRecientes = listOf(LocalPreviewProvider.miReview),
+                errorResenasRes = null,
+                errorAccionRes = null,
+                guardados = LocalPreviewProvider.favoritos,
+                errorGuardadosRes = null,
+                listaSeguidores = listOf(LocalPreviewProvider.otroUsuario),
+                errorSeguidoresRes = null,
+                listaSeguidos = LocalPreviewProvider.following.seguidos,
+                errorSeguidosRes = null,
+                onSettingsClick = {},
+                onImagePicked = {},
+                onTabSelected = {},
+                onItemClick = {},
+                onLikeClick = {},
+                onCommentsClick = {},
+                onEditClick = {},
+                onDeleteClick = {},
+                onSeeAllReviewsClick = {},
+                onUserClick = {},
+                onLogoutClick = {},
+            )
+        }
     }
 }

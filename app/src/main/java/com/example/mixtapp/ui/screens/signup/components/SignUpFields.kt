@@ -2,6 +2,7 @@ package com.example.mixtapp.ui.screens.signup.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -11,6 +12,7 @@ import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -19,6 +21,8 @@ import com.example.mixtapp.R
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppTextField
 
+// Los cinco campos ovalados del registro, con el mismo estilo del login. Cada contrasena tiene su
+// propio ojo, asi que cada una recibe su visibilidad. Los testTags son para las pruebas e2e
 @Composable
 fun SignUpFields(
     nombre: String,
@@ -37,73 +41,67 @@ fun SignUpFields(
     onConfirmarVisibleChange: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier) {
+    Column(modifier = modifier.fillMaxWidth()) {
         AppTextField(
-            label = stringResource(R.string.nombre),
-            placeholder = stringResource(R.string.ingresa_tu_nombre),
             value = nombre,
             onValueChange = onNombreChange,
-            keyboardOptions = KeyboardOptions.Default,
-            icon = Icons.Outlined.Person,
-            esContrasena = false,
-            contrasenaVisible = false,
-            onContrasenaVisibleChange = {}
+            placeholder = stringResource(R.string.ingresa_tu_nombre),
+            label = stringResource(R.string.nombre),
+            leadingIcon = Icons.Outlined.Person,
+            modifier = Modifier.testTag("txtNombre"),
         )
 
         Spacer(modifier = Modifier.height(14.dp))
 
         AppTextField(
-            label = stringResource(R.string.username),
-            placeholder = stringResource(R.string.choose_username),
             value = usuario,
             onValueChange = onUsuarioChange,
-            keyboardOptions = KeyboardOptions.Default,
-            icon = Icons.Outlined.AlternateEmail,
-            esContrasena = false,
-            contrasenaVisible = false,
-            onContrasenaVisibleChange = {}
+            placeholder = stringResource(R.string.choose_username),
+            label = stringResource(R.string.username),
+            leadingIcon = Icons.Outlined.AlternateEmail,
+            modifier = Modifier.testTag("txtUsername"),
         )
 
         Spacer(modifier = Modifier.height(14.dp))
 
         AppTextField(
-            label = stringResource(R.string.email),
-            placeholder = stringResource(R.string.enter_your_email),
             value = email,
             onValueChange = onEmailChange,
+            placeholder = stringResource(R.string.enter_your_email),
+            label = stringResource(R.string.email),
+            leadingIcon = Icons.Outlined.Email,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            icon = Icons.Outlined.Email,
-            esContrasena = false,
-            contrasenaVisible = false,
-            onContrasenaVisibleChange = {}
+            modifier = Modifier.testTag("txtEmailRegistro"),
         )
 
         Spacer(modifier = Modifier.height(14.dp))
 
         AppTextField(
-            label = stringResource(R.string.contrasena),
-            placeholder = stringResource(R.string.create_password),
             value = contrasena,
             onValueChange = onContrasenaChange,
+            placeholder = stringResource(R.string.create_password),
+            label = stringResource(R.string.contrasena),
+            leadingIcon = Icons.Outlined.Lock,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            icon = Icons.Outlined.Lock,
             esContrasena = true,
             contrasenaVisible = contrasenaVisible,
-            onContrasenaVisibleChange = onContrasenaVisibleChange
+            onContrasenaVisibleChange = onContrasenaVisibleChange,
+            modifier = Modifier.testTag("txtPasswordRegistro"),
         )
 
         Spacer(modifier = Modifier.height(14.dp))
 
         AppTextField(
-            label = stringResource(R.string.confirm_password),
-            placeholder = stringResource(R.string.repeat_password),
             value = confirmarContrasena,
             onValueChange = onConfirmarContrasenaChange,
+            placeholder = stringResource(R.string.repeat_password),
+            label = stringResource(R.string.confirm_password),
+            leadingIcon = Icons.Outlined.Lock,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            icon = Icons.Outlined.Lock,
             esContrasena = true,
             contrasenaVisible = confirmarVisible,
-            onContrasenaVisibleChange = onConfirmarVisibleChange
+            onContrasenaVisibleChange = onConfirmarVisibleChange,
+            modifier = Modifier.testTag("txtConfirmPassword"),
         )
     }
 }

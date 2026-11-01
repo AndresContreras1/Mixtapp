@@ -33,33 +33,41 @@ class SignUpViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(SignUpState())
     val uiState: StateFlow<SignUpState> = _uiState.asStateFlow()
 
+    // El nombre se corta en el limite del perfil (el mismo de Editar perfil); escribir borra el
+    // error anterior
     fun updateNombre(nombre: String) {
         _uiState.update { it.copy(nombre = nombre.take(MAX_NOMBRE_LENGTH), errorMessageRes = null) }
     }
 
+    // Igual que el nombre, con su propio maximo
     fun updateUsuario(usuario: String) {
         _uiState.update { it.copy(usuario = usuario.take(MAX_USERNAME_LENGTH), errorMessageRes = null) }
     }
 
+    // Al corregir el campo se limpia el error del intento anterior
     fun updateEmail(email: String) {
         _uiState.update { it.copy(email = email, errorMessageRes = null) }
     }
 
+    // Al corregir el campo se limpia el error del intento anterior
     fun updateContrasena(contrasena: String) {
         _uiState.update { it.copy(contrasena = contrasena, errorMessageRes = null) }
     }
 
+    // Al corregir el campo se limpia el error del intento anterior
     fun updateConfirmarContrasena(confirmarContrasena: String) {
         _uiState.update {
             it.copy(confirmarContrasena = confirmarContrasena, errorMessageRes = null)
         }
     }
 
+    // El ojo del campo de la contrasena: alterna entre verla y ocultarla con puntos
     fun mostrarEsconderContrasena() {
         val valorActual = _uiState.value.contrasenaVisible
         _uiState.update { it.copy(contrasenaVisible = !valorActual) }
     }
 
+    // El ojo del campo de confirmar, independiente del de la contrasena
     fun mostrarEsconderConfirmar() {
         val valorActual = _uiState.value.confirmarVisible
         _uiState.update { it.copy(confirmarVisible = !valorActual) }
@@ -154,5 +162,4 @@ class SignUpViewModel @Inject constructor(
             }
         }
     }
-
 }

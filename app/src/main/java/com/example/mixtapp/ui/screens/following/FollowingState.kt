@@ -1,19 +1,19 @@
 package com.example.mixtapp.ui.screens.following
 
 import androidx.annotation.StringRes
-import com.example.mixtapp.data.model.FollowingReviewUi
 import com.example.mixtapp.data.model.FollowingUi
-import com.example.mixtapp.ui.screens.following.model.FollowingFilterUi
+import com.example.mixtapp.data.model.ReviewUi
 
-// Es nulable porque puede que todavia no se hayan cargado los datos
 data class FollowingState(
+    // Es nulable porque puede que todavia no hayan llegado los datos
     val following: FollowingUi? = null,
-    val reviews: List<FollowingReviewUi> = emptyList(),
+    // Las resenas que se ven: ya vienen filtradas por el nombre del autor
+    val reviews: List<ReviewUi> = emptyList(),
     val friendQuery: String = "",
-    val filters: List<FollowingFilterUi> = emptyList(),
-    val selectedFilterId: String = "",
-    val selectedStoryId: String? = null,
-    // Arranca cargando porque lo primero que hace el ViewModel es pedir las resenas
+    // Arranca cargando porque el ViewModel empieza a escuchar al crearse
     val isLoading: Boolean = true,
+    // No se pudo cargar la pestana: ocupa toda la pantalla
     @StringRes val errorMessageRes: Int? = null,
+    // Fallo un like: la lista sigue visible y el error sale encima
+    @StringRes val errorAccionRes: Int? = null,
 )

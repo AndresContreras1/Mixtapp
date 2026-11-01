@@ -1,12 +1,14 @@
 package com.example.mixtapp.ui.screens.notifications.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
@@ -17,7 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -25,89 +27,114 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
-import com.example.mixtapp.data.local.LocalNotificationsProvider
+import com.example.mixtapp.data.local.LocalPreviewProvider
+import com.example.mixtapp.data.model.NOTIFICACION_COMENTARIO
+import com.example.mixtapp.data.model.NOTIFICACION_LIKE
+import com.example.mixtapp.data.model.NOTIFICACION_RESPUESTA
 import com.example.mixtapp.data.model.NotificationUi
 import com.example.mixtapp.ui.theme.MixtappTheme
-import com.example.mixtapp.ui.utils.AlbumAsyncImage
+import com.example.mixtapp.ui.utils.ItemAsyncImage
+import com.example.mixtapp.ui.utils.ProfileAsyncImage
 
+// Una notificacion: la foto de quien la genero, el texto con su nombre en negrita, cuanto hace,
+// la miniatura de lo resenado y un punto mientras no este leida. Las no leidas resaltan mas
 @Composable
-fun NotificationRow(notification: NotificationUi, modifier: Modifier = Modifier) {
-    // Las notificaciones ya leidas se ven un poco atenuadas
-    val alpha = if (notification.isRead) 0.55f else 1f
+fun NotificationRow(
+    notification: NotificationUi,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val texto = textoDeNotificacion(notification = notification)
 
     Row(
-        modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.Top,
-    ) {
-        Box(
-            modifier = Modifier
-                .size(38.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.6f * alpha)),
-            contentAlignment = Alignment.Center,
-        ) {
-            Text(
-                text = notification.actorInitials,
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = alpha),
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Bold,
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(20.dp))
+            .background(
+                MaterialTheme.colorScheme.surfaceContainer.copy(alpha = if (notification.isRead) 0.35f else 0.8f)
             )
-        }
+            .clickable { onClick() }
+            .testTag("notificacion_${notification.id}")
+            .padding(12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        ProfileAsyncImage(
+            profileImage = notification.actorImage,
+            contentDescription = stringResource(R.string.foto_perfil),
+            modifier = Modifier.size(44.dp)
+        )
 
         Spacer(modifier = Modifier.width(12.dp))
 
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = mensajeDeNotificacion(
-                    notification = notification,
-                    colorResaltado = MaterialTheme.colorScheme.onSurface,
-                ),
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = alpha),
-                fontSize = 14.sp,
-                lineHeight = 19.sp,
+                text = buildAnnotatedString {
+                    // Todos los textos empiezan con el nombre de quien la genero: ese pedazo va en negrita
+                    withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+                        append(notification.actorName)
+                    }
+                    append(texto.removePrefix(notification.actorName))
+                },
+                color = MaterialTheme.colorScheme.onSurface,
+                style = MaterialTheme.typography.bodyMedium,
             )
+
             Spacer(modifier = Modifier.height(4.dp))
+
             Text(
-                text = notification.timeAgo,
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f * alpha),
-                fontSize = 12.sp,
+                // Hace menos de un minuto el mapeo deja el texto vacio
+                text = notification.timeAgo.ifEmpty { stringResource(R.string.ahora) },
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.labelSmall,
             )
         }
 
-        if (notification.thumbnail.isNotEmpty()) {
+        // Un seguidor nuevo no trae miniatura
+        if (notification.itemImage.isNotEmpty()) {
             Spacer(modifier = Modifier.width(10.dp))
-            AlbumAsyncImage(
-                cover = notification.thumbnail,
-                contentDescription = stringResource(R.string.notification_thumbnail),
-                alpha = 1f,
+
+            ItemAsyncImage(
+                imagenUrl = notification.itemImage,
+                titulo = notification.itemTitle,
+                esquinas = 10.dp,
+                modifier = Modifier.size(44.dp)
+            )
+        }
+
+        if (!notification.isRead) {
+            Spacer(modifier = Modifier.width(10.dp))
+
+            Box(
                 modifier = Modifier
-                    .size(44.dp)
-                    .clip(RoundedCornerShape(8.dp)),
+                    .size(10.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.primary)
             )
         }
     }
 }
 
-// El nombre del actor y la palabra resaltada van en negrita; el resto en texto normal.
-// No es un composable: el color del tema llega desde la fila
-private fun mensajeDeNotificacion(notification: NotificationUi, colorResaltado: Color) = buildAnnotatedString {
-    withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = colorResaltado)) {
-        append(notification.actorName)
-    }
-    append(" ")
+// El texto segun el tipo. Si la resena no tiene titulo se usa la variante sin "de ..."
+@Composable
+private fun textoDeNotificacion(notification: NotificationUi): String {
+    val nombre = notification.actorName
+    val titulo = notification.itemTitle
 
-    val word = notification.highlightedWord
-    if (word.isNotEmpty() && notification.message.contains(word)) {
-        val index = notification.message.indexOf(word)
-        append(notification.message.substring(0, index))
-        withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = colorResaltado)) {
-            append(word)
+    return when (notification.tipo) {
+        NOTIFICACION_LIKE -> if (titulo.isEmpty()) {
+            stringResource(R.string.notificacion_like_sin_item, nombre)
+        } else {
+            stringResource(R.string.notificacion_like, nombre, titulo)
         }
-        append(notification.message.substring(index + word.length))
-    } else {
-        append(notification.message)
+        NOTIFICACION_COMENTARIO -> if (titulo.isEmpty()) {
+            stringResource(R.string.notificacion_comentario_sin_item, nombre)
+        } else {
+            stringResource(R.string.notificacion_comentario, nombre, titulo)
+        }
+        NOTIFICACION_RESPUESTA -> stringResource(R.string.notificacion_respuesta, nombre)
+        // NOTIFICACION_SEGUIDOR
+        else -> stringResource(R.string.notificacion_seguidor, nombre)
     }
 }
 
@@ -115,6 +142,20 @@ private fun mensajeDeNotificacion(notification: NotificationUi, colorResaltado: 
 @Preview(showBackground = true)
 fun NotificationRowPreview() {
     MixtappTheme(darkTheme = true) {
-        NotificationRow(notification = LocalNotificationsProvider.notifications.first())
+        NotificationRow(
+            notification = LocalPreviewProvider.notifications.first(),
+            onClick = {},
+        )
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun NotificationRowSeguidorPreview() {
+    MixtappTheme(darkTheme = true) {
+        NotificationRow(
+            notification = LocalPreviewProvider.notifications.last(),
+            onClick = {},
+        )
     }
 }

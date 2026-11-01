@@ -11,20 +11,25 @@ sealed class Screen(val route: String) {
     data object Profile : Screen(route = "profile")
     data object Following : Screen(route = "following")
     data object Notifications : Screen(route = "notifications")
-    data object SelectAlbum : Screen(route = "selectAlbum")
+    data object SelectItem : Screen(route = "selectItem")
     data object EditProfile : Screen(route = "editProfile")
 
-    // Las pantallas de detalle reciben un id por la ruta
-    data object AlbumDetail : Screen(route = "albumDetail/{albumId}") {
-        fun createRoute(albumId: String) = "albumDetail/$albumId"
+    // El detalle sirve para albumes, canciones y artistas: el tipo dice de que coleccion es el id
+    data object Detail : Screen(route = "detail/{tipo}/{itemId}") {
+        fun createRoute(tipo: String, itemId: String) = "detail/$tipo/$itemId"
+    }
+
+    // Los datos curiosos del mismo item, en su propia pantalla
+    data object DatosCuriosos : Screen(route = "datosCuriosos/{tipo}/{itemId}") {
+        fun createRoute(tipo: String, itemId: String) = "datosCuriosos/$tipo/$itemId"
+    }
+
+    data object WriteReview : Screen(route = "writeReview/{tipo}/{itemId}") {
+        fun createRoute(tipo: String, itemId: String) = "writeReview/$tipo/$itemId"
     }
 
     data object Discussion : Screen(route = "discussion/{reviewId}") {
         fun createRoute(reviewId: String) = "discussion/$reviewId"
-    }
-
-    data object WriteReview : Screen(route = "writeReview/{albumId}") {
-        fun createRoute(albumId: String) = "writeReview/$albumId"
     }
 
     data object UserProfile : Screen(route = "userProfile/{userId}") {

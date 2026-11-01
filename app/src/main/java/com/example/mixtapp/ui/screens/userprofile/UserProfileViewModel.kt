@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
 import com.example.mixtapp.data.injection.IoDispatcher
-import com.example.mixtapp.data.repository.SinConexionException
+import com.example.mixtapp.data.repository.ReviewRepository
 import com.example.mixtapp.data.repository.UsuarioRepository
 import com.example.mixtapp.ui.utils.mensajeDeError
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,6 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class UserProfileViewModel @Inject constructor(
     private val usuarioRepository: UsuarioRepository,
+    private val reviewRepository: ReviewRepository,
     // Las corrutinas se lanzan en este hilo; las pruebas pasan uno de prueba
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
@@ -29,10 +30,12 @@ class UserProfileViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(UserProfileState())
     val uiState: StateFlow<UserProfileState> = _uiState.asStateFlow()
 
-    // Los flujos se escuchan mientras exista el ViewModel: si se volvieran a pedir cada vez que la
-    // pantalla se muestra, se acumularian listeners
+    // Los flujos necesitan el id de la ruta, asi que los pide la pantalla. Se escuchan mientras
+    // exista el ViewModel: si se volvieran a pedir cada vez que la pantalla se muestra, se
+    // acumularian listeners
     private var escuchandoPerfil = false
     private var escuchandoResenas = false
+    private var escuchandoFavoritos = false
 
     // El perfil llega en vivo con sus contadores y con si ya lo sigo
     fun getUserProfile(userId: String) {
@@ -54,7 +57,8 @@ class UserProfileViewModel @Inject constructor(
         }
     }
 
-    // Sus resenas en vivo: un like desde otro celular cambia el contador sin salir
+    // Sus resenas en vivo, la ultima publicada o editada primero: un like desde otro celular cambia
+    // el contador sin salir
     fun getUserReviews(userId: String) {
         if (escuchandoResenas) return
         escuchandoResenas = true
@@ -69,8 +73,25 @@ class UserProfileViewModel @Inject constructor(
                     _uiState.update { it.copy(cargandoResenas = false, errorResenasRes = mensajeDeError(error = e, generico = R.string.error_cargar_contenido, noEncontrado = R.string.perfil_no_encontrado)) }
                 }
                 .collect { resenas ->
-                    val reviews = resenas.sortedByDescending { it.date }
-                    _uiState.update { it.copy(reviews = reviews, cargandoResenas = false, errorResenasRes = null) }
+                    _uiState.update { it.copy(reviews = resenas, cargandoResenas = false, errorResenasRes = null) }
+                }
+        }
+    }
+
+    // Sus favoritos son sus likes, el mas nuevo primero: si le da like a algo, aparece sin salir
+    fun getUserFavoritos(userId: String) {
+        if (escuchandoFavoritos) return
+        escuchandoFavoritos = true
+
+        viewModelScope.launch(ioDispatcher) {
+            usuarioRepository.getFavoritosLive(userId = userId)
+                .catch { e ->
+                    Log.d("UserProfileViewModel", "getUserFavoritos: ${e.message}")
+                    escuchandoFavoritos = false
+                    _uiState.update { it.copy(errorFavoritosRes = mensajeDeError(error = e, generico = R.string.error_cargar_contenido)) }
+                }
+                .collect { favoritos ->
+                    _uiState.update { it.copy(favoritos = favoritos, errorFavoritosRes = null) }
                 }
         }
     }
@@ -86,19 +107,25 @@ class UserProfileViewModel @Inject constructor(
             if (result.isSuccess) {
                 _uiState.update { it.copy(errorSeguimientoRes = null) }
             } else {
-                val error = result.exceptionOrNull()
-
                 _uiState.update {
-                    it.copy(
-                        errorSeguimientoRes = if (error is SinConexionException) {
-                            R.string.error_sin_conexion
-                        } else {
-                            R.string.error_actualizar_seguimiento
-                        }
-                    )
+                    it.copy(errorSeguimientoRes = mensajeDeError(error = result.exceptionOrNull(), generico = R.string.error_actualizar_seguimiento))
                 }
             }
         }
     }
 
+    // El corazon y el contador llegan con la resena nueva por el listener de sus resenas
+    fun sendOrDeleteLike(reviewId: String) {
+        viewModelScope.launch(ioDispatcher) {
+            val result = reviewRepository.sendOrDeleteLike(reviewId = reviewId)
+
+            if (result.isSuccess) {
+                _uiState.update { it.copy(errorLikeRes = null) }
+            } else {
+                _uiState.update {
+                    it.copy(errorLikeRes = mensajeDeError(error = result.exceptionOrNull(), generico = R.string.error_actualizar_like))
+                }
+            }
+        }
+    }
 }

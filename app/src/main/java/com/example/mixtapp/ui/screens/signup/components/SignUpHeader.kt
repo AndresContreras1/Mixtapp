@@ -2,52 +2,54 @@ package com.example.mixtapp.ui.screens.signup.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.theme.MixtappTheme
-import com.example.mixtapp.ui.theme.displayFontFamily
-import com.example.mixtapp.ui.utils.HeaderLogo
+import com.example.mixtapp.ui.utils.LogoText
 
+// La cabecera del registro: el logo, el titulo con la letra del logo y una linea que cuenta para
+// que sirve la cuenta
 @Composable
 fun SignUpHeader(
     modifier: Modifier = Modifier
-){
+) {
     Column(
-        modifier = modifier
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(30.dp))
+        LogoText(
+            fontSize = 40.sp,
+            fontWeight = FontWeight.Black,
+            lineHeight = 44.sp
+        )
 
-        HeaderLogo(modifier = Modifier.fillMaxWidth())
-
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         Text(
             text = stringResource(R.string.create_account),
-            color = MaterialTheme.colorScheme.onSurface,
-            fontSize = 28.sp,
-            lineHeight = 32.sp,
-            fontWeight = FontWeight.Black,
-            fontFamily = displayFontFamily
+            color = MaterialTheme.colorScheme.onBackground,
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold,
         )
 
         Spacer(modifier = Modifier.height(6.dp))
 
         Text(
             text = stringResource(R.string.signup_description),
-            color = MaterialTheme.colorScheme.onBackground,
-            fontSize = 15.sp,
-            lineHeight = 20.sp,
-            fontWeight = FontWeight.Medium
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.bodyMedium,
+            textAlign = TextAlign.Center,
         )
     }
 }

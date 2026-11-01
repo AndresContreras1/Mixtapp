@@ -6,12 +6,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.sp
 import com.example.mixtapp.ui.theme.MixtappTheme
+import com.example.mixtapp.ui.utils.AppBackground
+import com.example.mixtapp.ui.utils.LogoText
 
-// Pantalla sin contenido: su unica tarea es decidir a donde entrar.
-// Quien navega sigue siendo la pantalla, con lambdas, no el ViewModel
+// Su unica tarea es decidir a donde entrar. Quien navega sigue siendo la pantalla, con lambdas,
+// no el ViewModel
 @Composable
 fun SplashScreen(
     splashViewModel: SplashViewModel,
@@ -34,14 +39,23 @@ fun SplashScreen(
     SplashScreenContent(modifier = modifier)
 }
 
-// Como en clase, la pantalla no tiene contenido: solo decide a donde entrar
+// Mientras se decide a donde entrar se ve el fondo de la app con el logo en el centro
 @Composable
 fun SplashScreenContent(modifier: Modifier = Modifier) {
-    Box(modifier = modifier.fillMaxSize())
+    Box(modifier = modifier.fillMaxSize()) {
+        AppBackground()
+
+        LogoText(
+            fontSize = 56.sp,
+            fontWeight = FontWeight.Black,
+            lineHeight = 60.sp,
+            modifier = Modifier.align(Alignment.Center)
+        )
+    }
 }
 
 @Composable
-@Preview(showBackground = true)
+@Preview(showBackground = true, widthDp = 393, heightDp = 852)
 fun SplashScreenPreview() {
     MixtappTheme(darkTheme = true) {
         SplashScreenContent()

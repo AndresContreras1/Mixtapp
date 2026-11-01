@@ -1,28 +1,35 @@
 package com.example.mixtapp.ui.screens.home
 
 import androidx.annotation.StringRes
-import com.example.mixtapp.data.model.AlbumReviewsUi
-import com.example.mixtapp.data.model.FriendActivityUi
+import com.example.mixtapp.data.model.ItemConResenasUi
+import com.example.mixtapp.data.model.ItemResumenUi
+import com.example.mixtapp.data.model.ItemUi
+import com.example.mixtapp.data.model.ReviewUi
+import com.example.mixtapp.ui.screens.home.model.FILTRO_PARA_TI
 import com.example.mixtapp.ui.screens.home.model.HomeFilterUi
+import com.example.mixtapp.ui.screens.home.model.homeFilters
 
 data class HomeState(
-    // Los albumes del filtro elegido, para la fila de populares
-    val albums: List<AlbumReviewsUi> = emptyList(),
-    // Todos los albumes guardados, sin filtrar
-    val todos: List<AlbumReviewsUi> = emptyList(),
-    val trending: AlbumReviewsUi? = null,
-    // Las resenas de los usuarios que sigo, la mas reciente primero
-    val resenasDeSeguidos: List<FriendActivityUi> = emptyList(),
-    val followedIds: Set<String> = emptySet(),
-    val filters: List<HomeFilterUi> = emptyList(),
-    val selectedFilterId: String = "",
-    // Con el filtro de seguidos el inicio muestra solo las resenas de quienes sigo
-    val soloSeguidos: Boolean = false,
-    val profileImageUrl: String = "",
-    // Arranca cargando porque lo primero que hace el ViewModel es escuchar los albumes
+    val filters: List<HomeFilterUi> = homeFilters,
+    val selectedFilterId: String = FILTRO_PARA_TI,
+    // Lo que llega en vivo: con esto el ViewModel arma lo que pinta la pantalla
+    val catalogo: List<ItemConResenasUi> = emptyList(),
+    val favoritos: List<ItemResumenUi> = emptyList(),
+    val seguidosIds: Set<String> = emptySet(),
+    // El album de la tarjeta grande; null si el catalogo no tiene albumes
+    val enTendencia: ItemUi? = null,
+    // Las tres filas del filtro elegido, hasta 10 items cada una
+    val canciones: List<ItemUi> = emptyList(),
+    val albumes: List<ItemUi> = emptyList(),
+    val artistas: List<ItemUi> = emptyList(),
+    // Las resenas de quienes sigo, la mas nueva primero
+    val resenasDeSeguidos: List<ReviewUi> = emptyList(),
+    // Arranca cargando porque lo primero que hace el ViewModel es escuchar el catalogo
     val isLoading: Boolean = true,
-    // El error de los albumes tapa la pantalla si no hay nada que mostrar; el de los seguidos
-    // va aparte para que un flujo no borre el error del otro
+    // El error del catalogo tapa la pantalla. Los de favoritos y seguidos van aparte para que un
+    // flujo no borre el error del otro, y el del like se muestra sobre las resenas
     @StringRes val errorMessageRes: Int? = null,
+    @StringRes val errorFavoritosRes: Int? = null,
     @StringRes val errorSeguidosRes: Int? = null,
+    @StringRes val errorAccionRes: Int? = null,
 )

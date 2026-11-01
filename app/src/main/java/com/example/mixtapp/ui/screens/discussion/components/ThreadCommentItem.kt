@@ -1,31 +1,41 @@
 package com.example.mixtapp.ui.screens.discussion.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
-import com.example.mixtapp.data.local.LocalDiscussionProvider
+import com.example.mixtapp.data.local.LocalPreviewProvider
 import com.example.mixtapp.data.model.DiscussionCommentUi
 import com.example.mixtapp.ui.theme.MixtappTheme
-import com.example.mixtapp.ui.theme.displayFontFamily
+import com.example.mixtapp.ui.utils.LikeButton
+import com.example.mixtapp.ui.utils.ProfileAsyncImage
 
+// Un comentario de la discusion: la foto, el nombre, cuanto hace, el texto, el like y Responder.
+// Las respuestas van con sangria a la izquierda para que se vea el hilo
 @Composable
 fun ThreadCommentItem(
     comment: DiscussionCommentUi,
+    // Si es el comentario al que se esta respondiendo, Responder se resalta
     isReplying: Boolean,
+    onAuthorClick: (String) -> Unit,
     onLikeClick: () -> Unit,
     onReplyClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -33,57 +43,70 @@ fun ThreadCommentItem(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(
-                start = if (comment.isReply) 38.dp else 0.dp,
-                top = 7.dp,
-                bottom = 5.dp,
-            )
+            .padding(start = if (comment.isReply) 44.dp else 0.dp, top = 8.dp),
     ) {
-        CommentAvatarColumn(
-            initials = comment.initials,
-            isReply = comment.isReply,
+        // La foto y el nombre abren el perfil de quien lo escribio
+        ProfileAsyncImage(
+            profileImage = comment.authorImage,
+            contentDescription = stringResource(R.string.foto_perfil),
+            modifier = Modifier
+                .size(if (comment.isReply) 30.dp else 36.dp)
+                .clip(CircleShape)
+                .clickable { onAuthorClick(comment.authorId) },
         )
 
-        Spacer(modifier = Modifier.width(12.dp))
+        Spacer(modifier = Modifier.width(10.dp))
 
         Column(modifier = Modifier.weight(1f)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = comment.author,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.58f),
-                    fontSize = 20.sp,
-                    lineHeight = 24.sp,
-                    fontFamily = displayFontFamily,
-                    fontWeight = FontWeight.Black,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier
+                        .weight(1f, fill = false)
+                        .clickable { onAuthorClick(comment.authorId) },
                 )
 
-                Spacer(modifier = Modifier.weight(1f))
+                Spacer(modifier = Modifier.width(8.dp))
 
                 Text(
+                    // Hace menos de un minuto el mapeo deja el texto vacio
                     text = comment.timeAgo.ifEmpty { stringResource(R.string.ahora) },
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f),
-                    fontSize = 10.sp,
-                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.labelSmall,
                 )
             }
 
             Text(
                 text = comment.content,
-                modifier = Modifier.padding(top = 6.dp),
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.72f),
-                fontSize = 10.sp,
-                lineHeight = 16.sp,
-                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSurface,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(top = 2.dp),
             )
 
-            CommentActionsRow(
-                likes = comment.likes,
-                isLiked = comment.isLiked,
-                isReplying = isReplying,
-                onLikeClick = onLikeClick,
-                onReplyClick = onReplyClick,
-                modifier = Modifier.padding(top = 6.dp),
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                LikeButton(
+                    likesText = comment.likesText,
+                    isLiked = comment.isLiked,
+                    onLikeClick = onLikeClick,
+                    contentDescriptionRes = R.string.like_comment,
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                TextButton(onClick = onReplyClick) {
+                    Text(
+                        text = stringResource(if (isReplying) R.string.replying else R.string.reply),
+                        color = if (isReplying) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
+            }
         }
     }
 }
@@ -92,11 +115,16 @@ fun ThreadCommentItem(
 @Preview(showBackground = true)
 fun ThreadCommentItemPreview() {
     MixtappTheme(darkTheme = true) {
-        ThreadCommentItem(
-            comment = LocalDiscussionProvider.discussions.first().comments.first(),
-            isReplying = false,
-            onLikeClick = {},
-            onReplyClick = {},
-        )
+        Column {
+            LocalPreviewProvider.comentarios.forEach { comentario ->
+                ThreadCommentItem(
+                    comment = comentario,
+                    isReplying = false,
+                    onAuthorClick = {},
+                    onLikeClick = {},
+                    onReplyClick = {},
+                )
+            }
+        }
     }
 }

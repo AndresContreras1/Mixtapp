@@ -30,15 +30,17 @@ class LoginViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(LoginState())
     val uiState: StateFlow<LoginState> = _uiState.asStateFlow()
 
+    // Al corregir el campo se limpia el error del intento anterior
     fun updateEmail(email: String) {
-        // Al corregir el campo se limpia el error del intento anterior
         _uiState.update { it.copy(email = email, errorMessageRes = null) }
     }
 
+    // Igual que el correo: escribir de nuevo borra el error que ya no aplica
     fun updateContrasena(contrasena: String) {
         _uiState.update { it.copy(contrasena = contrasena, errorMessageRes = null) }
     }
 
+    // El ojo del campo: alterna entre ver la contrasena y ocultarla con puntos
     fun mostrarEsconderContrasena() {
         val valorActual = _uiState.value.contrasenaVisible
         _uiState.update { it.copy(contrasenaVisible = !valorActual) }
@@ -104,5 +106,4 @@ class LoginViewModel @Inject constructor(
             }
         }
     }
-
 }

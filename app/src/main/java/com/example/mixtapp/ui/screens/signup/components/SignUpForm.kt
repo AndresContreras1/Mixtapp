@@ -6,15 +6,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppButton
 
+// El formulario completo del registro: los campos, la fila de los terminos y el boton de crear la
+// cuenta, que muestra la carga mientras Firebase responde
 @Composable
 fun SignUpForm(
     nombre: String,
@@ -37,10 +38,8 @@ fun SignUpForm(
     cargando: Boolean,
     onSignUpClick: () -> Unit,
     modifier: Modifier = Modifier
-){
-    Column(
-        modifier = modifier
-    ) {
+) {
+    Column(modifier = modifier.fillMaxWidth()) {
         SignUpFields(
             nombre = nombre,
             onNombreChange = onNombreChange,
@@ -58,7 +57,7 @@ fun SignUpForm(
             onConfirmarVisibleChange = onConfirmarVisibleChange
         )
 
-        Spacer(modifier = Modifier.height(14.dp))
+        Spacer(modifier = Modifier.height(10.dp))
 
         TermsRow(
             checked = terminos,
@@ -72,18 +71,16 @@ fun SignUpForm(
             texto = stringResource(R.string.sign_up_btn),
             onClick = onSignUpClick,
             cargando = cargando,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Black,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(64.dp)
+                .testTag("btnRegistrar"),
         )
     }
 }
 
-@Preview(showBackground = true)
 @Composable
-fun SignUpFormPreview(){
+@Preview(showBackground = true)
+fun SignUpFormPreview() {
     MixtappTheme(darkTheme = true) {
         SignUpForm(
             nombre = "",
