@@ -1,7 +1,12 @@
 package com.example.mixtapp.dtos
 
+import com.example.mixtapp.data.dtos.ArtistaDto
+import com.example.mixtapp.data.dtos.CancionDto
+import com.example.mixtapp.data.dtos.busquedaEnYoutube
 import com.example.mixtapp.data.dtos.formatoCantidad
 import com.example.mixtapp.data.dtos.haceCuanto
+import com.example.mixtapp.data.dtos.perfilDeInstagram
+import com.example.mixtapp.data.dtos.toItemUi
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 import java.time.Instant
@@ -41,5 +46,35 @@ class FormatosTest {
     @Test
     fun haceCuanto_masDeUnaSemana_muestraLaFecha() {
         assertThat(haceCuanto(fechaIso = "2026-09-01T12:00:00Z", ahora = ahora)).isEqualTo("2026-09-01")
+    }
+
+    @Test
+    fun busquedaEnYoutube_espaciosYTildes_vanCodificados() {
+        assertThat(busquedaEnYoutube("Soda Stereo De Música Ligera"))
+            .isEqualTo("https://www.youtube.com/results?search_query=Soda%20Stereo%20De%20M%C3%BAsica%20Ligera")
+    }
+
+    @Test
+    fun cancion_mapeo_armaLosLinksConArtistaYTitulo() {
+        val cancion = CancionDto().copy(titulo = "Numb", artista = "Linkin Park").toItemUi()
+
+        assertThat(cancion.youtubeUrl).isEqualTo("https://www.youtube.com/results?search_query=Linkin%20Park%20Numb%20video%20oficial")
+        assertThat(cancion.spotifyUrl).isEqualTo("https://open.spotify.com/search/Linkin%20Park%20Numb")
+        assertThat(cancion.artista).isEqualTo("Linkin Park")
+    }
+
+    @Test
+    fun artista_integrante_suBandaYSuInstagram() {
+        val artista = ArtistaDto().copy(nombre = "James Hetfield", grupo = "Metallica", instagram = "metallica").toItemUi()
+
+        assertThat(artista.artista).isEqualTo("Metallica")
+        assertThat(artista.instagramUrl).isEqualTo("https://www.instagram.com/metallica/")
+        assertThat(artista.youtubeUrl).isEmpty()
+    }
+
+    @Test
+    fun perfilDeInstagram_sinUsuario_quedaVacio() {
+        assertThat(perfilDeInstagram(null)).isEmpty()
+        assertThat(perfilDeInstagram("")).isEmpty()
     }
 }
