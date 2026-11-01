@@ -58,8 +58,8 @@ class CatalogoRepository @Inject constructor(
             albumRemoteDataSource.listenAlbumes(),
             cancionRemoteDataSource.listenCanciones(),
             artistaRemoteDataSource.listenArtistas(),
-            // Las filas no pintan corazones: no se busca mi like de cada resena
-            reviewRemoteDataSource.listenAllReviews(),
+            // Con mi uid llega mi like de cada resena: las de quienes sigo se pintan con el corazon
+            reviewRemoteDataSource.listenAllReviews(currentUserId = usuarioActualId),
         ) { albumes, canciones, artistas, reviews ->
             val items = albumes.map { it.toItemUi() } +
                 canciones.map { it.toItemUi() } +
