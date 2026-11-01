@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -49,9 +48,8 @@ fun ProfileHeader(
         ProfileAsyncImage(
             profileImage = fotoUrl,
             contentDescription = stringResource(R.string.foto_perfil),
-            modifier = Modifier
-                .size(104.dp)
-                .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
+            size = 104,
+            modifier = Modifier.border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
         )
 
         Spacer(modifier = Modifier.height(12.dp))

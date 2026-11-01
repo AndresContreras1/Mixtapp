@@ -16,10 +16,13 @@ import coil.request.ImageRequest
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.theme.MixtappTheme
 
+// La foto de perfil desde su URL: Coil la descarga, mientras llega se ve la de carga y si no hay foto,
+// el icono de usuario. Siempre es redonda; quien la usa solo le da el tamano
 @Composable
 fun ProfileAsyncImage(
     profileImage: String,
     contentDescription: String,
+    size: Int,
     modifier: Modifier = Modifier
 ) {
     AsyncImage(
@@ -31,8 +34,9 @@ fun ProfileAsyncImage(
         error = painterResource(id = R.drawable.user_image_icon),
         placeholder = painterResource(id = R.drawable.loading_img),
         contentScale = ContentScale.Crop,
-        // La foto de perfil siempre es redonda; quien la usa solo le da el tamano
-        modifier = modifier.clip(CircleShape)
+        modifier = modifier
+            .size(size.dp)
+            .clip(CircleShape)
     )
 }
 
@@ -44,7 +48,7 @@ fun ProfileAsyncImagePreview() {
         ProfileAsyncImage(
             profileImage = "",
             contentDescription = stringResource(R.string.foto_perfil),
-            modifier = Modifier.size(46.dp)
+            size = 46
         )
     }
 }

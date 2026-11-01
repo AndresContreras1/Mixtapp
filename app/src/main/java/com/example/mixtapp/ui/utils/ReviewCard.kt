@@ -70,7 +70,7 @@ fun ReviewCard(
                 ProfileAsyncImage(
                     profileImage = review.authorImage,
                     contentDescription = stringResource(R.string.foto_perfil),
-                    modifier = Modifier.size(36.dp)
+                    size = 36
                 )
 
                 Spacer(modifier = Modifier.width(10.dp))

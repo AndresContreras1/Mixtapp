@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
@@ -149,21 +150,18 @@ class WriteReviewViewModel @Inject constructor(
         }
     }
 
-    // La fecha es opcional; si se escribe, tiene que ser AAAA-MM-DD con mes y dia posibles
+    // La fecha es opcional; si se escribe, tiene que ser AAAA-MM-DD, existir en el calendario (no
+    // hay 31 de febrero) y no ser despues de hoy
     private fun esFechaValida(fecha: String): Boolean {
         if (fecha.isEmpty()) return true
 
-        val formatoCorrecto = fecha.length == MAX_DATE_LENGTH &&
-                fecha[4] == '-' &&
-                fecha[7] == '-' &&
-                fecha.count { it.isDigit() } == 8
+        val dia = try {
+            LocalDate.parse(fecha)
+        } catch (e: Exception) {
+            return false
+        }
 
-        if (!formatoCorrecto) return false
-
-        val mes = fecha.substring(5, 7).toInt()
-        val dia = fecha.substring(8, 10).toInt()
-
-        return mes in 1..12 && dia in 1..31
+        return !dia.isAfter(LocalDate.now())
     }
 
 }

@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
 import com.example.mixtapp.data.injection.IoDispatcher
+import com.example.mixtapp.data.model.MAX_COMMENT_LENGTH
 import com.example.mixtapp.data.repository.ReviewRepository
 import com.example.mixtapp.ui.utils.mensajeDeError
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -66,7 +67,7 @@ class DiscussionViewModel @Inject constructor(
 
     // Lo que se va escribiendo en el campo de abajo
     fun updateNuevoComentario(texto: String) {
-        _uiState.update { it.copy(nuevoComentario = texto, errorAccionRes = null) }
+        _uiState.update { it.copy(nuevoComentario = texto.take(MAX_COMMENT_LENGTH), errorAccionRes = null) }
     }
 
     // No se agrega el comentario a mano: se guarda en Firestore y el flujo trae la lista al dia

@@ -1,6 +1,7 @@
 package com.example.mixtapp.datasource
 
 import com.example.mixtapp.cargarDatosDePrueba
+import com.example.mixtapp.conectarEmulador
 import com.example.mixtapp.data.datasource.impl.firestore.ReviewFirestoreDataSourceImpl
 import com.example.mixtapp.data.dtos.CreateComentarioDto
 import com.example.mixtapp.data.dtos.CreateReviewUsuarioDto
@@ -25,11 +26,7 @@ class ReviewFirestoreDataSourceTest {
 
     @Before
     fun setUp() = runTest {
-        try {
-            db.useEmulator("10.0.2.2", 8080)
-        } catch (e: Exception) {
-
-        }
+        conectarEmulador()
 
         dataSource = ReviewFirestoreDataSourceImpl(db)
         limpiarBase(db)

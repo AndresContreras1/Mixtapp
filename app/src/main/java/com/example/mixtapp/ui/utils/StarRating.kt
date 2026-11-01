@@ -1,6 +1,5 @@
 package com.example.mixtapp.ui.utils
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
@@ -8,6 +7,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -39,23 +39,35 @@ fun StarRating(
             val starValue = index + 1
             val isFilled = starValue <= rating
 
-            Icon(
-                imageVector = if (isFilled) Icons.Filled.Star else Icons.Outlined.StarOutline,
-                // Si solo se muestra dice si esta llena; si se puede tocar, cuantas estrellas pone
-                contentDescription = when {
-                    onRatingChange == null && isFilled -> stringResource(R.string.estrella_llena)
-                    onRatingChange == null -> stringResource(R.string.estrella_vacia)
-                    starValue == 1 -> stringResource(R.string.una_estrella)
-                    else -> stringResource(R.string.star_rating_format, starValue)
-                },
-                tint = if (isFilled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier
-                    .size(starSize)
-                    .then(
-                        if (onRatingChange == null) Modifier
-                        else Modifier.clickable { onRatingChange(starValue) }
+            val descripcion = when {
+                onRatingChange == null && isFilled -> stringResource(R.string.estrella_llena)
+                onRatingChange == null -> stringResource(R.string.estrella_vacia)
+                starValue == 1 -> stringResource(R.string.una_estrella)
+                else -> stringResource(R.string.star_rating_format, starValue)
+            }
+            val tinte = if (isFilled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+
+            // Si solo se muestra es un icono; si se puede calificar, cada estrella es un boton
+            if (onRatingChange == null) {
+                Icon(
+                    imageVector = if (isFilled) Icons.Filled.Star else Icons.Outlined.StarOutline,
+                    contentDescription = descripcion,
+                    tint = tinte,
+                    modifier = Modifier.size(starSize)
+                )
+            } else {
+                IconButton(
+                    onClick = { onRatingChange(starValue) },
+                    modifier = Modifier.size(starSize + 8.dp)
+                ) {
+                    Icon(
+                        imageVector = if (isFilled) Icons.Filled.Star else Icons.Outlined.StarOutline,
+                        contentDescription = descripcion,
+                        tint = tinte,
+                        modifier = Modifier.size(starSize)
                     )
-            )
+                }
+            }
         }
     }
 }

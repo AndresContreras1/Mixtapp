@@ -14,6 +14,7 @@ import androidx.compose.ui.test.performTextInput
 import androidx.test.espresso.Espresso
 import com.example.mixtapp.MainActivity
 import com.example.mixtapp.cargarDatosDePrueba
+import com.example.mixtapp.conectarEmulador
 import com.example.mixtapp.data.repository.AuthRepository
 import com.example.mixtapp.data.repository.UsuarioRepository
 import com.example.mixtapp.limpiarBase
@@ -54,12 +55,7 @@ class SeguirUsuarioE2E {
     fun setUp() {
         hiltRule.inject()
         // Con la aplicacion de prueba de Hilt no corre BaseApplication: el emulador se conecta aqui
-        try {
-            Firebase.auth.useEmulator("10.0.2.2", 9099)
-            Firebase.firestore.useEmulator("10.0.2.2", 8080)
-        } catch (e: Exception) {
-
-        }
+        conectarEmulador()
 
         // El usuario se registra como en la app y cierra la sesion: la prueba entra por el login.
         // usuario_1 (Nombre 1, 10 seguidores) escribio review_1 del album_1

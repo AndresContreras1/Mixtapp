@@ -1,6 +1,7 @@
 package com.example.mixtapp.viewmodels
 
 import com.example.mixtapp.R
+import com.example.mixtapp.conectarEmulador
 import com.example.mixtapp.data.datasource.AuthRemoteDataSource
 import com.example.mixtapp.data.datasource.MessagingRemoteDataSource
 import com.example.mixtapp.data.datasource.impl.firestore.UsuarioFirestoreDataSourceImpl
@@ -33,16 +34,7 @@ class SignUpViewModelIntegrationTest {
 
     @Before
     fun setUp() = runTest {
-        try {
-            db.useEmulator("10.0.2.2", 8080)
-        } catch (e: Exception) {
-
-        }
-        try {
-            auth.useEmulator("10.0.2.2", 9099)
-        } catch (e: Exception) {
-
-        }
+        conectarEmulador()
 
         limpiarBase(db)
         auth.signOut()

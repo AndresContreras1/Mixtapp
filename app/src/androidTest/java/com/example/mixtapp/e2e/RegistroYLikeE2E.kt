@@ -17,6 +17,7 @@ import androidx.test.espresso.Espresso
 import com.example.mixtapp.MainActivity
 import com.example.mixtapp.R
 import com.example.mixtapp.cargarDatosDePrueba
+import com.example.mixtapp.conectarEmulador
 import com.example.mixtapp.data.repository.AuthRepository
 import com.example.mixtapp.limpiarBase
 import com.google.firebase.Firebase
@@ -53,12 +54,7 @@ class RegistroYLikeE2E {
     fun setUp() {
         hiltRule.inject()
         // Con la aplicacion de prueba de Hilt no corre BaseApplication: el emulador se conecta aqui
-        try {
-            Firebase.auth.useEmulator("10.0.2.2", 9099)
-            Firebase.firestore.useEmulator("10.0.2.2", 8080)
-        } catch (e: Exception) {
-
-        }
+        conectarEmulador()
 
         // La primera publicacion es el album_1 con la resena review_1, sin likes
         runBlocking {

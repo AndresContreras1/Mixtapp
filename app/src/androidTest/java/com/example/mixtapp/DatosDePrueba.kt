@@ -6,11 +6,30 @@ import com.example.mixtapp.data.dtos.CreateReviewItemDto
 import com.example.mixtapp.data.dtos.CreateReviewUsuarioDto
 import com.example.mixtapp.data.dtos.UsuarioPerfilFirestoreDto
 import com.example.mixtapp.data.model.TIPO_ALBUM
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.tasks.await
 
 // Los datos los crea la propia prueba, no la carga con Faker: asi cada prueba es replicable.
 // Estan en un solo archivo para no copiarlos en cada clase de prueba
+
+// Todas las pruebas usan el emulador de Firebase. Cada useEmulator va en su propio try: si otra prueba
+// de la misma corrida ya lo conecto, lanza una excepcion que no importa, y asi no deja al otro sin
+// conectar
+fun conectarEmulador() {
+    try {
+        Firebase.firestore.useEmulator("10.0.2.2", 8080)
+    } catch (e: Exception) {
+
+    }
+    try {
+        Firebase.auth.useEmulator("10.0.2.2", 9099)
+    } catch (e: Exception) {
+
+    }
+}
 
 fun generateUsuario(i: Int): UsuarioPerfilFirestoreDto = UsuarioPerfilFirestoreDto(
     id = "usuario_$i",

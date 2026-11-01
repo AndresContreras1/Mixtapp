@@ -62,7 +62,7 @@ fun NotificationRow(
         ProfileAsyncImage(
             profileImage = notification.actorImage,
             contentDescription = stringResource(R.string.foto_perfil),
-            modifier = Modifier.size(44.dp)
+            size = 44
         )
 
         Spacer(modifier = Modifier.width(12.dp))

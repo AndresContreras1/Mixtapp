@@ -11,6 +11,7 @@ import androidx.compose.material.icons.outlined.Search
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.mixtapp.R
 
+// Una pestana de la barra: el icono lleno es el de la pestana actual y el vacio el de las demas
 data class BottomNavItem(
     val filledIcon: ImageVector,
     val outlineIcon: ImageVector,

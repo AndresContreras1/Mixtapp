@@ -67,7 +67,7 @@ Universidad Javeriana.
 | Modo claro y modo oscuro: la app sigue el del celular | Funcionando |
 | Modo debug contra el emulador de Firebase (Firebase CLI) | Funcionando |
 | Catálogo y datos falsos con Faker para el emulador o el Firebase real | Script en [mixtapp-functions](https://github.com/AndresContreras1/mixtapp-functions) |
-| Pruebas de integración de los data sources y los repositorios contra el emulador | 16 + 17 pruebas |
+| Pruebas de integración de los data sources y los repositorios contra el emulador | 21 + 17 pruebas |
 | Pruebas con mocks (MockK) del repositorio, con sus mapeos, y de los ViewModels | 12 + 11 pruebas, más 15 de mapeos y datos locales |
 | Pruebas de integración del ViewModel de registro contra el emulador | 2 pruebas |
 | Pruebas end to end de los dos casos de uso del sprint 13 | 2 pruebas |
@@ -354,12 +354,13 @@ prendido y la Firebase CLI corriendo (`firebase emulators:start --only firestore
 | Clase | Pruebas | Qué revisa |
 |---|---|---|
 | `datasource/UsuarioFirestoreDataSourceTest` | 8 | leer por id (válido y que no existe → `null`), registrar, seguir, el contador de seguidores, dejar de seguir, la lista de seguidores y las reseñas de un usuario |
+| `datasource/AlbumFirestoreDataSourceTest` | 5 | leer por id (válido y que no existe → `null`), el like a un álbum (sube `likesCount` y deja la copia en `usuarios/<uid>/likes`), quitarlo y el listener con mi like |
 | `datasource/ReviewFirestoreDataSourceTest` | 8 | leer por id, like y su contador, comentar y `commentsCount`, el orden de los comentarios, like a un comentario y borrar la reseña con sus comentarios |
 | `repository/ReviewRepositoryIntegrationTest` | 8 | guardar la reseña (`Result` bien y sin sesión), la copia del nombre y del item, like sin sesión, comentar, el hilo de respuestas, la discusión que no existe y eliminar |
 | `repository/UsuarioRepositoryIntegrationTest` | 9 | mi perfil (con documento, sin documento, sin sesión), registrar, seguirme a mí mismo, seguir a otro, seguir sin tener documento (se crea), seguir a alguien que no existe y modificar el perfil |
 | `viewmodels/SignUpViewModelIntegrationTest` | 2 | el registro válido navega y guarda el usuario; el correo ya registrado muestra su error. La prueba espera el estado con `uiState.map { … }.first { … }` |
 
-Cada clase tiene `@Before` (conecta al emulador dentro de un `try`, limpia y carga sus propios
+Cada clase tiene `@Before` (conecta al emulador con `conectarEmulador()`, limpia y carga sus propios
 datos con `DatosDePrueba.kt`) y `@After` (borra las colecciones con sus subcolecciones; en los
 repositorios también borra la cuenta de Authentication, aunque la prueba haya cerrado la sesión,
 y la cierra). Se corren con clic derecho en la carpeta `androidTest` → **Run 'Tests in…'**.

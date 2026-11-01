@@ -8,6 +8,7 @@ import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.storage.StorageException
 import javax.inject.Inject
 
+// Sube la foto de perfil a Firebase Storage y retorna su URL. Authentication dice de quien es la foto
 class StorageRepository @Inject constructor(
     private val storage: StorageRemoteDataSource,
     private val auth: AuthRemoteDataSource

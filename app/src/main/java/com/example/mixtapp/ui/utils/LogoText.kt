@@ -16,6 +16,7 @@ import com.example.mixtapp.R
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.theme.displayFontFamily
 
+// El nombre de la app con la letra del logo: "Mixt" en el color del texto y "app" en el terciario
 @Composable
 fun LogoText(
     fontSize: TextUnit,
