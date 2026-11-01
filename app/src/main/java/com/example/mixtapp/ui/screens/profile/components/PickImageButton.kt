@@ -7,14 +7,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppButton
 
+// Abre la galeria del celular y entrega la imagen elegida; si se cancela no hace nada
 @Composable
 fun PickImageButton(
     action: (Uri) -> Unit,
@@ -31,12 +30,9 @@ fun PickImageButton(
         texto = stringResource(R.string.cambiar_foto),
         onClick = { launcher.launch("image/*") },
         cargando = cargando,
-        fontSize = 13.sp,
-        fontWeight = FontWeight.Bold,
-        modifier = modifier.height(40.dp)
+        modifier = modifier.height(44.dp)
     )
 }
-
 
 @Composable
 @Preview(showBackground = true)

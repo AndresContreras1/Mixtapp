@@ -11,46 +11,46 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.example.mixtapp.R
 import com.example.mixtapp.ui.theme.MixtappTheme
 
+// El boton principal de la app: ovalado, con el color primario. Mientras carga muestra el circulo
+// y no se puede tocar otra vez
 @Composable
 fun AppButton(
     texto: String,
     onClick: () -> Unit,
-    cargando: Boolean,
-    fontSize: TextUnit,
-    fontWeight: FontWeight,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    cargando: Boolean = false,
 ) {
     Button(
         onClick = onClick,
-        modifier = modifier,
+        modifier = modifier.height(56.dp),
         enabled = !cargando,
         shape = CircleShape,
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.onSurface,
+            contentColor = MaterialTheme.colorScheme.onPrimary,
             disabledContainerColor = MaterialTheme.colorScheme.primary,
-            disabledContentColor = MaterialTheme.colorScheme.onSurface
+            disabledContentColor = MaterialTheme.colorScheme.onPrimary
         ),
-        elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
+        elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
     ) {
         if (cargando) {
             CircularProgressIndicator(
                 modifier = Modifier.size(24.dp),
-                color = MaterialTheme.colorScheme.onSurface,
+                color = MaterialTheme.colorScheme.onPrimary,
                 strokeWidth = 3.dp
             )
         } else {
             Text(
                 text = texto,
-                fontSize = fontSize,
-                fontWeight = fontWeight
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
             )
         }
     }
@@ -61,14 +61,9 @@ fun AppButton(
 fun AppButtonPreview() {
     MixtappTheme(darkTheme = true) {
         AppButton(
-            texto = "INGRESAR",
+            texto = stringResource(R.string.ingresar),
             onClick = {},
-            cargando = false,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Black,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(82.dp)
+            modifier = Modifier.fillMaxWidth(),
         )
     }
 }

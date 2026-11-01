@@ -2,33 +2,21 @@ package com.example.mixtapp.data.model
 
 data class DiscussionUi(
     val id: String,
-    val review: DiscussionReviewUi,
+    val review: ReviewUi,
     val comments: List<DiscussionCommentUi>,
-)
-
-data class DiscussionReviewUi(
-    val id: String,
-    val reviewerName: String,
-    val reviewerAvatarText: String,
-    // La foto de quien la escribio; si esta vacia se muestran las iniciales
-    val reviewerImage: String,
-    val reviewedAt: String,
-    val album: Album,
-    val rating: Int,
-    val reviewText: String,
-    val likes: Int,
-    val commentsCount: Int,
-    val isLiked: Boolean,
-    val isShared: Boolean,
 )
 
 data class DiscussionCommentUi(
     val id: String,
+    val authorId: String,
     val author: String,
-    val initials: String,
+    // La foto de quien lo escribio; si esta vacia se muestran las iniciales
+    val authorImage: String,
+    // Cuanto hace que lo publico ("5 min"); vacio si fue hace menos de un minuto
     val timeAgo: String,
     val content: String,
     val likes: Int,
+    val likesText: String,
     val isReply: Boolean,
     val isLiked: Boolean,
     // El comentario principal al que responde; null si no es una respuesta

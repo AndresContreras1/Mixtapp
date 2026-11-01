@@ -1,40 +1,46 @@
 package com.example.mixtapp.ui.screens.profile
 
 import androidx.annotation.StringRes
-import com.example.mixtapp.data.model.Album
-import com.example.mixtapp.data.model.MyReviewUi
+import com.example.mixtapp.data.model.ItemResumenUi
+import com.example.mixtapp.data.model.ReviewUi
+import com.example.mixtapp.data.model.UsuarioUi
+import com.example.mixtapp.ui.screens.profile.model.PESTANA_PERFIL
 import com.example.mixtapp.ui.screens.profile.model.ProfileTabUi
+import com.example.mixtapp.ui.screens.profile.model.profileTabs
 
 data class ProfileState(
-    val misResenas: List<MyReviewUi> = emptyList(),
-    // Los favoritos y las barras de calificaciones se calculan con mis resenas
-    val favoritos: List<Album> = emptyList(),
-    val barrasDeCalificacion: List<Float> = emptyList(),
-    // Arranca cargando porque lo primero que hace la pantalla es pedir mis resenas
+    // Arranca cargando hasta que llegan mis datos
     val isLoading: Boolean = true,
-    // Las pestanas las provee el ViewModel; el componente solo las pinta
-    val tabs: List<ProfileTabUi> = emptyList(),
-    val selectedTabId: String = "",
-    // Mi uid, para abrir mis listas de seguidores y seguidos
-    val usuarioId: String = "",
-    // Mis datos guardados en Firestore; sin ellos, el usuario sale del correo sin la arroba
+    // Mis datos de Firestore; sin mi documento, el usuario sale del correo antes de la arroba
     val usuario: String = "",
     val nombre: String = "",
     val bio: String = "",
     val seguidores: Int = 0,
     val seguidos: Int = 0,
-    // Aviso para quien todavia no tiene sus datos en Firestore; no es un error de carga
-    @StringRes val avisoPerfilRes: Int? = null,
     val profileImageUrl: String = "",
+    // Aviso para quien todavia no tiene su documento: no es un error de carga
+    @StringRes val avisoPerfilRes: Int? = null,
     val subiendoImagen: Boolean = false,
-    // La resena que se esta editando en esta misma pantalla y lo que lleva escrito
-    val resenaEnEdicionId: String? = null,
-    val calificacionEditada: Int = 0,
-    val textoEditado: String = "",
-    val guardandoEdicion: Boolean = false,
-    @StringRes val errorEdicionRes: Int? = null,
     @StringRes val errorImagenRes: Int? = null,
-    // Mientras se borra no se manda otro DELETE
+    // Las pestanas las provee el ViewModel; la elegida se conserva al volver a la pantalla
+    val tabs: List<ProfileTabUi> = profileTabs,
+    val selectedTabId: String = PESTANA_PERFIL,
+    // Cada seccion llega por su propio flujo y trae su propio error: si una falla, las demas se ven
+    val favoritos: List<ItemResumenUi> = emptyList(),
+    @StringRes val errorFavoritosRes: Int? = null,
+    // Solo las mas recientes: todas estan en Mis resenas
+    val resenasRecientes: List<ReviewUi> = emptyList(),
+    @StringRes val errorResenasRes: Int? = null,
+    val guardados: List<ItemResumenUi> = emptyList(),
+    @StringRes val errorGuardadosRes: Int? = null,
+    val listaSeguidores: List<UsuarioUi> = emptyList(),
+    @StringRes val errorSeguidoresRes: Int? = null,
+    val listaSeguidos: List<UsuarioUi> = emptyList(),
+    @StringRes val errorSeguidosRes: Int? = null,
+    // El like o el borrado de una resena que no se pudo hacer
+    @StringRes val errorAccionRes: Int? = null,
+    // Mientras se borra no se manda otro borrado
     val eliminando: Boolean = false,
+    // Error al cargar mis datos: si no hay nada que mostrar, la pantalla deja el motivo y cerrar sesion
     @StringRes val errorMessageRes: Int? = null,
 )

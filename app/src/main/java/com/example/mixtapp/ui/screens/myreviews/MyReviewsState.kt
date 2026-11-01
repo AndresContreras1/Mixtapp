@@ -1,22 +1,17 @@
 package com.example.mixtapp.ui.screens.myreviews
 
 import androidx.annotation.StringRes
-import com.example.mixtapp.data.model.MyReviewUi
-import com.example.mixtapp.ui.screens.myreviews.model.MyReviewFilterUi
+import com.example.mixtapp.data.model.ReviewUi
 
 data class MyReviewsState(
-    val username: String = "",
-    val iniciales: String = "",
-    // Todas mis resenas, para cambiar de filtro sin volver a pedirlas
-    val todas: List<MyReviewUi> = emptyList(),
-    // Ya vienen ordenadas o filtradas por el ViewModel
-    val reviews: List<MyReviewUi> = emptyList(),
-    // Los filtros los provee el ViewModel; el componente solo los pinta
-    val filters: List<MyReviewFilterUi> = emptyList(),
-    val selectedFilterId: String = "",
-    // Arranca cargando porque lo primero que hace la pantalla es pedir mis resenas
+    // Mis resenas, la mas nueva primero: el repositorio ya las entrega en ese orden
+    val reviews: List<ReviewUi> = emptyList(),
+    // Arranca cargando porque el ViewModel empieza a escuchar mis resenas al crearse
     val isLoading: Boolean = true,
-    // Mientras se borra no se manda otro DELETE
+    // Mientras se borra no se manda otra eliminacion
     val eliminando: Boolean = false,
+    // No se pudieron cargar mis resenas: si no hay ninguna, ocupa toda la pantalla
     @StringRes val errorMessageRes: Int? = null,
+    // Fallo borrar o dar like: la lista sigue visible y el error sale encima
+    @StringRes val errorAccionRes: Int? = null,
 )

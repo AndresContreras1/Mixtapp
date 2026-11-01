@@ -1,9 +1,10 @@
 package com.example.mixtapp.data.dtos
 
-// Lo que se manda para crear o modificar una resena
+// Lo que se manda para crear o modificar una resena en Firestore
 data class CreateReviewDto(
     val usuarioId: String,
-    val albumId: String,
+    val itemId: String,
+    val tipo: String,
     val calificacion: Int,
     val comentario: String,
     val fechaEscucha: String?,
@@ -14,10 +15,9 @@ data class CreateReviewDto(
     // Al modificarla solo cambia updatedAt
     val createdAt: String?,
     val updatedAt: String,
-    // Firestore no tiene joins: la resena guarda una copia de lo que se muestra del usuario y del
-    // album. Son nulables para que no choque con el backend, que los toma de sus tablas
-    val usuario: CreateReviewUsuarioDto? = null,
-    val album: CreateReviewAlbumDto? = null,
+    // Firestore no tiene joins: la resena guarda una copia de lo que se muestra del usuario y del item
+    val usuario: CreateReviewUsuarioDto,
+    val item: CreateReviewItemDto,
 )
 
 // Solo los datos del usuario que se muestran con la resena
@@ -26,9 +26,9 @@ data class CreateReviewUsuarioDto(
     val fotoUrl: String? = null,
 )
 
-// Solo los datos del album que se muestran en Mis resenas y en el perfil
-data class CreateReviewAlbumDto(
-    val titulo: String? = null,
-    val artista: String? = null,
-    val portadaUrl: String? = null,
+// Solo los datos del item que se muestran en la tarjeta de la resena
+data class CreateReviewItemDto(
+    val titulo: String,
+    val subtitulo: String,
+    val imagenUrl: String,
 )

@@ -3,8 +3,8 @@
 
     <!-- Fondo de la ventana mientras Compose todavia no dibuja. El valor se repite
          a mano porque los colores de la app viven en ui/theme/Color.kt: debe
-         coincidir con DeepBackground -->
+         coincidir con Mauve600, el fondo del modo oscuro -->
     <style name="Theme.Mixtapp" parent="android:Theme.Material.NoActionBar">
-        <item name="android:windowBackground">#FF1B020D</item>
+        <item name="android:windowBackground">#FF260B15</item>
     </style>
 </resources>

@@ -1,10 +1,11 @@
 package com.example.mixtapp
 
 import com.example.mixtapp.data.dtos.AlbumDto
-import com.example.mixtapp.data.dtos.CreateReviewAlbumDto
 import com.example.mixtapp.data.dtos.CreateReviewDto
+import com.example.mixtapp.data.dtos.CreateReviewItemDto
 import com.example.mixtapp.data.dtos.CreateReviewUsuarioDto
 import com.example.mixtapp.data.dtos.UsuarioPerfilFirestoreDto
+import com.example.mixtapp.data.model.TIPO_ALBUM
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
@@ -29,6 +30,10 @@ fun generateAlbum(i: Int): AlbumDto = AlbumDto(
     portadaUrl = "https://picsum.photos/600/600?random=$i",
     anio = 2000 + i,
     genero = "Rock",
+    subgenero = "Rock alternativo",
+    datosCuriosos = listOf("Dato curioso del album $i"),
+    tendencia = null,
+    likesCount = 0,
     createdAt = "2025-01-01T00:00:00Z",
     updatedAt = "2025-01-01T00:00:00Z",
 )
@@ -36,7 +41,8 @@ fun generateAlbum(i: Int): AlbumDto = AlbumDto(
 // La resena de un usuario a un album, con las copias que guarda la app
 fun generateReview(usuario: UsuarioPerfilFirestoreDto, album: AlbumDto): CreateReviewDto = CreateReviewDto(
     usuarioId = usuario.id,
-    albumId = album.id,
+    itemId = album.id,
+    tipo = TIPO_ALBUM,
     calificacion = 4,
     comentario = "Resena de ${usuario.nombre} a ${album.titulo}",
     fechaEscucha = "2025-01-01",
@@ -45,7 +51,7 @@ fun generateReview(usuario: UsuarioPerfilFirestoreDto, album: AlbumDto): CreateR
     createdAt = "2025-01-01T00:00:00Z",
     updatedAt = "2025-01-01T00:00:00Z",
     usuario = CreateReviewUsuarioDto(nombre = usuario.nombre, fotoUrl = usuario.fotoUrl),
-    album = CreateReviewAlbumDto(titulo = album.titulo, artista = album.artista, portadaUrl = album.portadaUrl),
+    item = CreateReviewItemDto(titulo = album.titulo, subtitulo = album.artista, imagenUrl = album.portadaUrl),
 )
 
 // Carga 10 usuarios, 5 albumes y la resena "review_i" del usuario i al album i (i de 1 a 5)
@@ -71,11 +77,10 @@ suspend fun cargarDatosDePrueba(db: FirebaseFirestore) {
 suspend fun limpiarBase(db: FirebaseFirestore) {
     val usuarios = db.collection("usuarios").get().await()
     for (usuarioDoc in usuarios) {
-        val followers = usuarioDoc.reference.collection("followers").get().await()
-        for (f in followers) f.reference.delete().await()
-
-        val following = usuarioDoc.reference.collection("following").get().await()
-        for (f in following) f.reference.delete().await()
+        for (subcoleccion in listOf("followers", "following", "likes", "guardados", "notificaciones")) {
+            val documentos = usuarioDoc.reference.collection(subcoleccion).get().await()
+            for (documento in documentos) documento.reference.delete().await()
+        }
 
         usuarioDoc.reference.delete().await()
     }
@@ -96,6 +101,13 @@ suspend fun limpiarBase(db: FirebaseFirestore) {
         reviewDoc.reference.delete().await()
     }
 
-    val albumes = db.collection("albumes").get().await()
-    for (albumDoc in albumes) albumDoc.reference.delete().await()
+    for (coleccion in listOf("albumes", "canciones", "artistas")) {
+        val items = db.collection(coleccion).get().await()
+        for (itemDoc in items) {
+            val likes = itemDoc.reference.collection("likes").get().await()
+            for (like in likes) like.reference.delete().await()
+
+            itemDoc.reference.delete().await()
+        }
+    }
 }

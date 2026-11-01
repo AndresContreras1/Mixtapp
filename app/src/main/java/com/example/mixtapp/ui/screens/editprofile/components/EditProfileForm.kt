@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AlternateEmail
 import androidx.compose.material.icons.outlined.Person
@@ -14,12 +13,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
-import com.example.mixtapp.data.local.LocalUsuarioProvider
+import com.example.mixtapp.data.local.LocalPreviewProvider
 import com.example.mixtapp.data.model.MAX_BIO_LENGTH
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppTextArea
 import com.example.mixtapp.ui.utils.AppTextField
 
+// Los campos del perfil: nombre y usuario ovalados como en el registro, y la biografia en el area
+// de texto con el contador, porque puede ocupar varias lineas
 @Composable
 fun EditProfileForm(
     nombre: String,
@@ -32,29 +33,21 @@ fun EditProfileForm(
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         AppTextField(
-            label = stringResource(R.string.nombre),
-            placeholder = stringResource(R.string.ingresa_tu_nombre),
             value = nombre,
             onValueChange = onNombreChange,
-            icon = Icons.Outlined.Person,
-            keyboardOptions = KeyboardOptions.Default,
-            esContrasena = false,
-            contrasenaVisible = false,
-            onContrasenaVisibleChange = {}
+            placeholder = stringResource(R.string.ingresa_tu_nombre),
+            label = stringResource(R.string.nombre),
+            leadingIcon = Icons.Outlined.Person,
         )
 
         Spacer(modifier = Modifier.height(14.dp))
 
         AppTextField(
-            label = stringResource(R.string.username),
-            placeholder = stringResource(R.string.choose_username),
             value = username,
             onValueChange = onUsernameChange,
-            icon = Icons.Outlined.AlternateEmail,
-            keyboardOptions = KeyboardOptions.Default,
-            esContrasena = false,
-            contrasenaVisible = false,
-            onContrasenaVisibleChange = {}
+            placeholder = stringResource(R.string.choose_username),
+            label = stringResource(R.string.username),
+            leadingIcon = Icons.Outlined.AlternateEmail,
         )
 
         Spacer(modifier = Modifier.height(14.dp))
@@ -72,7 +65,7 @@ fun EditProfileForm(
 @Composable
 @Preview(showBackground = true)
 fun EditProfileFormPreview() {
-    val usuario = LocalUsuarioProvider.usuario
+    val usuario = LocalPreviewProvider.usuario
 
     MixtappTheme(darkTheme = true) {
         EditProfileForm(

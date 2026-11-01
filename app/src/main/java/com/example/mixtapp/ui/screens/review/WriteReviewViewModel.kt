@@ -6,7 +6,7 @@ import com.example.mixtapp.R
 import com.example.mixtapp.data.injection.IoDispatcher
 import com.example.mixtapp.data.model.MAX_DATE_LENGTH
 import com.example.mixtapp.data.model.MAX_REVIEW_LENGTH
-import com.example.mixtapp.data.repository.AlbumRepository
+import com.example.mixtapp.data.repository.CatalogoRepository
 import com.example.mixtapp.data.repository.ReviewRepository
 import com.example.mixtapp.ui.utils.mensajeDeError
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,7 +21,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WriteReviewViewModel @Inject constructor(
-    private val albumRepository: AlbumRepository,
+    private val catalogoRepository: CatalogoRepository,
     private val reviewRepository: ReviewRepository,
     // Las corrutinas se lanzan en este hilo; las pruebas pasan uno de prueba
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
@@ -30,39 +30,47 @@ class WriteReviewViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(WriteReviewState())
     val uiState: StateFlow<WriteReviewState> = _uiState.asStateFlow()
 
-    // Buscar el album es responsabilidad del ViewModel, no de la navegacion
-    fun getAlbumById(albumId: String) {
-        if (_uiState.value.album != null) return
+    // Se pide una sola vez: si se volviera a pedir al mostrar la pantalla otra vez, se borraria lo
+    // que ya se escribio
+    private var cargado = false
+
+    // Buscar el item es responsabilidad del ViewModel, no de la navegacion. Llega con sus resenas,
+    // y entre ellas la mia si ya lo califique
+    fun getItem(tipo: String, itemId: String) {
+        if (cargado) return
+        cargado = true
 
         viewModelScope.launch(ioDispatcher) {
             _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
 
-            // El album llega con sus resenas, y entre ellas la mia si ya lo califique
-            val result = albumRepository.getAlbumReviewsById(albumId = albumId)
-            val albumReviews = result.getOrNull()
+            val result = catalogoRepository.getItemConResenas(tipo = tipo, itemId = itemId)
+            val itemConResenas = result.getOrNull()
 
-            if (result.isSuccess && albumReviews != null) {
-                // Solo se permite una calificacion por album: si ya existe se edita
-                val yaCalificado = albumReviews.reviews.find { it.esMia }
+            if (result.isSuccess && itemConResenas != null) {
+                // Solo se permite una resena por item: si ya existe se edita
+                val miResena = itemConResenas.reviews.find { it.isMine }
 
                 _uiState.update {
                     it.copy(
-                        album = albumReviews.album,
-                        reviewId = yaCalificado?.id,
-                        rating = yaCalificado?.rating ?: 0,
-                        reviewText = yaCalificado?.content ?: "",
-                        listenedDate = yaCalificado?.fecha ?: "",
+                        item = itemConResenas.item,
+                        reviewId = miResena?.id,
+                        rating = miResena?.rating ?: 0,
+                        reviewText = miResena?.content ?: "",
+                        listenedDate = miResena?.date ?: "",
                         isLoading = false,
                         errorMessageRes = null,
                     )
                 }
             } else {
+                // Si fallo se puede volver a pedir
+                cargado = false
                 _uiState.update {
                     it.copy(
                         isLoading = false,
                         errorMessageRes = mensajeDeError(
                             error = result.exceptionOrNull(),
-                            generico = R.string.error_cargar_contenido, noEncontrado = R.string.album_no_encontrado,
+                            generico = R.string.error_cargar_contenido,
+                            noEncontrado = R.string.album_no_encontrado,
                         )
                     )
                 }
@@ -70,6 +78,7 @@ class WriteReviewViewModel @Inject constructor(
         }
     }
 
+    // Tocar la misma estrella otra vez la quita: asi se puede dejar en 0
     fun updateRating(rating: Int) {
         val calificacionActual = _uiState.value.rating
         val nueva = if (rating == calificacionActual) 0 else rating
@@ -77,21 +86,24 @@ class WriteReviewViewModel @Inject constructor(
         _uiState.update { it.copy(rating = nueva) }
     }
 
+    // El texto se corta en el limite: el contador nunca pasa del maximo
     fun updateReviewText(reviewText: String) {
         _uiState.update {
             it.copy(reviewText = reviewText.take(MAX_REVIEW_LENGTH), errorMessageRes = null)
         }
     }
 
+    // La fecha no puede ser mas larga que AAAA-MM-DD
     fun updateListenedDate(listenedDate: String) {
         _uiState.update {
             it.copy(listenedDate = listenedDate.take(MAX_DATE_LENGTH), errorMessageRes = null)
         }
     }
 
+    // Valida el formulario y guarda la resena. No se vuelve atras hasta que la base confirma
     fun publicarResena() {
         val estado = _uiState.value
-        val album = estado.album ?: return
+        val item = estado.item ?: return
         val texto = estado.reviewText.trim()
         val fecha = estado.listenedDate.trim()
 
@@ -113,7 +125,7 @@ class WriteReviewViewModel @Inject constructor(
             _uiState.update { it.copy(publicando = true, errorMessageRes = null) }
 
             val result = reviewRepository.guardarResena(
-                albumId = album.id,
+                item = item,
                 rating = estado.rating,
                 texto = texto,
                 fecha = fecha,
@@ -121,14 +133,15 @@ class WriteReviewViewModel @Inject constructor(
             )
 
             if (result.isSuccess) {
-                _uiState.update { it.copy(publicando = false, publicada = true, errorMessageRes = null) }
+                _uiState.update { it.copy(publicando = false, navigate = true, errorMessageRes = null) }
             } else {
                 _uiState.update {
                     it.copy(
                         publicando = false,
                         errorMessageRes = mensajeDeError(
                             error = result.exceptionOrNull(),
-                            generico = R.string.error_publicar_resena, noEncontrado = R.string.album_no_encontrado,
+                            generico = R.string.error_publicar_resena,
+                            noEncontrado = R.string.album_no_encontrado,
                         )
                     )
                 }

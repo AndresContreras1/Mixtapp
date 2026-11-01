@@ -1,6 +1,6 @@
 package com.example.mixtapp.ui.screens.discussion
 
-import androidx.compose.foundation.background
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -10,144 +10,172 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
-import com.example.mixtapp.data.local.LocalDiscussionProvider
+import com.example.mixtapp.data.local.LocalPreviewProvider
 import com.example.mixtapp.data.model.DiscussionUi
-import com.example.mixtapp.ui.screens.discussion.components.CommentsDivider
-import com.example.mixtapp.ui.screens.discussion.components.DiscussionHeader
-import com.example.mixtapp.ui.screens.discussion.components.DiscussionReviewCard
 import com.example.mixtapp.ui.screens.discussion.components.NewCommentField
 import com.example.mixtapp.ui.screens.discussion.components.ThreadCommentItem
 import com.example.mixtapp.ui.theme.MixtappTheme
+import com.example.mixtapp.ui.utils.AppBackground
+import com.example.mixtapp.ui.utils.EmptyMessage
+import com.example.mixtapp.ui.utils.ErrorBox
 import com.example.mixtapp.ui.utils.ErrorMessage
 import com.example.mixtapp.ui.utils.LoadingBox
+import com.example.mixtapp.ui.utils.ReviewCard
+import com.example.mixtapp.ui.utils.ScreenTitle
+import com.example.mixtapp.ui.utils.SectionTitle
 
-// Recibe solo el id de la resena; el ViewModel se encarga de buscar la discusion
+// Recibe solo el id de la resena; el ViewModel se encarga de escuchar la discusion
 @Composable
 fun DiscussionScreen(
     reviewId: String,
     discussionViewModel: DiscussionViewModel,
+    onAuthorClick: (String) -> Unit,
+    // El tipo y el id de lo que se califico, para abrir su detalle
+    onItemClick: (String, String) -> Unit,
     onBackClick: () -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     val state by discussionViewModel.uiState.collectAsState()
 
+    // Necesita el id que llega por la ruta, asi que empieza a escuchar en un LaunchedEffect
     LaunchedEffect(Unit) {
         discussionViewModel.getDiscussionByReviewId(reviewId = reviewId)
     }
 
-    // Con una copia local, Kotlin sabe que no es nula despues de revisarla: no hace falta el !!
-    val discussion = state.discussion
-
-    when {
-        state.isLoading -> {
-            LoadingBox(modifier = modifier)
-        }
-        discussion == null -> {
-            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(text = stringResource(state.errorMessageRes ?: R.string.discusion_no_encontrada))
-            }
-        }
-        else -> DiscussionScreenContent(
-            discussion = discussion,
-            nuevoComentario = state.nuevoComentario,
-            replyingToCommentId = state.replyingToCommentId,
-            errorMessageRes = state.errorMessageRes,
-            onBackClick = onBackClick,
-            onReviewLikeClick = { discussionViewModel.sendOrDeleteLike() },
-            onReviewShareClick = { discussionViewModel.compartirQuitarResena() },
-            onCommentLikeClick = { discussionViewModel.sendOrDeleteLikeComentario(commentId = it) },
-            onCommentReplyClick = { discussionViewModel.responderComentario(commentId = it) },
-            onNuevoComentarioChange = { discussionViewModel.updateNuevoComentario(texto = it) },
-            onPublicarComentarioClick = { discussionViewModel.publicarComentario() },
-            modifier = modifier,
-        )
-    }
+    DiscussionScreenContent(
+        isLoading = state.isLoading,
+        discussion = state.discussion,
+        nuevoComentario = state.nuevoComentario,
+        replyingToCommentId = state.replyingToCommentId,
+        publicando = state.publicando,
+        errorMessageRes = state.errorMessageRes,
+        errorAccionRes = state.errorAccionRes,
+        onBackClick = onBackClick,
+        onAuthorClick = onAuthorClick,
+        onItemClick = onItemClick,
+        onReviewLikeClick = { discussionViewModel.sendOrDeleteLike(reviewId = it) },
+        onCommentLikeClick = { discussionViewModel.sendOrDeleteLikeComentario(commentId = it) },
+        onCommentReplyClick = { discussionViewModel.responderComentario(commentId = it) },
+        onCancelReplyClick = { discussionViewModel.cancelarRespuesta() },
+        onNuevoComentarioChange = { discussionViewModel.updateNuevoComentario(texto = it) },
+        onPublicarComentarioClick = { discussionViewModel.publicarComentario() },
+        modifier = modifier,
+    )
 }
 
 @Composable
 fun DiscussionScreenContent(
-    discussion: DiscussionUi,
+    isLoading: Boolean,
+    discussion: DiscussionUi?,
     nuevoComentario: String,
     replyingToCommentId: String?,
-    errorMessageRes: Int?,
+    publicando: Boolean,
+    @StringRes errorMessageRes: Int?,
+    @StringRes errorAccionRes: Int?,
     onBackClick: () -> Unit,
-    onReviewLikeClick: () -> Unit,
-    onReviewShareClick: () -> Unit,
+    onAuthorClick: (String) -> Unit,
+    onItemClick: (String, String) -> Unit,
+    onReviewLikeClick: (String) -> Unit,
     onCommentLikeClick: (String) -> Unit,
     onCommentReplyClick: (String) -> Unit,
+    onCancelReplyClick: () -> Unit,
     onNuevoComentarioChange: (String) -> Unit,
     onPublicarComentarioClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .imePadding()
-        ) {
-            DiscussionHeader(
-                commentsCount = discussion.review.commentsCount,
-                onBackClick = onBackClick,
-                modifier = Modifier.padding(horizontal = 24.dp)
-            )
+    Box(modifier = modifier.fillMaxSize()) {
+        AppBackground()
 
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                contentPadding = PaddingValues(start = 24.dp, end = 24.dp, bottom = 18.dp)
-            ) {
-                item {
-                    DiscussionReviewCard(
-                        review = discussion.review,
-                        onLikeClick = onReviewLikeClick,
-                        onShareClick = onReviewShareClick,
+        when {
+            isLoading -> LoadingBox()
+            discussion == null -> ErrorBox(messageRes = errorMessageRes ?: R.string.discusion_no_encontrada)
+            else -> {
+                // El nombre de quien escribio el comentario al que se responde
+                val respondiendoA = discussion.comments.find { it.id == replyingToCommentId }?.author
+
+                // El campo para comentar queda fijo abajo y sube con el teclado
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .imePadding()
+                ) {
+                    ScreenTitle(
+                        title = stringResource(R.string.discussion),
+                        onBackClick = onBackClick,
+                        modifier = Modifier.padding(horizontal = 16.dp),
                     )
-                }
 
-                item {
-                    CommentsDivider(
-                        modifier = Modifier.padding(top = 20.dp, bottom = 12.dp)
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        contentPadding = PaddingValues(start = 24.dp, end = 24.dp, top = 8.dp, bottom = 16.dp),
+                    ) {
+                        item {
+                            // Ya estamos en la discusion: el icono de comentarios solo muestra el total
+                            ReviewCard(
+                                review = discussion.review,
+                                onAuthorClick = onAuthorClick,
+                                onLikeClick = onReviewLikeClick,
+                                onCommentsClick = {},
+                                mostrarItem = true,
+                                onItemClick = { item -> onItemClick(item.tipo, item.id) },
+                            )
+                        }
+
+                        item {
+                            SectionTitle(
+                                title = stringResource(R.string.comentarios_total, discussion.comments.size),
+                                modifier = Modifier.padding(top = 24.dp, bottom = 4.dp),
+                            )
+                        }
+
+                        if (discussion.comments.isEmpty()) {
+                            item {
+                                EmptyMessage(
+                                    messageRes = R.string.sin_comentarios,
+                                    modifier = Modifier.fillMaxWidth(),
+                                )
+                            }
+                        }
+
+                        // Ya llegan en hilo: cada comentario seguido de sus respuestas
+                        items(discussion.comments, key = { it.id }) { comment ->
+                            ThreadCommentItem(
+                                comment = comment,
+                                isReplying = replyingToCommentId == comment.id,
+                                onAuthorClick = onAuthorClick,
+                                onLikeClick = { onCommentLikeClick(comment.id) },
+                                onReplyClick = { onCommentReplyClick(comment.id) },
+                            )
+                        }
+                    }
+
+                    ErrorMessage(
+                        messageRes = errorAccionRes,
+                        modifier = Modifier.padding(horizontal = 24.dp),
                     )
-                }
 
-                items(discussion.comments, key = { it.id }) { comment ->
-                    ThreadCommentItem(
-                        comment = comment,
-                        isReplying = replyingToCommentId == comment.id,
-                        onLikeClick = { onCommentLikeClick(comment.id) },
-                        onReplyClick = { onCommentReplyClick(comment.id) },
+                    NewCommentField(
+                        value = nuevoComentario,
+                        respondiendoA = respondiendoA,
+                        publicando = publicando,
+                        onValueChange = onNuevoComentarioChange,
+                        onCancelReplyClick = onCancelReplyClick,
+                        onPublicarClick = onPublicarComentarioClick,
+                        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 12.dp),
                     )
                 }
             }
-
-            ErrorMessage(
-                messageRes = errorMessageRes,
-                modifier = Modifier.padding(start = 24.dp, end = 24.dp, bottom = 8.dp)
-            )
-
-            NewCommentField(
-                value = nuevoComentario,
-                onValueChange = onNuevoComentarioChange,
-                onPublicarClick = onPublicarComentarioClick,
-                modifier = Modifier.padding(start = 24.dp, end = 24.dp, bottom = 18.dp),
-            )
         }
     }
 }
@@ -157,15 +185,20 @@ fun DiscussionScreenContent(
 fun DiscussionScreenPreview() {
     MixtappTheme(darkTheme = true) {
         DiscussionScreenContent(
-            discussion = LocalDiscussionProvider.discussions.first(),
+            isLoading = false,
+            discussion = LocalPreviewProvider.discussion,
             nuevoComentario = "",
             replyingToCommentId = null,
+            publicando = false,
             errorMessageRes = null,
+            errorAccionRes = null,
             onBackClick = {},
+            onAuthorClick = {},
+            onItemClick = { _, _ -> },
             onReviewLikeClick = {},
-            onReviewShareClick = {},
             onCommentLikeClick = {},
             onCommentReplyClick = {},
+            onCancelReplyClick = {},
             onNuevoComentarioChange = {},
             onPublicarComentarioClick = {},
         )

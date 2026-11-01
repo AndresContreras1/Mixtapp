@@ -1,186 +1,237 @@
 package com.example.mixtapp.ui.screens.search
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
+import com.example.mixtapp.data.local.LocalPreviewProvider
 import com.example.mixtapp.data.local.LocalSearchCategoriesProvider
-import com.example.mixtapp.data.local.LocalAlbumReviewsProvider
+import com.example.mixtapp.data.model.ItemConResenasUi
 import com.example.mixtapp.data.model.SearchCategoryUi
-import com.example.mixtapp.data.model.AlbumReviewsUi
-import com.example.mixtapp.ui.screens.search.components.BrowseByHeader
-import com.example.mixtapp.ui.screens.search.components.SearchCategoryRow
-import com.example.mixtapp.ui.screens.search.components.SearchHeader
+import com.example.mixtapp.data.model.UsuarioUi
+import com.example.mixtapp.ui.screens.search.components.ResultadoItemRow
+import com.example.mixtapp.ui.screens.search.components.SearchCategoryCardsRow
+import com.example.mixtapp.ui.screens.search.components.SelectedCategoryHeader
 import com.example.mixtapp.ui.theme.MixtappTheme
+import com.example.mixtapp.ui.utils.AppBackground
+import com.example.mixtapp.ui.utils.AppTextField
+import com.example.mixtapp.ui.utils.EmptyMessage
+import com.example.mixtapp.ui.utils.ErrorBox
 import com.example.mixtapp.ui.utils.ErrorMessage
 import com.example.mixtapp.ui.utils.LoadingBox
-import com.example.mixtapp.ui.utils.ReviewAlbumRow
+import com.example.mixtapp.ui.utils.ScreenTitle
+import com.example.mixtapp.ui.utils.SectionTitle
+import com.example.mixtapp.ui.utils.UserRow
 
 @Composable
 fun SearchScreen(
     searchViewModel: SearchViewModel,
-    onAlbumClick: (String) -> Unit,
+    onItemClick: (String, String) -> Unit,
+    onUserClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    // El catalogo llega en vivo y el ViewModel ya entrega los resultados filtrados
     val state by searchViewModel.uiState.collectAsState()
 
-    // Se pide cada vez que se muestra: al volver de escribir una resena, el promedio ya sale al dia
-    LaunchedEffect(Unit) {
-        searchViewModel.getAlbumes()
-    }
+    SearchScreenContent(
+        isLoading = state.isLoading,
+        errorMessageRes = state.errorMessageRes,
+        query = state.query,
+        ordenes = state.ordenes,
+        generos = state.generos,
+        categoriaElegida = state.categoriaElegida,
+        resultados = state.resultados,
+        usuarios = state.usuarios,
+        errorSecundarioRes = state.errorCategoriasRes ?: state.errorUsuariosRes,
+        onQueryChange = { searchViewModel.updateQuery(texto = it) },
+        onCategoryClick = { searchViewModel.selectCategory(id = it) },
+        onClearCategory = { searchViewModel.clearCategory() },
+        onItemClick = onItemClick,
+        onUserClick = onUserClick,
+        modifier = modifier,
+    )
+}
 
-    when {
-        state.isLoading -> {
-            LoadingBox(modifier = modifier)
-        }
-        // Sin albumes cargados solo se muestra el motivo del error
-        state.errorMessageRes != null && state.todos.isEmpty() -> {
-            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(text = stringResource(state.errorMessageRes ?: R.string.error_cargar_contenido))
+@Composable
+fun SearchScreenContent(
+    isLoading: Boolean,
+    @StringRes errorMessageRes: Int?,
+    query: String,
+    ordenes: List<SearchCategoryUi>,
+    generos: List<SearchCategoryUi>,
+    categoriaElegida: SearchCategoryUi?,
+    resultados: List<ItemConResenasUi>,
+    usuarios: List<UsuarioUi>,
+    @StringRes errorSecundarioRes: Int?,
+    onQueryChange: (String) -> Unit,
+    onCategoryClick: (String) -> Unit,
+    onClearCategory: () -> Unit,
+    onItemClick: (String, String) -> Unit,
+    onUserClick: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(modifier = modifier.fillMaxSize()) {
+        AppBackground()
+
+        when {
+            isLoading -> LoadingBox()
+            // Sin catalogo no hay donde buscar: solo el motivo del error
+            errorMessageRes != null -> ErrorBox(messageRes = errorMessageRes)
+            else -> LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 20.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                item {
+                    ScreenTitle(title = stringResource(R.string.search_title))
+                }
+
+                item {
+                    AppTextField(
+                        value = query,
+                        onValueChange = onQueryChange,
+                        placeholder = stringResource(R.string.search_placeholder),
+                        leadingIcon = Icons.Outlined.Search,
+                        modifier = Modifier.testTag("txtBuscar"),
+                    )
+
+                    ErrorMessage(messageRes = errorSecundarioRes, modifier = Modifier.padding(top = 8.dp))
+                }
+
+                when {
+                    // Con texto: los items que coinciden y, aparte, las personas
+                    query.isNotBlank() -> {
+                        if (resultados.isEmpty() && usuarios.isEmpty()) {
+                            item {
+                                EmptyMessage(messageRes = R.string.sin_resultados, modifier = Modifier.fillMaxWidth())
+                            }
+                        }
+
+                        items(resultados) { itemConResenas ->
+                            ResultadoItemRow(
+                                itemConResenas = itemConResenas,
+                                onClick = { onItemClick(itemConResenas.item.tipo, itemConResenas.item.id) },
+                                modifier = Modifier.testTag("resultado_${itemConResenas.item.id}"),
+                            )
+                        }
+
+                        if (usuarios.isNotEmpty()) {
+                            item {
+                                SectionTitle(title = stringResource(R.string.personas), modifier = Modifier.padding(top = 12.dp))
+                            }
+
+                            items(usuarios) { usuario ->
+                                UserRow(usuario = usuario, onUserClick = onUserClick)
+                            }
+                        }
+                    }
+
+                    // Con una tarjeta elegida: su titulo con la X y la lista en su orden
+                    categoriaElegida != null -> {
+                        item {
+                            SelectedCategoryHeader(
+                                titulo = stringResource(categoriaElegida.titleRes),
+                                onClearClick = onClearCategory,
+                            )
+                        }
+
+                        if (resultados.isEmpty()) {
+                            item {
+                                EmptyMessage(messageRes = R.string.sin_resultados, modifier = Modifier.fillMaxWidth())
+                            }
+                        }
+
+                        items(resultados) { itemConResenas ->
+                            ResultadoItemRow(
+                                itemConResenas = itemConResenas,
+                                onClick = { onItemClick(itemConResenas.item.tipo, itemConResenas.item.id) },
+                                modifier = Modifier.testTag("resultado_${itemConResenas.item.id}"),
+                            )
+                        }
+                    }
+
+                    // Sin texto ni tarjeta: las tarjetas de Explorar por y de Generos, dos por fila
+                    else -> {
+                        item {
+                            SectionTitle(title = stringResource(R.string.browse_by), modifier = Modifier.padding(top = 8.dp))
+                        }
+
+                        items(ordenes.chunked(2)) { fila ->
+                            SearchCategoryCardsRow(categorias = fila, onCategoryClick = onCategoryClick)
+                        }
+
+                        item {
+                            SectionTitle(title = stringResource(R.string.generos), modifier = Modifier.padding(top = 8.dp))
+                        }
+
+                        items(generos.chunked(2)) { fila ->
+                            SearchCategoryCardsRow(categorias = fila, onCategoryClick = onCategoryClick)
+                        }
+                    }
+                }
             }
         }
-        else -> SearchScreenContent(
-            query = state.query,
-            onQueryChange = { searchViewModel.updateQuery(query = it) },
-            categories = state.categories,
-            selectedCategoryId = state.selectedCategoryId,
-            onCategoryClick = { searchViewModel.updateSelectedCategory(categoryId = it) },
-            resultados = state.resultados,
-            errorMessageRes = state.errorMessageRes,
-            onAlbumClick = onAlbumClick,
-            modifier = modifier,
+    }
+}
+
+@Composable
+@Preview(showBackground = true, device = "spec:width=393dp,height=852dp")
+fun SearchScreenPreview() {
+    MixtappTheme(darkTheme = true) {
+        SearchScreenContent(
+            isLoading = false,
+            errorMessageRes = null,
+            query = "",
+            ordenes = LocalSearchCategoriesProvider.categories.filter { !it.esGenero },
+            generos = LocalSearchCategoriesProvider.categories.filter { it.esGenero },
+            categoriaElegida = null,
+            resultados = emptyList(),
+            usuarios = emptyList(),
+            errorSecundarioRes = null,
+            onQueryChange = {},
+            onCategoryClick = {},
+            onClearCategory = {},
+            onItemClick = { _, _ -> },
+            onUserClick = {},
         )
     }
 }
 
 @Composable
-fun SearchScreenContent(
-    query: String,
-    onQueryChange: (String) -> Unit,
-    categories: List<SearchCategoryUi>,
-    selectedCategoryId: String?,
-    onCategoryClick: (String) -> Unit,
-    resultados: List<AlbumReviewsUi>,
-    errorMessageRes: Int?,
-    onAlbumClick: (String) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-    ) {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(bottom = 28.dp),
-        ) {
-            item {
-                SearchHeader(
-                    query = query,
-                    onQueryChange = onQueryChange,
-                )
-            }
-
-            item {
-                ErrorMessage(
-                    messageRes = errorMessageRes,
-                    modifier = Modifier.padding(horizontal = 24.dp)
-                )
-            }
-
-            // Sin busqueda se ven las categorias; tocar otra vez la elegida la quita
-            if (query.isBlank()) {
-                item {
-                    BrowseByHeader(modifier = Modifier.padding(horizontal = 24.dp))
-                }
-
-                items(categories, key = { it.id }) { category ->
-                    SearchCategoryRow(
-                        category = category,
-                        selected = category.id == selectedCategoryId,
-                        onClick = { onCategoryClick(category.id) },
-                        modifier = Modifier.padding(horizontal = 24.dp),
-                    )
-                }
-
-                // Debajo de las categorias van todos los albumes, en el orden de la elegida
-                item {
-                    Text(
-                        text = stringResource(R.string.todos_los_albumes),
-                        modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 28.dp, bottom = 8.dp),
-                        color = MaterialTheme.colorScheme.onSurface,
-                        fontSize = 20.sp,
-                    )
-                }
-            }
-
-            if (resultados.isEmpty()) {
-                item {
-                    Text(
-                        text = stringResource(R.string.sin_resultados),
-                        modifier = Modifier.padding(horizontal = 24.dp, vertical = 28.dp),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        fontSize = 16.sp,
-                    )
-                }
-            }
-
-            items(resultados, key = { it.id }) { albumReviews ->
-                ReviewAlbumRow(
-                    cover = albumReviews.album.cover,
-                    albumTitle = albumReviews.album.title,
-                    artistName = albumReviews.album.artist,
-                    rating = albumReviews.estrellas,
-                    coverSize = 64.dp,
-                    coverCorner = 10.dp,
-                    starSize = 14.dp,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { onAlbumClick(albumReviews.id) }
-                        .padding(horizontal = 24.dp, vertical = 12.dp),
-                )
-            }
-
-            item {
-                Spacer(modifier = Modifier.height(28.dp))
-            }
-        }
-    }
-}
-
 @Preview(showBackground = true, device = "spec:width=393dp,height=852dp")
-@Composable
-fun SearchScreenPreview() {
+fun SearchScreenResultadosPreview() {
     MixtappTheme(darkTheme = true) {
         SearchScreenContent(
-            query = "",
-            onQueryChange = {},
-            categories = LocalSearchCategoriesProvider.categories,
-            selectedCategoryId = null,
-            onCategoryClick = {},
-            resultados = LocalAlbumReviewsProvider.albumReviews,
+            isLoading = false,
             errorMessageRes = null,
-            onAlbumClick = {},
+            query = "li",
+            ordenes = emptyList(),
+            generos = emptyList(),
+            categoriaElegida = null,
+            resultados = LocalPreviewProvider.catalogo,
+            usuarios = listOf(LocalPreviewProvider.otroUsuario),
+            errorSecundarioRes = null,
+            onQueryChange = {},
+            onCategoryClick = {},
+            onClearCategory = {},
+            onItemClick = { _, _ -> },
+            onUserClick = {},
         )
     }
 }

@@ -4,33 +4,8 @@ data class FollowingUi(
     val id: String,
     val followingCount: Int,
     val followersCount: Int,
-    val stories: List<FollowingStoryUi>,
-    val reviews: List<FollowingReviewUi>,
-)
-
-data class FollowingStoryUi(
-    val id: String,
-    val label: String,
-    val initials: String,
-    val isAddAction: Boolean,
-    val fotoUrl: String? = null,
-)
-
-data class FollowingReviewUi(
-    val id: String,
-    // Para abrir el perfil de quien la escribio
-    val authorId: String,
-    val reviewerName: String,
-    val reviewerInitials: String,
-    // La foto de quien la escribio; si esta vacia se muestran las iniciales
-    val reviewerImage: String,
-    val reviewedAt: String,
-    val album: Album,
-    val rating: Int,
-    val reviewText: String,
-    val likes: Int,
-    // Los comentarios de la discusion de esta resena
-    val comments: Int,
-    val isLiked: Boolean,
-    val isShared: Boolean,
+    // Los usuarios que sigo, para la fila de fotos de arriba
+    val seguidos: List<UsuarioUi>,
+    // Sus resenas, la ultima publicada o editada primero
+    val reviews: List<ReviewUi>,
 )

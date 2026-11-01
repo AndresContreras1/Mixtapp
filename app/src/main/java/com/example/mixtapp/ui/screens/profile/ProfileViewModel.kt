@@ -6,16 +6,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
 import com.example.mixtapp.data.injection.IoDispatcher
-import com.example.mixtapp.data.model.Album
-import com.example.mixtapp.data.model.FAVORITOS_EN_PERFIL
-import com.example.mixtapp.data.model.MAX_REVIEW_LENGTH
-import com.example.mixtapp.data.model.MyReviewUi
 import com.example.mixtapp.data.repository.AuthRepository
 import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
 import com.example.mixtapp.data.repository.ReviewRepository
 import com.example.mixtapp.data.repository.StorageRepository
 import com.example.mixtapp.data.repository.UsuarioRepository
-import com.example.mixtapp.ui.screens.profile.model.profileTabs
 import com.example.mixtapp.ui.utils.mensajeDeError
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -28,8 +23,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-// La calificacion va de 0 a 5; un album con 5 cuenta como favorito
-private const val CALIFICACION_MAXIMA = 5
+// Cuantas de mis resenas salen en Actividad reciente; las demas estan en Mis resenas
+private const val RESENAS_RECIENTES = 3
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
@@ -44,227 +39,182 @@ class ProfileViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(ProfileState())
     val uiState: StateFlow<ProfileState> = _uiState.asStateFlow()
 
-    // Los flujos se escuchan mientras exista el ViewModel: si se volvieran a pedir cada vez que la
-    // pantalla se muestra, se acumularian listeners
+    // Mis datos se pueden volver a pedir al volver a la pantalla: la bandera evita un segundo listener
     private var escuchandoPerfil = false
-    private var escuchandoResenas = false
 
-    // La pantalla la llama cada vez que se muestra: la foto se lee de nuevo y mis datos y mis
-    // resenas llegan en vivo, asi que un seguidor o un like desde otro celular se ven sin salir
-    fun getProfile() {
-        val usuarioDelCorreo = authRepository.usuarioDelCorreo
-        val foto = authRepository.currentUser?.photoUrl?.toString() ?: ""
-        val usuarioId = authRepository.currentUser?.uid ?: ""
+    // Ningun flujo de mi perfil necesita datos de la ruta, asi que todos se escuchan aqui una sola
+    // vez, mientras exista el ViewModel. Cada uno va en su propio launch porque collect no termina
+    init {
+        // La foto de la cuenta se muestra mientras llega la de mi documento
+        _uiState.update { it.copy(profileImageUrl = authRepository.currentUser?.photoUrl?.toString() ?: "") }
 
-        _uiState.update { it.copy(usuarioId = usuarioId, profileImageUrl = foto) }
+        escucharMiPerfil()
+        escucharMisResenas()
+        escucharMisFavoritos()
+        escucharMisGuardados()
+        escucharMisListas()
+    }
 
-        // Mis datos y mis resenas se usan por su lado, asi que cada uno va en su propio launch
-        if (!escuchandoPerfil) {
-            escuchandoPerfil = true
+    // Mis datos en vivo: si alguien me sigue desde otro celular, el contador cambia solo. Si mi
+    // documento no existia, el flujo termina; la pantalla lo pide otra vez al volver de Ajustes y
+    // ya sale el perfil completo
+    fun escucharMiPerfil() {
+        if (escuchandoPerfil) return
+        escuchandoPerfil = true
 
-            viewModelScope.launch(ioDispatcher) {
-                usuarioRepository.getMiPerfilLive()
-                    .catch { e ->
-                        Log.d("ProfileViewModel", "getProfile: ${e.message}")
-                        // Al volver a la pantalla se intenta de nuevo: asi sale el perfil recien completado
-                        escuchandoPerfil = false
-                        _uiState.update {
-                            it.copy(
-                                // Si mis datos ya estaban cargados se conservan; si no, sale la parte del correo
-                                usuario = it.usuario.ifEmpty { usuarioDelCorreo },
-                                // Sin mi documento en Firestore se pide completar el perfil; otro error se avisa
-                                avisoPerfilRes = if (e is ContenidoNoEncontradoException) {
-                                    R.string.completa_tu_perfil
-                                } else {
-                                    mensajeDeError(error = e, generico = R.string.error_cargar_contenido)
-                                },
-                            )
-                        }
-                    }
-                    .collect { miPerfil ->
-                        // Los contadores vienen del documento: no hace falta leer las listas
-                        _uiState.update {
-                            it.copy(
-                                usuario = miPerfil.username,
-                                nombre = miPerfil.nombre,
-                                bio = miPerfil.bio,
-                                seguidores = miPerfil.seguidores,
-                                seguidos = miPerfil.seguidos,
-                                avisoPerfilRes = null,
-                            )
-                        }
-                    }
-            }
-        }
+        viewModelScope.launch(ioDispatcher) {
+            usuarioRepository.getMiPerfilLive()
+                .catch { e ->
+                    Log.d("ProfileViewModel", "escucharMiPerfil: ${e.message}")
+                    escuchandoPerfil = false
 
-        if (!escuchandoResenas) {
-            escuchandoResenas = true
-
-            viewModelScope.launch(ioDispatcher) {
-                _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
-
-                reviewRepository.getMyReviewsLive()
-                    .catch { e ->
-                        Log.d("ProfileViewModel", "getProfile: ${e.message}")
-                        escuchandoResenas = false
+                    if (e is ContenidoNoEncontradoException) {
+                        // Sin documento no es un error: sale el usuario del correo y el aviso de completarlo
                         _uiState.update {
                             it.copy(
                                 isLoading = false,
-                                tabs = profileTabs,
-                                // Al volver se conserva la pestana elegida
-                                selectedTabId = it.selectedTabId.ifEmpty { profileTabs.first().id },
+                                usuario = it.usuario.ifEmpty { authRepository.usuarioDelCorreo },
+                                avisoPerfilRes = R.string.completa_tu_perfil,
+                            )
+                        }
+                    } else {
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
                                 errorMessageRes = mensajeDeError(error = e, generico = R.string.error_cargar_contenido),
                             )
                         }
                     }
-                    .collect { resenas ->
-                        // La fecha va como AAAA-MM-DD: la escuchada mas reciente queda arriba
-                        val misResenas = resenas.sortedByDescending { it.date }
-
-                        _uiState.update {
-                            it.copy(
-                                misResenas = misResenas,
-                                favoritos = favoritosDe(resenas = misResenas),
-                                barrasDeCalificacion = barrasDe(resenas = misResenas),
-                                isLoading = false,
-                                tabs = profileTabs,
-                                // Al volver se conserva la pestana elegida
-                                selectedTabId = it.selectedTabId.ifEmpty { profileTabs.first().id },
-                                // Si estaba editando una resena que sigue existiendo, la edicion no se pierde
-                                resenaEnEdicionId = if (misResenas.any { r -> r.id == it.resenaEnEdicionId }) {
-                                    it.resenaEnEdicionId
-                                } else {
-                                    null
-                                },
-                                errorMessageRes = null,
-                            )
-                        }
+                }
+                .collect { miPerfil ->
+                    // Los contadores vienen del documento: no hace falta contar las listas
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            usuario = miPerfil.username,
+                            nombre = miPerfil.nombre,
+                            bio = miPerfil.bio,
+                            seguidores = miPerfil.seguidores,
+                            seguidos = miPerfil.seguidos,
+                            // La del documento es la que ven los demas; sin ella queda la de la cuenta
+                            profileImageUrl = miPerfil.fotoUrl.ifEmpty { it.profileImageUrl },
+                            avisoPerfilRes = null,
+                            errorMessageRes = null,
+                        )
                     }
+                }
+        }
+    }
+
+    // Mis resenas en vivo, la ultima publicada o editada primero: al editar o borrar una, la
+    // actividad cambia sin volver a pedirla
+    private fun escucharMisResenas() {
+        viewModelScope.launch(ioDispatcher) {
+            reviewRepository.getMyReviewsLive()
+                .catch { e ->
+                    Log.d("ProfileViewModel", "escucharMisResenas: ${e.message}")
+                    _uiState.update { it.copy(errorResenasRes = mensajeDeError(error = e, generico = R.string.error_cargar_contenido)) }
+                }
+                .collect { resenas ->
+                    _uiState.update { it.copy(resenasRecientes = resenas.take(RESENAS_RECIENTES), errorResenasRes = null) }
+                }
+        }
+    }
+
+    // Mis favoritos son mis likes: albumes, canciones y artistas mezclados, el mas nuevo primero
+    private fun escucharMisFavoritos() {
+        viewModelScope.launch(ioDispatcher) {
+            usuarioRepository.getMisFavoritosLive()
+                .catch { e ->
+                    Log.d("ProfileViewModel", "escucharMisFavoritos: ${e.message}")
+                    _uiState.update { it.copy(errorFavoritosRes = mensajeDeError(error = e, generico = R.string.error_cargar_contenido)) }
+                }
+                .collect { favoritos ->
+                    _uiState.update { it.copy(favoritos = favoritos, errorFavoritosRes = null) }
+                }
+        }
+    }
+
+    // Lo que guarde con el boton de guardar del detalle
+    private fun escucharMisGuardados() {
+        viewModelScope.launch(ioDispatcher) {
+            usuarioRepository.getMisGuardadosLive()
+                .catch { e ->
+                    Log.d("ProfileViewModel", "escucharMisGuardados: ${e.message}")
+                    _uiState.update { it.copy(errorGuardadosRes = mensajeDeError(error = e, generico = R.string.error_cargar_contenido)) }
+                }
+                .collect { guardados ->
+                    _uiState.update { it.copy(guardados = guardados, errorGuardadosRes = null) }
+                }
+        }
+    }
+
+    // Mis seguidores y a quienes sigo, con mi uid: si alguien me sigue desde otro celular, aparece
+    // sin salir. Son dos flujos, asi que cada uno va en su launch
+    private fun escucharMisListas() {
+        val miId = authRepository.currentUser?.uid ?: ""
+
+        viewModelScope.launch(ioDispatcher) {
+            usuarioRepository.getSeguidoresLive(userId = miId)
+                .catch { e ->
+                    Log.d("ProfileViewModel", "escucharMisListas: ${e.message}")
+                    _uiState.update { it.copy(errorSeguidoresRes = mensajeDeError(error = e, generico = R.string.error_cargar_contenido)) }
+                }
+                .collect { seguidores ->
+                    _uiState.update { it.copy(listaSeguidores = seguidores, errorSeguidoresRes = null) }
+                }
+        }
+
+        viewModelScope.launch(ioDispatcher) {
+            usuarioRepository.getSeguidosLive(userId = miId)
+                .catch { e ->
+                    Log.d("ProfileViewModel", "escucharMisListas: ${e.message}")
+                    _uiState.update { it.copy(errorSeguidosRes = mensajeDeError(error = e, generico = R.string.error_cargar_contenido)) }
+                }
+                .collect { seguidos ->
+                    _uiState.update { it.copy(listaSeguidos = seguidos, errorSeguidosRes = null) }
+                }
+        }
+    }
+
+    // El corazon y el contador no se cambian a mano: llegan con la resena nueva por el listener
+    fun sendOrDeleteLike(reviewId: String) {
+        viewModelScope.launch(ioDispatcher) {
+            val result = reviewRepository.sendOrDeleteLike(reviewId = reviewId)
+
+            if (result.isSuccess) {
+                _uiState.update { it.copy(errorAccionRes = null) }
+            } else {
+                _uiState.update {
+                    it.copy(errorAccionRes = mensajeDeError(error = result.exceptionOrNull(), generico = R.string.error_actualizar_like))
+                }
             }
         }
     }
 
-    // Eliminar filtra la lista en vez de volver a pedir todas las resenas
+    // La resena no se quita de la lista a mano: el listener de mis resenas trae la lista sin ella
     fun eliminarResena(reviewId: String) {
+        // Se marca antes de lanzar la corrutina: asi un doble toque no manda dos borrados
         if (_uiState.value.eliminando) return
+        _uiState.update { it.copy(eliminando = true, errorAccionRes = null) }
 
         viewModelScope.launch(ioDispatcher) {
-            _uiState.update { it.copy(eliminando = true, errorMessageRes = null) }
-
             val result = reviewRepository.eliminarResena(reviewId = reviewId)
 
             if (result.isSuccess) {
-                val restantes = _uiState.value.misResenas.filter { it.id != reviewId }
-
-                _uiState.update {
-                    it.copy(
-                        misResenas = restantes,
-                        favoritos = favoritosDe(resenas = restantes),
-                        barrasDeCalificacion = barrasDe(resenas = restantes),
-                        eliminando = false,
-                        errorMessageRes = null,
-                    )
-                }
+                _uiState.update { it.copy(eliminando = false) }
             } else {
                 _uiState.update {
                     it.copy(
                         eliminando = false,
-                        errorMessageRes = mensajeDeError(
-                            error = result.exceptionOrNull(),
-                            generico = R.string.error_eliminar_resena,
-                        )
+                        errorAccionRes = mensajeDeError(error = result.exceptionOrNull(), generico = R.string.error_eliminar_resena),
                     )
                 }
             }
         }
     }
 
-    // La resena se edita en la misma tarjeta del perfil, sin ir a otra pantalla
-    fun empezarEdicion(resena: MyReviewUi) {
-        _uiState.update {
-            it.copy(
-                resenaEnEdicionId = resena.id,
-                calificacionEditada = resena.rating,
-                textoEditado = resena.excerpt,
-                errorEdicionRes = null,
-            )
-        }
-    }
-
-    fun updateCalificacionEditada(rating: Int) {
-        val calificacionActual = _uiState.value.calificacionEditada
-        val nueva = if (rating == calificacionActual) 0 else rating
-
-        _uiState.update { it.copy(calificacionEditada = nueva) }
-    }
-
-    fun updateTextoEditado(texto: String) {
-        _uiState.update {
-            it.copy(textoEditado = texto.take(MAX_REVIEW_LENGTH), errorEdicionRes = null)
-        }
-    }
-
-    fun cancelarEdicion() {
-        _uiState.update { it.copy(resenaEnEdicionId = null, errorEdicionRes = null) }
-    }
-
-    fun guardarEdicion() {
-        val estado = _uiState.value
-        val resena = estado.misResenas.find { it.id == estado.resenaEnEdicionId } ?: return
-        val texto = estado.textoEditado.trim()
-
-        if (estado.guardandoEdicion) return
-
-        if (texto.isEmpty()) {
-            _uiState.update { it.copy(errorEdicionRes = R.string.error_resena_vacia) }
-            return
-        }
-
-        viewModelScope.launch(ioDispatcher) {
-            _uiState.update { it.copy(guardandoEdicion = true, errorEdicionRes = null) }
-
-            val result = reviewRepository.guardarResena(
-                albumId = resena.album.id,
-                rating = estado.calificacionEditada,
-                texto = texto,
-                fecha = resena.date,
-                reviewId = resena.id,
-            )
-
-            if (result.isSuccess) {
-                // Solo cambia esa resena en la lista, sin volver a pedirlas todas
-                val actualizadas = _uiState.value.misResenas.map { miResena ->
-                    if (miResena.id == resena.id) {
-                        miResena.copy(rating = estado.calificacionEditada, excerpt = texto)
-                    } else {
-                        miResena
-                    }
-                }
-
-                _uiState.update {
-                    it.copy(
-                        misResenas = actualizadas,
-                        favoritos = favoritosDe(resenas = actualizadas),
-                        barrasDeCalificacion = barrasDe(resenas = actualizadas),
-                        resenaEnEdicionId = null,
-                        guardandoEdicion = false,
-                        errorEdicionRes = null,
-                    )
-                }
-            } else {
-                _uiState.update {
-                    it.copy(
-                        guardandoEdicion = false,
-                        errorEdicionRes = mensajeDeError(
-                            error = result.exceptionOrNull(),
-                            generico = R.string.error_publicar_resena,
-                        ),
-                    )
-                }
-            }
-        }
-    }
-
+    // La foto se sube a Storage y despues se copia en mi documento, para que otros la vean
     fun subirFotoDePerfil(uri: Uri) {
         Log.d("ProfileViewModel", uri.toString())
 
@@ -276,7 +226,6 @@ class ProfileViewModel @Inject constructor(
             if (result.isSuccess) {
                 val url = result.getOrNull() ?: ""
 
-                // El documento de Firestore tambien guarda la foto para que otros la vean en mi perfil
                 val guardada = usuarioRepository.actualizarFotoDePerfil(fotoUrl = url)
 
                 _uiState.update {
@@ -300,24 +249,7 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    // Los favoritos son los albumes que califique con 5
-    private fun favoritosDe(resenas: List<MyReviewUi>): List<Album> =
-        resenas.filter { it.rating == CALIFICACION_MAXIMA }.map { it.album }.take(FAVORITOS_EN_PERFIL)
-
-    // Cuantas resenas tengo con cada calificacion, de 0 a 5, como el alto de cada barra
-    private fun barrasDe(resenas: List<MyReviewUi>): List<Float> {
-        val cantidades = (0..CALIFICACION_MAXIMA).map { estrellas ->
-            resenas.count { it.rating == estrellas }
-        }
-        val mayor = cantidades.maxOrNull() ?: 0
-
-        return cantidades.map { cantidad ->
-            if (mayor == 0) 0f else cantidad.toFloat() / mayor
-        }
-    }
-
-
-
+    // La pestana elegida vive en el estado: al volver de otra pantalla sigue la misma
     fun updateSelectedTab(tabId: String) {
         _uiState.update { it.copy(selectedTabId = tabId) }
     }

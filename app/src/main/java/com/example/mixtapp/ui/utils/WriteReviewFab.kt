@@ -13,6 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.theme.MixtappTheme
 
+// El + de las pantallas con barra: abre la lista para elegir que calificar
 @Composable
 fun WriteReviewFab(
     onClick: () -> Unit,
@@ -22,7 +23,7 @@ fun WriteReviewFab(
         onClick = onClick,
         modifier = modifier,
         containerColor = MaterialTheme.colorScheme.primary,
-        contentColor = MaterialTheme.colorScheme.onSurface,
+        contentColor = MaterialTheme.colorScheme.onPrimary,
         shape = CircleShape
     ) {
         Icon(

@@ -4,7 +4,7 @@
 
 <h1 align="center">Mixtapp</h1>
 
-<p align="center"><b>Califica, reseña y descubre álbumes con la gente a la que sigues.</b></p>
+<p align="center"><b>Califica, reseña y descubre álbumes, canciones y artistas con la gente a la que sigues.</b></p>
 
 <p align="center">
   <img alt="Kotlin" src="https://img.shields.io/badge/Kotlin-2.2.10-7F52FF?logo=kotlin&logoColor=white" />
@@ -17,15 +17,19 @@
   <img alt="minSdk" src="https://img.shields.io/badge/minSdk-26-3DDC84?logo=android&logoColor=white" />
 </p>
 
-Mixtapp es una app Android donde abres un álbum, le pones de 0 a 5 estrellas, escribes tu reseña
-y ves lo que publican las demás personas. Puedes dar like a las reseñas, seguir a otros usuarios y
-recibir una notificación cuando alguien le da like a la tuya. Está escrita en Kotlin con Jetpack
+Mixtapp es una app Android donde abres un álbum, una canción o un artista, le pones de 0 a 5
+estrellas, escribes tu reseña y ves lo que publican las demás personas. Le das me gusta a lo que te
+gusta (de ahí salen tus favoritos y el inicio **Para ti**), guardas lo que quieres escuchar después,
+lees sus datos curiosos, comentas las reseñas, sigues a otros usuarios y recibes una notificación
+cuando alguien interactúa contigo. El catálogo es real: portadas, géneros y el Top Colombia de
+Deezer. Está escrita en Kotlin con Jetpack
 Compose, una sola Activity y arquitectura en capas sobre Firebase (Authentication, Storage, Cloud
 Firestore y Cloud Messaging). Es el proyecto semestral de Computación Móvil de la Pontificia
 Universidad Javeriana.
 
 > [!NOTE]
-> Los álbumes, las reseñas, los perfiles, los likes y los seguidores viven en **Cloud Firestore**.
+> El catálogo (álbumes, canciones y artistas), las reseñas, los perfiles, los likes, los guardados,
+> los seguidores y las notificaciones viven en **Cloud Firestore**.
 > La capa de datos tiene una segunda implementación con **Retrofit** contra el backend de Express
 > ([mixtapp-backend](https://github.com/AndresContreras1/mixtapp-backend)): las dos cumplen el mismo
 > contrato y se cambia de una a otra con una línea por contrato en `DataSourceModule`. Las funciones en línea
@@ -42,24 +46,28 @@ Universidad Javeriana.
 |---|---|
 | Registro, inicio de sesión y sesión persistente con Firebase Auth | Funcionando |
 | Al registrarse, el nombre, el usuario y el token de notificaciones quedan guardados en Firestore | Funcionando |
-| Mi perfil y modificarlo (nombre, usuario y biografía) | Funcionando, Firestore |
-| Perfil de cualquier otro usuario con sus reseñas | Funcionando, Firestore |
-| Inicio con todos los álbumes, la tendencia y la actividad de quienes sigo, **en tiempo real** | Funcionando, Firestore |
-| Filtro **Seguidos** del inicio y pestaña Siguiendo: solo las reseñas de los usuarios que sigo | Funcionando, Firestore |
-| Detalle del álbum con promedio, total de calificaciones y % que lo recomienda | Funcionando, Firestore |
-| Escribir, modificar y eliminar mi reseña desde el álbum, mi perfil y Mis reseñas | Funcionando, Firestore |
-| Dar y quitar like a una reseña, con el total de likes | Funcionando, Firestore |
+| Catálogo de álbumes, canciones y artistas reales, con portadas de 1000 px, géneros, datos curiosos y el Top Colombia | Funcionando, Firestore (seed en mixtapp-functions) |
+| Inicio con **Para ti**, **Tendencias** y **Seguidos**: la tarjeta En tendencia, filas de canciones, álbumes y artistas populares y las reseñas de quienes sigo, **en tiempo real** | Funcionando, Firestore |
+| **Para ti** mezcla los géneros de mis me gusta, en proporción a cuántos tengo de cada uno | Funcionando |
+| Buscar: catálogo y personas por texto, tarjetas por fecha de lanzamiento, más populares, mejor calificados y por género | Funcionando, Firestore |
+| Detalle de un álbum, una canción o un artista: promedio, total de calificaciones, % que lo recomienda, me gusta, guardar y sus reseñas, **en tiempo real** | Funcionando, Firestore |
+| Datos curiosos de cada álbum, canción y artista, en su propia pantalla | Funcionando, Firestore |
+| Escribir, modificar y eliminar mi reseña desde el detalle, mi perfil y Mis reseñas | Funcionando, Firestore |
+| Me gusta a un álbum, una canción o un artista: queda en mis Favoritos | Funcionando, Firestore |
+| Guardar un álbum, una canción o un artista: queda en la pestaña Guardados de mi perfil | Funcionando, Firestore |
+| Mi perfil con pestañas Perfil (favoritos, actividad reciente y cerrar sesión), Guardados, Seguidores y Siguiendo | Funcionando, Firestore |
+| Perfil de cualquier otro usuario con sus favoritos y sus reseñas | Funcionando, Firestore |
+| Dar y quitar like a una reseña y a un comentario, con el total de likes | Funcionando, Firestore |
 | Seguir y dejar de seguir, con el total de seguidores y seguidos | Funcionando, Firestore |
-| Lista de seguidores y de seguidos de cualquier perfil | Funcionando, Firestore |
-| Notificación cuando alguien le da like a mi reseña, la comenta, responde mi comentario o me empieza a seguir | FCM y Cloud Functions, con el Firebase real (en modo debug las funciones no corren) |
+| Discusión de una reseña: comentarios, respuestas y likes a cada comentario, **en tiempo real**. Se abre desde cualquier tarjeta de reseña, aunque no sigas a quien la escribió | Funcionando, Firestore |
+| Pantalla de notificaciones (me gusta, comentarios, respuestas y seguidores nuevos), **en tiempo real** y marcadas como leídas | Funcionando, Firestore y Cloud Functions |
+| Notificación push de las mismas acciones | FCM y Cloud Functions, con el Firebase real (en modo debug las funciones no corren) |
 | Foto de perfil subida a Firebase Storage | Funcionando |
 | Consumo del backend de Express con Retrofit | Implementado, intercambiable con Firestore |
-| Discusión de una reseña: comentarios, respuestas y likes a cada comentario, **en tiempo real**. Se abre desde cualquier tarjeta de reseña, aunque no sigas a quien la escribió | Funcionando, Firestore |
+| Modo claro y modo oscuro: la app sigue el del celular | Funcionando |
 | Modo debug contra el emulador de Firebase (Firebase CLI) | Funcionando |
-| Datos falsos con Faker para el emulador o el Firebase real | Script en [mixtapp-functions](https://github.com/AndresContreras1/mixtapp-functions) |
+| Catálogo y datos falsos con Faker para el emulador o el Firebase real | Script en [mixtapp-functions](https://github.com/AndresContreras1/mixtapp-functions) |
 | Pruebas de integración de los data sources y los repositorios contra el emulador | 16 + 17 pruebas |
-| Pantalla de notificaciones | Datos de prueba en `data/local/` |
-| Modo claro | Pendiente: falta diseñar cómo se ven las pantallas en claro |
 
 ## Arquitectura
 
@@ -73,7 +81,7 @@ flowchart LR
     D["<b>DataSource</b><br/>contrato e implementaciones"]
     F[("<b>Firebase</b><br/>Auth · Storage · Firestore")]
     E[("<b>Express</b><br/>API REST con Retrofit")]
-    L[("<b>data/local</b><br/>datos de prueba")]
+    L[("<b>data/local</b><br/>tarjetas de Buscar")]
 
     S --> V --> R --> D
     D --> F
@@ -82,12 +90,15 @@ flowchart LR
 ```
 
 **El data source** declara la petición y devuelve el DTO de su base. Cada contrato
-(`AlbumRemoteDataSource`, `ReviewRemoteDataSource`, `UsuarioRemoteDataSource`) tiene una
+(`AlbumRemoteDataSource`, `CancionRemoteDataSource`, `ArtistaRemoteDataSource`,
+`ReviewRemoteDataSource`, `UsuarioRemoteDataSource` y `NotificacionRemoteDataSource`) tiene una
 implementación en `impl/firestore` y otra en `impl/retrofit`. Si el documento no existe, el data
 source retorna `null` y el repositorio decide el error. Los repositorios reciben el contrato y
 `DataSourceModule` dice con `@Binds` qué implementación entrega Hilt. **El repositorio** hace el
-`try`/`catch`, mapea el DTO al modelo de la pantalla, organiza varios data sources (por ejemplo, la
-reseña lleva una copia del usuario y del álbum) y devuelve un `Result<T>`. Para los datos en vivo
+`try`/`catch`, mapea el DTO al modelo de la pantalla, organiza varios data sources (por ejemplo,
+`CatalogoRepository` junta los álbumes, las canciones, los artistas y sus reseñas, y la reseña lleva
+una copia del usuario y del item) y devuelve un `Result<T>`. El mapeo deja los números y las fechas
+listos para la pantalla: 14 929 likes se ven como `14K` y la fecha como `3 h`. Para los datos en vivo
 devuelve un `Flow` y los errores llegan al `catch` del ViewModel. **El ViewModel** mira
 `result.isSuccess` (o recolecta el flujo con `collect`), toma uno de los dos caminos y ahí vive la
 lógica: filtrar, ordenar y decidir qué se muestra. **La pantalla** pinta y avisa.
@@ -109,20 +120,30 @@ lógica: filtrar, ordenar y decidir qué se muestra. **La pantalla** pinta y avi
 | `usuarios` | el uid de Authentication | `username`, `nombre` (texto) · `bio`, `fotoUrl` (texto o null) · `followersCount`, `followingCount` (número) · `fcmtoken` (texto) |
 | `usuarios/<uid>/followers` | el uid de quien me sigue | `timestamp` |
 | `usuarios/<uid>/following` | el uid de quien sigo | `timestamp` |
-| `albumes` | `1` a `8` | `titulo`, `artista`, `portadaUrl`, `genero` (texto) · `anio` (número) |
-| `reviews` | id aleatorio | `usuarioId`, `albumId` (texto) · `calificacion` (número) · `comentario` (texto) · `fechaEscucha` (texto `AAAA-MM-DD` o null) · `createdAt`, `updatedAt` (texto ISO) · `likesCount`, `commentsCount` (número) · `usuario` y `album` (mapas) |
+| `usuarios/<uid>/likes` | el id del item | `tipo`, `titulo`, `subtitulo`, `imagenUrl`, `genero`, `createdAt` (texto): la copia del item que me gusta |
+| `usuarios/<uid>/guardados` | el id del item | los mismos campos: la copia del item que guardé |
+| `usuarios/<uid>/notificaciones` | id aleatorio | `tipo` (`like`, `comentario`, `respuesta` o `seguidor`) · `actorId`, `actorNombre`, `actorFotoUrl` · `reviewId`, `itemTitulo`, `imagenUrl` (texto o null) · `leida` (booleano) · `createdAt` (texto ISO). Las escriben las Cloud Functions |
+| `albumes` | `album_<nombre>` | `titulo`, `artista`, `portadaUrl`, `genero`, `subgenero` (texto) · `anio`, `likesCount` (número) · `tendencia` (número o null) · `datosCuriosos` (arreglo de texto) |
+| `canciones` | `cancion_<nombre>` | los del álbum más `albumId` y `album` (el nombre del álbum) |
+| `artistas` | `artista_<nombre>` | `nombre`, `fotoUrl`, `genero`, `subgenero` (texto) · `grupo` (texto o null) · `likesCount` (número) · `tendencia` (número o null) · `datosCuriosos` (arreglo de texto) |
+| `albumes/<id>/likes`, `canciones/<id>/likes`, `artistas/<id>/likes` | el uid de quien dio like | `timestamp` |
+| `reviews` | id aleatorio | `usuarioId`, `itemId`, `tipo` (texto) · `calificacion` (número) · `comentario` (texto) · `fechaEscucha` (texto `AAAA-MM-DD` o null) · `createdAt`, `updatedAt` (texto ISO) · `likesCount`, `commentsCount` (número) · `usuario` y `item` (mapas) |
 | `reviews/<id>/likes` | el uid de quien dio like | `timestamp` |
 | `reviews/<id>/comments` | id aleatorio | `usuarioId`, `contenido` (texto) · `parentCommentId` (texto o null) · `likesCount` (número) · `createdAt` (texto ISO) · `usuario` (mapa) |
 | `reviews/<id>/comments/<id>/likes` | el uid de quien dio like | `timestamp` |
 
 Los tipos tienen que coincidir con los DTO: `toObject` falla si `anio` o `calificacion` no son
-número, y `whereEqualTo` no encuentra reseñas si `albumId` o `usuarioId` se guardan como número.
+número, y `whereEqualTo` no encuentra reseñas si `itemId` o `usuarioId` se guardan como número. El id
+de cada item lleva su tipo adelante (`album_`, `cancion_`, `artista_`), así que una reseña se busca
+solo con `itemId` y no se mezclan las de un álbum con las de una canción.
 
 - El correo y la contraseña se quedan en Authentication; en Firestore no se guardan.
 - Firestore no tiene joins, así que cada reseña guarda una copia de lo que se muestra con ella:
-  `usuario` (`nombre`, `fotoUrl`) y `album` (`titulo`, `artista`, `portadaUrl`).
+  `usuario` (`nombre`, `fotoUrl`) e `item` (`titulo`, `subtitulo`, `imagenUrl`). Los likes y los
+  guardados de un usuario también guardan la copia del item, para pintar Favoritos y Guardados sin
+  otra consulta.
 - Si alguien cambia su nombre o su foto, la Cloud Function `updateUserInfoInReviews` actualiza esa
-  copia en todas sus reseñas. Así las copias no quedan viejas.
+  copia en todas sus reseñas y en sus comentarios. Así las copias no quedan viejas.
 
 ### Likes y seguidores
 
@@ -135,6 +156,11 @@ que la tarjeta no usa. La tarjeta solo necesita el número, que vive en el docum
   `reviews/<id>/likes/<mi uid>`. Si existe, lo borra y resta 1 a `likesCount`; si no, lo crea con
   `FieldValue.serverTimestamp()` y suma 1. Si una de las dos escrituras falla, Firebase deshace la
   otra.
+- **Me gusta a un álbum, una canción o un artista** son tres escrituras en una transacción: el
+  like en el item, la copia del item en `usuarios/<uid>/likes` y su `likesCount`. Mis likes son mis
+  **Favoritos** y, con sus géneros, el inicio **Para ti**.
+- **Guardar** crea o borra `usuarios/<uid>/guardados/<id del item>` en una transacción, para que dos
+  toques seguidos no lo guarden dos veces. El detalle escucha ese documento y el marcador cambia solo.
 - **Seguir** son cuatro escrituras en la misma transacción: `following/<B>` en A,
   `followers/<A>` en B, `followingCount` de A y `followersCount` de B.
 - **Si ya di like o ya lo sigo** sale de buscar mi uid en la subcolección con `exists()`. El data
@@ -184,12 +210,14 @@ Android 13 o superior, `Mixtapp.kt` pide el permiso al abrir la app (solo si tod
 concedido). El token del celular se guarda en `usuarios/<uid>.fcmtoken` al registrarse y al iniciar
 sesión.
 
-Las notificaciones las envían tres Cloud Functions de
+Las crean tres Cloud Functions de
 [mixtapp-functions](https://github.com/AndresContreras1/mixtapp-functions):
 `sendLikeNotification` («Nuevo me gusta»), `sendFollowNotification` («Nuevo seguidor») y
 `sendCommentNotification` («Nuevo comentario» al autor de la reseña y «Nueva respuesta» al autor
-del comentario que se responde). Para que llegue en las pruebas, la app debe estar en segundo plano
-o cerrada.
+del comentario que se responde). Cada una guarda la notificación en `usuarios/<uid>/notificaciones`
+y, si el usuario tiene token, envía el push. La pantalla de notificaciones escucha esa subcolección
+en vivo, la agrupa en Hoy y Antes, y al tocar una la marca leída y abre la reseña o el perfil. Para
+que el push llegue en las pruebas, la app debe estar en segundo plano o cerrada.
 
 ## Decisiones
 
@@ -197,27 +225,41 @@ o cerrada.
   `AppNavigation.kt`. La única excepción es `BottomNav`, que existe solo para navegar.
 - **A las pantallas de detalle les llega el id, no el objeto.** El ViewModel busca la entidad y la
   pantalla decide qué pintar si no existe.
-- **Un solo `Scaffold`**, en `Mixtapp.kt`, con la barra inferior y el botón flotante en sus ranuras.
-  `NavigationLogic` decide en qué rutas se ven. El botón **+** abre la lista de álbumes para elegir
-  cuál reseñar.
-- **Una sola calificación por álbum.** La pantalla de escribir carga mi reseña de ese álbum si ya
+- **Un solo `Scaffold`**, en `Mixtapp.kt`, con la barra inferior (Inicio, Buscar y Perfil) y el
+  botón flotante en sus ranuras. `NavigationLogic` decide en qué rutas se ven. El botón **+** abre
+  el catálogo para elegir qué calificar.
+- **Un solo detalle para álbumes, canciones y artistas.** La ruta lleva el tipo y el id
+  (`detail/{tipo}/{itemId}`, como `followList`) y el repositorio escucha el data source de ese tipo.
+  Los datos curiosos usan la misma ruta en su pantalla.
+- **Una sola calificación por item.** La pantalla de escribir carga mi reseña de ese item si ya
   existe: si llega su id se modifica y si no se crea.
-- **Mis reseñas se editan en el mismo perfil.** El lápiz convierte la tarjeta en un formulario y la
-  papelera la elimina sin salir de la pantalla.
-- **El promedio y el porcentaje que recomienda se calculan en el repositorio** con las reseñas
-  guardadas de cada álbum; las de todos los álbumes se piden a la vez con `async`.
-- **Mi reseña la marca el repositorio.** Cada reseña llega con `esMia` (su `usuarioId` es mi uid),
+- **Una sola tarjeta de reseña** (`ReviewCard`) para toda la app: el inicio, el detalle, los perfiles,
+  Mis reseñas, Siguiendo y la discusión. El lápiz abre Escribir reseña y la papelera la elimina.
+- **El promedio y el porcentaje que recomienda se calculan en el repositorio** con las reseñas de
+  cada item.
+- **Mi reseña la marca el repositorio.** Cada reseña llega con `isMine` (su `usuarioId` es mi uid),
   así el inicio, el detalle y la pantalla de escribir saben cuál es la mía sin otra petición.
+- **Las filas del inicio las arma el ViewModel.** Para ti reparte 10 cupos entre los géneros de mis
+  me gusta según cuántos tengo de cada uno, los intercala y completa con lo más popular. Tendencias
+  ordena por el puesto en el Top Colombia, que viene guardado en el catálogo (no hay una API externa).
+  Seguidos muestra lo que reseñaron los usuarios que sigo.
 - **Las reseñas, los perfiles y la discusión están en tiempo real.** Cada data source escucha
   con `callbackFlow` y `addSnapshotListener`, el repositorio mapea el flujo y el ViewModel lo
-  recolecta una sola vez con `catch` y `collect`. Están en vivo el inicio, el detalle del álbum, la
-  discusión, Siguiendo, mi perfil, el perfil de otro usuario, Mis reseñas y las listas de seguidores.
-  Los formularios (escribir reseña, editar perfil) leen una sola vez.
+  recolecta una sola vez con `catch` y `collect`. Están en vivo el inicio, Buscar, el detalle, la
+  discusión, Siguiendo, mi perfil con sus pestañas, el perfil de otro usuario, Mis reseñas, las
+  listas de seguidores y las notificaciones. Los formularios (escribir reseña, editar perfil) y los
+  datos curiosos leen una sola vez.
 - **Las corrutinas de cada ViewModel se lanzan en un dispatcher inyectado** (`@IoDispatcher`, que
   entrega `CoroutineModule`), así las pruebas pueden pasar uno de prueba.
-- **El color sale del `MaterialTheme`.** No hay colores quemados fuera de `Color.kt`, salvo el
-  fondo de la ventana en `themes.xml` y los drawables XML (icono y marcadores de imagen), que se
-  pintan sin Compose y repiten a mano los colores de la paleta.
+- **El color sale del `MaterialTheme`.** `Color.kt` tiene las cuatro escalas de la paleta (Crimson,
+  Mauve, Plum y Gris, del 50 al 600) y `Theme.kt` elige el tono de cada rol: para cambiar el tema
+  basta con cambiar un tono en uno de los dos archivos. El modo oscuro usa los tonos pastel sobre el
+  fondo de vino casi negro y el modo claro, los fondos pastel. No hay colores quemados fuera de
+  `Color.kt`, salvo el fondo de la ventana en `themes.xml` y los drawables XML (icono y marcadores de
+  imagen), que se pintan sin Compose y repiten a mano los colores de la paleta.
+- **Un solo campo de texto** (`AppTextField`): un `OutlinedTextField` ovalado con el fondo
+  translúcido, para que se vea el fondo con los círculos. Lo usan el login, el registro, Buscar, la
+  fecha de escucha y los comentarios.
 - **Tipografía de Google Fonts:** Playfair Display para los títulos e Inter para el texto. El
   certificado está en `res/values/font_certs.xml`. Sin internet, Android usa la fuente por defecto.
 - **Hilt se compila con KSP.** El proyecto está en AGP 9.0.0, que trae Kotlin integrado (por eso no
@@ -226,10 +268,8 @@ o cerrada.
   mismo módulo.
 - **Los errores de Firestore los traduce el repositorio**, igual que el `HttpException` del
   backend: sin conexión, documento que no existe o error del servidor.
-- **La app es solo oscura.** El esquema claro existe como plantilla, pero no se aplica hasta que
-  estén diseñadas las pantallas en modo claro.
-- **Hay callbacks vacíos a propósito**: más opciones y las pestañas Diario, Listas y Biblioteca del
-  perfil apuntan a pantallas que todavía no existen.
+- **La app sigue el modo del celular.** `MixtappTheme` elige el esquema claro u oscuro con
+  `isSystemInDarkTheme()` y el dynamic color queda apagado.
 
 ## Cómo ejecutarlo
 
@@ -266,13 +306,14 @@ datos se borran al cerrar la CLI: hay que registrarse otra vez o cargar los dato
 </details>
 
 <details>
-<summary>Datos falsos con Faker</summary>
+<summary>Catálogo y datos falsos con Faker</summary>
 
 El script está en la carpeta `seed/` de
-[mixtapp-functions](https://github.com/AndresContreras1/mixtapp-functions). Crea usuarios, álbumes,
-reseñas y comentarios con los mismos campos de la tabla de arriba, y sube al emulador o al
-Firebase real cambiando dos líneas. Las instrucciones están en ese README. Estos datos son para ver
-la app llena, no para las pruebas.
+[mixtapp-functions](https://github.com/AndresContreras1/mixtapp-functions). Carga el catálogo real
+de `catalogo.json` (24 álbumes, 46 canciones y 21 artistas de rock, metal, reggaetón y música
+popular) y 12 usuarios de Faker con sus seguidores, me gusta, reseñas y comentarios, con los mismos
+campos de la tabla de arriba. Por defecto escribe en el emulador; para el Firebase real se cambian
+tres líneas. Las instrucciones están en ese README.
 
 </details>
 
@@ -286,7 +327,7 @@ prendido y la Firebase CLI corriendo (`firebase emulators:start --only firestore
 |---|---|---|
 | `datasource/UsuarioFirestoreDataSourceTest` | 8 | leer por id (válido y que no existe → `null`), registrar, seguir, el contador de seguidores, dejar de seguir, la lista de seguidores y las reseñas de un usuario |
 | `datasource/ReviewFirestoreDataSourceTest` | 8 | leer por id, like y su contador, comentar y `commentsCount`, el orden de los comentarios, like a un comentario y borrar la reseña con sus comentarios |
-| `repository/ReviewRepositoryIntegrationTest` | 8 | guardar la reseña (`Result` bien y álbum que no existe), la copia del nombre, sin sesión, comentar, el hilo de respuestas y la discusión que no existe |
+| `repository/ReviewRepositoryIntegrationTest` | 8 | guardar la reseña (`Result` bien y sin sesión), la copia del nombre y del item, like sin sesión, comentar, el hilo de respuestas, la discusión que no existe y eliminar |
 | `repository/UsuarioRepositoryIntegrationTest` | 9 | mi perfil (con documento, sin documento, sin sesión), registrar, seguirme a mí mismo, seguir a otro, seguir sin tener documento (se crea), seguir a alguien que no existe y modificar el perfil |
 
 Cada clase tiene `@Before` (conecta al emulador dentro de un `try`, limpia y carga sus propios
@@ -304,13 +345,11 @@ iniciar sesión o al seguir a alguien.
 <summary>Firestore: crear la base y los datos iniciales</summary>
 
 1. Consola de Firebase → **Firestore Database → Crear base de datos**, en **modo de prueba**.
-2. Cargar los datos iniciales con **Iniciar colección** y **Agregar documento**, con los ids y
-   los tipos de la tabla de arriba:
-   - `albumes`: los 8 álbumes de `data/local/LocalAlbumProvider.kt`, con las portadas de
-     `data/local/AlbumCovers.kt` (ids `1` a `8`).
-   - `usuarios`: cuatro usuarios de prueba (ids `2` a `5`) con `username`, `nombre` y `bio`.
-   - `reviews`: sus reseñas, cada una con `usuarioId`, `albumId`, `likesCount` en 0 y las copias
-     `usuario` (`nombre`, `fotoUrl`) y `album` (`titulo`, `artista`, `portadaUrl`).
+2. Cargar el catálogo y los usuarios de ejemplo con el seed de
+   [mixtapp-functions](https://github.com/AndresContreras1/mixtapp-functions) (ver *Catálogo y datos
+   falsos con Faker*). Si la base tiene los álbumes de antes (`1` a `8` o `album_1` a `album_15`) y
+   reseñas con `albumId`, primero se borran las colecciones `albumes`, `reviews` y `usuarios` desde
+   la consola.
 3. Crear una cuenta en la app: el registro guarda tus datos en `usuarios` con tu uid.
 
 Las reglas del modo de prueba vencen unos 30 días después de crear la base, igual que las de
@@ -344,9 +383,11 @@ encuentra en `http://10.0.2.2:3000/`.
 - Los usuarios de Firebase no existen en el backend, así que la implementación de Retrofit trata
   al usuario `1` como el usuario de la app: guarda mis reseñas a su nombre y las devuelve con mi uid
   para que el repositorio sepa que son mías.
-- El backend no tiene rutas para crear ni modificar usuarios, ni likes, seguidores o comentarios.
-  Igual que en clase, esas funciones quedan como *to-do* en las implementaciones de Retrofit y las
-  listas salen vacías: los likes, el seguimiento y los comentarios solo funcionan con Firestore.
+- El backend tiene álbumes, canciones y artistas, pero sus reseñas son solo de álbumes:
+  `ReviewRetrofitDto` convierte cada una a la reseña genérica de la app. No tiene rutas para crear
+  ni modificar usuarios, ni likes, guardados, seguidores, comentarios o notificaciones. Igual que en
+  clase, esas funciones quedan como *to-do* en las implementaciones de Retrofit y las listas salen
+  vacías: solo funcionan con Firestore.
 - Con HTTP no hay una conexión continua: el flujo del inicio manda una sola vez lo que responde
   `GET /reviews`. La discusión de una reseña usa `GET /reviews/:id`, que trae el usuario y el álbum
   con `include` en la misma consulta.
@@ -370,14 +411,14 @@ Sin ellos, dos de los mensajes de error nunca salen:
 ```text
 app/src/main/java/com/example/mixtapp/
 ├── data/
-│   ├── datasource/      contratos · Auth · Storage · locales
+│   ├── datasource/      contratos · Auth · Storage · Messaging · Busqueda (local)
 │   │   ├── impl/
-│   │   │   ├── firestore/   Album · Review · Usuario
-│   │   │   └── retrofit/    Album · Review · Usuario
+│   │   │   ├── firestore/   Album · Cancion · Artista · Review · Usuario · Notificacion · MisLikes
+│   │   │   └── retrofit/    Album · Cancion · Artista · Review · Usuario · Notificacion
 │   │   └── services/    servicios de Retrofit · MyFirebaseMessagingService
-│   ├── dtos/            DTO de cada base y sus funciones de mapeo
-│   ├── injection/       FirebaseHiltModule · AppModule · DataSourceModule
-│   ├── local/           proveedores de datos de prueba
+│   ├── dtos/            DTO de cada base, sus funciones de mapeo y Formatos (14K, 3 h)
+│   ├── injection/       FirebaseHiltModule · AppModule · DataSourceModule · CoroutineModule
+│   ├── local/           las tarjetas de Buscar y los datos de los previews
 │   ├── model/           las entidades que usa la UI
 │   └── repository/      los repositorios y AppExceptions
 ├── ui/

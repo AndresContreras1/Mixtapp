@@ -3,6 +3,7 @@ package com.example.mixtapp.ui.navigation
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -28,11 +29,17 @@ fun BottomNav(
                 icon = {
                     Icon(
                         imageVector = if (isSelected) item.filledIcon else item.outlineIcon,
-                        contentDescription = stringResource(item.label)
+                        // La ruta, como en clase: las pruebas e2e encuentran la pestana por ella
+                        contentDescription = item.route
                     )
                 },
+                label = { Text(text = stringResource(item.label)) },
+                // Como lo deja el profesor: el icono lleno o vacio ya marca la pestana actual
                 selected = false,
-                onClick = { navController.navigate(item.route) }
+                // Tocar la pestana en la que ya se esta no la vuelve a apilar
+                onClick = {
+                    if (!isSelected) navController.navigate(item.route)
+                }
             )
         }
     }

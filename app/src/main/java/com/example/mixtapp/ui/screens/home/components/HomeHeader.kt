@@ -1,16 +1,10 @@
 package com.example.mixtapp.ui.screens.home.components
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.People
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -20,74 +14,43 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.TextUnit
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.LogoText
-import com.example.mixtapp.ui.utils.ProfileAsyncImage
 
+// El encabezado del inicio: el logo a la izquierda y los accesos a Siguiendo y a las
+// notificaciones. La busqueda no va aqui porque ya esta en la barra de abajo
 @Composable
 fun HomeHeader(
-    profileImageUrl: String,
-    onSearchClick: () -> Unit,
-    onProfileClick: () -> Unit,
+    onFollowingClick: () -> Unit,
     onNotificationsClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         LogoText(
-            fontSize = 36.sp,
+            fontSize = MaterialTheme.typography.headlineLarge.fontSize,
             fontWeight = FontWeight.Bold,
-            lineHeight = TextUnit.Unspecified
+            lineHeight = MaterialTheme.typography.headlineLarge.lineHeight,
+            modifier = Modifier.weight(1f),
         )
 
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            IconButton(
-                onClick = onSearchClick,
-                modifier = Modifier.size(32.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = stringResource(R.string.search_title),
-                    tint = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier.size(32.dp)
-                )
-            }
+        IconButton(onClick = onFollowingClick) {
+            Icon(
+                imageVector = Icons.Outlined.People,
+                contentDescription = stringResource(R.string.following_title),
+                tint = MaterialTheme.colorScheme.onBackground,
+            )
+        }
 
-            Spacer(modifier = Modifier.width(14.dp))
-
-            IconButton(
-                onClick = onNotificationsClick,
-                modifier = Modifier.size(30.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Notifications,
-                    contentDescription = stringResource(R.string.notifications_title),
-                    tint = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier.size(30.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.width(14.dp))
-
-            IconButton(
-                onClick = onProfileClick,
-                modifier = Modifier.size(46.dp)
-            ) {
-                ProfileAsyncImage(
-                    profileImage = profileImageUrl,
-                    contentDescription = stringResource(R.string.foto_perfil),
-                    modifier = Modifier
-                        .size(46.dp)
-                        .background(MaterialTheme.colorScheme.secondary, CircleShape)
-                )
-            }
+        IconButton(onClick = onNotificationsClick) {
+            Icon(
+                imageVector = Icons.Outlined.Notifications,
+                contentDescription = stringResource(R.string.notifications_title),
+                tint = MaterialTheme.colorScheme.onBackground,
+            )
         }
     }
 }
@@ -97,9 +60,7 @@ fun HomeHeader(
 fun HomeHeaderPreview() {
     MixtappTheme(darkTheme = true) {
         HomeHeader(
-            profileImageUrl = "",
-            onSearchClick = {},
-            onProfileClick = {},
+            onFollowingClick = {},
             onNotificationsClick = {},
         )
     }

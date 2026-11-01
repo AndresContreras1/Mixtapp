@@ -32,7 +32,7 @@ class DiscussionViewModel @Inject constructor(
     // pantalla se muestra, se acumularian listeners
     private var escuchandoDiscusion = false
 
-    // Datos en vivo: un like desde otro celular cambia el corazon y el contador sin salir
+    // Datos en vivo: un comentario nuevo o un like desde otro celular aparecen sin salir
     fun getDiscussionByReviewId(reviewId: String) {
         if (escuchandoDiscusion) return
         escuchandoDiscusion = true
@@ -43,48 +43,52 @@ class DiscussionViewModel @Inject constructor(
             reviewRepository.getDiscussionLive(reviewId = reviewId)
                 .catch { e ->
                     Log.d("DiscussionViewModel", "getDiscussionByReviewId: ${e.message}")
+                    // Si se cerro con error se puede volver a escuchar al entrar de nuevo
                     escuchandoDiscusion = false
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            errorMessageRes = mensajeDeError(error = e, generico = R.string.error_cargar_contenido, noEncontrado = R.string.discusion_no_encontrada),
+                            errorMessageRes = mensajeDeError(
+                                error = e,
+                                generico = R.string.error_cargar_contenido,
+                                noEncontrado = R.string.discusion_no_encontrada,
+                            ),
                         )
                     }
                 }
                 .collect { discussion ->
                     _uiState.update {
-                        it.copy(
-                            // Compartir solo existe en esta pantalla: se conserva al llegar datos nuevos
-                            discussion = discussion.copy(
-                                review = discussion.review.copy(isShared = it.discussion?.review?.isShared ?: false)
-                            ),
-                            isLoading = false,
-                            errorMessageRes = null,
-                        )
+                        it.copy(discussion = discussion, isLoading = false, errorMessageRes = null)
                     }
                 }
         }
     }
 
+    // Lo que se va escribiendo en el campo de abajo
     fun updateNuevoComentario(texto: String) {
-        _uiState.update { it.copy(nuevoComentario = texto, errorMessageRes = null) }
+        _uiState.update { it.copy(nuevoComentario = texto, errorAccionRes = null) }
     }
 
     // No se agrega el comentario a mano: se guarda en Firestore y el flujo trae la lista al dia
     fun publicarComentario() {
-        val discussion = _uiState.value.discussion ?: return
-        val texto = _uiState.value.nuevoComentario.trim()
+        val estado = _uiState.value
+        val discussion = estado.discussion ?: return
+        val texto = estado.nuevoComentario.trim()
+
+        if (estado.publicando) return
 
         if (texto.isEmpty()) {
-            _uiState.update { it.copy(errorMessageRes = R.string.error_comentario_vacio) }
+            _uiState.update { it.copy(errorAccionRes = R.string.error_comentario_vacio) }
             return
         }
 
         // Si se responde a una respuesta, la nueva queda en el hilo del comentario principal
-        val respondiendoA = discussion.comments.find { it.id == _uiState.value.replyingToCommentId }
+        val respondiendoA = discussion.comments.find { it.id == estado.replyingToCommentId }
         val parentCommentId = respondiendoA?.parentId ?: respondiendoA?.id
 
         viewModelScope.launch(ioDispatcher) {
+            _uiState.update { it.copy(publicando = true, errorAccionRes = null) }
+
             val result = reviewRepository.publicarComentario(
                 reviewId = discussion.id,
                 texto = texto,
@@ -92,13 +96,17 @@ class DiscussionViewModel @Inject constructor(
             )
 
             if (result.isSuccess) {
-                _uiState.update { it.copy(nuevoComentario = "", replyingToCommentId = null, errorMessageRes = null) }
+                _uiState.update {
+                    it.copy(nuevoComentario = "", replyingToCommentId = null, publicando = false, errorAccionRes = null)
+                }
             } else {
                 _uiState.update {
                     it.copy(
-                        errorMessageRes = mensajeDeError(
+                        publicando = false,
+                        errorAccionRes = mensajeDeError(
                             error = result.exceptionOrNull(),
-                            generico = R.string.error_publicar_comentario, noEncontrado = R.string.discusion_no_encontrada,
+                            generico = R.string.error_publicar_comentario,
+                            noEncontrado = R.string.discusion_no_encontrada,
                         )
                     )
                 }
@@ -108,35 +116,23 @@ class DiscussionViewModel @Inject constructor(
 
     // No se copia el estado a mano: la transaccion cambia likesCount, eso dispara el flujo y llega
     // la resena con el corazon y el contador al dia
-    fun sendOrDeleteLike() {
-        val reviewId = _uiState.value.discussion?.id ?: return
-
+    fun sendOrDeleteLike(reviewId: String) {
         viewModelScope.launch(ioDispatcher) {
             val result = reviewRepository.sendOrDeleteLike(reviewId = reviewId)
 
             if (result.isSuccess) {
-                _uiState.update { it.copy(errorMessageRes = null) }
+                _uiState.update { it.copy(errorAccionRes = null) }
             } else {
                 _uiState.update {
                     it.copy(
-                        errorMessageRes = mensajeDeError(
+                        errorAccionRes = mensajeDeError(
                             error = result.exceptionOrNull(),
-                            generico = R.string.error_me_gusta, noEncontrado = R.string.discusion_no_encontrada,
+                            generico = R.string.error_me_gusta,
+                            noEncontrado = R.string.discusion_no_encontrada,
                         )
                     )
                 }
             }
-        }
-    }
-
-    // Compartir solo marca la tarjeta en esta pantalla
-    fun compartirQuitarResena() {
-        _uiState.update {
-            it.copy(
-                discussion = it.discussion?.copy(
-                    review = it.discussion.review.copy(isShared = !it.discussion.review.isShared)
-                )
-            )
         }
     }
 
@@ -152,13 +148,14 @@ class DiscussionViewModel @Inject constructor(
             )
 
             if (result.isSuccess) {
-                _uiState.update { it.copy(errorMessageRes = null) }
+                _uiState.update { it.copy(errorAccionRes = null) }
             } else {
                 _uiState.update {
                     it.copy(
-                        errorMessageRes = mensajeDeError(
+                        errorAccionRes = mensajeDeError(
                             error = result.exceptionOrNull(),
-                            generico = R.string.error_me_gusta, noEncontrado = R.string.discusion_no_encontrada,
+                            generico = R.string.error_me_gusta,
+                            noEncontrado = R.string.discusion_no_encontrada,
                         )
                     )
                 }
@@ -166,8 +163,14 @@ class DiscussionViewModel @Inject constructor(
         }
     }
 
+    // El siguiente comentario que se publique sera la respuesta a este
     fun responderComentario(commentId: String) {
         _uiState.update { it.copy(replyingToCommentId = commentId) }
+    }
+
+    // La X de "Respondiendo a": el siguiente comentario vuelve a ser para la resena
+    fun cancelarRespuesta() {
+        _uiState.update { it.copy(replyingToCommentId = null) }
     }
 
 }

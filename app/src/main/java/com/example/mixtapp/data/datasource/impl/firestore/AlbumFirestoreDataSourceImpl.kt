@@ -2,11 +2,9 @@ package com.example.mixtapp.data.datasource.impl.firestore
 
 import com.example.mixtapp.data.datasource.AlbumRemoteDataSource
 import com.example.mixtapp.data.dtos.AlbumDto
-import com.example.mixtapp.data.dtos.ReviewConUsuarioDto
+import com.example.mixtapp.data.dtos.CopiaDeItemDto
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.map
@@ -27,78 +25,63 @@ class AlbumFirestoreDataSourceImpl @Inject constructor(
         }
     }
 
-    override suspend fun getAlbumById(id: String): AlbumDto? {
-        val respuesta = db.collection("albumes").document(id).get().await()
+    override suspend fun getAlbumById(id: String, currentUserId: String): AlbumDto? {
+        val albumRef = db.collection("albumes").document(id)
+        val respuesta = albumRef.get().await()
         // Si el documento no existe, toObject da null y se retorna null: el repositorio decide el error
-        val album = respuesta.toObject(AlbumDto::class.java) ?: return null
+        val album = respuesta.toObject(AlbumDto::class.java)?.copy(id = respuesta.id) ?: return null
 
-        return album.copy(id = respuesta.id)
+        album.liked = albumRef.tieneMiLike(currentUserId)
+        return album
     }
 
-    override suspend fun getReviewsDeAlbum(id: String, currentUserId: String): List<ReviewConUsuarioDto> {
-        val snapshot = db.collection("reviews").whereEqualTo("albumId", id).get().await()
-        val reviews = snapshot.documents.mapNotNull { doc ->
-            doc.toObject(ReviewConUsuarioDto::class.java)?.copy(id = doc.id)
-        }
-
-        return conMisLikes(reviews = reviews, currentUserId = currentUserId)
-    }
-
-    // El listener escucha la coleccion reviews: cada cambio manda la lista completa por el flujo.
-    // Un like solo cambia likesCount en la resena, asi que tambien llega por aqui. El inicio no
-    // pinta corazones: mi like solo se busca si llega el usuario
-    override fun listenAllReviews(currentUserId: String): Flow<List<ReviewConUsuarioDto>> = callbackFlow {
-        val listenerRegistration = db.collection("reviews")
+    // El listener escucha la coleccion: un like cambia likesCount de un album y llega la lista
+    // completa por el flujo
+    override fun listenAlbumes(): Flow<List<AlbumDto>> = callbackFlow {
+        val listenerRegistration = db.collection("albumes")
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
                     close(error) // cierra el flujo con error
                     return@addSnapshotListener
                 }
                 if (snapshot != null) {
-                    val reviews = snapshot.documents.mapNotNull { doc ->
-                        doc.toObject(ReviewConUsuarioDto::class.java)?.copy(id = doc.id)
+                    val albumes = snapshot.documents.mapNotNull { doc ->
+                        doc.toObject(AlbumDto::class.java)?.copy(id = doc.id)
                     }
-                    trySend(reviews).isSuccess // envia la lista al flujo
+                    trySend(albumes).isSuccess // envia la lista al flujo
                 }
             }
 
         // Cuando nadie escucha el flujo, se quita el listener para no dejar la conexion activa
         awaitClose { listenerRegistration.remove() }
-    }.map { reviews -> conMisLikes(reviews = reviews, currentUserId = currentUserId) }
+    }
 
-    // Escucha solo las resenas de este album. El listener no puede esperar otra consulta, asi que
-    // mi like de cada resena se busca con exists() cada vez que llega la lista
-    override fun listenReviewsDeAlbum(id: String, currentUserId: String): Flow<List<ReviewConUsuarioDto>> = callbackFlow {
-        val listenerRegistration = db.collection("reviews").whereEqualTo("albumId", id)
+    // El listener escucha el documento: mi like cambia likesCount, asi que tambien llega por aqui y
+    // se vuelve a buscar con exists(). Si no existe se envia null
+    override fun listenAlbumById(id: String, currentUserId: String): Flow<AlbumDto?> = callbackFlow {
+        val listenerRegistration = db.collection("albumes").document(id)
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
                     close(error) // cierra el flujo con error
                     return@addSnapshotListener
                 }
                 if (snapshot != null) {
-                    val reviews = snapshot.documents.mapNotNull { doc ->
-                        doc.toObject(ReviewConUsuarioDto::class.java)?.copy(id = doc.id)
-                    }
-                    trySend(reviews).isSuccess // envia la lista al flujo
+                    val album = snapshot.toObject(AlbumDto::class.java)?.copy(id = snapshot.id)
+                    trySend(album).isSuccess // envia el album (o null) al flujo
                 }
             }
 
-        // Cuando se sale del album nadie escucha el flujo y se quita el listener
+        // Cuando se sale del detalle nadie escucha el flujo y se quita el listener
         awaitClose { listenerRegistration.remove() }
-    }.map { reviews -> conMisLikes(reviews = reviews, currentUserId = currentUserId) }
-
-    // Mi like de cada resena se pide a la vez y se espera el mas lento, en vez de uno por uno
-    private suspend fun conMisLikes(
-        reviews: List<ReviewConUsuarioDto>,
-        currentUserId: String,
-    ): List<ReviewConUsuarioDto> = coroutineScope {
-        val pendientes = reviews.map { review ->
-            async {
-                review.liked = db.collection("reviews").document(review.id).tieneMiLike(currentUserId)
-                review
-            }
+    }.map { album ->
+        if (album != null) {
+            album.liked = db.collection("albumes").document(album.id).tieneMiLike(currentUserId)
         }
 
-        pendientes.map { it.await() }
+        album
+    }
+
+    override suspend fun sendOrDeleteLike(albumId: String, userId: String, copia: CopiaDeItemDto) {
+        db.sendOrDeleteLikeDeItem(coleccion = "albumes", itemId = albumId, userId = userId, copia = copia)
     }
 }
