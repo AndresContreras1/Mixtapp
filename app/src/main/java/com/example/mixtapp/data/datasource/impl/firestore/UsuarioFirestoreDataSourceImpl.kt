@@ -18,13 +18,13 @@ class UsuarioFirestoreDataSourceImpl @Inject constructor(
     private val db: FirebaseFirestore
 ) : UsuarioRemoteDataSource {
 
-    override suspend fun getUsuarioById(id: String, currentUserId: String): UsuarioPerfilFirestoreDto {
+    override suspend fun getUsuarioById(id: String, currentUserId: String): UsuarioPerfilFirestoreDto? {
         val docRef = db.collection("usuarios").document(id)
         val respuesta = docRef.get().await()
 
-        // Si el documento no existe, toObject da null: el repositorio lo muestra como no encontrado
+        // Si el documento no existe, toObject da null y se retorna null: el repositorio decide el error
         val usuario = respuesta.toObject(UsuarioPerfilFirestoreDto::class.java)?.copy(id = respuesta.id)
-            ?: throw NoSuchElementException("No existe el usuario $id")
+            ?: return null
 
         // Si en su subcoleccion followers hay un documento con mi uid, ya lo sigo
         if (currentUserId.isNotEmpty()) {

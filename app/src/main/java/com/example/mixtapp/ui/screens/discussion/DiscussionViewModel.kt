@@ -5,8 +5,6 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
-import com.example.mixtapp.data.model.DiscussionCommentUi
-import com.example.mixtapp.data.repository.AuthRepository
 import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
 import com.example.mixtapp.data.repository.ErrorDelServidorException
 import com.example.mixtapp.data.repository.ReviewRepository
@@ -22,7 +20,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DiscussionViewModel @Inject constructor(
-    private val authRepository: AuthRepository,
     private val reviewRepository: ReviewRepository
 ) : ViewModel() {
 
@@ -71,8 +68,9 @@ class DiscussionViewModel @Inject constructor(
         _uiState.update { it.copy(nuevoComentario = texto, errorMessageRes = null) }
     }
 
+    // No se agrega el comentario a mano: se guarda en Firestore y el flujo trae la lista al dia
     fun publicarComentario() {
-        val reviewId = _uiState.value.discussion?.id ?: return
+        val discussion = _uiState.value.discussion ?: return
         val texto = _uiState.value.nuevoComentario.trim()
 
         if (texto.isEmpty()) {
@@ -80,19 +78,19 @@ class DiscussionViewModel @Inject constructor(
             return
         }
 
-        val autor = authRepository.usuarioDelCorreo
+        // Si se responde a una respuesta, la nueva queda en el hilo del comentario principal
+        val respondiendoA = discussion.comments.find { it.id == _uiState.value.replyingToCommentId }
+        val parentCommentId = respondiendoA?.parentId ?: respondiendoA?.id
 
         viewModelScope.launch {
             val result = reviewRepository.publicarComentario(
-                reviewId = reviewId,
-                autor = autor,
+                reviewId = discussion.id,
                 texto = texto,
-                esRespuesta = _uiState.value.replyingToCommentId != null,
+                parentCommentId = parentCommentId,
             )
 
             if (result.isSuccess) {
-                actualizarComentarios(comentarios = result.getOrNull() ?: emptyList())
-                _uiState.update { it.copy(nuevoComentario = "", replyingToCommentId = null) }
+                _uiState.update { it.copy(nuevoComentario = "", replyingToCommentId = null, errorMessageRes = null) }
             } else {
                 _uiState.update {
                     it.copy(
@@ -140,6 +138,8 @@ class DiscussionViewModel @Inject constructor(
         }
     }
 
+    // Igual que el like de la resena: la transaccion cambia likesCount del comentario y el flujo
+    // trae el corazon y el contador al dia
     fun darQuitarLikeComentario(commentId: String) {
         val reviewId = _uiState.value.discussion?.id ?: return
 
@@ -150,7 +150,7 @@ class DiscussionViewModel @Inject constructor(
             )
 
             if (result.isSuccess) {
-                actualizarComentarios(comentarios = result.getOrNull() ?: emptyList())
+                _uiState.update { it.copy(errorMessageRes = null) }
             } else {
                 _uiState.update {
                     it.copy(
@@ -166,19 +166,6 @@ class DiscussionViewModel @Inject constructor(
 
     fun responderComentario(commentId: String) {
         _uiState.update { it.copy(replyingToCommentId = commentId) }
-    }
-
-    // El total del encabezado cambia con la lista
-    private fun actualizarComentarios(comentarios: List<DiscussionCommentUi>) {
-        _uiState.update {
-            it.copy(
-                discussion = it.discussion?.copy(
-                    review = it.discussion.review.copy(commentsCount = comentarios.size),
-                    comments = comentarios,
-                ),
-                errorMessageRes = null,
-            )
-        }
     }
 
     @StringRes

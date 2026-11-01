@@ -9,7 +9,8 @@ import kotlinx.coroutines.flow.Flow
 // Contrato de los usuarios: cada implementacion retorna el DTO de su propia base.
 // currentUserId es opcional para que Retrofit no tenga que usarlo
 interface UsuarioRemoteDataSource {
-    suspend fun getUsuarioById(id: String, currentUserId: String = ""): UsuarioDtoGeneric
+    // Si no existe retorna null: el repositorio decide el error
+    suspend fun getUsuarioById(id: String, currentUserId: String = ""): UsuarioDtoGeneric?
     suspend fun getReviewsDeUsuario(id: String, currentUserId: String = ""): List<ReviewConAlbumDto>
     // Crea los datos del usuario que tiene ese id
     suspend fun registrarUsuario(registrarUsuarioDto: RegistrarUsuarioDto, usuarioId: String): Unit

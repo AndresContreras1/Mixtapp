@@ -2,7 +2,7 @@ package com.example.mixtapp.data.repository
 
 import android.util.Log
 import com.example.mixtapp.data.datasource.AuthRemoteDataSource
-import com.example.mixtapp.data.datasource.impl.firestore.UsuarioFirestoreDataSourceImpl
+import com.example.mixtapp.data.datasource.UsuarioRemoteDataSource
 import com.example.mixtapp.data.dtos.ActualizarUsuarioDto
 import com.example.mixtapp.data.dtos.RegistrarUsuarioDto
 import com.example.mixtapp.data.dtos.toMyReviewUi
@@ -17,11 +17,12 @@ import kotlinx.coroutines.tasks.await
 import retrofit2.HttpException
 import javax.inject.Inject
 
-// Para volver al backend de Express basta con cambiar la implementacion a UsuarioRetrofitDataSourceImpl.
+// Recibe el contrato: Hilt entrega la implementacion de Firestore desde DataSourceModule. Para
+// volver al backend de Express basta con cambiar ese @Binds a UsuarioRetrofitDataSourceImpl.
 // El backend todavia no tiene rutas para guardar usuarios ni seguidores, asi que esas funciones
 // quedan como to-do en esa implementacion, como en clase
 class UsuarioRepository @Inject constructor(
-    private val usuarioRemoteDataSource: UsuarioFirestoreDataSourceImpl,
+    private val usuarioRemoteDataSource: UsuarioRemoteDataSource,
     private val authRemoteDataSource: AuthRemoteDataSource
 ) {
 
@@ -83,17 +84,17 @@ class UsuarioRepository @Inject constructor(
             val usuarioId = authRemoteDataSource.currentUser?.uid
                 ?: return Result.failure(SinSesionException())
 
-            val usuario = usuarioRemoteDataSource.getUsuarioById(usuarioId).toUsuarioUi()
-            Result.success(usuario.copy(esMiPerfil = true))
+            // El data source retorna null si no existe: el repositorio es el que decide el error
+            val usuario = usuarioRemoteDataSource.getUsuarioById(usuarioId)
+            if (usuario == null) return Result.failure(ContenidoNoEncontradoException())
+
+            Result.success(usuario.toUsuarioUi().copy(esMiPerfil = true))
         } catch (e: HttpException) {
             Log.d("UsuarioRepository", "getMiPerfil: ${e.message}")
             Result.failure(errorDelBackend(e))
         } catch (e: FirebaseFirestoreException) {
             Log.d("UsuarioRepository", "getMiPerfil: ${e.message}")
             Result.failure(errorDeFirestore(e))
-        } catch (e: NoSuchElementException) {
-            Log.d("UsuarioRepository", "getMiPerfil: ${e.message}")
-            Result.failure(ContenidoNoEncontradoException())
         } catch (e: Exception) {
             Log.d("UsuarioRepository", "getMiPerfil: ${e.message}")
             Result.failure(ErrorInesperadoException())
@@ -115,8 +116,9 @@ class UsuarioRepository @Inject constructor(
             val usuarioId = authRemoteDataSource.currentUser?.uid
                 ?: return Result.failure(SinSesionException())
 
-            // Sin el await sigue derecho y el token queda vacio
-            val fcmToken = FirebaseMessaging.getInstance().token.await()
+            // Sin el await sigue derecho y el token queda vacio. Va en su propio try: si el token
+            // falla, el registro sigue y el documento queda con "Vacio"
+            val fcmToken = try { FirebaseMessaging.getInstance().token.await() } catch (e: Exception) { "Vacio" }
 
             val registrarUsuarioDto = RegistrarUsuarioDto(
                 username = username,

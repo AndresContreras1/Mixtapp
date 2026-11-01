@@ -1,14 +1,15 @@
 package com.example.mixtapp.data.repository
 
 import android.util.Log
+import com.example.mixtapp.data.datasource.AlbumRemoteDataSource
 import com.example.mixtapp.data.datasource.AuthRemoteDataSource
-import com.example.mixtapp.data.datasource.ReviewLocalDataSource
-import com.example.mixtapp.data.datasource.impl.firestore.AlbumFirestoreDataSourceImpl
-import com.example.mixtapp.data.datasource.impl.firestore.ReviewFirestoreDataSourceImpl
-import com.example.mixtapp.data.datasource.impl.firestore.UsuarioFirestoreDataSourceImpl
+import com.example.mixtapp.data.datasource.ReviewRemoteDataSource
+import com.example.mixtapp.data.datasource.UsuarioRemoteDataSource
+import com.example.mixtapp.data.dtos.CreateComentarioDto
 import com.example.mixtapp.data.dtos.CreateReviewAlbumDto
 import com.example.mixtapp.data.dtos.CreateReviewDto
 import com.example.mixtapp.data.dtos.CreateReviewUsuarioDto
+import com.example.mixtapp.data.dtos.toDiscussionCommentUi
 import com.example.mixtapp.data.dtos.toDiscussionReviewUi
 import com.example.mixtapp.data.dtos.toMyReviewUi
 import com.example.mixtapp.data.model.DiscussionCommentUi
@@ -19,18 +20,20 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import retrofit2.HttpException
+import java.time.Instant
 import javax.inject.Inject
 
-// Organiza varios data sources: las resenas, el usuario y el album que se copian en cada una,
-// los comentarios locales y Authentication para saber quien es el usuario de la app.
-// Para volver al backend de Express basta con cambiar las implementaciones a las de Retrofit
+// Organiza varios data sources: las resenas con sus comentarios, el usuario y el album que se
+// copian en cada una, y Authentication para saber quien es el usuario de la app.
+// Recibe los contratos: para volver al backend de Express basta con cambiar los @Binds de
+// DataSourceModule a las implementaciones de Retrofit
 class ReviewRepository @Inject constructor(
-    private val reviewLocalDataSource: ReviewLocalDataSource,
-    private val reviewRemoteDataSource: ReviewFirestoreDataSourceImpl,
-    private val usuarioRemoteDataSource: UsuarioFirestoreDataSourceImpl,
-    private val albumRemoteDataSource: AlbumFirestoreDataSourceImpl,
+    private val reviewRemoteDataSource: ReviewRemoteDataSource,
+    private val usuarioRemoteDataSource: UsuarioRemoteDataSource,
+    private val albumRemoteDataSource: AlbumRemoteDataSource,
     private val authRemoteDataSource: AuthRemoteDataSource
 ) {
 
@@ -84,11 +87,12 @@ class ReviewRepository @Inject constructor(
 
             // La resena guarda una copia de lo que se muestra del usuario y del album, porque
             // en Firestore no hay joins. Solo se copia lo que se ve, no todo el usuario.
-            // El album y mi nombre salen a la vez y se espera el mas lento
+            // El album y mi nombre salen a la vez y se espera el mas lento. Si el album no
+            // existe queda null
             val createReviewDto = coroutineScope {
                 val album = async { albumRemoteDataSource.getAlbumById(albumId) }
                 val nombre = async { nombreDelUsuario(usuarioId = usuarioId) }
-                val albumDto = album.await()
+                val albumDto = album.await() ?: return@coroutineScope null
 
                 CreateReviewDto(
                     usuarioId = usuarioId,
@@ -97,6 +101,7 @@ class ReviewRepository @Inject constructor(
                     comentario = texto,
                     fechaEscucha = if (fecha.isEmpty()) null else fecha,
                     likesCount = 0,
+                    commentsCount = 0,
                     usuario = CreateReviewUsuarioDto(nombre = nombre.await(), fotoUrl = photoUrl),
                     album = CreateReviewAlbumDto(
                         titulo = albumDto.titulo,
@@ -105,6 +110,9 @@ class ReviewRepository @Inject constructor(
                     ),
                 )
             }
+
+            // El data source retorna null si no existe: el repositorio es el que decide el error
+            if (createReviewDto == null) return Result.failure(ContenidoNoEncontradoException())
 
             if (reviewId != null) reviewRemoteDataSource.updateReview(reviewId, createReviewDto)
             else reviewRemoteDataSource.createReview(createReviewDto)
@@ -116,9 +124,6 @@ class ReviewRepository @Inject constructor(
         } catch (e: FirebaseFirestoreException) {
             Log.d("ReviewRepository", "guardarResena: ${e.message}")
             Result.failure(errorDeFirestore(e))
-        } catch (e: NoSuchElementException) {
-            Log.d("ReviewRepository", "guardarResena: ${e.message}")
-            Result.failure(ContenidoNoEncontradoException())
         } catch (e: Exception) {
             Log.d("ReviewRepository", "guardarResena: ${e.message}")
             Result.failure(ErrorInesperadoException())
@@ -141,94 +146,106 @@ class ReviewRepository @Inject constructor(
         }
     }
 
-    // La resena llega en vivo de la base remota, con mi like, y sus comentarios de los datos locales
+    // La discusion en vivo con dos listeners: la resena (mi like y sus contadores) y sus comentarios.
+    // Cuando llega cualquiera de los dos, combine arma la discusion de nuevo, como en Seguidos
     fun getDiscussionLive(reviewId: String): Flow<DiscussionUi> {
         val usuarioId = authRemoteDataSource.currentUser?.uid ?: ""
 
-        return reviewRemoteDataSource.listenReviewById(reviewId, currentUserId = usuarioId)
-            .map { review ->
-                val comentarios = reviewLocalDataSource.getComentarios(reviewId = reviewId)
-
-                DiscussionUi(
-                    id = reviewId,
-                    review = review.toDiscussionReviewUi(comentarios = comentarios.size),
-                    comments = comentarios,
-                )
-            }
+        return combine(
+            reviewRemoteDataSource.listenReviewById(reviewId, currentUserId = usuarioId),
+            reviewRemoteDataSource.listenComentarios(reviewId, currentUserId = usuarioId),
+        ) { review, comentarios ->
+            DiscussionUi(
+                id = reviewId,
+                review = review.toDiscussionReviewUi(),
+                comments = enHilo(comentarios = comentarios.map { it.toDiscussionCommentUi() }),
+            )
+        }
             .catch { e ->
                 Log.d("ReviewRepository", "getDiscussionLive: ${e.message}")
                 throw errorDelFlujo(e)
             }
     }
 
+    // El comentario guarda una copia de mi nombre y mi foto, igual que la resena. Si es una
+    // respuesta, llega el id del comentario principal
     suspend fun publicarComentario(
         reviewId: String,
-        autor: String,
         texto: String,
-        esRespuesta: Boolean,
-    ): Result<List<DiscussionCommentUi>> = actualizarComentarios(reviewId = reviewId) { comentarios ->
-        val comentario = DiscussionCommentUi(
-            id = "comentario-propio-" + (comentarios.size + 1),
-            author = autor,
-            initials = autor.take(2).lowercase(),
-            // Vacio: la pantalla muestra "ahora" desde strings.xml
-            timeAgo = "",
-            content = texto,
-            likes = 0,
-            isReply = esRespuesta,
-            isLiked = false,
-        )
-
-        comentarios + comentario
-    }
-
-    suspend fun darQuitarLikeComentario(
-        reviewId: String,
-        commentId: String,
-    ): Result<List<DiscussionCommentUi>> = actualizarComentarios(reviewId = reviewId) { comentarios ->
-        comentarios.map { comentario ->
-            if (comentario.id == commentId) {
-                conLike(comentario = comentario)
-            } else {
-                comentario
-            }
-        }
-    }
-
-    private fun conLike(comentario: DiscussionCommentUi): DiscussionCommentUi {
-        val nuevoLike = !comentario.isLiked
-
-        return comentario.copy(
-            likes = if (nuevoLike) comentario.likes + 1 else comentario.likes - 1,
-            isLiked = nuevoLike,
-        )
-    }
-
-    private suspend fun actualizarComentarios(
-        reviewId: String,
-        cambio: (List<DiscussionCommentUi>) -> List<DiscussionCommentUi>,
-    ): Result<List<DiscussionCommentUi>> {
+        parentCommentId: String?,
+    ): Result<Unit> {
         return try {
-            val comentarios = reviewLocalDataSource.getComentarios(reviewId = reviewId)
-            val actualizados = cambio(comentarios)
+            val usuarioId = authRemoteDataSource.currentUser?.uid
+                ?: return Result.failure(SinSesionException())
 
-            reviewLocalDataSource.guardarComentarios(reviewId = reviewId, comentarios = actualizados)
-            Result.success(actualizados)
+            val createComentarioDto = CreateComentarioDto(
+                usuarioId = usuarioId,
+                contenido = texto,
+                parentCommentId = parentCommentId,
+                likesCount = 0,
+                // En formato ISO, para que la lista se ordene por esta fecha
+                createdAt = Instant.now().toString(),
+                usuario = CreateReviewUsuarioDto(
+                    nombre = nombreDelUsuario(usuarioId = usuarioId),
+                    fotoUrl = authRemoteDataSource.currentUser?.photoUrl?.toString(),
+                ),
+            )
+
+            reviewRemoteDataSource.createComentario(reviewId = reviewId, comentario = createComentarioDto)
+            Result.success(Unit)
+        } catch (e: HttpException) {
+            Log.d("ReviewRepository", "publicarComentario: ${e.message}")
+            Result.failure(errorDelBackend(e))
+        } catch (e: FirebaseFirestoreException) {
+            Log.d("ReviewRepository", "publicarComentario: ${e.message}")
+            Result.failure(errorDeFirestore(e))
         } catch (e: Exception) {
-            Log.d("ReviewRepository", "actualizarComentarios: ${e.message}")
-            Result.failure(ErrorDeDatosLocalesException())
+            Log.d("ReviewRepository", "publicarComentario: ${e.message}")
+            Result.failure(ErrorInesperadoException())
         }
     }
 
-    // Una cuenta creada antes del sprint 10 no tiene documento en usuarios: se usa su correo
-    private suspend fun nombreDelUsuario(usuarioId: String): String {
+    // Da el like al comentario o lo quita: el data source decide segun si ya existe
+    suspend fun darQuitarLikeComentario(reviewId: String, commentId: String): Result<Unit> {
         return try {
-            usuarioRemoteDataSource.getUsuarioById(usuarioId).toUsuarioUi().nombre
-        } catch (e: NoSuchElementException) {
-            // Solo una cuenta sin documento usa el correo; si Firestore falla por otra razon,
-            // falla todo el guardado, como en clase
-            Log.d("ReviewRepository", "nombreDelUsuario: ${e.message}")
-            authRemoteDataSource.currentUser?.email?.substringBefore("@") ?: ""
+            val usuarioId = authRemoteDataSource.currentUser?.uid
+                ?: return Result.failure(SinSesionException())
+
+            reviewRemoteDataSource.sendOrDeleteLikeComentario(
+                reviewId = reviewId,
+                comentarioId = commentId,
+                userId = usuarioId,
+            )
+            Result.success(Unit)
+        } catch (e: HttpException) {
+            Log.d("ReviewRepository", "darQuitarLikeComentario: ${e.message}")
+            Result.failure(errorDelBackend(e))
+        } catch (e: FirebaseFirestoreException) {
+            Log.d("ReviewRepository", "darQuitarLikeComentario: ${e.message}")
+            Result.failure(errorDeFirestore(e))
+        } catch (e: Exception) {
+            Log.d("ReviewRepository", "darQuitarLikeComentario: ${e.message}")
+            Result.failure(ErrorInesperadoException())
         }
+    }
+
+    // Los comentarios llegan del mas viejo al mas nuevo: cada comentario principal va seguido de
+    // sus respuestas
+    private fun enHilo(comentarios: List<DiscussionCommentUi>): List<DiscussionCommentUi> {
+        val principales = comentarios.filter { it.parentId == null }
+
+        return principales.flatMap { principal ->
+            listOf(principal) + comentarios.filter { it.parentId == principal.id }
+        }
+    }
+
+    // Una cuenta creada antes del sprint 10 no tiene documento en usuarios: se usa su correo.
+    // Si Firestore falla por otra razon, la excepcion sigue y falla todo el guardado, como en clase
+    private suspend fun nombreDelUsuario(usuarioId: String): String {
+        val usuario = usuarioRemoteDataSource.getUsuarioById(usuarioId)
+
+        return usuario?.toUsuarioUi()?.nombre
+            ?: authRemoteDataSource.currentUser?.email?.substringBefore("@")
+            ?: ""
     }
 }

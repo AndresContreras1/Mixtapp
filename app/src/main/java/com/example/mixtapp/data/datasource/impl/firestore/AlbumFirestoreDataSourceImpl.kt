@@ -25,12 +25,12 @@ class AlbumFirestoreDataSourceImpl @Inject constructor(
         }
     }
 
-    override suspend fun getAlbumById(id: String): AlbumDto {
+    override suspend fun getAlbumById(id: String): AlbumDto? {
         val respuesta = db.collection("albumes").document(id).get().await()
-        val album = respuesta.toObject(AlbumDto::class.java)
+        // Si el documento no existe, toObject da null y se retorna null: el repositorio decide el error
+        val album = respuesta.toObject(AlbumDto::class.java) ?: return null
 
-        // Si el documento no existe, toObject da null: el repositorio lo muestra como no encontrado
-        return album?.copy(id = respuesta.id) ?: throw NoSuchElementException("No existe el album $id")
+        return album.copy(id = respuesta.id)
     }
 
     override suspend fun getReviewsDeAlbum(id: String, currentUserId: String): List<ReviewConUsuarioDto> {

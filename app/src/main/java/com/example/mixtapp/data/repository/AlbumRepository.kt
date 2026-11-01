@@ -2,8 +2,8 @@ package com.example.mixtapp.data.repository
 
 import android.util.Log
 import com.example.mixtapp.data.datasource.AlbumLocalDataSource
+import com.example.mixtapp.data.datasource.AlbumRemoteDataSource
 import com.example.mixtapp.data.datasource.AuthRemoteDataSource
-import com.example.mixtapp.data.datasource.impl.firestore.AlbumFirestoreDataSourceImpl
 import com.example.mixtapp.data.dtos.AlbumDto
 import com.example.mixtapp.data.dtos.toAlbum
 import com.example.mixtapp.data.dtos.toAlbumReviewItemUi
@@ -24,11 +24,12 @@ import kotlin.math.roundToInt
 // Desde esta calificacion se cuenta que la resena recomienda el album
 private const val CALIFICACION_PARA_RECOMENDAR = 4
 
-// Para volver al backend de Express basta con cambiar la implementacion a AlbumRetrofitDataSourceImpl.
+// Recibe el contrato: para volver al backend de Express basta con cambiar el @Binds de
+// DataSourceModule a AlbumRetrofitDataSourceImpl.
 // Authentication dice quien es el usuario de la app: con eso se marca mi resena y mis likes
 class AlbumRepository @Inject constructor(
     private val albumLocalDataSource: AlbumLocalDataSource,
-    private val albumRemoteDataSource: AlbumFirestoreDataSourceImpl,
+    private val albumRemoteDataSource: AlbumRemoteDataSource,
     private val authRemoteDataSource: AuthRemoteDataSource
 ) {
 
@@ -106,7 +107,10 @@ class AlbumRepository @Inject constructor(
 
         return albumRemoteDataSource.listenReviewsDeAlbum(albumId, currentUserId = usuarioActualId)
             .map { reviews ->
-                val album = albumGuardado ?: albumRemoteDataSource.getAlbumById(albumId).toAlbum()
+                // Si no existe, el error va al catch del flujo y se muestra como no encontrado
+                val album = albumGuardado
+                    ?: albumRemoteDataSource.getAlbumById(albumId)?.toAlbum()
+                    ?: throw NoSuchElementException("No existe el album $albumId")
                 albumGuardado = album
 
                 conEstadisticas(
@@ -125,18 +129,22 @@ class AlbumRepository @Inject constructor(
         return try {
             val usuarioActualId = authRemoteDataSource.currentUser?.uid ?: ""
 
-            // El album y sus resenas salen a la vez
+            // El album y sus resenas salen a la vez. Si el album no existe queda null
             val albumReviews = coroutineScope {
                 val album = async { albumRemoteDataSource.getAlbumById(albumId) }
                 val reviews = async { albumRemoteDataSource.getReviewsDeAlbum(albumId, currentUserId = usuarioActualId) }
+                val albumDto = album.await() ?: return@coroutineScope null
 
                 conEstadisticas(
-                    album = album.await().toAlbum(),
+                    album = albumDto.toAlbum(),
                     reviews = reviews.await().map { review ->
                         review.toAlbumReviewItemUi(usuarioActualId = usuarioActualId)
                     }
                 )
             }
+
+            // El data source retorna null si no existe: el repositorio es el que decide el error
+            if (albumReviews == null) return Result.failure(ContenidoNoEncontradoException())
 
             Result.success(albumReviews)
         } catch (e: HttpException) {
@@ -145,9 +153,6 @@ class AlbumRepository @Inject constructor(
         } catch (e: FirebaseFirestoreException) {
             Log.d("AlbumRepository", "getAlbumReviewsById: ${e.message}")
             Result.failure(errorDeFirestore(e))
-        } catch (e: NoSuchElementException) {
-            Log.d("AlbumRepository", "getAlbumReviewsById: ${e.message}")
-            Result.failure(ContenidoNoEncontradoException())
         } catch (e: Exception) {
             Log.d("AlbumRepository", "getAlbumReviewsById: ${e.message}")
             Result.failure(ErrorInesperadoException())
