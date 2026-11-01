@@ -1,4 +1,4 @@
-package com.example.mixtapp
+package com.example.mixtapp.dtos
 
 import com.example.mixtapp.data.dtos.ReviewDto
 import com.example.mixtapp.data.dtos.UsuarioPerfilFirestoreDto

@@ -21,7 +21,8 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        // Las pruebas e2e arrancan la app con Hilt: el runner cambia BaseApplication por la de prueba
+        testInstrumentationRunner = "com.example.mixtapp.HiltTestRunner"
     }
 
     buildTypes {
@@ -40,6 +41,10 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+    }
+    // En las pruebas con mocks (src/test) no hay Android: Log.d responde 0 en vez de lanzar error
+    testOptions {
+        unitTests.isReturnDefaultValues = true
     }
     buildFeatures {
         compose = true
@@ -77,6 +82,10 @@ dependencies {
     implementation(libs.retrofit.converter.scalars)
     implementation(libs.retrofit.converter.gson)
     testImplementation(libs.junit)
+    // Pruebas con mocks del repositorio y de los ViewModels: MockK, runTest y Truth
+    testImplementation(libs.mockk)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.truth)
     // Pruebas de integracion contra el emulador de Firebase: runTest para las funciones suspend y
     // Truth para los asserts
     androidTestImplementation(libs.kotlinx.coroutines.test)
@@ -85,6 +94,9 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    // Pruebas e2e con Hilt: @HiltAndroidTest, HiltAndroidRule y el compilador para androidTest
+    androidTestImplementation(libs.hilt.android.testing)
+    kspAndroidTest(libs.dagger.hilt.compiler)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 

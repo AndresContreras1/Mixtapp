@@ -48,7 +48,9 @@ fun ReviewCard(
     onDeleteClick: ((String) -> Unit)? = null,
 ) {
     Card(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .testTag("review_${review.id}"),
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.8f)
@@ -68,7 +70,7 @@ fun ReviewCard(
                 ProfileAsyncImage(
                     profileImage = review.authorImage,
                     contentDescription = stringResource(R.string.foto_perfil),
-                    modifier = Modifier.size(36.dp)
+                    size = 36
                 )
 
                 Spacer(modifier = Modifier.width(10.dp))
@@ -148,7 +150,8 @@ fun ReviewCard(
                     isLiked = review.isLiked,
                     onLikeClick = { onLikeClick(review.id) },
                     contentDescriptionRes = R.string.like_review,
-                    modifier = Modifier.testTag("like_${review.id}"),
+                    botonModifier = Modifier.testTag("like_${review.id}"),
+                    contadorModifier = Modifier.testTag("likes_${review.id}"),
                 )
 
                 // Abre la discusion aunque no siga a quien la escribio

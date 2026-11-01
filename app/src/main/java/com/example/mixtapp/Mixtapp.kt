@@ -24,7 +24,7 @@ import com.google.firebase.messaging.FirebaseMessaging
 
 @Composable
 fun Mixtapp(modifier: Modifier = Modifier) {
-    // La notificacion necesita saber en que pantalla se va a lanzar
+    // El contexto sirve para revisar si el permiso de notificaciones ya esta concedido
     val context = LocalContext.current
 
     // Launcher para pedir el permiso de notificaciones; si se niega, solo se pierden las

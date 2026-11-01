@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -17,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -48,9 +48,8 @@ fun ProfileHeader(
         ProfileAsyncImage(
             profileImage = fotoUrl,
             contentDescription = stringResource(R.string.foto_perfil),
-            modifier = Modifier
-                .size(104.dp)
-                .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
+            size = 104,
+            modifier = Modifier.border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -62,7 +61,8 @@ fun ProfileHeader(
                 color = MaterialTheme.colorScheme.onBackground,
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                modifier = Modifier.testTag("nombrePerfil")
             )
         }
 
@@ -88,11 +88,13 @@ fun ProfileHeader(
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             ProfileCounter(
                 texto = stringResource(R.string.cantidad_seguidores, seguidores),
-                onClick = onSeguidoresClick
+                onClick = onSeguidoresClick,
+                modifier = Modifier.testTag("contadorSeguidores")
             )
             ProfileCounter(
                 texto = stringResource(R.string.cantidad_seguidos, seguidos),
-                onClick = onSeguidosClick
+                onClick = onSeguidosClick,
+                modifier = Modifier.testTag("contadorSeguidos")
             )
         }
 

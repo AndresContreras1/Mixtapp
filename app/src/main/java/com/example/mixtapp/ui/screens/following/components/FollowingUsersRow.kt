@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -50,7 +49,7 @@ fun FollowingUsersRow(
                 ProfileAsyncImage(
                     profileImage = usuario.fotoUrl,
                     contentDescription = stringResource(R.string.foto_perfil),
-                    modifier = Modifier.size(58.dp)
+                    size = 58
                 )
 
                 Spacer(modifier = Modifier.height(6.dp))

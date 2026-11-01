@@ -1,4 +1,4 @@
-package com.example.mixtapp
+package com.example.mixtapp.local
 
 import com.example.mixtapp.data.local.LocalPreviewProvider
 import com.example.mixtapp.data.local.LocalSearchCategoriesProvider

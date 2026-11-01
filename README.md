@@ -67,7 +67,10 @@ Universidad Javeriana.
 | Modo claro y modo oscuro: la app sigue el del celular | Funcionando |
 | Modo debug contra el emulador de Firebase (Firebase CLI) | Funcionando |
 | Catálogo y datos falsos con Faker para el emulador o el Firebase real | Script en [mixtapp-functions](https://github.com/AndresContreras1/mixtapp-functions) |
-| Pruebas de integración de los data sources y los repositorios contra el emulador | 16 + 17 pruebas |
+| Pruebas de integración de los data sources y los repositorios contra el emulador | 21 + 17 pruebas |
+| Pruebas con mocks (MockK) del repositorio, con sus mapeos, y de los ViewModels | 12 + 11 pruebas, más 15 de mapeos y datos locales |
+| Pruebas de integración del ViewModel de registro contra el emulador | 2 pruebas |
+| Pruebas end to end de los dos casos de uso del sprint 13 | 2 pruebas |
 
 ## Arquitectura
 
@@ -111,7 +114,7 @@ lógica: filtrar, ordenar y decidir qué se muestra. **La pantalla** pinta y avi
 | Datos | Firebase Auth · Storage · Cloud Firestore · Cloud Messaging · Retrofit · corrutinas con `suspend`, `viewModelScope` y `Flow` |
 | Inyección | Dagger Hilt con KSP: `FirebaseHiltModule`, `AppModule` y `DataSourceModule` |
 | Build | Gradle Kotlin DSL · `libs.versions.toml` · `BuildConfig` para el modo debug |
-| Pruebas | JUnit · Truth · `runTest` · emulador de Firebase |
+| Pruebas | JUnit · Truth · MockK · `runTest` y `StandardTestDispatcher` · Compose UI Test · Hilt testing · emulador de Firebase |
 
 ## Datos en Firestore
 
@@ -318,6 +321,31 @@ tres líneas. Las instrucciones están en ese README.
 </details>
 
 <details>
+<summary>Pruebas con mocks (sin emulador)</summary>
+
+Están en `app/src/test`, por capa. Corren en el computador, sin emulador: clic derecho en la carpeta
+`test` → **Run 'Tests in…'**. MockK simula las capas de abajo (`mockk`, `coEvery { … } returns …`,
+`any()`) y se prueba solo la capa de arriba.
+
+| Clase | Pruebas | Qué revisa |
+|---|---|---|
+| `repository/CatalogoRepositoryTest` | 6 | el promedio, el total, el % que recomienda y mi calificación; la canción en tres líneas y sus likes como `1.2K`; el artista que no existe; el data source que falla; el like sin sesión; cada álbum del catálogo con sus reseñas |
+| `repository/ReviewRepositoryTest` | 3 | mis reseñas de la última editada a la más vieja; la respuesta debajo de su comentario; la discusión de una reseña que no existe |
+| `repository/UsuarioRepositoryTest` | 3 | el perfil con `bio` y `fotoUrl` nulas (quedan vacías); sin documento; la búsqueda no me incluye |
+| `viewmodels/SignUpViewModelTest` | 4 | registro válido, contraseña de 4 caracteres, correo ya registrado y sin aceptar los términos |
+| `viewmodels/LoginViewModelTest` | 2 | credenciales válidas y contraseña incorrecta |
+| `viewmodels/WriteReviewViewModelTest` | 3 | sin texto, fecha con mes 13 y reseña válida |
+| `viewmodels/DetailViewModelTest` | 2 | item que no existe y like sin conexión (el error es del botón, el item se sigue viendo) |
+| `dtos/FormatosTest`, `dtos/InteraccionesSocialesTest`, `local/DatosLocalesTest` | 15 | `14K`, `3 h`, los contadores y las marcas del mapeo y los datos fijos de la app |
+
+Los ViewModels reciben el dispatcher de prueba en el constructor (`@IoDispatcher`),
+`Dispatchers.setMain` lo pone como principal y `advanceUntilIdle()` espera a que terminen sus
+corrutinas antes de los asserts. En `build.gradle.kts`, `unitTests.isReturnDefaultValues = true`
+hace que `Log.d` responda 0 en el computador, donde no hay Android.
+
+</details>
+
+<details>
 <summary>Pruebas de integración</summary>
 
 Están en `app/src/androidTest`, contra el emulador de Firebase: necesitan el emulador de Android
@@ -326,11 +354,13 @@ prendido y la Firebase CLI corriendo (`firebase emulators:start --only firestore
 | Clase | Pruebas | Qué revisa |
 |---|---|---|
 | `datasource/UsuarioFirestoreDataSourceTest` | 8 | leer por id (válido y que no existe → `null`), registrar, seguir, el contador de seguidores, dejar de seguir, la lista de seguidores y las reseñas de un usuario |
+| `datasource/AlbumFirestoreDataSourceTest` | 5 | leer por id (válido y que no existe → `null`), el like a un álbum (sube `likesCount` y deja la copia en `usuarios/<uid>/likes`), quitarlo y el listener con mi like |
 | `datasource/ReviewFirestoreDataSourceTest` | 8 | leer por id, like y su contador, comentar y `commentsCount`, el orden de los comentarios, like a un comentario y borrar la reseña con sus comentarios |
 | `repository/ReviewRepositoryIntegrationTest` | 8 | guardar la reseña (`Result` bien y sin sesión), la copia del nombre y del item, like sin sesión, comentar, el hilo de respuestas, la discusión que no existe y eliminar |
 | `repository/UsuarioRepositoryIntegrationTest` | 9 | mi perfil (con documento, sin documento, sin sesión), registrar, seguirme a mí mismo, seguir a otro, seguir sin tener documento (se crea), seguir a alguien que no existe y modificar el perfil |
+| `viewmodels/SignUpViewModelIntegrationTest` | 2 | el registro válido navega y guarda el usuario; el correo ya registrado muestra su error. La prueba espera el estado con `uiState.map { … }.first { … }` |
 
-Cada clase tiene `@Before` (conecta al emulador dentro de un `try`, limpia y carga sus propios
+Cada clase tiene `@Before` (conecta al emulador con `conectarEmulador()`, limpia y carga sus propios
 datos con `DatosDePrueba.kt`) y `@After` (borra las colecciones con sus subcolecciones; en los
 repositorios también borra la cuenta de Authentication, aunque la prueba haya cerrado la sesión,
 y la cierra). Se corren con clic derecho en la carpeta `androidTest` → **Run 'Tests in…'**.
@@ -338,6 +368,28 @@ y la cierra). Se corren con clic derecho en la carpeta `androidTest` → **Run '
 Las pruebas usan el mismo emulador que la app en debug y lo dejan vacío. Después de correrlas hay
 que volver a cargar el seed; la cuenta con la que se entra a la app recupera su documento sola al
 iniciar sesión o al seguir a alguien.
+
+</details>
+
+<details>
+<summary>Pruebas end to end</summary>
+
+Están en `app/src/androidTest/…/e2e`, una clase por caso de uso del sprint 13. Un robot toca la
+pantalla y escribe, desde el registro hasta la base del emulador. Usan Hilt (`@HiltAndroidTest`,
+`HiltAndroidRule` y el `HiltTestRunner` de `androidTest`) y arrancan en `MainActivity` con
+`createAndroidComposeRule`. Los elementos que tocan o revisan llevan un `testTag`, y las pestañas de
+la barra se buscan por su ruta en el `contentDescription`.
+
+| Clase | Caso de uso |
+|---|---|
+| `RegistroYLikeE2E` | Un usuario nuevo se registra con la contraseña `1234` y ve el error; la corrige a `123456` y entra. Abre la primera publicación y revisa su título, da like a la primera reseña (el contador pasa de 0 a 1), vuelve atrás, entra otra vez y quita el like (vuelve a 0). |
+| `SeguirUsuarioE2E` | Un usuario ya registrado inicia sesión, abre el perfil del autor de la primera reseña y revisa su nombre y sus 10 seguidores, lo sigue (pasa a 11), vuelve al inicio, abre Siguiendo y encuentra la reseña de ese usuario. |
+
+Cada `@Before` conecta el emulador dentro de un `try` (con la aplicación de prueba de Hilt no corre
+`BaseApplication`), limpia la base y carga sus datos con `DatosDePrueba.kt`; el `@After` borra la
+cuenta y vuelve a limpiar. Necesitan el emulador de Android y la Firebase CLI corriendo, como las de
+integración. El permiso de notificaciones tiene que estar concedido antes de correrlas (abrir la
+app una vez y aceptarlo): si el diálogo aparece, tapa la pantalla y el robot no encuentra nada.
 
 </details>
 
@@ -430,10 +482,19 @@ app/src/main/java/com/example/mixtapp/
 ├── MainActivity.kt      @AndroidEntryPoint
 └── Mixtapp.kt           permiso de notificaciones + Scaffold + barra + botón flotante + AppNavigation
 
+app/src/test/java/com/example/mixtapp/
+├── dtos/                mapeos y formatos
+├── local/               datos fijos de la app
+├── repository/          los repositorios con mocks (MockK)
+└── viewmodels/          los ViewModels con mocks y el dispatcher de prueba
+
 app/src/androidTest/java/com/example/mixtapp/
 ├── datasource/          pruebas de integración de los data sources de Firestore
 ├── repository/          pruebas de integración de los repositorios
-└── DatosDePrueba.kt     los datos que crea cada prueba y la limpieza de la base
+├── viewmodels/          prueba de integración del ViewModel de registro
+├── e2e/                 los casos de uso del sprint 13 de punta a punta
+├── DatosDePrueba.kt     los datos que crea cada prueba y la limpieza de la base
+└── HiltTestRunner.kt    arranca las pruebas con la aplicación de prueba de Hilt
 ```
 
 Los diagramas de clases y de entidad-relación están en `Docs/`.

@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.theme.MixtappTheme
 
+// El ojo de los campos de contrasena: abierto si se ve la contrasena, cerrado si no
 @Composable
 fun PasswordVisibilityIcon(
     contrasenaVisible: Boolean,

@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
@@ -49,8 +48,8 @@ fun ThreadCommentItem(
         ProfileAsyncImage(
             profileImage = comment.authorImage,
             contentDescription = stringResource(R.string.foto_perfil),
+            size = if (comment.isReply) 30 else 36,
             modifier = Modifier
-                .size(if (comment.isReply) 30.dp else 36.dp)
                 .clip(CircleShape)
                 .clickable { onAuthorClick(comment.authorId) },
         )

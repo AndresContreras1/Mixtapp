@@ -1,6 +1,7 @@
 package com.example.mixtapp.datasource
 
 import com.example.mixtapp.cargarDatosDePrueba
+import com.example.mixtapp.conectarEmulador
 import com.example.mixtapp.data.datasource.impl.firestore.UsuarioFirestoreDataSourceImpl
 import com.example.mixtapp.data.dtos.RegistrarUsuarioDto
 import com.example.mixtapp.generateUsuario
@@ -25,11 +26,7 @@ class UsuarioFirestoreDataSourceTest {
     fun setUp() = runTest {
         // En debug la app ya conecto esta instancia al emulador: conectarla otra vez lanza
         // IllegalStateException, por eso va en un try
-        try {
-            db.useEmulator("10.0.2.2", 8080)
-        } catch (e: Exception) {
-
-        }
+        conectarEmulador()
 
         dataSource = UsuarioFirestoreDataSourceImpl(db)
         limpiarBase(db)
