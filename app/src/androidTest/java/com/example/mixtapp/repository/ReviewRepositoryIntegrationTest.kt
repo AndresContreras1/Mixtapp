@@ -62,7 +62,9 @@ class ReviewRepositoryIntegrationTest {
     @After
     fun tearDown() = runTest {
         limpiarBase(db)
-        val user = auth.currentUser
+        // Si la prueba cerro la sesion se vuelve a entrar con la cuenta de prueba para poder
+        // borrarla: el Authentication del emulador queda como estaba
+        val user = auth.currentUser ?: auth.signInWithEmailAndPassword(correo, "123456").await().user
         user?.delete()?.await()
         auth.signOut()
     }

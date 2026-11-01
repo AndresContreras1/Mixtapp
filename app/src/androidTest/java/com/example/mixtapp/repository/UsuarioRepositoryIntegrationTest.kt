@@ -2,8 +2,10 @@ package com.example.mixtapp.repository
 
 import com.example.mixtapp.cargarDatosDePrueba
 import com.example.mixtapp.data.datasource.AuthRemoteDataSource
+import com.example.mixtapp.data.datasource.MessagingRemoteDataSource
 import com.example.mixtapp.data.datasource.impl.firestore.UsuarioFirestoreDataSourceImpl
 import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
+import com.example.mixtapp.data.repository.SeguirseASiMismoException
 import com.example.mixtapp.data.repository.SinSesionException
 import com.example.mixtapp.data.repository.UsuarioRepository
 import com.example.mixtapp.generateUsuario
@@ -12,6 +14,7 @@ import com.google.common.truth.Truth
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -27,6 +30,7 @@ class UsuarioRepositoryIntegrationTest {
 
     private lateinit var usuarioRepository: UsuarioRepository
     private lateinit var dataSource: UsuarioFirestoreDataSourceImpl
+    private lateinit var correo: String
 
     @Before
     fun setUp() = runTest {
@@ -42,18 +46,25 @@ class UsuarioRepositoryIntegrationTest {
         }
 
         dataSource = UsuarioFirestoreDataSourceImpl(db)
-        usuarioRepository = UsuarioRepository(dataSource, AuthRemoteDataSource(auth))
+        usuarioRepository = UsuarioRepository(
+            dataSource,
+            AuthRemoteDataSource(auth),
+            MessagingRemoteDataSource(FirebaseMessaging.getInstance()),
+        )
         limpiarBase(db)
         cargarDatosDePrueba(db)
 
         // Crear la cuenta tambien inicia la sesion. Todavia no tiene documento en usuarios
-        auth.createUserWithEmailAndPassword("prueba${System.currentTimeMillis()}@example.com", "123456").await()
+        correo = "prueba${System.currentTimeMillis()}@example.com"
+        auth.createUserWithEmailAndPassword(correo, "123456").await()
     }
 
     @After
     fun tearDown() = runTest {
         limpiarBase(db)
-        val user = auth.currentUser
+        // Si la prueba cerro la sesion se vuelve a entrar con la cuenta de prueba para poder
+        // borrarla: el Authentication del emulador queda como estaba
+        val user = auth.currentUser ?: auth.signInWithEmailAndPassword(correo, "123456").await().user
         user?.delete()?.await()
         auth.signOut()
     }
@@ -107,13 +118,36 @@ class UsuarioRepositoryIntegrationTest {
     }
 
     @Test
-    fun followOrUnfollow_mismoUsuario_failure() = runTest {
+    fun followOrUnfollow_mismoUsuario_seguirseASiMismoException() = runTest {
         //Arrange
         val usuarioId = auth.currentUser?.uid ?: ""
         //Act
         val result = usuarioRepository.followOrUnfollow(usuarioId)
         //Assert
-        Truth.assertThat(result.isFailure).isTrue()
+        Truth.assertThat(result.exceptionOrNull()).isInstanceOf(SeguirseASiMismoException::class.java)
+    }
+
+    @Test
+    fun followOrUnfollow_sinMiDocumento_creaMiDocumentoYSigue() = runTest {
+        //Arrange: la cuenta de la sesion no tiene documento en usuarios, como pasa en modo debug
+        // cuando el emulador se reinicia y la sesion sigue guardada en el celular
+        val miId = auth.currentUser?.uid ?: ""
+        //Act
+        val result = usuarioRepository.followOrUnfollow(targetUserId = "usuario_2")
+        //Assert
+        Truth.assertThat(result.isSuccess).isTrue()
+        Truth.assertThat(dataSource.getUsuarioById(miId)).isNotNull()
+        Truth.assertThat(dataSource.getUsuarioById("usuario_2", currentUserId = miId)?.followed).isTrue()
+    }
+
+    @Test
+    fun followOrUnfollow_usuarioQueNoExiste_contenidoNoEncontradoException() = runTest {
+        //Arrange
+        crearMiDocumento()
+        //Act
+        val result = usuarioRepository.followOrUnfollow(targetUserId = "usuario_que_no_existe")
+        //Assert
+        Truth.assertThat(result.exceptionOrNull()).isInstanceOf(ContenidoNoEncontradoException::class.java)
     }
 
     @Test

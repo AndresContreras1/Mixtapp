@@ -5,6 +5,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.storage
 import dagger.Module
@@ -31,4 +32,9 @@ class FirebaseHiltModule {
     @Singleton
     @Provides
     fun firestore(): FirebaseFirestore = Firebase.firestore
+
+    // El token de notificaciones tambien lo entrega Hilt, para poder cambiarlo en las pruebas
+    @Singleton
+    @Provides
+    fun messaging(): FirebaseMessaging = FirebaseMessaging.getInstance()
 }

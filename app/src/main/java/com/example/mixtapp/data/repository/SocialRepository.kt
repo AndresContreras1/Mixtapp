@@ -35,16 +35,17 @@ class SocialRepository @Inject constructor(
         return combine(
             usuarioRemoteDataSource.listenUsuarioById(usuarioId),
             albumRemoteDataSource.listenAllReviews(),
-        ) { miPerfil, _ -> armarFollowing(usuarioId = usuarioId, miPerfil = miPerfil.toUsuarioUi()) }
+        ) { miPerfil, _ -> armarFollowing(usuarioId = usuarioId, miPerfil = miPerfil?.toUsuarioUi()) }
             .catch { e ->
                 Log.d("SocialRepository", "getFollowingLive: ${e.message}")
                 throw errorDelFlujo(e)
             }
     }
 
-    // Las resenas de los usuarios que sigo, la mas reciente primero, con mis contadores. Si falla
-    // una consulta falla todo: una lista a medias mostraria que alguien no ha escrito nada
-    private suspend fun armarFollowing(usuarioId: String, miPerfil: UsuarioUi): FollowingUi =
+    // Las resenas de los usuarios que sigo, la ultima publicada o editada primero, con mis contadores.
+    // Si mi cuenta todavia no tiene documento, los contadores quedan en 0. Si falla una consulta
+    // falla todo: una lista a medias mostraria que alguien no ha escrito nada
+    private suspend fun armarFollowing(usuarioId: String, miPerfil: UsuarioUi?): FollowingUi =
         coroutineScope {
             val seguidos = usuarioRemoteDataSource.getSeguidos(usuarioId).map { it.toUsuarioUi() }
 
@@ -54,9 +55,9 @@ class SocialRepository @Inject constructor(
             }
 
             val reviews = pendientes.map { it.await() }.flatten()
+                // Las fechas van en formato ISO, asi que ordenar el texto ordena las fechas
+                .sortedByDescending { dto -> dto.updatedAt ?: dto.createdAt ?: "" }
                 .map { dto -> dto.toFollowingReviewUi() }
-                // La fecha va como AAAA-MM-DD, asi que ordenar el texto ordena las fechas
-                .sortedByDescending { it.reviewedAt }
 
             val stories = listOf(
                 FollowingStoryUi(id = "log", label = "", initials = "+", isAddAction = true, fotoUrl = null)
@@ -74,8 +75,8 @@ class SocialRepository @Inject constructor(
 
             FollowingUi(
                 id = usuarioId,
-                followingCount = miPerfil.seguidos,
-                followersCount = miPerfil.seguidores,
+                followingCount = miPerfil?.seguidos ?: 0,
+                followersCount = miPerfil?.seguidores ?: 0,
                 stories = stories,
                 reviews = reviews,
             )
