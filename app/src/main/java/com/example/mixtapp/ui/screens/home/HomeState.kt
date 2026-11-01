@@ -21,5 +21,8 @@ data class HomeState(
     val profileImageUrl: String = "",
     // Arranca cargando porque lo primero que hace el ViewModel es escuchar los albumes
     val isLoading: Boolean = true,
+    // El error de los albumes tapa la pantalla si no hay nada que mostrar; el de los seguidos
+    // va aparte para que un flujo no borre el error del otro
     @StringRes val errorMessageRes: Int? = null,
+    @StringRes val errorSeguidosRes: Int? = null,
 )

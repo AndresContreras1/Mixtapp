@@ -10,4 +10,6 @@ data class FriendActivityUi(
     val author: String,
     val authorImage: String,
     val date: String,
+    // Cuantos comentarios tiene su discusion
+    val comments: Int = 0,
 )

@@ -12,6 +12,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import javax.inject.Singleton
 
+// Todo lo de Retrofit: la instancia con la URL del backend y un servicio por recurso. Lo de
+// Firebase va en FirebaseHiltModule
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
@@ -20,6 +22,7 @@ object AppModule {
     @Provides
     fun providesRetrofit(): Retrofit {
         return Retrofit.Builder()
+            // Desde el emulador de Android, 10.0.2.2 es el computador donde corre el backend
             .baseUrl("http://10.0.2.2:3000/")
             .addConverterFactory(GsonConverterFactory.create())
             .addConverterFactory(ScalarsConverterFactory.create())

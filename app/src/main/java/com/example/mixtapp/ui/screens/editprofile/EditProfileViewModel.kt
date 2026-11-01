@@ -1,19 +1,19 @@
 package com.example.mixtapp.ui.screens.editprofile
 
-import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
+import com.example.mixtapp.data.injection.IoDispatcher
 import com.example.mixtapp.data.model.MAX_BIO_LENGTH
 import com.example.mixtapp.data.model.MAX_NOMBRE_LENGTH
 import com.example.mixtapp.data.model.MAX_USERNAME_LENGTH
 import com.example.mixtapp.data.repository.AuthRepository
 import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
-import com.example.mixtapp.data.repository.ErrorDelServidorException
-import com.example.mixtapp.data.repository.SinConexionException
-import com.example.mixtapp.data.repository.SinSesionException
 import com.example.mixtapp.data.repository.UsuarioRepository
+import com.example.mixtapp.ui.utils.mensajeDeError
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -23,7 +23,9 @@ import javax.inject.Inject
 @HiltViewModel
 class EditProfileViewModel @Inject constructor(
     private val authRepository: AuthRepository,
-    private val usuarioRepository: UsuarioRepository
+    private val usuarioRepository: UsuarioRepository,
+    // Las corrutinas se lanzan en este hilo; las pruebas pasan uno de prueba
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(EditProfileState())
@@ -37,7 +39,7 @@ class EditProfileViewModel @Inject constructor(
     private fun getMiPerfil() {
         val usuarioDelCorreo = authRepository.usuarioDelCorreo
 
-        viewModelScope.launch {
+        viewModelScope.launch(ioDispatcher) {
             _uiState.update { it.copy(isLoading = true, errorCargaRes = null) }
 
             val result = usuarioRepository.getMiPerfil()
@@ -58,7 +60,7 @@ class EditProfileViewModel @Inject constructor(
                 _uiState.update { it.copy(username = usuarioDelCorreo, sinDocumento = true, isLoading = false) }
             } else {
                 _uiState.update {
-                    it.copy(isLoading = false, errorCargaRes = mensajeDeCarga(result.exceptionOrNull()))
+                    it.copy(isLoading = false, errorCargaRes = mensajeDeError(error = result.exceptionOrNull(), generico = R.string.error_cargar_contenido))
                 }
             }
         }
@@ -96,7 +98,7 @@ class EditProfileViewModel @Inject constructor(
             return
         }
 
-        viewModelScope.launch {
+        viewModelScope.launch(ioDispatcher) {
             _uiState.update { it.copy(guardando = true, errorMessageRes = null) }
 
             val result = if (estado.sinDocumento) {
@@ -111,23 +113,11 @@ class EditProfileViewModel @Inject constructor(
                 }
             } else {
                 _uiState.update {
-                    it.copy(guardando = false, errorMessageRes = mensajeDeError(result.exceptionOrNull()))
+                    it.copy(guardando = false, errorMessageRes = mensajeDeError(error = result.exceptionOrNull(), generico = R.string.error_guardar_perfil))
                 }
             }
         }
     }
 
-    @StringRes
-    private fun mensajeDeCarga(error: Throwable?): Int = when (error) {
-        is SinConexionException -> R.string.error_sin_conexion
-        is ErrorDelServidorException -> R.string.error_servidor
-        else -> R.string.error_cargar_contenido
-    }
 
-    @StringRes
-    private fun mensajeDeError(error: Throwable?): Int = when (error) {
-        is SinSesionException -> R.string.error_sin_sesion
-        is SinConexionException -> R.string.error_sin_conexion
-        else -> R.string.error_guardar_perfil
-    }
 }

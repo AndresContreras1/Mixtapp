@@ -1,22 +1,22 @@
 package com.example.mixtapp.ui.screens.home
 
 import android.util.Log
-import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
+import com.example.mixtapp.data.injection.IoDispatcher
 import com.example.mixtapp.data.model.AlbumReviewsUi
 import com.example.mixtapp.data.model.FriendActivityUi
 import com.example.mixtapp.data.repository.AlbumRepository
 import com.example.mixtapp.data.repository.AuthRepository
-import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
-import com.example.mixtapp.data.repository.ErrorDelServidorException
-import com.example.mixtapp.data.repository.SinConexionException
 import com.example.mixtapp.data.repository.UsuarioRepository
 import com.example.mixtapp.ui.screens.home.model.FILTRO_SEGUIDOS
 import com.example.mixtapp.ui.screens.home.model.FILTRO_TENDENCIAS
 import com.example.mixtapp.ui.screens.home.model.homeFilters
+import com.example.mixtapp.ui.utils.mensajeDeError
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -29,7 +29,9 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val albumRepository: AlbumRepository,
-    private val usuarioRepository: UsuarioRepository
+    private val usuarioRepository: UsuarioRepository,
+    // Las corrutinas se lanzan en este hilo; las pruebas pasan uno de prueba
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeState())
@@ -45,13 +47,18 @@ class HomeViewModel @Inject constructor(
     // Cada vez que alguien escribe, edita, borra o le da like a una resena, llegan los albumes de
     // nuevo y la pantalla se vuelve a pintar sola
     private fun escucharAlbumes() {
-        viewModelScope.launch {
+        viewModelScope.launch(ioDispatcher) {
             _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
 
             albumRepository.getAlbumReviewsLive()
                 .catch { e ->
                     Log.d("HomeViewModel", "escucharAlbumes: ${e.message}")
-                    _uiState.update { it.copy(isLoading = false, errorMessageRes = R.string.error_cargar_contenido) }
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessageRes = mensajeDeError(error = e, generico = R.string.error_cargar_contenido),
+                        )
+                    }
                 }
                 .collect { todos ->
                     _uiState.update {
@@ -78,12 +85,12 @@ class HomeViewModel @Inject constructor(
     // Los usuarios que sigo tambien llegan en vivo: si sigo o dejo de seguir a alguien, el filtro
     // de seguidos ya cuenta con eso al volver al inicio
     private fun escucharSeguidos() {
-        viewModelScope.launch {
+        viewModelScope.launch(ioDispatcher) {
             usuarioRepository.getMisSeguidosLive()
                 .catch { e ->
                     Log.d("HomeViewModel", "escucharSeguidos: ${e.message}")
                     _uiState.update {
-                        it.copy(errorMessageRes = mensajeDeError(error = e, generico = R.string.error_cargar_contenido))
+                        it.copy(errorSeguidosRes = mensajeDeError(error = e, generico = R.string.error_cargar_contenido))
                     }
                 }
                 .collect { seguidos ->
@@ -93,7 +100,7 @@ class HomeViewModel @Inject constructor(
                         it.copy(
                             followedIds = followedIds,
                             resenasDeSeguidos = resenasDeSeguidos(todos = it.todos, followedIds = followedIds),
-                            errorMessageRes = null,
+                            errorSeguidosRes = null,
                         )
                     }
                 }
@@ -145,6 +152,7 @@ class HomeViewModel @Inject constructor(
                             author = review.author,
                             authorImage = review.authorImage,
                             date = review.fecha,
+                            comments = review.comments,
                         )
                     )
                 }
@@ -155,11 +163,4 @@ class HomeViewModel @Inject constructor(
         return actividades.sortedByDescending { it.date }
     }
 
-    @StringRes
-    private fun mensajeDeError(error: Throwable?, @StringRes generico: Int): Int = when (error) {
-        is ContenidoNoEncontradoException -> R.string.contenido_no_encontrado
-        is ErrorDelServidorException -> R.string.error_servidor
-        is SinConexionException -> R.string.error_sin_conexion
-        else -> generico
-    }
 }

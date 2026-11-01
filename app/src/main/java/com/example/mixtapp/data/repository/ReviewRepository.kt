@@ -37,8 +37,8 @@ class ReviewRepository @Inject constructor(
     private val authRemoteDataSource: AuthRemoteDataSource
 ) {
 
-    // Da el like o lo quita: el data source decide segun si ya existe. La UI cambia el corazon
-    // y el contador solo si esto sale bien
+    // Da el like o lo quita: el data source decide segun si ya existe. El corazon y el contador
+    // cambian cuando llega la resena nueva por el listener
     suspend fun sendOrDeleteLike(reviewId: String): Result<Unit> {
         return try {
             val usuarioId = authRemoteDataSource.currentUser?.uid
@@ -84,6 +84,9 @@ class ReviewRepository @Inject constructor(
                 ?: return Result.failure(SinSesionException())
 
             val photoUrl = authRemoteDataSource.currentUser?.photoUrl?.toString()
+            // En formato ISO, como los comentarios: la resena nueva guarda las dos fechas y al
+            // modificarla solo cambia updatedAt
+            val ahora = Instant.now().toString()
 
             // La resena guarda una copia de lo que se muestra del usuario y del album, porque
             // en Firestore no hay joins. Solo se copia lo que se ve, no todo el usuario.
@@ -102,6 +105,8 @@ class ReviewRepository @Inject constructor(
                     fechaEscucha = if (fecha.isEmpty()) null else fecha,
                     likesCount = 0,
                     commentsCount = 0,
+                    createdAt = if (reviewId == null) ahora else null,
+                    updatedAt = ahora,
                     usuario = CreateReviewUsuarioDto(nombre = nombre.await(), fotoUrl = photoUrl),
                     album = CreateReviewAlbumDto(
                         titulo = albumDto.titulo,
@@ -155,6 +160,9 @@ class ReviewRepository @Inject constructor(
             reviewRemoteDataSource.listenReviewById(reviewId, currentUserId = usuarioId),
             reviewRemoteDataSource.listenComentarios(reviewId, currentUserId = usuarioId),
         ) { review, comentarios ->
+            // El data source envia null si la resena no existe: el repositorio decide el error
+            if (review == null) throw ContenidoNoEncontradoException()
+
             DiscussionUi(
                 id = reviewId,
                 review = review.toDiscussionReviewUi(),
@@ -206,7 +214,7 @@ class ReviewRepository @Inject constructor(
     }
 
     // Da el like al comentario o lo quita: el data source decide segun si ya existe
-    suspend fun darQuitarLikeComentario(reviewId: String, commentId: String): Result<Unit> {
+    suspend fun sendOrDeleteLikeComentario(reviewId: String, commentId: String): Result<Unit> {
         return try {
             val usuarioId = authRemoteDataSource.currentUser?.uid
                 ?: return Result.failure(SinSesionException())
@@ -218,13 +226,13 @@ class ReviewRepository @Inject constructor(
             )
             Result.success(Unit)
         } catch (e: HttpException) {
-            Log.d("ReviewRepository", "darQuitarLikeComentario: ${e.message}")
+            Log.d("ReviewRepository", "sendOrDeleteLikeComentario: ${e.message}")
             Result.failure(errorDelBackend(e))
         } catch (e: FirebaseFirestoreException) {
-            Log.d("ReviewRepository", "darQuitarLikeComentario: ${e.message}")
+            Log.d("ReviewRepository", "sendOrDeleteLikeComentario: ${e.message}")
             Result.failure(errorDeFirestore(e))
         } catch (e: Exception) {
-            Log.d("ReviewRepository", "darQuitarLikeComentario: ${e.message}")
+            Log.d("ReviewRepository", "sendOrDeleteLikeComentario: ${e.message}")
             Result.failure(ErrorInesperadoException())
         }
     }

@@ -26,6 +26,7 @@ fun AlbumDetailScreen(
     onWriteReviewClick: () -> Unit,
     onBackClick: () -> Unit,
     onAuthorClick: (String) -> Unit,
+    onCommentsClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val state by albumDetailViewModel.uiState.collectAsState()
@@ -57,6 +58,7 @@ fun AlbumDetailScreen(
             onDeleteMyReviewClick = { albumDetailViewModel.eliminarMiResena() },
             onBackClick = onBackClick,
             onAuthorClick = onAuthorClick,
+            onCommentsClick = onCommentsClick,
             modifier = modifier
         )
     }
@@ -72,6 +74,7 @@ fun AlbumDetailScreenContent(
     onDeleteMyReviewClick: () -> Unit,
     onBackClick: () -> Unit,
     onAuthorClick: (String) -> Unit,
+    onCommentsClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -86,6 +89,7 @@ fun AlbumDetailScreenContent(
             onDeleteMyReviewClick = onDeleteMyReviewClick,
             onBackClick = onBackClick,
             onAuthorClick = onAuthorClick,
+            onCommentsClick = onCommentsClick,
             modifier = Modifier.fillMaxSize()
         )
     }
@@ -105,7 +109,8 @@ fun AlbumDetailScreenPreview() {
             onWriteReviewClick = {},
             onDeleteMyReviewClick = {},
             onBackClick = {},
-            onAuthorClick = {}
+            onAuthorClick = {},
+            onCommentsClick = {}
         )
     }
 }

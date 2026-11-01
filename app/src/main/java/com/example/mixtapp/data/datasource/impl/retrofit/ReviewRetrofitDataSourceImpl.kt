@@ -6,9 +6,8 @@ import com.example.mixtapp.data.dtos.ComentarioDto
 import com.example.mixtapp.data.dtos.CreateComentarioDto
 import com.example.mixtapp.data.dtos.CreateReviewDto
 import com.example.mixtapp.data.dtos.ReviewConAlbumDto
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class ReviewRetrofitDataSourceImpl @Inject constructor(
@@ -39,11 +38,9 @@ class ReviewRetrofitDataSourceImpl @Inject constructor(
     override suspend fun sendOrDeleteLike(reviewId: String, userId: String) {
     }
 
-    // Con HTTP no hay una conexion continua: el flujo manda una sola vez lo que responde el backend
-    override fun listenReviewById(id: String, currentUserId: String): Flow<ReviewConAlbumDto> = callbackFlow {
-        trySend(getReviewById(id = id, currentUserId = currentUserId)).isSuccess
-
-        awaitClose { }
+    // Con HTTP no hay una conexion continua: flow { emit() } manda una sola vez lo que responde el backend
+    override fun listenReviewById(id: String, currentUserId: String): Flow<ReviewConAlbumDto> = flow {
+        emit(getReviewById(id = id, currentUserId = currentUserId))
     }
 
     // to-do: el backend no tiene comentarios; como los likes, solo funcionan con Firestore
@@ -54,10 +51,8 @@ class ReviewRetrofitDataSourceImpl @Inject constructor(
     }
 
     // El backend no tiene comentarios: la lista llega vacia
-    override fun listenComentarios(reviewId: String, currentUserId: String): Flow<List<ComentarioDto>> = callbackFlow {
-        trySend(emptyList<ComentarioDto>()).isSuccess
-
-        awaitClose { }
+    override fun listenComentarios(reviewId: String, currentUserId: String): Flow<List<ComentarioDto>> = flow {
+        emit(emptyList<ComentarioDto>())
     }
 
     private fun paraElBackend(review: CreateReviewDto): CreateReviewDto =

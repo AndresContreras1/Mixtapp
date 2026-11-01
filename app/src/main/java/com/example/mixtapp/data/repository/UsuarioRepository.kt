@@ -2,6 +2,7 @@ package com.example.mixtapp.data.repository
 
 import android.util.Log
 import com.example.mixtapp.data.datasource.AuthRemoteDataSource
+import com.example.mixtapp.data.datasource.MessagingRemoteDataSource
 import com.example.mixtapp.data.datasource.UsuarioRemoteDataSource
 import com.example.mixtapp.data.dtos.ActualizarUsuarioDto
 import com.example.mixtapp.data.dtos.RegistrarUsuarioDto
@@ -9,11 +10,9 @@ import com.example.mixtapp.data.dtos.toMyReviewUi
 import com.example.mixtapp.data.model.MyReviewUi
 import com.example.mixtapp.data.model.UsuarioUi
 import com.google.firebase.firestore.FirebaseFirestoreException
-import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.tasks.await
 import retrofit2.HttpException
 import javax.inject.Inject
 
@@ -23,7 +22,8 @@ import javax.inject.Inject
 // quedan como to-do en esa implementacion, como en clase
 class UsuarioRepository @Inject constructor(
     private val usuarioRemoteDataSource: UsuarioRemoteDataSource,
-    private val authRemoteDataSource: AuthRemoteDataSource
+    private val authRemoteDataSource: AuthRemoteDataSource,
+    private val messagingRemoteDataSource: MessagingRemoteDataSource
 ) {
 
     // El perfil en vivo: si alguien lo sigue desde otro celular, el contador cambia sin salir.
@@ -33,7 +33,8 @@ class UsuarioRepository @Inject constructor(
 
         return usuarioRemoteDataSource.listenUsuarioById(id, currentUserId = usuarioActualId)
             .map { dto ->
-                val usuario = dto.toUsuarioUi()
+                // El data source envia null si no existe: el repositorio decide el error
+                val usuario = dto?.toUsuarioUi() ?: throw ContenidoNoEncontradoException()
                 usuario.copy(esMiPerfil = usuario.id == usuarioActualId)
             }
             .catch { e ->
@@ -42,15 +43,22 @@ class UsuarioRepository @Inject constructor(
             }
     }
 
-    // Sigue o deja de seguir: el data source decide segun si ya lo sigo. La UI cambia el boton
-    // y el contador solo si esto sale bien
+    // Sigue o deja de seguir: el data source decide segun si ya lo sigo. El boton y el contador
+    // cambian cuando llega el documento nuevo por el listener
     suspend fun followOrUnfollow(targetUserId: String): Result<Unit> {
         return try {
             val usuarioActualId = authRemoteDataSource.currentUser?.uid
                 ?: return Result.failure(SinSesionException())
 
             // Nadie se sigue a si mismo
-            if (targetUserId == usuarioActualId) return Result.failure(ErrorInesperadoException())
+            if (targetUserId == usuarioActualId) return Result.failure(SeguirseASiMismoException())
+
+            // La transaccion cambia el contador de los dos documentos: si el otro no existe, el
+            // repositorio decide el error, y si falta el mio se crea antes de seguir
+            if (usuarioRemoteDataSource.getUsuarioById(targetUserId) == null) {
+                return Result.failure(ContenidoNoEncontradoException())
+            }
+            crearMiDocumentoSiFalta(usuarioId = usuarioActualId)
 
             usuarioRemoteDataSource.followOrUnfollow(currentUserId = usuarioActualId, targetUserId = targetUserId)
             Result.success(Unit)
@@ -71,7 +79,11 @@ class UsuarioRepository @Inject constructor(
         val usuarioId = authRemoteDataSource.currentUser?.uid ?: ""
 
         return usuarioRemoteDataSource.listenUsuarioById(usuarioId)
-            .map { dto -> dto.toUsuarioUi().copy(esMiPerfil = true) }
+            .map { dto ->
+                // Sin documento el perfil avisa que hay que completarlo en Editar perfil
+                val usuario = dto?.toUsuarioUi() ?: throw ContenidoNoEncontradoException()
+                usuario.copy(esMiPerfil = true)
+            }
             .catch { e ->
                 Log.d("UsuarioRepository", "getMiPerfilLive: ${e.message}")
                 throw errorDelFlujo(e)
@@ -116,17 +128,13 @@ class UsuarioRepository @Inject constructor(
             val usuarioId = authRemoteDataSource.currentUser?.uid
                 ?: return Result.failure(SinSesionException())
 
-            // Sin el await sigue derecho y el token queda vacio. Va en su propio try: si el token
-            // falla, el registro sigue y el documento queda con "Vacio"
-            val fcmToken = try { FirebaseMessaging.getInstance().token.await() } catch (e: Exception) { "Vacio" }
-
             val registrarUsuarioDto = RegistrarUsuarioDto(
                 username = username,
                 nombre = nombre,
                 bio = if (bio.isEmpty()) null else bio,
                 // La foto se sube a Storage y queda en Authentication; se copia para que otros la vean
                 fotoUrl = authRemoteDataSource.currentUser?.photoUrl?.toString(),
-                FCMToken = fcmToken,
+                FCMToken = tokenDelCelular(),
             )
             usuarioRemoteDataSource.registrarUsuario(registrarUsuarioDto, usuarioId)
             Result.success(Unit)
@@ -197,7 +205,10 @@ class UsuarioRepository @Inject constructor(
             val usuarioId = authRemoteDataSource.currentUser?.uid
                 ?: return Result.failure(SinSesionException())
 
-            val fcmToken = FirebaseMessaging.getInstance().token.await()
+            // Si la cuenta no tiene documento se crea aqui, asi despues se puede seguir a otros
+            crearMiDocumentoSiFalta(usuarioId = usuarioId)
+
+            val fcmToken = messagingRemoteDataSource.getToken()
             usuarioRemoteDataSource.actualizarToken(usuarioId, fcmToken)
             Result.success(Unit)
         } catch (e: HttpException) {
@@ -232,4 +243,32 @@ class UsuarioRepository @Inject constructor(
     // Los usuarios que sigo, para el filtro de seguidos del inicio
     fun getMisSeguidosLive(): Flow<List<UsuarioUi>> =
         getSeguidosLive(userId = authRemoteDataSource.currentUser?.uid ?: "")
+
+    // Una cuenta de Authentication puede quedar sin documento en usuarios: el registro entra aunque
+    // falle Firestore y, en modo debug, la sesion sigue en el celular aunque el emulador se reinicie
+    // vacio. Sin el documento no se puede seguir ni guardar el token, asi que se crea igual que en el
+    // registro, con la parte del correo antes de la arroba como usuario
+    private suspend fun crearMiDocumentoSiFalta(usuarioId: String) {
+        if (usuarioRemoteDataSource.getUsuarioById(usuarioId) != null) return
+
+        val usuarioDelCorreo = authRemoteDataSource.currentUser?.email?.substringBefore("@") ?: ""
+        val nombre = authRemoteDataSource.currentUser?.displayName
+
+        val registrarUsuarioDto = RegistrarUsuarioDto(
+            username = usuarioDelCorreo,
+            nombre = if (nombre.isNullOrEmpty()) usuarioDelCorreo else nombre,
+            fotoUrl = authRemoteDataSource.currentUser?.photoUrl?.toString(),
+            FCMToken = tokenDelCelular(),
+        )
+        usuarioRemoteDataSource.registrarUsuario(registrarUsuarioDto, usuarioId)
+    }
+
+    // Va en su propio try: si el token falla, el documento queda con "Vacio" y lo demas sigue
+    private suspend fun tokenDelCelular(): String =
+        try {
+            messagingRemoteDataSource.getToken()
+        } catch (e: Exception) {
+            Log.d("UsuarioRepository", "tokenDelCelular: ${e.message}")
+            "Vacio"
+        }
 }

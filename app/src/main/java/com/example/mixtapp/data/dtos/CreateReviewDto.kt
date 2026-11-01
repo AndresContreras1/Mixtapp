@@ -10,6 +10,10 @@ data class CreateReviewDto(
     // Una resena nueva empieza con los contadores en 0; al modificarla los contadores no se tocan
     val likesCount: Int,
     val commentsCount: Int,
+    // Fechas en formato ISO: Siguiendo y el inicio muestran primero lo ultimo que se publico o edito.
+    // Al modificarla solo cambia updatedAt
+    val createdAt: String?,
+    val updatedAt: String,
     // Firestore no tiene joins: la resena guarda una copia de lo que se muestra del usuario y del
     // album. Son nulables para que no choque con el backend, que los toma de sus tablas
     val usuario: CreateReviewUsuarioDto? = null,

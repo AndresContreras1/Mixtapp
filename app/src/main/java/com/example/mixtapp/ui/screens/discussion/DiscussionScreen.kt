@@ -67,7 +67,7 @@ fun DiscussionScreen(
             onBackClick = onBackClick,
             onReviewLikeClick = { discussionViewModel.sendOrDeleteLike() },
             onReviewShareClick = { discussionViewModel.compartirQuitarResena() },
-            onCommentLikeClick = { discussionViewModel.darQuitarLikeComentario(commentId = it) },
+            onCommentLikeClick = { discussionViewModel.sendOrDeleteLikeComentario(commentId = it) },
             onCommentReplyClick = { discussionViewModel.responderComentario(commentId = it) },
             onNuevoComentarioChange = { discussionViewModel.updateNuevoComentario(texto = it) },
             onPublicarComentarioClick = { discussionViewModel.publicarComentario() },

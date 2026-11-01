@@ -36,6 +36,7 @@ import com.example.mixtapp.ui.utils.MyReviewCard
 fun MyReviewsScreen(
     myReviewsViewModel: MyReviewsViewModel,
     onReviewClick: (String) -> Unit,
+    onCommentsClick: (String) -> Unit,
     onEditClick: (String) -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -67,6 +68,7 @@ fun MyReviewsScreen(
             errorMessageRes = state.errorMessageRes,
             onFilterSelected = { myReviewsViewModel.updateSelectedFilter(filtroId = it) },
             onReviewClick = onReviewClick,
+            onCommentsClick = onCommentsClick,
             // Editar abre la pantalla de escribir con el album de la resena
             onEditClick = { onEditClick(it.album.id) },
             onDeleteClick = { myReviewsViewModel.eliminarResena(reviewId = it) },
@@ -87,6 +89,7 @@ fun MyReviewsScreenContent(
     errorMessageRes: Int?,
     onFilterSelected: (String) -> Unit,
     onReviewClick: (String) -> Unit,
+    onCommentsClick: (String) -> Unit,
     onEditClick: (MyReviewUi) -> Unit,
     onDeleteClick: (String) -> Unit,
     onBackClick: () -> Unit,
@@ -135,6 +138,7 @@ fun MyReviewsScreenContent(
                     MyReviewCard(
                         review = reviews[index],
                         onReviewClick = onReviewClick,
+                        onCommentsClick = onCommentsClick,
                         showEditButton = true,
                         onEditClick = onEditClick,
                         onDeleteClick = onDeleteClick,
@@ -160,6 +164,7 @@ fun MyReviewsScreenPreview() {
             errorMessageRes = null,
             onFilterSelected = {},
             onReviewClick = {},
+            onCommentsClick = {},
             onEditClick = {},
             onDeleteClick = {},
             onBackClick = {}

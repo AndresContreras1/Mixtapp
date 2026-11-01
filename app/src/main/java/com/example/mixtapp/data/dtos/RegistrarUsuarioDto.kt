@@ -7,8 +7,8 @@ package com.example.mixtapp.data.dtos
 data class RegistrarUsuarioDto(
     val username: String,
     val nombre: String,
-    val bio: String?,
-    val fotoUrl: String?,
+    val bio: String? = null,
+    val fotoUrl: String? = null,
     val FCMToken: String,
 )
 

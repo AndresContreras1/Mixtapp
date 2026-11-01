@@ -4,13 +4,16 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
+import com.example.mixtapp.data.injection.IoDispatcher
 import com.example.mixtapp.data.model.NotificationUi
-import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
 import com.example.mixtapp.data.repository.SocialRepository
 import com.example.mixtapp.ui.screens.notifications.model.NotificationSectionUi
 import com.example.mixtapp.ui.screens.notifications.model.TAB_SIN_LEER
 import com.example.mixtapp.ui.screens.notifications.model.notificationTabs
+import com.example.mixtapp.ui.utils.mensajeDeError
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,7 +23,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class NotificationsViewModel @Inject constructor(
-    private val socialRepository: SocialRepository
+    private val socialRepository: SocialRepository,
+    // Las corrutinas se lanzan en este hilo; las pruebas pasan uno de prueba
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(NotificationsState())
@@ -42,7 +47,7 @@ class NotificationsViewModel @Inject constructor(
     }
 
     private fun cargarNotificaciones(tabId: String, @StringRes generico: Int) {
-        viewModelScope.launch {
+        viewModelScope.launch(ioDispatcher) {
             val result = socialRepository.getNotifications()
 
             if (result.isSuccess) {
@@ -92,9 +97,4 @@ class NotificationsViewModel @Inject constructor(
             NotificationSectionUi(section = section, notifications = delGrupo)
         }
 
-    @StringRes
-    private fun mensajeDeError(error: Throwable?, @StringRes generico: Int): Int = when (error) {
-        is ContenidoNoEncontradoException -> R.string.contenido_no_encontrado
-        else -> generico
-    }
 }

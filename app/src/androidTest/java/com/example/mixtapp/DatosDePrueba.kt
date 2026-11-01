@@ -42,6 +42,8 @@ fun generateReview(usuario: UsuarioPerfilFirestoreDto, album: AlbumDto): CreateR
     fechaEscucha = "2025-01-01",
     likesCount = 0,
     commentsCount = 0,
+    createdAt = "2025-01-01T00:00:00Z",
+    updatedAt = "2025-01-01T00:00:00Z",
     usuario = CreateReviewUsuarioDto(nombre = usuario.nombre, fotoUrl = usuario.fotoUrl),
     album = CreateReviewAlbumDto(titulo = album.titulo, artista = album.artista, portadaUrl = album.portadaUrl),
 )

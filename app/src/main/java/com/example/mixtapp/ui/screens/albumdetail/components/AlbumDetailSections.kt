@@ -33,6 +33,7 @@ fun AlbumDetailSections(
     onDeleteMyReviewClick: () -> Unit,
     onBackClick: () -> Unit,
     onAuthorClick: (String) -> Unit,
+    onCommentsClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -122,6 +123,7 @@ fun AlbumDetailSections(
                 onEditClick = onWriteReviewClick,
                 onDeleteClick = onDeleteMyReviewClick,
                 onAuthorClick = { onAuthorClick(review.authorId) },
+                onCommentsClick = { onCommentsClick(review.id) },
                 modifier = Modifier.padding(bottom = 12.dp)
             )
         }
@@ -141,6 +143,7 @@ fun AlbumDetailSectionsPreview() {
             onDeleteMyReviewClick = {},
             onBackClick = {},
             onAuthorClick = {},
+            onCommentsClick = {},
         )
     }
 }

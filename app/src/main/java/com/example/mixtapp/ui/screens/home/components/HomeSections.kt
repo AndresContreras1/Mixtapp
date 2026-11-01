@@ -39,6 +39,7 @@ fun HomeSections(
     onFilterSelected: (String) -> Unit,
     onAlbumClick: (String) -> Unit,
     onAuthorClick: (String) -> Unit,
+    onCommentsClick: (String) -> Unit,
     onSearchClick: () -> Unit,
     onProfileClick: () -> Unit,
     onFollowingClick: () -> Unit,
@@ -93,6 +94,7 @@ fun HomeSections(
                     activity = resenasDeSeguidos[index],
                     onClick = onAlbumClick,
                     onAuthorClick = onAuthorClick,
+                    onCommentsClick = onCommentsClick,
                     modifier = Modifier.padding(bottom = 12.dp)
                 )
             }
@@ -135,7 +137,8 @@ fun HomeSections(
                     FriendsActivity(
                         activity = ultimaDeSeguidos,
                         onClick = onAlbumClick,
-                        onAuthorClick = onAuthorClick
+                        onAuthorClick = onAuthorClick,
+                        onCommentsClick = onCommentsClick
                     )
                 } else {
                     FriendsActivityEmpty(
@@ -190,6 +193,7 @@ fun HomeSectionsPreview() {
             onFilterSelected = {},
             onAlbumClick = {},
             onAuthorClick = {},
+            onCommentsClick = {},
             onSearchClick = {},
             onProfileClick = {},
             onFollowingClick = {},
@@ -215,6 +219,7 @@ fun HomeSectionsSoloSeguidosPreview() {
             onFilterSelected = {},
             onAlbumClick = {},
             onAuthorClick = {},
+            onCommentsClick = {},
             onSearchClick = {},
             onProfileClick = {},
             onFollowingClick = {},

@@ -1,23 +1,23 @@
 package com.example.mixtapp.ui.screens.myreviews
 
 import android.util.Log
-import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
+import com.example.mixtapp.data.injection.IoDispatcher
 import com.example.mixtapp.data.model.MyReviewUi
 import com.example.mixtapp.data.repository.AuthRepository
-import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
-import com.example.mixtapp.data.repository.ErrorDelServidorException
 import com.example.mixtapp.data.repository.ReviewRepository
-import com.example.mixtapp.data.repository.SinConexionException
 import com.example.mixtapp.data.repository.UsuarioRepository
 import com.example.mixtapp.ui.screens.myreviews.model.FILTRO_A_Z
 import com.example.mixtapp.ui.screens.myreviews.model.FILTRO_CALIFICACION_4
 import com.example.mixtapp.ui.screens.myreviews.model.FILTRO_CALIFICACION_5
 import com.example.mixtapp.ui.screens.myreviews.model.FILTRO_MEJOR_CALIFICADAS
 import com.example.mixtapp.ui.screens.myreviews.model.myReviewFilters
+import com.example.mixtapp.ui.utils.mensajeDeError
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -30,7 +30,9 @@ import javax.inject.Inject
 class MyReviewsViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val reviewRepository: ReviewRepository,
-    private val usuarioRepository: UsuarioRepository
+    private val usuarioRepository: UsuarioRepository,
+    // Las corrutinas se lanzan en este hilo; las pruebas pasan uno de prueba
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MyReviewsState())
@@ -45,7 +47,7 @@ class MyReviewsViewModel @Inject constructor(
         val usuarioDelCorreo = authRepository.usuarioDelCorreo
 
         // Mis datos y mis resenas se usan por su lado, asi que cada uno va en su propio launch
-        viewModelScope.launch {
+        viewModelScope.launch(ioDispatcher) {
             val perfil = usuarioRepository.getMiPerfil()
 
             _uiState.update {
@@ -59,7 +61,7 @@ class MyReviewsViewModel @Inject constructor(
         if (escuchandoResenas) return
         escuchandoResenas = true
 
-        viewModelScope.launch {
+        viewModelScope.launch(ioDispatcher) {
             _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
 
             reviewRepository.getMyReviewsLive()
@@ -110,7 +112,7 @@ class MyReviewsViewModel @Inject constructor(
     fun eliminarResena(reviewId: String) {
         if (_uiState.value.eliminando) return
 
-        viewModelScope.launch {
+        viewModelScope.launch(ioDispatcher) {
             _uiState.update { it.copy(eliminando = true, errorMessageRes = null) }
 
             val result = reviewRepository.eliminarResena(reviewId = reviewId)
@@ -152,11 +154,4 @@ class MyReviewsViewModel @Inject constructor(
         }
     }
 
-    @StringRes
-    private fun mensajeDeError(error: Throwable?, @StringRes generico: Int): Int = when (error) {
-        is ContenidoNoEncontradoException -> R.string.contenido_no_encontrado
-        is ErrorDelServidorException -> R.string.error_servidor
-        is SinConexionException -> R.string.error_sin_conexion
-        else -> generico
-    }
 }

@@ -1,17 +1,17 @@
 package com.example.mixtapp.ui.screens.review
 
-import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
+import com.example.mixtapp.data.injection.IoDispatcher
 import com.example.mixtapp.data.model.MAX_DATE_LENGTH
 import com.example.mixtapp.data.model.MAX_REVIEW_LENGTH
 import com.example.mixtapp.data.repository.AlbumRepository
-import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
-import com.example.mixtapp.data.repository.ErrorDelServidorException
 import com.example.mixtapp.data.repository.ReviewRepository
-import com.example.mixtapp.data.repository.SinConexionException
+import com.example.mixtapp.ui.utils.mensajeDeError
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,7 +22,9 @@ import javax.inject.Inject
 @HiltViewModel
 class WriteReviewViewModel @Inject constructor(
     private val albumRepository: AlbumRepository,
-    private val reviewRepository: ReviewRepository
+    private val reviewRepository: ReviewRepository,
+    // Las corrutinas se lanzan en este hilo; las pruebas pasan uno de prueba
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(WriteReviewState())
@@ -32,7 +34,7 @@ class WriteReviewViewModel @Inject constructor(
     fun getAlbumById(albumId: String) {
         if (_uiState.value.album != null) return
 
-        viewModelScope.launch {
+        viewModelScope.launch(ioDispatcher) {
             _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
 
             // El album llega con sus resenas, y entre ellas la mia si ya lo califique
@@ -60,7 +62,7 @@ class WriteReviewViewModel @Inject constructor(
                         isLoading = false,
                         errorMessageRes = mensajeDeError(
                             error = result.exceptionOrNull(),
-                            generico = R.string.error_cargar_contenido,
+                            generico = R.string.error_cargar_contenido, noEncontrado = R.string.album_no_encontrado,
                         )
                     )
                 }
@@ -107,7 +109,7 @@ class WriteReviewViewModel @Inject constructor(
             return
         }
 
-        viewModelScope.launch {
+        viewModelScope.launch(ioDispatcher) {
             _uiState.update { it.copy(publicando = true, errorMessageRes = null) }
 
             val result = reviewRepository.guardarResena(
@@ -126,7 +128,7 @@ class WriteReviewViewModel @Inject constructor(
                         publicando = false,
                         errorMessageRes = mensajeDeError(
                             error = result.exceptionOrNull(),
-                            generico = R.string.error_publicar_resena,
+                            generico = R.string.error_publicar_resena, noEncontrado = R.string.album_no_encontrado,
                         )
                     )
                 }
@@ -151,11 +153,4 @@ class WriteReviewViewModel @Inject constructor(
         return mes in 1..12 && dia in 1..31
     }
 
-    @StringRes
-    private fun mensajeDeError(error: Throwable?, @StringRes generico: Int): Int = when (error) {
-        is ContenidoNoEncontradoException -> R.string.contenido_no_encontrado
-        is ErrorDelServidorException -> R.string.error_servidor
-        is SinConexionException -> R.string.error_sin_conexion
-        else -> generico
-    }
 }
