@@ -44,7 +44,8 @@ class AlbumRepository @Inject constructor(
             val albumesConResenas = coroutineScope {
                 val pendientes = albumes.map { album ->
                     async {
-                        val reviews = albumRemoteDataSource.getReviewsDeAlbum(album.id, currentUserId = usuarioActualId)
+                        // Esta lista no pinta corazones: no se busca mi like de cada resena
+                        val reviews = albumRemoteDataSource.getReviewsDeAlbum(album.id)
                         conEstadisticas(
                             album = album.toAlbum(),
                             reviews = reviews.map { review ->
@@ -79,7 +80,8 @@ class AlbumRepository @Inject constructor(
         // cada cambio, para no gastar lecturas
         var albumes: List<AlbumDto> = emptyList()
 
-        return albumRemoteDataSource.listenAllReviews(currentUserId = usuarioActualId)
+        // El inicio no pinta corazones: no se busca mi like de cada resena
+        return albumRemoteDataSource.listenAllReviews()
             .map { reviews ->
                 if (albumes.isEmpty()) albumes = albumRemoteDataSource.getAlbumes()
 
@@ -110,7 +112,7 @@ class AlbumRepository @Inject constructor(
                 // Si no existe, el error va al catch del flujo y se muestra como no encontrado
                 val album = albumGuardado
                     ?: albumRemoteDataSource.getAlbumById(albumId)?.toAlbum()
-                    ?: throw NoSuchElementException("No existe el album $albumId")
+                    ?: throw ContenidoNoEncontradoException()
                 albumGuardado = album
 
                 conEstadisticas(
@@ -132,7 +134,8 @@ class AlbumRepository @Inject constructor(
             // El album y sus resenas salen a la vez. Si el album no existe queda null
             val albumReviews = coroutineScope {
                 val album = async { albumRemoteDataSource.getAlbumById(albumId) }
-                val reviews = async { albumRemoteDataSource.getReviewsDeAlbum(albumId, currentUserId = usuarioActualId) }
+                // Escribir resena solo busca la mia, sin likes
+                val reviews = async { albumRemoteDataSource.getReviewsDeAlbum(albumId) }
                 val albumDto = album.await() ?: return@coroutineScope null
 
                 conEstadisticas(
@@ -168,9 +171,8 @@ class AlbumRepository @Inject constructor(
         }
     }
 
-    // El promedio, el total, el porcentaje que recomienda y mi calificacion salen de las resenas.
-    // Es publica para que el ViewModel recalcule al quitar una resena, sin volver a pedir el album
-    fun conEstadisticas(album: Album, reviews: List<AlbumReviewItemUi>): AlbumReviewsUi {
+    // El promedio, el total, el porcentaje que recomienda y mi calificacion salen de las resenas
+    private fun conEstadisticas(album: Album, reviews: List<AlbumReviewItemUi>): AlbumReviewsUi {
         var suma = 0
         var recomiendan = 0
 

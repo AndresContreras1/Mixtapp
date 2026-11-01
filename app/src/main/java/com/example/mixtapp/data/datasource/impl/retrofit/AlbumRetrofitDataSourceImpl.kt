@@ -5,9 +5,8 @@ import com.example.mixtapp.data.datasource.services.AlbumRetrofitService
 import com.example.mixtapp.data.datasource.services.ReviewRetrofitService
 import com.example.mixtapp.data.dtos.AlbumDto
 import com.example.mixtapp.data.dtos.ReviewConUsuarioDto
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class AlbumRetrofitDataSourceImpl @Inject constructor(
@@ -28,19 +27,15 @@ class AlbumRetrofitDataSourceImpl @Inject constructor(
         return conMiUsuario(reviews = service.getReviewsDeAlbum(id), currentUserId = currentUserId)
     }
 
-    // Con HTTP no hay una conexion continua: el flujo manda una sola vez lo que responde el backend
-    override fun listenAllReviews(currentUserId: String): Flow<List<ReviewConUsuarioDto>> = callbackFlow {
+    // Con HTTP no hay una conexion continua: flow { emit() } manda una sola vez lo que responde el backend
+    override fun listenAllReviews(currentUserId: String): Flow<List<ReviewConUsuarioDto>> = flow {
         val reviews = reviewService.getReviews()
-        trySend(conMiUsuario(reviews = reviews, currentUserId = currentUserId)).isSuccess
-
-        awaitClose { }
+        emit(conMiUsuario(reviews = reviews, currentUserId = currentUserId))
     }
 
-    // Con HTTP no hay una conexion continua: el flujo manda una sola vez las resenas del album
-    override fun listenReviewsDeAlbum(id: String, currentUserId: String): Flow<List<ReviewConUsuarioDto>> = callbackFlow {
-        trySend(getReviewsDeAlbum(id = id, currentUserId = currentUserId)).isSuccess
-
-        awaitClose { }
+    // Con HTTP no hay una conexion continua: flow { emit() } manda una sola vez las resenas del album
+    override fun listenReviewsDeAlbum(id: String, currentUserId: String): Flow<List<ReviewConUsuarioDto>> = flow {
+        emit(getReviewsDeAlbum(id = id, currentUserId = currentUserId))
     }
 
     // En el backend el usuario de la app es el 1: sus resenas vuelven con el uid de la sesion para

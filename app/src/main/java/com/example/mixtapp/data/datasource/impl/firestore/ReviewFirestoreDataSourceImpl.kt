@@ -7,7 +7,9 @@ import com.example.mixtapp.data.dtos.CreateReviewDto
 import com.example.mixtapp.data.dtos.ReviewConAlbumDto
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.map
@@ -25,11 +27,7 @@ class ReviewFirestoreDataSourceImpl @Inject constructor(
         val review = respuesta.toObject(ReviewConAlbumDto::class.java)?.copy(id = respuesta.id)
             ?: return null
 
-        if (currentUserId.isNotEmpty()) {
-            val likeSnapshot = reviewRef.collection("likes").document(currentUserId).get().await()
-            review.liked = likeSnapshot.exists()
-        }
-
+        review.liked = reviewRef.tieneMiLike(currentUserId)
         return review
     }
 
@@ -38,40 +36,41 @@ class ReviewFirestoreDataSourceImpl @Inject constructor(
         db.collection("reviews").add(review).await()
     }
 
-    // Solo se cambia lo que se edita y la copia de quien la escribe: el contador de likes y la
-    // subcoleccion se conservan
+    // Solo se cambia lo que se edita, la fecha de la edicion y la copia de quien la escribe: el
+    // contador de likes y la subcoleccion se conservan
     override suspend fun updateReview(id: String, review: CreateReviewDto) {
         db.collection("reviews").document(id).update(
             mapOf(
                 "calificacion" to review.calificacion,
                 "comentario" to review.comentario,
                 "fechaEscucha" to review.fechaEscucha,
+                "updatedAt" to review.updatedAt,
                 "usuario.nombre" to review.usuario?.nombre,
                 "usuario.fotoUrl" to review.usuario?.fotoUrl,
             )
         ).await()
     }
 
-    // Borrar el documento no borra sus subcolecciones: los likes y los comentarios (con los likes de
-    // cada comentario) se eliminan uno por uno
+    // Borrar el documento no borra sus subcolecciones: los likes y los comentarios (con los likes
+    // de cada comentario) se borran en un solo batch junto con la resena. Un batch maneja hasta 500
+    // operaciones, muchas mas de las que tiene una resena
     override suspend fun deleteReview(id: String) {
         val reviewRef = db.collection("reviews").document(id)
-        val likesSnapshot = reviewRef.collection("likes").get().await()
+        val batch = db.batch()
 
-        for (doc in likesSnapshot.documents) {
-            doc.reference.delete().await()
-        }
+        val likesSnapshot = reviewRef.collection("likes").get().await()
+        for (like in likesSnapshot.documents) batch.delete(like.reference)
 
         val comentariosSnapshot = reviewRef.collection("comments").get().await()
-
         for (comentario in comentariosSnapshot.documents) {
             val likesComentario = comentario.reference.collection("likes").get().await()
-            for (like in likesComentario.documents) like.reference.delete().await()
+            for (like in likesComentario.documents) batch.delete(like.reference)
 
-            comentario.reference.delete().await()
+            batch.delete(comentario.reference)
         }
 
-        reviewRef.delete().await()
+        batch.delete(reviewRef)
+        batch.commit().await()
     }
 
     // El like y el contador van en una transaccion: si uno falla, Firebase deshace el otro
@@ -92,9 +91,10 @@ class ReviewFirestoreDataSourceImpl @Inject constructor(
         }.await()
     }
 
-    // El listener escucha el documento de la resena. Mi like no esta en el documento, asi que se
+    // El listener escucha el documento de la resena. Si la borran mientras se ve, toObject da null
+    // y se envia null: el repositorio decide el error. Mi like no esta en el documento, asi que se
     // busca con exists() cada vez que llega
-    override fun listenReviewById(id: String, currentUserId: String): Flow<ReviewConAlbumDto> = callbackFlow {
+    override fun listenReviewById(id: String, currentUserId: String): Flow<ReviewConAlbumDto?> = callbackFlow {
         val listenerRegistration = db.collection("reviews").document(id)
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
@@ -102,21 +102,16 @@ class ReviewFirestoreDataSourceImpl @Inject constructor(
                     return@addSnapshotListener
                 }
                 if (snapshot != null) {
-                    // Si la borran mientras se ve, toObject da null: el repositorio lo muestra como no encontrada
                     val review = snapshot.toObject(ReviewConAlbumDto::class.java)?.copy(id = snapshot.id)
-
-                    if (review == null) close(NoSuchElementException("No existe la resena $id"))
-                    else trySend(review).isSuccess // envia la resena al flujo
+                    trySend(review).isSuccess // envia la resena (o null) al flujo
                 }
             }
 
         // Cuando se sale de la discusion nadie escucha el flujo y se quita el listener
         awaitClose { listenerRegistration.remove() }
     }.map { review ->
-        if (currentUserId.isNotEmpty()) {
-            val likeSnapshot = db.collection("reviews").document(review.id)
-                .collection("likes").document(currentUserId).get().await()
-            review.liked = likeSnapshot.exists()
+        if (review != null) {
+            review.liked = db.collection("reviews").document(review.id).tieneMiLike(currentUserId)
         }
 
         review
@@ -164,9 +159,8 @@ class ReviewFirestoreDataSourceImpl @Inject constructor(
                     return@addSnapshotListener
                 }
                 if (snapshot != null) {
-                    val comentarios = snapshot.documents.map { doc ->
-                        val comentario = doc.toObject(ComentarioDto::class.java)
-                        comentario?.copy(id = doc.id) ?: throw Exception("Comment not found")
+                    val comentarios = snapshot.documents.mapNotNull { doc ->
+                        doc.toObject(ComentarioDto::class.java)?.copy(id = doc.id)
                     }
                     trySend(comentarios).isSuccess // envia la lista al flujo
                 }
@@ -175,15 +169,18 @@ class ReviewFirestoreDataSourceImpl @Inject constructor(
         // Cuando se sale de la discusion nadie escucha el flujo y se quita el listener
         awaitClose { listenerRegistration.remove() }
     }.map { comentarios ->
-        comentarios.map { comentario ->
-            if (currentUserId.isNotEmpty()) {
-                val likeSnapshot = db.collection("reviews").document(reviewId)
-                    .collection("comments").document(comentario.id)
-                    .collection("likes").document(currentUserId).get().await()
-                comentario.liked = likeSnapshot.exists()
+        // Mi like de cada comentario se pide a la vez y se espera el mas lento
+        coroutineScope {
+            val pendientes = comentarios.map { comentario ->
+                async {
+                    comentario.liked = db.collection("reviews").document(reviewId)
+                        .collection("comments").document(comentario.id)
+                        .tieneMiLike(currentUserId)
+                    comentario
+                }
             }
 
-            comentario
+            pendientes.map { it.await() }
         }
     }
 }

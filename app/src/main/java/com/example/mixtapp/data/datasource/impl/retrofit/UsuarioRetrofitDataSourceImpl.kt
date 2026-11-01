@@ -6,13 +6,9 @@ import com.example.mixtapp.data.dtos.ActualizarUsuarioDto
 import com.example.mixtapp.data.dtos.RegistrarUsuarioDto
 import com.example.mixtapp.data.dtos.ReviewConAlbumDto
 import com.example.mixtapp.data.dtos.UsuarioPerfilRetrofitDto
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
-
-// Los usuarios de Firebase no existen en el backend: el usuario de la app se quema como el 1
-const val USUARIO_DE_LA_APP_EN_EL_BACKEND = "1"
 
 class UsuarioRetrofitDataSourceImpl @Inject constructor(
     private val service: UsuarioRetrofitService
@@ -55,30 +51,22 @@ class UsuarioRetrofitDataSourceImpl @Inject constructor(
         return emptyList()
     }
 
-    // Con HTTP no hay una conexion continua: cada flujo manda una sola vez lo que responde el backend
-    override fun listenUsuarioById(id: String, currentUserId: String): Flow<UsuarioPerfilRetrofitDto> = callbackFlow {
-        trySend(getUsuarioById(id = id, currentUserId = currentUserId)).isSuccess
-
-        awaitClose { }
+    // Con HTTP no hay una conexion continua: cada flow { emit() } manda una sola vez lo que responde el backend
+    override fun listenUsuarioById(id: String, currentUserId: String): Flow<UsuarioPerfilRetrofitDto> = flow {
+        emit(getUsuarioById(id = id, currentUserId = currentUserId))
     }
 
-    override fun listenReviewsDeUsuario(id: String, currentUserId: String): Flow<List<ReviewConAlbumDto>> = callbackFlow {
-        trySend(getReviewsDeUsuario(id = id, currentUserId = currentUserId)).isSuccess
-
-        awaitClose { }
+    override fun listenReviewsDeUsuario(id: String, currentUserId: String): Flow<List<ReviewConAlbumDto>> = flow {
+        emit(getReviewsDeUsuario(id = id, currentUserId = currentUserId))
     }
 
     // El backend no tiene seguidores: las listas llegan vacias
-    override fun listenSeguidores(id: String): Flow<List<UsuarioPerfilRetrofitDto>> = callbackFlow {
-        trySend(getSeguidores(id = id)).isSuccess
-
-        awaitClose { }
+    override fun listenSeguidores(id: String): Flow<List<UsuarioPerfilRetrofitDto>> = flow {
+        emit(getSeguidores(id = id))
     }
 
-    override fun listenSeguidos(id: String): Flow<List<UsuarioPerfilRetrofitDto>> = callbackFlow {
-        trySend(getSeguidos(id = id)).isSuccess
-
-        awaitClose { }
+    override fun listenSeguidos(id: String): Flow<List<UsuarioPerfilRetrofitDto>> = flow {
+        emit(getSeguidos(id = id))
     }
 
     // Los ids del backend son numeros; el uid de Firebase no, asi que ese se cambia por el 1

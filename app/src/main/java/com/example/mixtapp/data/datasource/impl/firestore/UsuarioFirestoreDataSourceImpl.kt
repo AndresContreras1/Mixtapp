@@ -7,7 +7,9 @@ import com.example.mixtapp.data.dtos.ReviewConAlbumDto
 import com.example.mixtapp.data.dtos.UsuarioPerfilFirestoreDto
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.map
@@ -26,29 +28,18 @@ class UsuarioFirestoreDataSourceImpl @Inject constructor(
         val usuario = respuesta.toObject(UsuarioPerfilFirestoreDto::class.java)?.copy(id = respuesta.id)
             ?: return null
 
-        // Si en su subcoleccion followers hay un documento con mi uid, ya lo sigo
-        if (currentUserId.isNotEmpty()) {
-            val followerDoc = docRef.collection("followers").document(currentUserId).get().await()
-            usuario.followed = followerDoc.exists()
-        }
-
+        usuario.followed = loSigo(usuarioId = id, currentUserId = currentUserId)
         return usuario
     }
 
+    // Las resenas que escribio un usuario, con mi like en cada una
     override suspend fun getReviewsDeUsuario(id: String, currentUserId: String): List<ReviewConAlbumDto> {
         val snapshot = db.collection("reviews").whereEqualTo("usuarioId", id).get().await()
-
-        return snapshot.documents.map { doc ->
-            val review = doc.toObject(ReviewConAlbumDto::class.java)?.copy(id = doc.id)
-                ?: throw Exception("Review not found")
-
-            if (currentUserId.isNotEmpty()) {
-                val likeSnapshot = doc.reference.collection("likes").document(currentUserId).get().await()
-                review.liked = likeSnapshot.exists()
-            }
-
-            review
+        val reviews = snapshot.documents.mapNotNull { doc ->
+            doc.toObject(ReviewConAlbumDto::class.java)?.copy(id = doc.id)
         }
+
+        return conMisLikes(reviews = reviews, currentUserId = currentUserId)
     }
 
     // El documento se crea con el mismo id del usuario de Authentication
@@ -69,6 +60,8 @@ class UsuarioFirestoreDataSourceImpl @Inject constructor(
         ).await()
     }
 
+    // La URL de la foto que quedo en Storage; ese cambio es el que escucha la Cloud Function que
+    // pone la foto nueva en las resenas y los comentarios
     override suspend fun actualizarFotoDePerfil(usuarioId: String, fotoUrl: String) {
         val docRef = db.collection("usuarios").document(usuarioId)
         docRef.update("fotoUrl", fotoUrl).await()
@@ -110,15 +103,20 @@ class UsuarioFirestoreDataSourceImpl @Inject constructor(
 
     // La lista completa es una segunda consulta: los ids salen de la subcoleccion y los datos de
     // cada usuario de su documento
-    override suspend fun getSeguidores(id: String): List<UsuarioPerfilFirestoreDto> =
-        usuariosDeLaSubcoleccion(id = id, subcoleccion = "followers")
+    override suspend fun getSeguidores(id: String): List<UsuarioPerfilFirestoreDto> {
+        val snapshot = db.collection("usuarios").document(id).collection("followers").get().await()
+        return usuariosConIds(snapshot.documents.map { doc -> doc.id })
+    }
 
-    override suspend fun getSeguidos(id: String): List<UsuarioPerfilFirestoreDto> =
-        usuariosDeLaSubcoleccion(id = id, subcoleccion = "following")
+    override suspend fun getSeguidos(id: String): List<UsuarioPerfilFirestoreDto> {
+        val snapshot = db.collection("usuarios").document(id).collection("following").get().await()
+        return usuariosConIds(snapshot.documents.map { doc -> doc.id })
+    }
 
     // El listener escucha el documento del usuario: seguir o dejar de seguir cambia sus contadores,
-    // asi que tambien llega por aqui. Si lo sigo se busca con exists() cada vez que llega
-    override fun listenUsuarioById(id: String, currentUserId: String): Flow<UsuarioPerfilFirestoreDto> = callbackFlow {
+    // asi que tambien llega por aqui. Si el documento no existe se envia null y el repositorio
+    // decide el error. Si lo sigo se busca con exists() cada vez que llega
+    override fun listenUsuarioById(id: String, currentUserId: String): Flow<UsuarioPerfilFirestoreDto?> = callbackFlow {
         val listenerRegistration = db.collection("usuarios").document(id)
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
@@ -126,21 +124,16 @@ class UsuarioFirestoreDataSourceImpl @Inject constructor(
                     return@addSnapshotListener
                 }
                 if (snapshot != null) {
-                    // Sin documento, toObject da null: el repositorio lo muestra como no encontrado
                     val usuario = snapshot.toObject(UsuarioPerfilFirestoreDto::class.java)?.copy(id = snapshot.id)
-
-                    if (usuario == null) close(NoSuchElementException("No existe el usuario $id"))
-                    else trySend(usuario).isSuccess // envia el usuario al flujo
+                    trySend(usuario).isSuccess // envia el usuario (o null) al flujo
                 }
             }
 
         // Cuando se sale del perfil nadie escucha el flujo y se quita el listener
         awaitClose { listenerRegistration.remove() }
     }.map { usuario ->
-        if (currentUserId.isNotEmpty()) {
-            val followerDoc = db.collection("usuarios").document(usuario.id)
-                .collection("followers").document(currentUserId).get().await()
-            usuario.followed = followerDoc.exists()
+        if (usuario != null) {
+            usuario.followed = loSigo(usuarioId = usuario.id, currentUserId = currentUserId)
         }
 
         usuario
@@ -155,26 +148,15 @@ class UsuarioFirestoreDataSourceImpl @Inject constructor(
                     return@addSnapshotListener
                 }
                 if (snapshot != null) {
-                    val reviews = snapshot.documents.map { doc ->
-                        val review = doc.toObject(ReviewConAlbumDto::class.java)
-                        review?.copy(id = doc.id) ?: throw Exception("Review not found")
+                    val reviews = snapshot.documents.mapNotNull { doc ->
+                        doc.toObject(ReviewConAlbumDto::class.java)?.copy(id = doc.id)
                     }
                     trySend(reviews).isSuccess // envia la lista al flujo
                 }
             }
 
         awaitClose { listenerRegistration.remove() }
-    }.map { reviews ->
-        reviews.map { review ->
-            if (currentUserId.isNotEmpty()) {
-                val likeSnapshot = db.collection("reviews").document(review.id)
-                    .collection("likes").document(currentUserId).get().await()
-                review.liked = likeSnapshot.exists()
-            }
-
-            review
-        }
-    }
+    }.map { reviews -> conMisLikes(reviews = reviews, currentUserId = currentUserId) }
 
     override fun listenSeguidores(id: String): Flow<List<UsuarioPerfilFirestoreDto>> =
         listenSubcoleccion(id = id, subcoleccion = "followers")
@@ -197,21 +179,41 @@ class UsuarioFirestoreDataSourceImpl @Inject constructor(
             }
 
         awaitClose { listenerRegistration.remove() }
-    }.map { ids ->
-        // Si alguno ya no tiene documento en usuarios, no se muestra
-        ids.mapNotNull { usuarioId ->
-            val respuesta = db.collection("usuarios").document(usuarioId).get().await()
-            respuesta.toObject(UsuarioPerfilFirestoreDto::class.java)?.copy(id = respuesta.id)
+    }.map { ids -> usuariosConIds(ids) }
+
+    // Los documentos de varios usuarios se piden a la vez y se espera el mas lento. Si alguno ya
+    // no tiene documento en usuarios, no se muestra
+    private suspend fun usuariosConIds(ids: List<String>): List<UsuarioPerfilFirestoreDto> = coroutineScope {
+        val pendientes = ids.map { usuarioId ->
+            async {
+                val respuesta = db.collection("usuarios").document(usuarioId).get().await()
+                respuesta.toObject(UsuarioPerfilFirestoreDto::class.java)?.copy(id = respuesta.id)
+            }
         }
+
+        pendientes.mapNotNull { it.await() }
     }
 
-    private suspend fun usuariosDeLaSubcoleccion(id: String, subcoleccion: String): List<UsuarioPerfilFirestoreDto> {
-        val snapshot = db.collection("usuarios").document(id).collection(subcoleccion).get().await()
+    // Si en su subcoleccion followers hay un documento con mi uid, ya lo sigo
+    private suspend fun loSigo(usuarioId: String, currentUserId: String): Boolean {
+        if (currentUserId.isEmpty()) return false
 
-        // Si alguno ya no tiene documento en usuarios, no se muestra
-        return snapshot.documents.mapNotNull { doc ->
-            val respuesta = db.collection("usuarios").document(doc.id).get().await()
-            respuesta.toObject(UsuarioPerfilFirestoreDto::class.java)?.copy(id = respuesta.id)
+        return db.collection("usuarios").document(usuarioId)
+            .collection("followers").document(currentUserId).get().await().exists()
+    }
+
+    // Mi like de cada resena se pide a la vez y se espera el mas lento, en vez de uno por uno
+    private suspend fun conMisLikes(
+        reviews: List<ReviewConAlbumDto>,
+        currentUserId: String,
+    ): List<ReviewConAlbumDto> = coroutineScope {
+        val pendientes = reviews.map { review ->
+            async {
+                review.liked = db.collection("reviews").document(review.id).tieneMiLike(currentUserId)
+                review
+            }
         }
+
+        pendientes.map { it.await() }
     }
 }

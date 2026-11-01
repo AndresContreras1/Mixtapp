@@ -24,7 +24,8 @@ interface UsuarioRemoteDataSource {
     suspend fun getSeguidos(id: String): List<UsuarioDtoGeneric>
     // Datos en vivo: cada vez que cambia el documento, sus resenas o sus listas, llega todo de
     // nuevo por el flujo
-    fun listenUsuarioById(id: String, currentUserId: String = ""): Flow<UsuarioDtoGeneric>
+    // Si el usuario no tiene documento llega null: el repositorio decide el error
+    fun listenUsuarioById(id: String, currentUserId: String = ""): Flow<UsuarioDtoGeneric?>
     fun listenReviewsDeUsuario(id: String, currentUserId: String = ""): Flow<List<ReviewConAlbumDto>>
     fun listenSeguidores(id: String): Flow<List<UsuarioDtoGeneric>>
     fun listenSeguidos(id: String): Flow<List<UsuarioDtoGeneric>>
