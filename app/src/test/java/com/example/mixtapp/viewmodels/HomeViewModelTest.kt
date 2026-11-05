@@ -3,6 +3,7 @@ package com.example.mixtapp.viewmodels
 import com.example.mixtapp.data.local.LocalPreviewProvider
 import com.example.mixtapp.data.model.ItemConResenasUi
 import com.example.mixtapp.data.model.ItemResumenUi
+import com.example.mixtapp.data.model.TIPO_ALBUM
 import com.example.mixtapp.data.model.TIPO_CANCION
 import com.example.mixtapp.data.repository.CatalogoRepository
 import com.example.mixtapp.data.repository.ReviewRepository
@@ -58,6 +59,7 @@ class HomeViewModelTest {
         genero: String,
         likes: Int = 0,
         tendencia: Int? = null,
+        tendenciaColombia: Int? = null,
         fecha: String = "2020-01-01",
     ) = ItemConResenasUi(
         item = LocalPreviewProvider.emptinessMachine.copy(
@@ -66,6 +68,7 @@ class HomeViewModelTest {
             subgenero = genero,
             likes = likes,
             tendencia = tendencia,
+            tendenciaColombia = tendenciaColombia,
             fechaLanzamiento = fecha,
         ),
         rating = 0.0,
@@ -75,6 +78,12 @@ class HomeViewModelTest {
         userRating = 0,
         reviews = emptyList(),
     )
+
+    // Un album con su puesto en la lista de su genero y en el Top Colombia
+    private fun album(id: String, genero: String, tendencia: Int? = null, tendenciaColombia: Int? = null) =
+        cancion(id = id, genero = genero, tendencia = tendencia, tendenciaColombia = tendenciaColombia).let {
+            it.copy(item = it.item.copy(tipo = TIPO_ALBUM))
+        }
 
     private fun like(id: String, genero: String) =
         ItemResumenUi(id = id, tipo = TIPO_CANCION, titulo = id, subtitulo = "", imagenUrl = "", genero = genero)
@@ -115,20 +124,81 @@ class HomeViewModelTest {
     }
 
     @Test
-    fun updateSelectedFilter_tendenciasMeGustaElMetal_primeroLaListaDelMetal() = runTest {
-        //Arrange: los dos generos tienen canciones en su lista; solo me gusta el metal
+    fun updateSelectedFilter_tendenciasMeGustaElMetal_primeroElTopColombia() = runTest {
+        //Arrange: solo me gusta el metal, pero el Top Colombia es de reggaeton
         val catalogo = listOf(
-            cancion(id = "metal_top_2", genero = "Metal", tendencia = 2),
+            cancion(id = "reggaeton_top_2", genero = "Reggaetón", tendenciaColombia = 2),
+            cancion(id = "reggaeton_top_1", genero = "Reggaetón", tendenciaColombia = 1),
             cancion(id = "metal_top_1", genero = "Metal", tendencia = 1),
-            cancion(id = "reggaeton_top_1", genero = "Reggaetón", tendencia = 1),
         ) + metal
         val viewModel = crearViewModel(catalogo = catalogo, favoritos = listOf(like("metal_1", "Metal")))
         //Act
         viewModel.updateSelectedFilter(FILTRO_TENDENCIAS)
         advanceUntilIdle()
-        //Assert: primero las de la lista del metal por su puesto, y nada de reggaeton
+        //Assert: primero la lista de Colombia por su puesto, sin importar mis generos
         val canciones = viewModel.uiState.value.canciones
-        assertThat(canciones.take(2).map { it.id }).containsExactly("metal_top_1", "metal_top_2").inOrder()
-        assertThat(canciones.map { it.genero }).doesNotContain("Reggaetón")
+        assertThat(canciones.take(2).map { it.id }).containsExactly("reggaeton_top_1", "reggaeton_top_2").inOrder()
+    }
+
+    @Test
+    fun updateSelectedFilter_tendencias_tarjetaEsElPrimeroDeColombia() = runTest {
+        //Arrange
+        val catalogo = listOf(
+            album(id = "metal_album", genero = "Metal", tendencia = 1),
+            album(id = "colombia_3", genero = "Reggaetón", tendenciaColombia = 3),
+            album(id = "colombia_1", genero = "Música popular", tendenciaColombia = 1),
+        )
+        val viewModel = crearViewModel(catalogo = catalogo, favoritos = listOf(like("metal_album", "Metal")))
+        //Act
+        viewModel.updateSelectedFilter(FILTRO_TENDENCIAS)
+        advanceUntilIdle()
+        //Assert
+        val state = viewModel.uiState.value
+        assertThat(state.enTendencia?.id).isEqualTo("colombia_1")
+        assertThat(state.enTendenciaColombia).isTrue()
+    }
+
+    @Test
+    fun init_albumesEnLaListaDeMiGenero_tarjetaEsUnoDeEllos() = runTest {
+        //Arrange: me gusta el metal; hay tres albumes de metal en su lista y uno de reggaeton
+        val delMetal = listOf("metal_a", "metal_b", "metal_c")
+        val catalogo = delMetal.mapIndexed { i, id -> album(id = id, genero = "Metal", tendencia = i + 1) } +
+            album(id = "reggaeton_a", genero = "Reggaetón", tendencia = 1)
+        val viewModel = crearViewModel(catalogo = catalogo, favoritos = listOf(like("metal_a", "Metal")))
+        //Act
+        advanceUntilIdle()
+        //Assert: sale al azar, pero siempre uno de metal que esta en su lista
+        assertThat(viewModel.uiState.value.enTendencia?.id).isIn(delMetal)
+    }
+
+    @Test
+    fun elegirAlbumEnTendencia_variasEntradas_siempreDeMiGeneroEnLista() = runTest {
+        //Arrange
+        val delMetal = listOf("metal_a", "metal_b", "metal_c")
+        val catalogo = delMetal.mapIndexed { i, id -> album(id = id, genero = "Metal", tendencia = i + 1) } +
+            album(id = "reggaeton_a", genero = "Reggaetón", tendencia = 1)
+        val viewModel = crearViewModel(catalogo = catalogo, favoritos = listOf(like("metal_a", "Metal")))
+        advanceUntilIdle()
+        //Act: entra al inicio cinco veces
+        val elegidos = (1..5).map {
+            viewModel.elegirAlbumEnTendencia()
+            viewModel.uiState.value.enTendencia?.id
+        }
+        //Assert
+        assertThat(delMetal).containsAtLeastElementsIn(elegidos.toSet())
+    }
+
+    @Test
+    fun init_sinAlbumesEnLaLista_tarjetaEsElMasPopular() = runTest {
+        //Arrange: ningun album esta en una lista (como en los datos de las pruebas e2e)
+        val catalogo = listOf(
+            album(id = "album_1", genero = "Rock"),
+            album(id = "album_2", genero = "Rock"),
+        )
+        val viewModel = crearViewModel(catalogo = catalogo, favoritos = emptyList())
+        //Act
+        advanceUntilIdle()
+        //Assert: empatan en popularidad y queda el primero, siempre el mismo
+        assertThat(viewModel.uiState.value.enTendencia?.id).isEqualTo("album_1")
     }
 }
