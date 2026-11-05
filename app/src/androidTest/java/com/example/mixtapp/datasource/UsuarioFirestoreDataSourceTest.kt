@@ -24,8 +24,8 @@ class UsuarioFirestoreDataSourceTest {
 
     @Before
     fun setUp() = runTest {
-        // En debug la app ya conecto esta instancia al emulador: conectarla otra vez lanza
-        // IllegalStateException, por eso va en un try
+        // Si otra prueba de la misma corrida ya conecto esta instancia al emulador, conectarla otra
+        // vez lanza IllegalStateException: por eso conectarEmulador tiene cada useEmulator en un try
         conectarEmulador()
 
         dataSource = UsuarioFirestoreDataSourceImpl(db)

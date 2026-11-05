@@ -3,8 +3,7 @@ package com.example.mixtapp.datasource
 import com.example.mixtapp.cargarDatosDePrueba
 import com.example.mixtapp.conectarEmulador
 import com.example.mixtapp.data.datasource.impl.firestore.ReviewFirestoreDataSourceImpl
-import com.example.mixtapp.data.dtos.CreateComentarioDto
-import com.example.mixtapp.data.dtos.CreateReviewUsuarioDto
+import com.example.mixtapp.generateComentario
 import com.example.mixtapp.generateUsuario
 import com.example.mixtapp.limpiarBase
 import com.google.common.truth.Truth
@@ -36,20 +35,6 @@ class ReviewFirestoreDataSourceTest {
     @After
     fun tearDown() = runTest {
         limpiarBase(db)
-    }
-
-    // Un comentario del usuario i, como lo arma el repositorio
-    private fun generateComentario(i: Int, parentCommentId: String? = null): CreateComentarioDto {
-        val usuario = generateUsuario(i)
-
-        return CreateComentarioDto(
-            usuarioId = usuario.id,
-            contenido = "Comentario $i",
-            parentCommentId = parentCommentId,
-            likesCount = 0,
-            createdAt = "2025-01-0${i}T00:00:00Z",
-            usuario = CreateReviewUsuarioDto(nombre = usuario.nombre, fotoUrl = usuario.fotoUrl),
-        )
     }
 
     @Test
