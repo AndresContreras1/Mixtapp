@@ -70,8 +70,8 @@ Universidad Javeriana.
 | Modo claro y modo oscuro: la app sigue el del celular | Funcionando |
 | Modo debug contra el emulador de Firebase (Firebase CLI) | Funcionando |
 | Catálogo y datos falsos con Faker para el emulador o el Firebase real | Script en [mixtapp-functions](https://github.com/AndresContreras1/mixtapp-functions) |
-| Pruebas de integración de los data sources y los repositorios contra el emulador | 23 + 17 pruebas |
-| Pruebas con mocks (MockK) del repositorio, con sus mapeos, y de los ViewModels | 15 + 14 pruebas, más 19 de mapeos y datos locales |
+| Pruebas de integración de los data sources y los repositorios contra el emulador | 25 + 17 pruebas |
+| Pruebas con mocks (MockK) del repositorio, con sus mapeos, y de los ViewModels | 15 + 15 pruebas, más 26 de mapeos y datos locales |
 | Pruebas de integración del ViewModel de registro contra el emulador | 2 pruebas |
 | Pruebas end to end de los dos casos de uso del sprint 13 | 2 pruebas |
 
@@ -359,9 +359,9 @@ Están en `app/src/test`, por capa. Corren en el computador, sin emulador: clic 
 | `viewmodels/SignUpViewModelTest` | 4 | registro válido, contraseña de 4 caracteres, correo ya registrado y sin aceptar los términos |
 | `viewmodels/LoginViewModelTest` | 2 | credenciales válidas y contraseña incorrecta |
 | `viewmodels/WriteReviewViewModelTest` | 3 | sin texto, fecha con mes 13 y reseña válida |
-| `viewmodels/DetailViewModelTest` | 2 | item que no existe y like sin conexión (el error es del botón, el item se sigue viendo) |
-| `viewmodels/HomeViewModelTest` | 3 | Para ti con 9 me gusta de metal y 1 de reggaetón saca un solo reggaetón; Descubre no muestra lo que ya tiene mi me gusta; Tendencias pone primero la lista de mi género y no muestra los otros |
-| `dtos/FormatosTest`, `dtos/InteraccionesSocialesTest`, `local/DatosLocalesTest` | 19 | `14K`, `3 h`, los links de YouTube, Spotify e Instagram, los contadores y las marcas del mapeo y los datos fijos de la app (los cinco géneros) |
+| `viewmodels/DetailViewModelTest` | 3 | el item que existe se muestra sin error, el que no existe da su mensaje y el like sin conexión (el error es del botón, el item se sigue viendo) |
+| `viewmodels/HomeViewModelTest` | 3 | Para ti con 9 me gusta de metal y 1 de reggaetón saca un solo reggaetón; Descubre no muestra lo que ya tiene mi me gusta y pone primero mi género (si no alcanza, completa con otros); Tendencias pone primero la lista de mi género y no muestra los otros |
+| `dtos/FormatosTest`, `dtos/InteraccionesSocialesTest`, `local/DatosLocalesTest` | 13 + 8 + 5 | `14K`, `3 h`, los links de YouTube, Spotify e Instagram, los contadores y las marcas del mapeo y los datos fijos de la app (los cinco géneros) |
 
 Los ViewModels reciben el dispatcher de prueba en el constructor (`@IoDispatcher`),
 `Dispatchers.setMain` lo pone como principal y `advanceUntilIdle()` espera a que terminen sus
@@ -379,11 +379,11 @@ prendido y la Firebase CLI corriendo (`firebase emulators:start --only firestore
 | Clase | Pruebas | Qué revisa |
 |---|---|---|
 | `datasource/UsuarioFirestoreDataSourceTest` | 8 | leer por id (válido y que no existe → `null`), registrar, seguir, el contador de seguidores, dejar de seguir, la lista de seguidores y las reseñas de un usuario |
-| `datasource/AlbumFirestoreDataSourceTest` | 5 | leer por id (válido y que no existe → `null`), el like a un álbum (sube `likesCount` y deja la copia en `usuarios/<uid>/likes`), quitarlo y el listener con mi like |
+| `datasource/AlbumFirestoreDataSourceTest` | 7 | leer por id (válido y que no existe → `null`), el like a un álbum (queda `liked`, sube `likesCount` y deja la copia en `usuarios/<uid>/likes`, cada uno en su prueba), quitarlo y el listener con mi like |
 | `datasource/HistoriaFirestoreDataSourceTest` | 2 | la historia de un álbum con sus secciones en orden, y la de un item que no tiene (`null`) |
 | `datasource/ReviewFirestoreDataSourceTest` | 8 | leer por id, like y su contador, comentar y `commentsCount`, el orden de los comentarios, like a un comentario y borrar la reseña con sus comentarios |
-| `repository/ReviewRepositoryIntegrationTest` | 8 | guardar la reseña (`Result` bien y sin sesión), la copia del nombre y del item, like sin sesión, comentar, el hilo de respuestas, la discusión que no existe y eliminar |
-| `repository/UsuarioRepositoryIntegrationTest` | 9 | mi perfil (con documento, sin documento, sin sesión), registrar, seguirme a mí mismo, seguir a otro, seguir sin tener documento (se crea), seguir a alguien que no existe y modificar el perfil |
+| `repository/ReviewRepositoryIntegrationTest` | 8 | guardar la reseña (`Result` bien y sin sesión), la copia del nombre y del item, like sin sesión, comentar, el hilo de respuestas, la discusión que no existe y eliminar (el documento ya no existe) |
+| `repository/UsuarioRepositoryIntegrationTest` | 9 | mi perfil (con documento, sin documento, sin sesión), registrar, seguirme a mí mismo, seguir a otro (sube su contador), seguir sin tener documento (se crea), seguir a alguien que no existe y modificar el perfil |
 | `viewmodels/SignUpViewModelIntegrationTest` | 2 | el registro válido navega y guarda el usuario; el correo ya registrado muestra su error. La prueba espera el estado con `uiState.map { … }.first { … }` |
 
 Cada clase tiene `@Before` (conecta al emulador con `conectarEmulador()`, limpia y carga sus propios
@@ -394,6 +394,17 @@ y la cierra). Se corren con clic derecho en la carpeta `androidTest` → **Run '
 Las pruebas usan el mismo emulador que la app en debug y lo dejan vacío. Después de correrlas hay
 que volver a cargar el seed; la cuenta con la que se entra a la app recupera su documento sola al
 iniciar sesión o al seguir a alguien.
+
+**Antes de correr `androidTest`:**
+
+1. Prender el emulador de Firebase en `mixtapp-functions`:
+   `firebase emulators:start --only firestore,auth,functions --project mixtapp-720eb`.
+2. Borrar los datos de la app en el emulador de Android: `adb shell pm clear com.example.mixtapp`.
+   Las e2e abren la app antes del `@Before`: si quedó una sesión guardada, el inicio empieza a leer
+   Firestore antes de `conectarEmulador()`, la conexión al emulador falla y la prueba seguiría
+   contra el Firebase real. Si pasa, el Logcat lo muestra con el filtro `DatosDePrueba`.
+3. Abrir la app una vez y aceptar el permiso de notificaciones (`pm clear` también lo quita).
+4. Al terminar, volver a cargar el seed (`node seed.js` en `mixtapp-functions/seed`).
 
 </details>
 
@@ -408,12 +419,13 @@ la barra se buscan por su ruta en el `contentDescription`.
 
 | Clase | Caso de uso |
 |---|---|
-| `RegistroYLikeE2E` | Un usuario nuevo se registra con la contraseña `1234` y ve el error; la corrige a `123456` y entra. Abre la primera publicación y revisa su título, da like a la primera reseña (el contador pasa de 0 a 1), vuelve atrás, entra otra vez y quita el like (vuelve a 0). |
-| `SeguirUsuarioE2E` | Un usuario ya registrado inicia sesión, abre el perfil del autor de la primera reseña y revisa su nombre y sus 10 seguidores, lo sigue (pasa a 11), vuelve al inicio, abre Siguiendo y encuentra la reseña de ese usuario. |
+| `RegistroYLikeE2E` | Un usuario nuevo se registra con la contraseña `1234` y ve el error; la corrige a `123456` y entra. Mientras tanto sigue en la pantalla de registro. Abre la primera publicación y revisa su título y su artista, da like a la primera reseña (el contador pasa de 0 a 1), vuelve atrás, entra otra vez y quita el like (vuelve a 0). |
+| `SeguirUsuarioE2E` | Un usuario ya registrado inicia sesión, abre el perfil del autor de la primera reseña y revisa su nombre, su @usuario y sus 10 seguidores, lo sigue (pasa a 11), vuelve al inicio, abre Siguiendo y encuentra la reseña de ese usuario. |
 
 Cada `@Before` conecta el emulador dentro de un `try` (con la aplicación de prueba de Hilt no corre
 `BaseApplication`), limpia la base y carga sus datos con `DatosDePrueba.kt`; el `@After` borra la
-cuenta y vuelve a limpiar. Necesitan el emulador de Android y la Firebase CLI corriendo, como las de
+cuenta y vuelve a limpiar. Las esperas (`esperarTag`, `esperarTexto`) y la limpieza son comunes a
+los dos casos y están en `e2e/EsperasE2E.kt`. Necesitan el emulador de Android y la Firebase CLI corriendo, como las de
 integración. El permiso de notificaciones tiene que estar concedido antes de correrlas (abrir la
 app una vez y aceptarlo): si el diálogo aparece, tapa la pantalla y el robot no encuentra nada.
 
