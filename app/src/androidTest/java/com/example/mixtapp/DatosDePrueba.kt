@@ -3,10 +3,13 @@ package com.example.mixtapp
 import android.util.Log
 import com.example.mixtapp.data.dtos.AlbumDto
 import com.example.mixtapp.data.dtos.CreateComentarioDto
+import com.example.mixtapp.data.dtos.CreateDueloDto
 import com.example.mixtapp.data.dtos.CreateReviewDto
 import com.example.mixtapp.data.dtos.CreateReviewItemDto
 import com.example.mixtapp.data.dtos.CreateReviewUsuarioDto
+import com.example.mixtapp.data.dtos.CreateVotoDto
 import com.example.mixtapp.data.dtos.HistoriaDto
+import com.example.mixtapp.data.dtos.ItemDelDueloDto
 import com.example.mixtapp.data.dtos.SeccionDto
 import com.example.mixtapp.data.dtos.UsuarioPerfilFirestoreDto
 import com.example.mixtapp.data.model.TIPO_ALBUM
@@ -174,4 +177,41 @@ suspend fun limpiarBase(db: FirebaseFirestore) {
             itemDoc.reference.delete().await()
         }
     }
+
+    val duelos = db.collection("duelos").get().await()
+    for (dueloDoc in duelos) {
+        val votos = dueloDoc.reference.collection("votos").get().await()
+        for (voto in votos) voto.reference.delete().await()
+
+        dueloDoc.reference.delete().await()
+    }
+}
+
+// El duelo de prueba entre album_1 y album_2, como lo arma el repositorio con el primer voto
+fun generateDuelo(votosA: Int, votosB: Int): CreateDueloDto {
+    val albumA = generateAlbum(1)
+    val albumB = generateAlbum(2)
+
+    return CreateDueloDto(
+        dia = 1,
+        tipo = TIPO_ALBUM,
+        genero = albumA.genero,
+        itemA = ItemDelDueloDto(id = albumA.id, titulo = albumA.titulo, subtitulo = albumA.artista, imagenUrl = albumA.portadaUrl),
+        itemB = ItemDelDueloDto(id = albumB.id, titulo = albumB.titulo, subtitulo = albumB.artista, imagenUrl = albumB.portadaUrl),
+        votosA = votosA,
+        votosB = votosB,
+        createdAt = "2025-01-01T00:00:00Z",
+    )
+}
+
+// El voto del usuario i, con la copia de su nombre y su foto
+fun generateVoto(i: Int, opcion: String, createdAt: String = "2025-01-0${i}T00:00:00Z"): CreateVotoDto {
+    val usuario = generateUsuario(i)
+
+    return CreateVotoDto(
+        opcion = opcion,
+        opinion = "Opinion $i",
+        createdAt = createdAt,
+        usuario = CreateReviewUsuarioDto(nombre = usuario.nombre, fotoUrl = usuario.fotoUrl),
+    )
 }
