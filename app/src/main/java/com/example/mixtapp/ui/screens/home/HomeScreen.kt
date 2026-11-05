@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -53,12 +54,19 @@ fun HomeScreen(
     // solo pinta lo que ya viene armado
     val state by homeViewModel.uiState.collectAsState()
 
+    // Cada vez que se vuelve al inicio (del detalle, de otra pestana) sale otro album en tendencia.
+    // Los flujos no se piden aqui: ya se escuchan desde el init del ViewModel
+    LaunchedEffect(Unit) {
+        homeViewModel.elegirAlbumEnTendencia()
+    }
+
     HomeScreenContent(
         isLoading = state.isLoading,
         errorMessageRes = state.errorMessageRes,
         filters = state.filters,
         selectedFilterId = state.selectedFilterId,
         enTendencia = state.enTendencia,
+        enTendenciaColombia = state.enTendenciaColombia,
         canciones = state.canciones,
         albumes = state.albumes,
         artistas = state.artistas,
@@ -83,6 +91,7 @@ fun HomeScreenContent(
     filters: List<HomeFilterUi>,
     selectedFilterId: String,
     enTendencia: ItemUi?,
+    enTendenciaColombia: Boolean,
     canciones: List<ItemUi>,
     albumes: List<ItemUi>,
     artistas: List<ItemUi>,
@@ -143,6 +152,7 @@ fun HomeScreenContent(
 
                             TrendingCard(
                                 item = enTendencia,
+                                enColombia = enTendenciaColombia,
                                 onClick = { onItemClick(enTendencia.tipo, enTendencia.id) },
                                 modifier = Modifier.testTag("tarjetaTendencia"),
                             )
@@ -225,6 +235,7 @@ fun HomeScreenPreview() {
             filters = homeFilters,
             selectedFilterId = homeFilters.first().id,
             enTendencia = LocalPreviewProvider.karolG,
+            enTendenciaColombia = false,
             canciones = listOf(LocalPreviewProvider.emptinessMachine),
             albumes = listOf(LocalPreviewProvider.karolG, LocalPreviewProvider.fromZero),
             artistas = listOf(LocalPreviewProvider.mikeShinoda),

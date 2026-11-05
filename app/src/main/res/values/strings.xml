@@ -236,6 +236,7 @@
     <string name="canciones_populares">Canciones populares</string>
     <string name="artistas_populares">Artistas populares</string>
     <string name="puesto_en_genero">#%1$d en %2$s</string>
+    <string name="puesto_en_colombia">#%1$d en Colombia</string>
     <string name="sin_items_filtro">Todavía no hay nada para mostrar aquí</string>
     <string name="generos">Géneros</string>
     <string name="personas">Personas</string>
