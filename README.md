@@ -49,7 +49,8 @@ Universidad Javeriana.
 | Al registrarse, el nombre, el usuario y el token de notificaciones quedan guardados en Firestore | Funcionando |
 | Catálogo real de cinco géneros (50 álbumes, 126 canciones y 56 artistas), con portadas de 1000 px, fechas de salida, el Instagram de cada artista y su puesto en la lista de Deezer de su género | Funcionando, Firestore (seed en mixtapp-functions) |
 | Inicio con **Para ti**, **Descubre**, **Tendencias** y **Seguidos**: la tarjeta En tendencia, filas de canciones, álbumes y artistas y las reseñas de quienes sigo, **en tiempo real** | Funcionando, Firestore |
-| **Para ti**, **Descubre** y **Tendencias** reparten cada fila entre los géneros que me gustan (mis me gusta y mis reseñas de 3 estrellas o más), en proporción a cuánto pesa cada uno: si casi todo es metal, casi no sale reggaetón | Funcionando |
+| **Para ti** y **Descubre** reparten cada fila entre los géneros que me gustan (mis me gusta y mis reseñas de 3 estrellas o más), en proporción a cuánto pesa cada uno: si casi todo es metal, casi no sale reggaetón. El álbum En tendencia sale al azar de las listas de Deezer de mis géneros y cambia cada vez que vuelvo al inicio | Funcionando |
+| **Tendencias** es el Top Colombia de Deezer para todos, sin repartir por mis géneros, con el #1 de Colombia en la tarjeta grande | Funcionando |
 | **Descubre**: lo de mis géneros que todavía no tiene mi me gusta ni mi reseña, primero mi subgénero y lo más nuevo | Funcionando |
 | Buscar: catálogo y personas por texto, tarjetas por fecha de lanzamiento, más populares, mejor calificados y por cada uno de los cinco géneros | Funcionando, Firestore |
 | Detalle de un álbum, una canción o un artista: promedio, total de calificaciones, % que lo recomienda, me gusta, guardar y sus reseñas, **en tiempo real** | Funcionando, Firestore |
@@ -71,7 +72,7 @@ Universidad Javeriana.
 | Modo debug contra el emulador de Firebase (Firebase CLI) | Funcionando |
 | Catálogo y datos falsos con Faker para el emulador o el Firebase real | Script en [mixtapp-functions](https://github.com/AndresContreras1/mixtapp-functions) |
 | Pruebas de integración de los data sources y los repositorios contra el emulador | 25 + 17 pruebas |
-| Pruebas con mocks (MockK) del repositorio, con sus mapeos, y de los ViewModels | 15 + 15 pruebas, más 26 de mapeos y datos locales |
+| Pruebas con mocks (MockK) del repositorio, con sus mapeos, y de los ViewModels | 15 + 19 pruebas, más 26 de mapeos y datos locales |
 | Pruebas de integración del ViewModel de registro contra el emulador | 2 pruebas |
 | Pruebas end to end de los dos casos de uso del sprint 13 | 2 pruebas |
 
@@ -129,9 +130,9 @@ lógica: filtrar, ordenar y decidir qué se muestra. **La pantalla** pinta y avi
 | `usuarios/<uid>/likes` | el id del item | `tipo`, `titulo`, `subtitulo`, `imagenUrl`, `genero`, `createdAt` (texto): la copia del item que me gusta |
 | `usuarios/<uid>/guardados` | el id del item | los mismos campos: la copia del item que guardé |
 | `usuarios/<uid>/notificaciones` | id aleatorio | `tipo` (`like`, `like_comentario`, `comentario`, `respuesta` o `seguidor`) · `actorId`, `actorNombre`, `actorFotoUrl` · `reviewId`, `itemTitulo`, `imagenUrl` (texto o null) · `leida` (booleano) · `createdAt` (texto ISO). Las escriben las Cloud Functions |
-| `albumes` | `album_<nombre>` | `titulo`, `artista`, `portadaUrl`, `genero`, `subgenero`, `fechaLanzamiento` (texto, `AAAA-MM-DD`) · `anio`, `likesCount` (número) · `tendencia` (número o null: el puesto en la lista de Deezer de su género) |
+| `albumes` | `album_<nombre>` | `titulo`, `artista`, `portadaUrl`, `genero`, `subgenero`, `fechaLanzamiento` (texto, `AAAA-MM-DD`) · `anio`, `likesCount` (número) · `tendencia` (número o null: el puesto en la lista de Deezer de su género) · `tendenciaColombia` (número o null: el puesto en el Top Colombia de Deezer) |
 | `canciones` | `cancion_<nombre>` | los del álbum más `albumId` y `album` (el nombre del álbum) |
-| `artistas` | `artista_<nombre>` | `nombre`, `fotoUrl`, `genero`, `subgenero` (texto) · `grupo`, `instagram` (texto o null) · `likesCount` (número) · `tendencia` (número o null) |
+| `artistas` | `artista_<nombre>` | `nombre`, `fotoUrl`, `genero`, `subgenero` (texto) · `grupo`, `instagram` (texto o null) · `likesCount` (número) · `tendencia`, `tendenciaColombia` (número o null) |
 | `historias` | el id del item | `tipo` (texto) · `secciones` (arreglo de mapas con `titulo` y `texto`): los datos curiosos. Van aparte del item para que el inicio no descargue ese texto |
 | `albumes/<id>/likes`, `canciones/<id>/likes`, `artistas/<id>/likes` | el uid de quien dio like | `timestamp` |
 | `reviews` | id aleatorio | `usuarioId`, `itemId`, `tipo` (texto) · `calificacion` (número) · `comentario` (texto) · `fechaEscucha` (texto `AAAA-MM-DD` o null) · `createdAt`, `updatedAt` (texto ISO) · `likesCount`, `commentsCount` (número) · `usuario` y `item` (mapas) |
@@ -255,15 +256,21 @@ La pantalla de notificaciones tiene tres pestañas, todas en vivo:
   cada item.
 - **Mi reseña la marca el repositorio.** Cada reseña llega con `isMine` (su `usuarioId` es mi uid),
   así el inicio, el detalle y la pantalla de escribir saben cuál es la mía sin otra petición.
-- **Las filas del inicio las arma el ViewModel.** Cada género pesa cuántos items de él me gustan
+- **Las filas del inicio las arma el ViewModel.** En Para ti, Descubre y Seguidos cada género pesa cuántos items de él me gustan
   (mis me gusta y mis reseñas de 3 estrellas o más) y recibe esa parte de los 10 cupos, sin mínimo:
   si casi todo es metal, el reggaetón puede quedar con uno o con ninguno. Los géneros se intercalan
   y, si sobran cupos, se completa primero con más de mis géneros.
   - **Para ti** ordena por popularidad.
   - **Descubre** quita lo que ya tiene mi me gusta o mi reseña y ordena por mi subgénero, por lo
     más nuevo y por popularidad.
-  - **Tendencias** pone primero lo que está en la lista de Deezer de su género, por su puesto, que
-    viene guardado en el catálogo (no hay una API externa en la app).
+  - **Tendencias** no se reparte por mis géneros: pone primero lo que está en el Top Colombia de
+    Deezer, por su puesto, y completa con lo más popular. Los puestos vienen guardados en el
+    catálogo (no hay una API externa en la app).
+- **El álbum En tendencia cambia al volver al inicio.** La pantalla llama a
+  `elegirAlbumEnTendencia()` en su `LaunchedEffect(Unit)`, que corre cada vez que el inicio vuelve a
+  aparecer. El ViewModel elige al azar uno de los álbumes que están en la lista de Deezer de mis
+  géneros y guarda su id en el estado, para que un like o una reseña nueva no lo cambien. Si ninguno
+  está en una lista, queda el más popular. En la pestaña Tendencias la tarjeta es el #1 de Colombia.
   - **Seguidos** muestra lo que reseñaron los usuarios que sigo.
 - **Los links de YouTube, Spotify e Instagram salen del mapeo**, con el artista y el título (las
   canciones buscan su video oficial). No se guardan en la base y se abren con `LocalUriHandler`.
@@ -360,7 +367,7 @@ Están en `app/src/test`, por capa. Corren en el computador, sin emulador: clic 
 | `viewmodels/LoginViewModelTest` | 2 | credenciales válidas y contraseña incorrecta |
 | `viewmodels/WriteReviewViewModelTest` | 3 | sin texto, fecha con mes 13 y reseña válida |
 | `viewmodels/DetailViewModelTest` | 3 | el item que existe se muestra sin error, el que no existe da su mensaje y el like sin conexión (el error es del botón, el item se sigue viendo) |
-| `viewmodels/HomeViewModelTest` | 3 | Para ti con 9 me gusta de metal y 1 de reggaetón saca un solo reggaetón; Descubre no muestra lo que ya tiene mi me gusta y pone primero mi género (si no alcanza, completa con otros); Tendencias pone primero la lista de mi género y no muestra los otros |
+| `viewmodels/HomeViewModelTest` | 7 | Para ti con 9 me gusta de metal y 1 de reggaetón saca un solo reggaetón; Descubre no muestra lo que ya tiene mi me gusta y pone primero mi género (si no alcanza, completa con otros); Tendencias pone primero el Top Colombia aunque me guste otro género y su tarjeta es el #1 de Colombia; la tarjeta de Para ti es un álbum en lista de mi género, también al volver a entrar varias veces, y sin álbumes en lista es el más popular |
 | `dtos/FormatosTest`, `dtos/InteraccionesSocialesTest`, `local/DatosLocalesTest` | 13 + 8 + 5 | `14K`, `3 h`, los links de YouTube, Spotify e Instagram, los contadores y las marcas del mapeo y los datos fijos de la app (los cinco géneros) |
 
 Los ViewModels reciben el dispatcher de prueba en el constructor (`@IoDispatcher`),
