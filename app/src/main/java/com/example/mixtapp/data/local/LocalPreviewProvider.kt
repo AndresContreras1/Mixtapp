@@ -95,6 +95,7 @@ object LocalPreviewProvider {
         genero = "Reggaetón",
         subgenero = "Reggaetón",
         tendencia = 1,
+        tendenciaColombia = 1,
         likes = 15400,
         likesText = "15K",
     )

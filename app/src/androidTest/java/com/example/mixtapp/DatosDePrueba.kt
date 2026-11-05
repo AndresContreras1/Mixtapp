@@ -58,6 +58,7 @@ fun generateAlbum(i: Int): AlbumDto = AlbumDto(
     genero = "Rock",
     subgenero = "Rock alternativo",
     tendencia = null,
+    tendenciaColombia = null,
     likesCount = 0,
     createdAt = "2025-01-01T00:00:00Z",
     updatedAt = "2025-01-01T00:00:00Z",

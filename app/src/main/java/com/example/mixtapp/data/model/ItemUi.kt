@@ -26,6 +26,8 @@ data class ItemUi(
     val subgenero: String,
     // Puesto en la lista de Deezer de su genero; null si no esta en la lista
     val tendencia: Int?,
+    // Puesto en el Top Colombia de Deezer (la pestana Tendencias); null si no esta en esa lista
+    val tendenciaColombia: Int? = null,
     val likes: Int,
     val likesText: String,
     // Para abrirlo afuera de la app: la busqueda en YouTube (solo canciones) y en Spotify, y el
