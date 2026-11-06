@@ -75,7 +75,8 @@ fun ProfileHeader(
                 Text(
                     text = stringResource(R.string.arroba_usuario, username),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.testTag("usernamePerfil")
                 )
 
                 // Tocar un contador abre esa lista

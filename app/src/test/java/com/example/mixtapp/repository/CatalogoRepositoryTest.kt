@@ -29,6 +29,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
+import org.junit.Before
 import org.junit.Test
 
 // El repositorio del catalogo con mocks: los data sources responden lo que dice cada prueba y se
@@ -57,10 +58,15 @@ class CatalogoRepositoryTest {
 
     private val fromZero = AlbumDto().copy(id = "album_1", titulo = "From Zero", artista = "Linkin Park", anio = 2024)
 
+    // Casi todas las pruebas son con la sesion iniciada: la que no, cambia el mock
+    @Before
+    fun setUp() {
+        coEvery { authDataSource.currentUser?.uid } returns "yo"
+    }
+
     @Test
     fun getItemConResenas_albumConDosResenas_calculaLasEstadisticas() = runTest {
         //Arrange
-        coEvery { authDataSource.currentUser?.uid } returns "yo"
         coEvery { albumDataSource.getAlbumById("album_1", "yo") } returns fromZero
         coEvery { reviewDataSource.getReviewsDeItem(TIPO_ALBUM, "album_1", any()) } returns listOf(
             ReviewDto().copy(id = "r1", calificacion = 5, usuarioId = "yo", itemId = "album_1"),
@@ -81,7 +87,6 @@ class CatalogoRepositoryTest {
     @Test
     fun getItemConResenas_cancion_mapeaTituloAlbumYArtista() = runTest {
         //Arrange
-        coEvery { authDataSource.currentUser?.uid } returns "yo"
         coEvery { cancionDataSource.getCancionById("cancion_1", "yo") } returns CancionDto().copy(
             id = "cancion_1",
             titulo = "The Emptiness Machine",
@@ -102,7 +107,6 @@ class CatalogoRepositoryTest {
     @Test
     fun getItemConResenas_artistaQueNoExiste_contenidoNoEncontrado() = runTest {
         //Arrange
-        coEvery { authDataSource.currentUser?.uid } returns "yo"
         coEvery { artistaDataSource.getArtistaById("artista_999", "yo") } returns null
         coEvery { reviewDataSource.getReviewsDeItem(TIPO_ARTISTA, "artista_999", any()) } returns emptyList()
         //Act
@@ -114,7 +118,6 @@ class CatalogoRepositoryTest {
     @Test
     fun getItemConResenas_dataSourceFalla_errorInesperado() = runTest {
         //Arrange
-        coEvery { authDataSource.currentUser?.uid } returns "yo"
         coEvery { albumDataSource.getAlbumById(any(), any()) } throws RuntimeException("Fallo la lectura")
         coEvery { reviewDataSource.getReviewsDeItem(any(), any(), any()) } returns emptyList()
         //Act
@@ -136,7 +139,6 @@ class CatalogoRepositoryTest {
     @Test
     fun getCatalogoLive_resenasDeVariosAlbumes_cadaAlbumConLasSuyas() = runTest {
         //Arrange
-        coEvery { authDataSource.currentUser?.uid } returns "yo"
         coEvery { albumDataSource.listenAlbumes() } returns flowOf(listOf(fromZero, fromZero.copy(id = "album_2")))
         coEvery { cancionDataSource.listenCanciones() } returns flowOf(emptyList())
         coEvery { artistaDataSource.listenArtistas() } returns flowOf(emptyList())
@@ -186,7 +188,6 @@ class CatalogoRepositoryTest {
     fun getLanzamientosLive_meGustaUnArtista_susAlbumesYCancionesDelMasNuevo() = runTest {
         //Arrange: me gusta Mike Shinoda (de Linkin Park): salen los albumes y las canciones de la
         // banda, del mas nuevo al mas viejo; Metallica no
-        coEvery { authDataSource.currentUser?.uid } returns "yo"
         coEvery { albumDataSource.listenAlbumes() } returns flowOf(
             listOf(
                 fromZero.copy(fechaLanzamiento = "2024-11-15"),

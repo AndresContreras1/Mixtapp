@@ -73,6 +73,7 @@ fun ItemHeader(
             text = item.subtitulo,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.testTag("subtituloItem"),
         )
 
         // Solo las canciones traen el artista aparte del album

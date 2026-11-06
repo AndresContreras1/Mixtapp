@@ -1,17 +1,18 @@
 package com.example.mixtapp.repository
 
+import com.example.mixtapp.borrarCuentaDePrueba
 import com.example.mixtapp.cargarDatosDePrueba
 import com.example.mixtapp.conectarEmulador
 import com.example.mixtapp.data.datasource.AuthRemoteDataSource
 import com.example.mixtapp.data.datasource.impl.firestore.ReviewFirestoreDataSourceImpl
 import com.example.mixtapp.data.datasource.impl.firestore.UsuarioFirestoreDataSourceImpl
-import com.example.mixtapp.data.dtos.CreateComentarioDto
 import com.example.mixtapp.data.dtos.toItemUi
 import com.example.mixtapp.data.model.TIPO_ALBUM
 import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
 import com.example.mixtapp.data.repository.ReviewRepository
 import com.example.mixtapp.data.repository.SinSesionException
 import com.example.mixtapp.generateAlbum
+import com.example.mixtapp.generateComentario
 import com.example.mixtapp.limpiarBase
 import com.google.common.truth.Truth
 import com.google.firebase.Firebase
@@ -55,11 +56,7 @@ class ReviewRepositoryIntegrationTest {
     @After
     fun tearDown() = runTest {
         limpiarBase(db)
-        // Si la prueba cerro la sesion se vuelve a entrar con la cuenta de prueba para poder
-        // borrarla: el Authentication del emulador queda como estaba
-        val user = auth.currentUser ?: auth.signInWithEmailAndPassword(correo, "123456").await().user
-        user?.delete()?.await()
-        auth.signOut()
+        borrarCuentaDePrueba(auth, correo)
     }
 
     @Test
@@ -122,11 +119,11 @@ class ReviewRepositoryIntegrationTest {
     fun getDiscussionLive_respuesta_quedaDebajoDeSuComentario() = runTest {
         //Arrange: la respuesta es la mas nueva, pero va debajo del comentario que responde
         val dataSource = ReviewFirestoreDataSourceImpl(db)
-        dataSource.createComentario("review_1", comentario("A", null, "2025-01-01T00:00:00Z"))
-        dataSource.createComentario("review_1", comentario("B", null, "2025-01-02T00:00:00Z"))
+        dataSource.createComentario("review_1", generateComentario(i = 2, contenido = "A", createdAt = "2025-01-01T00:00:00Z"))
+        dataSource.createComentario("review_1", generateComentario(i = 2, contenido = "B", createdAt = "2025-01-02T00:00:00Z"))
         val comentarioA = dataSource.listenComentarios("review_1")
             .first { lista -> lista.any { it.contenido == "A" } }.first { it.contenido == "A" }
-        dataSource.createComentario("review_1", comentario("Respuesta a A", comentarioA.id, "2025-01-03T00:00:00Z"))
+        dataSource.createComentario("review_1", generateComentario(i = 2, parentCommentId = comentarioA.id, contenido = "Respuesta a A", createdAt = "2025-01-03T00:00:00Z"))
         //Act: se espera la discusion con los tres comentarios, no la que trae la cache local
         val discussion = reviewRepository.getDiscussionLive("review_1").first { it.comments.size == 3 }
         //Assert
@@ -144,18 +141,11 @@ class ReviewRepositoryIntegrationTest {
     }
 
     @Test
-    fun eliminarResena_validReview_success() = runTest {
+    fun eliminarResena_validReview_yaNoExiste() = runTest {
         //Act
         val result = reviewRepository.eliminarResena("review_1")
-        //Assert
+        //Assert: ademas del success, el documento se borro
         Truth.assertThat(result.isSuccess).isTrue()
+        Truth.assertThat(db.collection("reviews").document("review_1").get().await().exists()).isFalse()
     }
-
-    private fun comentario(texto: String, parentCommentId: String?, createdAt: String) = CreateComentarioDto(
-        usuarioId = "usuario_2",
-        contenido = texto,
-        parentCommentId = parentCommentId,
-        likesCount = 0,
-        createdAt = createdAt,
-    )
 }

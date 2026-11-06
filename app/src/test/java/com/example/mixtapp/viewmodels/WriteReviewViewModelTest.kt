@@ -12,6 +12,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -47,11 +48,16 @@ class WriteReviewViewModelTest {
         Dispatchers.resetMain()
     }
 
+    // Las tres pruebas empiezan con el formulario del album de ejemplo abierto
+    private fun TestScope.abrirFormulario() {
+        viewModel.getItem(TIPO_ALBUM, "album_from_zero")
+        advanceUntilIdle()
+    }
+
     @Test
     fun publicarResena_sinTexto_errorResenaVacia() = runTest {
         //Arrange
-        viewModel.getItem(TIPO_ALBUM, "album_from_zero")
-        advanceUntilIdle()
+        abrirFormulario()
         viewModel.updateRating(4)
         //Act
         viewModel.publicarResena()
@@ -65,8 +71,7 @@ class WriteReviewViewModelTest {
     @Test
     fun publicarResena_fechaConMes13_errorFechaInvalida() = runTest {
         //Arrange
-        viewModel.getItem(TIPO_ALBUM, "album_from_zero")
-        advanceUntilIdle()
+        abrirFormulario()
         viewModel.updateReviewText("Muy bueno")
         viewModel.updateListenedDate("2026-13-01")
         //Act
@@ -79,8 +84,7 @@ class WriteReviewViewModelTest {
     @Test
     fun publicarResena_resenaValida_navega() = runTest {
         //Arrange
-        viewModel.getItem(TIPO_ALBUM, "album_from_zero")
-        advanceUntilIdle()
+        abrirFormulario()
         viewModel.updateRating(5)
         viewModel.updateReviewText("Muy bueno")
         viewModel.updateListenedDate("2026-10-30")

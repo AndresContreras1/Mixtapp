@@ -1,6 +1,8 @@
 package com.example.mixtapp
 
+import android.util.Log
 import com.example.mixtapp.data.dtos.AlbumDto
+import com.example.mixtapp.data.dtos.CreateComentarioDto
 import com.example.mixtapp.data.dtos.CreateReviewDto
 import com.example.mixtapp.data.dtos.CreateReviewItemDto
 import com.example.mixtapp.data.dtos.CreateReviewUsuarioDto
@@ -9,6 +11,7 @@ import com.example.mixtapp.data.dtos.SeccionDto
 import com.example.mixtapp.data.dtos.UsuarioPerfilFirestoreDto
 import com.example.mixtapp.data.model.TIPO_ALBUM
 import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
@@ -19,17 +22,18 @@ import kotlinx.coroutines.tasks.await
 
 // Todas las pruebas usan el emulador de Firebase. Cada useEmulator va en su propio try: si otra prueba
 // de la misma corrida ya lo conecto, lanza una excepcion que no importa, y asi no deja al otro sin
-// conectar
+// conectar. El Log.d queda en el Logcat (filtro DatosDePrueba): si la instancia ya se habia usado
+// sin el emulador, ahi se ve por que la prueba no esta en el emulador
 fun conectarEmulador() {
     try {
         Firebase.firestore.useEmulator("10.0.2.2", 8080)
     } catch (e: Exception) {
-
+        Log.d("DatosDePrueba", "Firestore no se conecto al emulador: ${e.message}")
     }
     try {
         Firebase.auth.useEmulator("10.0.2.2", 9099)
     } catch (e: Exception) {
-
+        Log.d("DatosDePrueba", "Authentication no se conecto al emulador: ${e.message}")
     }
 }
 
@@ -102,6 +106,33 @@ suspend fun cargarDatosDePrueba(db: FirebaseFirestore) {
     }
 
     batch.commit().await()
+}
+
+// Un comentario del usuario i, como lo arma el repositorio (con la copia del autor)
+fun generateComentario(
+    i: Int,
+    parentCommentId: String? = null,
+    contenido: String = "Comentario $i",
+    createdAt: String = "2025-01-0${i}T00:00:00Z",
+): CreateComentarioDto {
+    val usuario = generateUsuario(i)
+
+    return CreateComentarioDto(
+        usuarioId = usuario.id,
+        contenido = contenido,
+        parentCommentId = parentCommentId,
+        likesCount = 0,
+        createdAt = createdAt,
+        usuario = CreateReviewUsuarioDto(nombre = usuario.nombre, fotoUrl = usuario.fotoUrl),
+    )
+}
+
+// Las pruebas de repositorio crean una cuenta en el Authentication del emulador. Si la prueba cerro
+// la sesion se vuelve a entrar con esa cuenta para poder borrarla: el emulador queda como estaba
+suspend fun borrarCuentaDePrueba(auth: FirebaseAuth, correo: String) {
+    val user = auth.currentUser ?: auth.signInWithEmailAndPassword(correo, "123456").await().user
+    user?.delete()?.await()
+    auth.signOut()
 }
 
 // Antes y despues de cada prueba la base debe quedar igual, y lo ideal es que vacia. Borrar un

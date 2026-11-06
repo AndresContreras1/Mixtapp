@@ -59,13 +59,30 @@ class AlbumFirestoreDataSourceTest {
     }
 
     @Test
-    fun sendOrDeleteLike_primeraVez_subeElContadorYCopiaElAlbum() = runTest {
+    fun sendOrDeleteLike_primeraVez_liked() = runTest {
         //Act
         dataSource.sendOrDeleteLike(albumId = "album_1", userId = "usuario_2", copia = copia)
         //Assert
         val album = dataSource.getAlbumById("album_1", currentUserId = "usuario_2")
-        Truth.assertThat(album?.likesCount).isEqualTo(1)
         Truth.assertThat(album?.liked).isTrue()
+    }
+
+    @Test
+    fun sendOrDeleteLike_primeraVez_subeElContador() = runTest {
+        //Arrange
+        val oldAlbum = dataSource.getAlbumById("album_1", currentUserId = "usuario_2")
+        //Act
+        dataSource.sendOrDeleteLike(albumId = "album_1", userId = "usuario_2", copia = copia)
+        //Assert
+        val album = dataSource.getAlbumById("album_1", currentUserId = "usuario_2")
+        Truth.assertThat(album?.likesCount).isEqualTo((oldAlbum?.likesCount ?: 0) + 1)
+    }
+
+    @Test
+    fun sendOrDeleteLike_primeraVez_copiaElAlbumEnMisLikes() = runTest {
+        //Act
+        dataSource.sendOrDeleteLike(albumId = "album_1", userId = "usuario_2", copia = copia)
+        //Assert: la copia guarda lo que se muestra y el genero para Para ti
         val miLike = db.collection("usuarios").document("usuario_2")
             .collection("likes").document("album_1").get().await()
         Truth.assertThat(miLike.getString("titulo")).isEqualTo("Album 1")

@@ -86,7 +86,7 @@ class HomeViewModelTest {
     }
 
     @Test
-    fun paraTi_casiTodoMetalYUnReggaeton_soloUnReggaeton() = runTest {
+    fun init_casiTodoMetalYUnReggaeton_paraTiConSoloUnReggaeton() = runTest {
         //Arrange: 9 likes de metal y 1 de reggaeton
         val favoritos = metal.take(9).map { like(it.item.id, "Metal") } + like("reggaeton_1", "Reggaetón")
         val viewModel = crearViewModel(catalogo = metal + reggaeton, favoritos = favoritos)
@@ -99,21 +99,23 @@ class HomeViewModelTest {
     }
 
     @Test
-    fun descubre_conMisLikes_soloLoQueNoTieneMiLike() = runTest {
+    fun updateSelectedFilter_descubreConMisLikes_primeroMiGeneroSinLoQueTieneMiLike() = runTest {
         //Arrange
         val favoritos = metal.take(3).map { like(it.item.id, "Metal") }
         val viewModel = crearViewModel(catalogo = metal + reggaeton, favoritos = favoritos)
         //Act
         viewModel.updateSelectedFilter(FILTRO_DESCUBRE)
         advanceUntilIdle()
-        //Assert: las canciones que ya tienen mi like no salen, y todo es de mi genero
+        //Assert: las canciones que ya tienen mi like no salen. Primero van las 7 de metal que no
+        // conozco y, como no alcanzan para los 10 cupos, la fila se completa con otro genero
         val canciones = viewModel.uiState.value.canciones
         assertThat(canciones.map { it.id }).containsNoneOf("metal_1", "metal_2", "metal_3")
-        assertThat(canciones.map { it.genero }.toSet()).containsExactly("Metal")
+        assertThat(canciones.take(7).map { it.genero }.toSet()).containsExactly("Metal")
+        assertThat(canciones.drop(7).map { it.genero }.toSet()).containsExactly("Reggaetón")
     }
 
     @Test
-    fun tendencias_meGustaElMetal_primeroLaListaDelMetal() = runTest {
+    fun updateSelectedFilter_tendenciasMeGustaElMetal_primeroLaListaDelMetal() = runTest {
         //Arrange: los dos generos tienen canciones en su lista; solo me gusta el metal
         val catalogo = listOf(
             cancion(id = "metal_top_2", genero = "Metal", tendencia = 2),

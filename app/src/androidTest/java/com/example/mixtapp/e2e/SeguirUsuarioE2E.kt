@@ -4,9 +4,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.hasTestTag
-import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
@@ -19,12 +17,10 @@ import com.example.mixtapp.data.repository.AuthRepository
 import com.example.mixtapp.data.repository.UsuarioRepository
 import com.example.mixtapp.limpiarBase
 import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
@@ -58,7 +54,7 @@ class SeguirUsuarioE2E {
         conectarEmulador()
 
         // El usuario se registra como en la app y cierra la sesion: la prueba entra por el login.
-        // usuario_1 (Nombre 1, 10 seguidores) escribio review_1 del album_1
+        // usuario_1 (Nombre 1, @username_1, 10 seguidores) escribio review_1 del album_1
         runBlocking {
             limpiarBase(Firebase.firestore)
             cargarDatosDePrueba(Firebase.firestore)
@@ -70,52 +66,42 @@ class SeguirUsuarioE2E {
 
     @After
     fun tearDown() = runTest {
-        // Se borra la cuenta de la prueba y lo que quedo en la base
-        Firebase.auth.currentUser?.delete()?.await()
-        Firebase.auth.signOut()
-        limpiarBase(Firebase.firestore)
-    }
-
-    private fun esperarTag(tag: String) {
-        composeRule.waitUntil(timeoutMillis = 10000) {
-            composeRule.onAllNodesWithTag(tag).fetchSemanticsNodes().isNotEmpty()
-        }
+        borrarCuentaYLimpiarBase()
     }
 
     @Test
     fun login_seguirAlAutorDeUnaResena_suResenaApareceEnSiguiendo() {
         // Inicia sesion
+        composeRule.esperarTag("loginScreen")
         composeRule.onNodeWithTag("txtEmail").performTextInput(correo)
         composeRule.onNodeWithTag("txtPassword").performTextInput("123456")
         composeRule.onNodeWithTag("btnLogin").performClick()
-        esperarTag("homeScreen")
+        composeRule.esperarTag("homeScreen")
 
         // Va al perfil de un usuario: el autor de la primera resena de la primera publicacion
-        esperarTag("tarjetaTendencia")
+        composeRule.esperarTag("tarjetaTendencia")
         composeRule.onNodeWithTag("tarjetaTendencia").performClick()
-        esperarTag("tituloItem")
+        composeRule.esperarTag("tituloItem")
         composeRule.onNodeWithTag("listaDetalle").performScrollToNode(hasTestTag("autor_review_1"))
         composeRule.onNodeWithTag("autor_review_1").performClick()
 
-        // La informacion del usuario es la correcta
-        esperarTag("nombrePerfil")
+        // La informacion del usuario es la correcta: nombre, usuario y seguidores
+        composeRule.esperarTag("nombrePerfil")
         composeRule.onNodeWithTag("nombrePerfil").assertTextEquals("Nombre 1")
+        composeRule.onNodeWithTag("usernamePerfil").assertTextEquals("@username_1")
         composeRule.onNodeWithTag("contadorSeguidores").assertTextContains("10", substring = true)
 
         // Lo sigue: el contador de seguidores sube a 11
         composeRule.onNodeWithTag("btnSeguir").performClick()
-        composeRule.waitUntil(timeoutMillis = 10000) {
-            composeRule.onAllNodes(hasTestTag("contadorSeguidores") and hasText("11", substring = true))
-                .fetchSemanticsNodes().isNotEmpty()
-        }
+        composeRule.esperarTexto(tag = "contadorSeguidores", texto = "11", substring = true)
         composeRule.onNodeWithTag("contadorSeguidores").assertTextContains("11", substring = true)
 
         // Vuelve al inicio (perfil -> detalle -> inicio) y abre Siguiendo: ahi esta su resena
         Espresso.pressBack()
         Espresso.pressBack()
-        esperarTag("homeScreen")
+        composeRule.esperarTag("homeScreen")
         composeRule.onNodeWithTag("btnSiguiendo").performClick()
-        esperarTag("review_review_1")
+        composeRule.esperarTag("review_review_1")
         composeRule.onNodeWithTag("review_review_1").assertIsDisplayed()
     }
 }

@@ -4,9 +4,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.hasTestTag
-import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
@@ -21,12 +19,10 @@ import com.example.mixtapp.conectarEmulador
 import com.example.mixtapp.data.repository.AuthRepository
 import com.example.mixtapp.limpiarBase
 import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
@@ -56,7 +52,7 @@ class RegistroYLikeE2E {
         // Con la aplicacion de prueba de Hilt no corre BaseApplication: el emulador se conecta aqui
         conectarEmulador()
 
-        // La primera publicacion es el album_1 con la resena review_1, sin likes
+        // La primera publicacion es el album_1 (de Artista 1) con la resena review_1, sin likes
         runBlocking {
             limpiarBase(Firebase.firestore)
             cargarDatosDePrueba(Firebase.firestore)
@@ -66,37 +62,21 @@ class RegistroYLikeE2E {
 
     @After
     fun tearDown() = runTest {
-        // Se borra la cuenta que creo la prueba y lo que quedo en la base
-        Firebase.auth.currentUser?.delete()?.await()
-        Firebase.auth.signOut()
-        limpiarBase(Firebase.firestore)
-    }
-
-    private fun esperarTag(tag: String) {
-        composeRule.waitUntil(timeoutMillis = 10000) {
-            composeRule.onAllNodesWithTag(tag).fetchSemanticsNodes().isNotEmpty()
-        }
-    }
-
-    // El contador de likes de la resena llega por el listener: se espera a que muestre el numero
-    private fun esperarLikes(reviewId: String, likes: String) {
-        composeRule.waitUntil(timeoutMillis = 10000) {
-            composeRule.onAllNodes(hasTestTag("likes_$reviewId") and hasText(likes))
-                .fetchSemanticsNodes().isNotEmpty()
-        }
+        borrarCuentaYLimpiarBase()
     }
 
     // Abre la primera publicacion del inicio y baja hasta la primera resena
     private fun abrirPrimeraPublicacion() {
-        esperarTag("tarjetaTendencia")
+        composeRule.esperarTag("tarjetaTendencia")
         composeRule.onNodeWithTag("tarjetaTendencia").performClick()
-        esperarTag("tituloItem")
+        composeRule.esperarTag("tituloItem")
         composeRule.onNodeWithTag("listaDetalle").performScrollToNode(hasTestTag("like_review_1"))
     }
 
     @Test
     fun registro_contrasenaCortaYLuegoValida_daYQuitaLikeEnLaPrimeraPublicacion() {
         // Registro con contrasena de 4 caracteres: sale el error y no entra
+        composeRule.esperarTag("loginScreen")
         composeRule.onNodeWithTag("btnIrARegistro").performClick()
         composeRule.onNodeWithTag("txtNombre").performTextInput("Nuevo Usuario")
         composeRule.onNodeWithTag("txtUsername").performTextInput("nuevo")
@@ -107,8 +87,9 @@ class RegistroYLikeE2E {
         composeRule.onNodeWithTag("btnRegistrar").performScrollTo().performClick()
 
         val errorContrasena = composeRule.activity.getString(R.string.error_contrasena_corta)
-        composeRule.onNodeWithTag("errorMessage").assertIsDisplayed()
+        composeRule.onNodeWithTag("errorMessage").performScrollTo().assertIsDisplayed()
         composeRule.onNodeWithTag("errorMessage").assertTextEquals(errorContrasena)
+        composeRule.onNodeWithTag("signUpScreen").assertIsDisplayed()
 
         // Corrige la contrasena: performTextClearance antes, porque performTextInput escribe al inicio
         composeRule.onNodeWithTag("txtPasswordRegistro").performScrollTo().performTextClearance()
@@ -117,26 +98,27 @@ class RegistroYLikeE2E {
         composeRule.onNodeWithTag("txtConfirmPassword").performTextInput("123456")
         composeRule.onNodeWithTag("btnRegistrar").performScrollTo().performClick()
 
-        esperarTag("homeScreen")
+        composeRule.esperarTag("homeScreen")
         composeRule.onNodeWithTag("homeScreen").assertIsDisplayed()
 
-        // La primera publicacion: el detalle muestra el album correcto
+        // La primera publicacion: el detalle muestra el album y el artista correctos
         abrirPrimeraPublicacion()
         composeRule.onNodeWithTag("tituloItem").assertTextEquals("Album 1")
+        composeRule.onNodeWithTag("subtituloItem").assertTextEquals("Artista 1")
 
         // Like a la primera resena: el contador pasa de 0 a 1
         composeRule.onNodeWithTag("likes_review_1").assertTextEquals("0")
         composeRule.onNodeWithTag("like_review_1").performClick()
-        esperarLikes(reviewId = "review_1", likes = "1")
+        composeRule.esperarTexto(tag = "likes_review_1", texto = "1")
         composeRule.onNodeWithTag("likes_review_1").assertTextContains("1")
 
         // Vuelve atras, entra otra vez a la publicacion y quita el like: el contador baja a 0
         Espresso.pressBack()
-        esperarTag("homeScreen")
+        composeRule.esperarTag("homeScreen")
         abrirPrimeraPublicacion()
-        esperarLikes(reviewId = "review_1", likes = "1")
+        composeRule.esperarTexto(tag = "likes_review_1", texto = "1")
         composeRule.onNodeWithTag("like_review_1").performClick()
-        esperarLikes(reviewId = "review_1", likes = "0")
+        composeRule.esperarTexto(tag = "likes_review_1", texto = "0")
         composeRule.onNodeWithTag("likes_review_1").assertTextEquals("0")
     }
 }

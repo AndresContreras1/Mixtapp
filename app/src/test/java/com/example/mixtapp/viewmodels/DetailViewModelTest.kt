@@ -49,6 +49,21 @@ class DetailViewModelTest {
     }
 
     @Test
+    fun getItem_itemQueExiste_loMuestraSinError() = runTest {
+        //Arrange
+        coEvery { catalogoRepository.getItemLive(TIPO_ALBUM, "album_from_zero") } returns
+            flowOf(LocalPreviewProvider.itemConResenas)
+        //Act
+        viewModel.getItem(TIPO_ALBUM, "album_from_zero")
+        advanceUntilIdle()
+        //Assert
+        val state = viewModel.uiState.value
+        assertThat(state.isLoading).isFalse()
+        assertThat(state.itemConResenas?.item?.id).isEqualTo(LocalPreviewProvider.itemConResenas.item.id)
+        assertThat(state.errorMessageRes).isNull()
+    }
+
+    @Test
     fun getItem_itemQueNoExiste_mensajeNoEncontrado() = runTest {
         //Arrange
         coEvery { catalogoRepository.getItemLive(TIPO_ALBUM, "album_999") } returns

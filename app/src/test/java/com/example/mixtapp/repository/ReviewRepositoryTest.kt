@@ -13,6 +13,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
+import org.junit.Before
 import org.junit.Test
 
 // El repositorio de resenas con mocks: los flujos del data source se reemplazan por flowOf con lo
@@ -25,10 +26,15 @@ class ReviewRepositoryTest {
 
     private val repository = ReviewRepository(reviewDataSource, usuarioDataSource, authDataSource)
 
+    // Las tres pruebas son con la sesion iniciada
+    @Before
+    fun setUp() {
+        coEvery { authDataSource.currentUser?.uid } returns "yo"
+    }
+
     @Test
     fun getMyReviewsLive_tresResenas_laUltimaEditadaPrimeroYMias() = runTest {
         //Arrange
-        coEvery { authDataSource.currentUser?.uid } returns "yo"
         coEvery { usuarioDataSource.listenReviewsDeUsuario("yo", "yo") } returns flowOf(
             listOf(
                 ReviewDto().copy(id = "vieja", usuarioId = "yo", updatedAt = "2026-10-01T00:00:00Z"),
@@ -46,7 +52,6 @@ class ReviewRepositoryTest {
     @Test
     fun getDiscussionLive_respuesta_quedaDebajoDeSuComentario() = runTest {
         //Arrange: los comentarios llegan del mas viejo al mas nuevo, y la respuesta es la ultima
-        coEvery { authDataSource.currentUser?.uid } returns "yo"
         coEvery { reviewDataSource.listenReviewById("r1", "yo") } returns flowOf(ReviewDto().copy(id = "r1"))
         coEvery { reviewDataSource.listenComentarios("r1", "yo") } returns flowOf(
             listOf(
@@ -65,7 +70,6 @@ class ReviewRepositoryTest {
     @Test
     fun getDiscussionLive_resenaQueNoExiste_contenidoNoEncontrado() = runTest {
         //Arrange: el data source envia null cuando la resena no existe
-        coEvery { authDataSource.currentUser?.uid } returns "yo"
         coEvery { reviewDataSource.listenReviewById("r999", "yo") } returns flowOf(null)
         coEvery { reviewDataSource.listenComentarios("r999", "yo") } returns flowOf(emptyList())
         //Act

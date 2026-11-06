@@ -1,5 +1,6 @@
 package com.example.mixtapp.repository
 
+import com.example.mixtapp.borrarCuentaDePrueba
 import com.example.mixtapp.cargarDatosDePrueba
 import com.example.mixtapp.conectarEmulador
 import com.example.mixtapp.data.datasource.AuthRemoteDataSource
@@ -16,6 +17,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
 import com.google.firebase.messaging.FirebaseMessaging
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -54,11 +56,7 @@ class UsuarioRepositoryIntegrationTest {
     @After
     fun tearDown() = runTest {
         limpiarBase(db)
-        // Si la prueba cerro la sesion se vuelve a entrar con la cuenta de prueba para poder
-        // borrarla: el Authentication del emulador queda como estaba
-        val user = auth.currentUser ?: auth.signInWithEmailAndPassword(correo, "123456").await().user
-        user?.delete()?.await()
-        auth.signOut()
+        borrarCuentaDePrueba(auth, correo)
     }
 
     // Guarda el documento de la cuenta de la sesion, con el uid como id
@@ -143,13 +141,15 @@ class UsuarioRepositoryIntegrationTest {
     }
 
     @Test
-    fun followOrUnfollow_otroUsuario_success() = runTest {
+    fun followOrUnfollow_otroUsuario_loSigoYSubenSusSeguidores() = runTest {
         //Arrange
         crearMiDocumento()
         //Act
         val result = usuarioRepository.followOrUnfollow("usuario_2")
-        //Assert
+        //Assert: usuario_2 tenia 20 seguidores; el perfil en vivo me muestra siguiendolo
+        val perfil = usuarioRepository.getUsuarioByIdLive("usuario_2").first { it.siguiendo }
         Truth.assertThat(result.isSuccess).isTrue()
+        Truth.assertThat(perfil.seguidores).isEqualTo(21)
     }
 
     @Test
