@@ -9,7 +9,6 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextInput
-import androidx.test.espresso.Espresso
 import com.example.mixtapp.MainActivity
 import com.example.mixtapp.cargarDatosDePrueba
 import com.example.mixtapp.conectarEmulador
@@ -96,9 +95,11 @@ class SeguirUsuarioE2E {
         composeRule.esperarTexto(tag = "contadorSeguidores", texto = "11", substring = true)
         composeRule.onNodeWithTag("contadorSeguidores").assertTextContains("11", substring = true)
 
-        // Vuelve al inicio (perfil -> detalle -> inicio) y abre Siguiendo: ahi esta su resena
-        Espresso.pressBack()
-        Espresso.pressBack()
+        // Vuelve al inicio con la flecha (perfil -> detalle -> inicio) y abre Siguiendo: ahi esta su
+        // resena. En el detalle la lista quedo abajo, en la resena
+        composeRule.tocarVolver()
+        composeRule.esperarTag("listaDetalle")
+        composeRule.tocarVolver(listaTag = "listaDetalle")
         composeRule.esperarTag("homeScreen")
         composeRule.onNodeWithTag("btnSiguiendo").performClick()
         composeRule.esperarTag("review_review_1")
