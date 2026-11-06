@@ -18,6 +18,11 @@ data class HomeState(
     val seguidosIds: Set<String> = emptySet(),
     // El album de la tarjeta grande; null si el catalogo no tiene albumes
     val enTendencia: ItemUi? = null,
+    // El id del album en tendencia de mis generos que salio al azar al entrar al inicio. Se guarda
+    // para que un like o una resena nueva, que vuelven a armar el inicio, no lo cambien
+    val albumEnTendenciaId: String? = null,
+    // En la pestana Tendencias la tarjeta es el puesto 1 de Colombia y dice su puesto en esa lista
+    val enTendenciaColombia: Boolean = false,
     // Las tres filas del filtro elegido, hasta 10 items cada una
     val canciones: List<ItemUi> = emptyList(),
     val albumes: List<ItemUi> = emptyList(),

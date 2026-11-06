@@ -15,6 +15,8 @@ import com.example.mixtapp.ui.screens.detail.DetailScreen
 import com.example.mixtapp.ui.screens.detail.DetailViewModel
 import com.example.mixtapp.ui.screens.discussion.DiscussionScreen
 import com.example.mixtapp.ui.screens.discussion.DiscussionViewModel
+import com.example.mixtapp.ui.screens.duelos.DuelosScreen
+import com.example.mixtapp.ui.screens.duelos.DuelosViewModel
 import com.example.mixtapp.ui.screens.editprofile.EditProfileScreen
 import com.example.mixtapp.ui.screens.editprofile.EditProfileViewModel
 import com.example.mixtapp.ui.screens.followlist.FollowListScreen
@@ -143,6 +145,20 @@ fun AppNavigation(
                 },
                 onFollowingClick = { navController.navigate(Screen.Following.route) },
                 onNotificationsClick = { navController.navigate(Screen.Notifications.route) }
+            )
+        }
+
+        composable(route = Screen.Duelos.route) {
+            val duelosViewModel: DuelosViewModel = hiltViewModel()
+
+            DuelosScreen(
+                duelosViewModel = duelosViewModel,
+                onItemClick = { tipo, itemId ->
+                    navController.abrirItem(tipo = tipo, itemId = itemId)
+                },
+                onUserClick = { userId ->
+                    navController.abrirPerfil(userId = userId)
+                }
             )
         }
 

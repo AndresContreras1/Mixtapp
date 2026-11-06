@@ -49,7 +49,8 @@ Universidad Javeriana.
 | Al registrarse, el nombre, el usuario y el token de notificaciones quedan guardados en Firestore | Funcionando |
 | Catálogo real de cinco géneros (50 álbumes, 126 canciones y 56 artistas), con portadas de 1000 px, fechas de salida, el Instagram de cada artista y su puesto en la lista de Deezer de su género | Funcionando, Firestore (seed en mixtapp-functions) |
 | Inicio con **Para ti**, **Descubre**, **Tendencias** y **Seguidos**: la tarjeta En tendencia, filas de canciones, álbumes y artistas y las reseñas de quienes sigo, **en tiempo real** | Funcionando, Firestore |
-| **Para ti**, **Descubre** y **Tendencias** reparten cada fila entre los géneros que me gustan (mis me gusta y mis reseñas de 3 estrellas o más), en proporción a cuánto pesa cada uno: si casi todo es metal, casi no sale reggaetón | Funcionando |
+| **Para ti** y **Descubre** reparten cada fila entre los géneros que me gustan (mis me gusta y mis reseñas de 3 estrellas o más), en proporción a cuánto pesa cada uno: si casi todo es metal, casi no sale reggaetón. El álbum En tendencia sale al azar de las listas de Deezer de mis géneros y cambia cada vez que vuelvo al inicio | Funcionando |
+| **Tendencias** es el Top Colombia de Deezer para todos, sin repartir por mis géneros, con el #1 de Colombia en la tarjeta grande | Funcionando |
 | **Descubre**: lo de mis géneros que todavía no tiene mi me gusta ni mi reseña, primero mi subgénero y lo más nuevo | Funcionando |
 | Buscar: catálogo y personas por texto, tarjetas por fecha de lanzamiento, más populares, mejor calificados y por cada uno de los cinco géneros | Funcionando, Firestore |
 | Detalle de un álbum, una canción o un artista: promedio, total de calificaciones, % que lo recomienda, me gusta, guardar y sus reseñas, **en tiempo real** | Funcionando, Firestore |
@@ -64,14 +65,15 @@ Universidad Javeriana.
 | Seguir y dejar de seguir, con el total de seguidores y seguidos | Funcionando, Firestore |
 | Discusión de una reseña: comentarios, respuestas y likes a cada comentario, **en tiempo real**. Se abre desde cualquier tarjeta de reseña, aunque no sigas a quien la escribió | Funcionando, Firestore |
 | Notificaciones en tres pestañas, **en tiempo real**: Mías (me gusta a mis reseñas y a mis comentarios, comentarios, respuestas y seguidores nuevos, marcadas como leídas), Discusiones (reseñas nuevas de quienes sigo) y Lanzamientos (lo más nuevo de los artistas que me gustan) | Funcionando, Firestore y Cloud Functions |
+| **Duelos del día** (pestaña Duelos de la barra): cada día un duelo de álbumes, uno de canciones y uno de artistas, dos del mismo género; se vota por el mejor del día con una opinión opcional y los porcentajes y las opiniones cambian **en tiempo real** | Funcionando, Firestore |
 | Notificación push de las mismas acciones | FCM y Cloud Functions, con el Firebase real (en modo debug las funciones no corren) |
 | Foto de perfil subida a Firebase Storage | Funcionando |
 | Consumo del backend de Express con Retrofit | Implementado, intercambiable con Firestore |
 | Modo claro y modo oscuro: la app sigue el del celular | Funcionando |
 | Modo debug contra el emulador de Firebase (Firebase CLI) | Funcionando |
 | Catálogo y datos falsos con Faker para el emulador o el Firebase real | Script en [mixtapp-functions](https://github.com/AndresContreras1/mixtapp-functions) |
-| Pruebas de integración de los data sources y los repositorios contra el emulador | 25 + 17 pruebas |
-| Pruebas con mocks (MockK) del repositorio, con sus mapeos, y de los ViewModels | 15 + 15 pruebas, más 26 de mapeos y datos locales |
+| Pruebas de integración de los data sources y los repositorios contra el emulador | 31 + 17 pruebas |
+| Pruebas con mocks (MockK) del repositorio, con sus mapeos, y de los ViewModels | 21 + 27 pruebas, más 32 de mapeos y datos locales |
 | Pruebas de integración del ViewModel de registro contra el emulador | 2 pruebas |
 | Pruebas end to end de los dos casos de uso del sprint 13 | 2 pruebas |
 
@@ -129,10 +131,12 @@ lógica: filtrar, ordenar y decidir qué se muestra. **La pantalla** pinta y avi
 | `usuarios/<uid>/likes` | el id del item | `tipo`, `titulo`, `subtitulo`, `imagenUrl`, `genero`, `createdAt` (texto): la copia del item que me gusta |
 | `usuarios/<uid>/guardados` | el id del item | los mismos campos: la copia del item que guardé |
 | `usuarios/<uid>/notificaciones` | id aleatorio | `tipo` (`like`, `like_comentario`, `comentario`, `respuesta` o `seguidor`) · `actorId`, `actorNombre`, `actorFotoUrl` · `reviewId`, `itemTitulo`, `imagenUrl` (texto o null) · `leida` (booleano) · `createdAt` (texto ISO). Las escriben las Cloud Functions |
-| `albumes` | `album_<nombre>` | `titulo`, `artista`, `portadaUrl`, `genero`, `subgenero`, `fechaLanzamiento` (texto, `AAAA-MM-DD`) · `anio`, `likesCount` (número) · `tendencia` (número o null: el puesto en la lista de Deezer de su género) |
+| `albumes` | `album_<nombre>` | `titulo`, `artista`, `portadaUrl`, `genero`, `subgenero`, `fechaLanzamiento` (texto, `AAAA-MM-DD`) · `anio`, `likesCount` (número) · `tendencia` (número o null: el puesto en la lista de Deezer de su género) · `tendenciaColombia` (número o null: el puesto en el Top Colombia de Deezer) |
 | `canciones` | `cancion_<nombre>` | los del álbum más `albumId` y `album` (el nombre del álbum) |
-| `artistas` | `artista_<nombre>` | `nombre`, `fotoUrl`, `genero`, `subgenero` (texto) · `grupo`, `instagram` (texto o null) · `likesCount` (número) · `tendencia` (número o null) |
+| `artistas` | `artista_<nombre>` | `nombre`, `fotoUrl`, `genero`, `subgenero` (texto) · `grupo`, `instagram` (texto o null) · `likesCount` (número) · `tendencia`, `tendenciaColombia` (número o null) |
 | `historias` | el id del item | `tipo` (texto) · `secciones` (arreglo de mapas con `titulo` y `texto`): los datos curiosos. Van aparte del item para que el inicio no descargue ese texto |
+| `duelos` | `dia_<número del día>_<tipo>` | `dia` (número) · `tipo`, `genero` (texto) · `itemA`, `itemB` (mapas con `id`, `titulo`, `subtitulo` e `imagenUrl`: la copia de los dos items) · `votosA`, `votosB` (número) · `createdAt` (texto ISO). Lo crea el primer voto del día |
+| `duelos/<id>/votos` | el uid de quien votó | `opcion` (`a` o `b`) · `opinion` (texto, hasta 140) · `usuario` (mapa con `nombre` y `fotoUrl`) · `createdAt` (texto ISO). Cada usuario tiene un solo voto por duelo |
 | `albumes/<id>/likes`, `canciones/<id>/likes`, `artistas/<id>/likes` | el uid de quien dio like | `timestamp` |
 | `reviews` | id aleatorio | `usuarioId`, `itemId`, `tipo` (texto) · `calificacion` (número) · `comentario` (texto) · `fechaEscucha` (texto `AAAA-MM-DD` o null) · `createdAt`, `updatedAt` (texto ISO) · `likesCount`, `commentsCount` (número) · `usuario` y `item` (mapas) |
 | `reviews/<id>/likes` | el uid de quien dio like | `timestamp` |
@@ -255,15 +259,21 @@ La pantalla de notificaciones tiene tres pestañas, todas en vivo:
   cada item.
 - **Mi reseña la marca el repositorio.** Cada reseña llega con `isMine` (su `usuarioId` es mi uid),
   así el inicio, el detalle y la pantalla de escribir saben cuál es la mía sin otra petición.
-- **Las filas del inicio las arma el ViewModel.** Cada género pesa cuántos items de él me gustan
+- **Las filas del inicio las arma el ViewModel.** En Para ti, Descubre y Seguidos cada género pesa cuántos items de él me gustan
   (mis me gusta y mis reseñas de 3 estrellas o más) y recibe esa parte de los 10 cupos, sin mínimo:
   si casi todo es metal, el reggaetón puede quedar con uno o con ninguno. Los géneros se intercalan
   y, si sobran cupos, se completa primero con más de mis géneros.
   - **Para ti** ordena por popularidad.
   - **Descubre** quita lo que ya tiene mi me gusta o mi reseña y ordena por mi subgénero, por lo
     más nuevo y por popularidad.
-  - **Tendencias** pone primero lo que está en la lista de Deezer de su género, por su puesto, que
-    viene guardado en el catálogo (no hay una API externa en la app).
+  - **Tendencias** no se reparte por mis géneros: pone primero lo que está en el Top Colombia de
+    Deezer, por su puesto, y completa con lo más popular. Los puestos vienen guardados en el
+    catálogo (no hay una API externa en la app).
+- **El álbum En tendencia cambia al volver al inicio.** La pantalla llama a
+  `elegirAlbumEnTendencia()` en su `LaunchedEffect(Unit)`, que corre cada vez que el inicio vuelve a
+  aparecer. El ViewModel elige al azar uno de los álbumes que están en la lista de Deezer de mis
+  géneros y guarda su id en el estado, para que un like o una reseña nueva no lo cambien. Si ninguno
+  está en una lista, queda el más popular. En la pestaña Tendencias la tarjeta es el #1 de Colombia.
   - **Seguidos** muestra lo que reseñaron los usuarios que sigo.
 - **Los links de YouTube, Spotify e Instagram salen del mapeo**, con el artista y el título (las
   canciones buscan su video oficial). No se guardan en la base y se abren con `LocalUriHandler`.
@@ -276,6 +286,15 @@ La pantalla de notificaciones tiene tres pestañas, todas en vivo:
   discusión, Siguiendo, mi perfil con sus pestañas, el perfil de otro usuario, Mis reseñas, las
   listas de seguidores y las notificaciones. Los formularios (escribir reseña, editar perfil) y los
   datos curiosos leen una sola vez.
+- **Los duelos no necesitan un servidor que los cree.** El id es el número del día en Colombia
+  (`(milisegundos − 5 h) / 1 día`) y el tipo, así que todos los celulares llegan al mismo documento.
+  El par sale del catálogo: cada tipo toma un género que rota con los días (solo los que tienen dos
+  items o más) y, dentro del género ordenado por id, dos items distintos que también rotan. El
+  primer voto del día crea el documento con la copia de los dos items, y desde ahí el par sale de
+  ese documento. El voto va en una transacción: crea el duelo o suma el voto y, si cambié de
+  opinión, se lo resta al otro. Los porcentajes y las opiniones llegan por dos listeners
+  (`callbackFlow`) que el repositorio junta con `combine`; el ViewModel los escucha una sola vez en
+  su `init`, porque los ids de hoy no dependen de la ruta.
 - **Las corrutinas de cada ViewModel se lanzan en un dispatcher inyectado** (`@IoDispatcher`, que
   entrega `CoroutineModule`), así las pruebas pueden pasar uno de prueba.
 - **El color sale del `MaterialTheme`.** `Color.kt` tiene las cuatro escalas de la paleta (Crimson,
@@ -360,8 +379,10 @@ Están en `app/src/test`, por capa. Corren en el computador, sin emulador: clic 
 | `viewmodels/LoginViewModelTest` | 2 | credenciales válidas y contraseña incorrecta |
 | `viewmodels/WriteReviewViewModelTest` | 3 | sin texto, fecha con mes 13 y reseña válida |
 | `viewmodels/DetailViewModelTest` | 3 | el item que existe se muestra sin error, el que no existe da su mensaje y el like sin conexión (el error es del botón, el item se sigue viendo) |
-| `viewmodels/HomeViewModelTest` | 3 | Para ti con 9 me gusta de metal y 1 de reggaetón saca un solo reggaetón; Descubre no muestra lo que ya tiene mi me gusta y pone primero mi género (si no alcanza, completa con otros); Tendencias pone primero la lista de mi género y no muestra los otros |
-| `dtos/FormatosTest`, `dtos/InteraccionesSocialesTest`, `local/DatosLocalesTest` | 13 + 8 + 5 | `14K`, `3 h`, los links de YouTube, Spotify e Instagram, los contadores y las marcas del mapeo y los datos fijos de la app (los cinco géneros) |
+| `repository/DueloRepositoryTest` | 6 | el duelo sin documento (0 votos y sin items), los items del documento con su tipo, mi voto entre los votos (mi opción y `esMio`), votar sin sesión, votar bien y el data source que falla |
+| `viewmodels/DuelosViewModelTest` | 8 | el par de hoy son dos distintos del mismo género y tipo, el tipo sin dos del mismo género no tiene duelo, si alguien ya votó los items salen del documento, votar sin elegir, votar bien limpia el formulario, el error sin conexión conserva la opinión, la opinión se corta en 140 y cambiar de pestaña limpia el formulario |
+| `viewmodels/HomeViewModelTest` | 7 | Para ti con 9 me gusta de metal y 1 de reggaetón saca un solo reggaetón; Descubre no muestra lo que ya tiene mi me gusta y pone primero mi género (si no alcanza, completa con otros); Tendencias pone primero el Top Colombia aunque me guste otro género y su tarjeta es el #1 de Colombia; la tarjeta de Para ti es un álbum en lista de mi género, también al volver a entrar varias veces, y sin álbumes en lista es el más popular |
+| `dtos/FormatosTest`, `dtos/InteraccionesSocialesTest`, `dtos/DueloMapeosTest`, `local/DatosLocalesTest` | 13 + 8 + 6 + 5 | `14K`, `3 h`, los links de YouTube, Spotify e Instagram, los contadores y las marcas del mapeo, los porcentajes y el ganador de un duelo y los datos fijos de la app (los cinco géneros) |
 
 Los ViewModels reciben el dispatcher de prueba en el constructor (`@IoDispatcher`),
 `Dispatchers.setMain` lo pone como principal y `advanceUntilIdle()` espera a que terminen sus
@@ -380,6 +401,7 @@ prendido y la Firebase CLI corriendo (`firebase emulators:start --only firestore
 |---|---|---|
 | `datasource/UsuarioFirestoreDataSourceTest` | 8 | leer por id (válido y que no existe → `null`), registrar, seguir, el contador de seguidores, dejar de seguir, la lista de seguidores y las reseñas de un usuario |
 | `datasource/AlbumFirestoreDataSourceTest` | 7 | leer por id (válido y que no existe → `null`), el like a un álbum (queda `liked`, sube `likesCount` y deja la copia en `usuarios/<uid>/likes`, cada uno en su prueba), quitarlo y el listener con mi like |
+| `datasource/DueloFirestoreDataSourceTest` | 6 | el duelo en el que nadie ha votado (`null`), el primer voto crea el duelo con ese voto, el voto de otro suma sin crear otro duelo, cambiar de opción pasa el voto al otro, votar dos veces por el mismo no suma dos veces y las opiniones del más nuevo al más viejo |
 | `datasource/HistoriaFirestoreDataSourceTest` | 2 | la historia de un álbum con sus secciones en orden, y la de un item que no tiene (`null`) |
 | `datasource/ReviewFirestoreDataSourceTest` | 8 | leer por id, like y su contador, comentar y `commentsCount`, el orden de los comentarios, like a un comentario y borrar la reseña con sus comentarios |
 | `repository/ReviewRepositoryIntegrationTest` | 8 | guardar la reseña (`Result` bien y sin sesión), la copia del nombre y del item, like sin sesión, comentar, el hilo de respuestas, la discusión que no existe y eliminar (el documento ya no existe) |
@@ -503,8 +525,8 @@ app/src/main/java/com/example/mixtapp/
 ├── data/
 │   ├── datasource/      contratos · Auth · Storage · Messaging · Busqueda (local)
 │   │   ├── impl/
-│   │   │   ├── firestore/   Album · Cancion · Artista · Review · Usuario · Notificacion · Historia · MisLikes
-│   │   │   └── retrofit/    Album · Cancion · Artista · Review · Usuario · Notificacion · Historia
+│   │   │   ├── firestore/   Album · Cancion · Artista · Review · Usuario · Notificacion · Historia · Duelo · MisLikes
+│   │   │   └── retrofit/    Album · Cancion · Artista · Review · Usuario · Notificacion · Historia · Duelo
 │   │   └── services/    servicios de Retrofit · MyFirebaseMessagingService
 │   ├── dtos/            DTO de cada base, sus funciones de mapeo y Formatos (14K, 3 h, links)
 │   ├── injection/       FirebaseHiltModule · AppModule · DataSourceModule · CoroutineModule

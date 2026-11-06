@@ -118,6 +118,12 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    // Cada vez que se entra al inicio sale otro album en tendencia de mis generos: la pantalla lo
+    // pide en su LaunchedEffect. Se borra el elegido y armarInicio saca otro al azar
+    fun elegirAlbumEnTendencia() {
+        _uiState.update { armarInicio(estado = it.copy(albumEnTendenciaId = null)) }
+    }
+
     // Las filas se arman con lo que ya llego: cambiar de filtro no vuelve a pedir nada
     fun updateSelectedFilter(filtroId: String) {
         _uiState.update { armarInicio(estado = it.copy(selectedFilterId = filtroId)) }
@@ -148,9 +154,17 @@ class HomeViewModel @Inject constructor(
         // Cuanto pesa cada genero y cada subgenero: cuantos items de el me gustan
         val pesos = meGustan.groupBy { it.genero }.mapValues { (_, delGenero) -> delGenero.size }
         val afinidad = meGustan.groupBy { it.subgenero }.mapValues { (_, delSubgenero) -> delSubgenero.size }
+        val albumEnTendenciaId = elegirDeMisGeneros(estado = estado, pesos = pesos)
+        val enColombia = estado.selectedFilterId == FILTRO_TENDENCIAS
 
         return estado.copy(
-            enTendencia = enTendencia(catalogo = estado.catalogo, pesos = pesos),
+            albumEnTendenciaId = albumEnTendenciaId,
+            enTendenciaColombia = enColombia,
+            enTendencia = if (enColombia) {
+                primeroEnColombia(catalogo = estado.catalogo)
+            } else {
+                enTendencia(catalogo = estado.catalogo, pesos = pesos, elegidoId = albumEnTendenciaId)
+            },
             canciones = armarFila(tipo = TIPO_CANCION, estado = estado, pesos = pesos, afinidad = afinidad),
             albumes = armarFila(tipo = TIPO_ALBUM, estado = estado, pesos = pesos, afinidad = afinidad),
             artistas = armarFila(tipo = TIPO_ARTISTA, estado = estado, pesos = pesos, afinidad = afinidad),
@@ -170,19 +184,48 @@ class HomeViewModel @Inject constructor(
         return (conMiLike + conMiResena).map { it.item }.filter { it.genero.isNotEmpty() }
     }
 
-    // El album en el puesto mas alto de la lista de mi genero favorito (el numero mas bajo); sin
-    // generos, de todos. Si ninguno esta en la lista, el album mas popular
-    private fun enTendencia(catalogo: List<ItemConResenasUi>, pesos: Map<String, Int>): ItemUi? {
-        val albumes = catalogo.filter { it.item.tipo == TIPO_ALBUM }
-        val generoFavorito = pesos.maxByOrNull { it.value }?.key
-        val deMiGenero = albumes.filter { generoFavorito == null || it.item.genero == generoFavorito }
-        val delTop = deMiGenero.filter { it.item.tendencia != null }.minByOrNull { it.item.tendencia ?: Int.MAX_VALUE }
+    // Los albumes que estan en la lista de Deezer de alguno de mis generos; sin generos, los de
+    // todas las listas. De aqui sale al azar la tarjeta grande
+    private fun albumesEnTendencia(catalogo: List<ItemConResenasUi>, pesos: Map<String, Int>): List<ItemConResenasUi> =
+        catalogo.filter { conResenas ->
+            conResenas.item.tipo == TIPO_ALBUM &&
+                conResenas.item.tendencia != null &&
+                (pesos.isEmpty() || conResenas.item.genero in pesos)
+        }
 
-        return (delTop ?: deMiGenero.maxByOrNull { it.popularidad } ?: albumes.maxByOrNull { it.popularidad })?.item
+    // Si el elegido sigue siendo de mis generos se queda; si no (es la primera vez, se borro al
+    // volver al inicio o cambiaron mis generos), sale otro al azar. null si no hay ninguno en lista
+    private fun elegirDeMisGeneros(estado: HomeState, pesos: Map<String, Int>): String? {
+        val candidatos = albumesEnTendencia(catalogo = estado.catalogo, pesos = pesos)
+        val sigue = candidatos.any { it.item.id == estado.albumEnTendenciaId }
+
+        return if (sigue) estado.albumEnTendenciaId else candidatos.randomOrNull()?.item?.id
     }
 
-    // Una fila tiene solo un tipo; el filtro elegido decide cuales y en que orden. Para ti, Descubre
-    // y Tendencias ordenan a su manera y despues reparten los cupos entre mis generos
+    // La tarjeta de Para ti, Descubre y Seguidos: el album elegido al azar. Si ninguno de mis
+    // generos tiene albumes en su lista, el mas popular de mi genero favorito o, sin generos, de todos
+    private fun enTendencia(catalogo: List<ItemConResenasUi>, pesos: Map<String, Int>, elegidoId: String?): ItemUi? {
+        val albumes = catalogo.filter { it.item.tipo == TIPO_ALBUM }
+        val elegido = albumes.find { it.item.id == elegidoId }
+        val generoFavorito = pesos.maxByOrNull { it.value }?.key
+        val deMiGenero = albumes.filter { generoFavorito == null || it.item.genero == generoFavorito }
+
+        return (elegido ?: deMiGenero.maxByOrNull { it.popularidad } ?: albumes.maxByOrNull { it.popularidad })?.item
+    }
+
+    // La tarjeta de la pestana Tendencias: el album mas arriba del Top Colombia, sin importar mis
+    // generos. Si ninguno esta en esa lista, el mas popular
+    private fun primeroEnColombia(catalogo: List<ItemConResenasUi>): ItemUi? {
+        val albumes = catalogo.filter { it.item.tipo == TIPO_ALBUM }
+        val primero = albumes.filter { it.item.tendenciaColombia != null }
+            .minByOrNull { it.item.tendenciaColombia ?: Int.MAX_VALUE }
+
+        return (primero ?: albumes.maxByOrNull { it.popularidad })?.item
+    }
+
+    // Una fila tiene solo un tipo; el filtro elegido decide cuales y en que orden. Para ti y
+    // Descubre ordenan a su manera y despues reparten los cupos entre mis generos. Tendencias es la
+    // lista de Colombia para todos: no se reparte por mis generos
     private fun armarFila(
         tipo: String,
         estado: HomeState,
@@ -193,7 +236,7 @@ class HomeViewModel @Inject constructor(
 
         return when (estado.selectedFilterId) {
             FILTRO_SEGUIDOS -> deSeguidos(items = delTipo, seguidosIds = estado.seguidosIds)
-            FILTRO_TENDENCIAS -> repartirPorGenero(ordenados = deTendencias(items = delTipo), pesos = pesos)
+            FILTRO_TENDENCIAS -> deTendenciasColombia(items = delTipo).take(ITEMS_POR_FILA).map { it.item }
             FILTRO_DESCUBRE -> repartirPorGenero(
                 ordenados = porDescubrir(items = delTipo, favoritos = estado.favoritos, afinidad = afinidad),
                 pesos = pesos,
@@ -202,11 +245,12 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    // Primero los que estan en la lista de su genero, del puesto 1 hacia abajo; despues los demas
-    // por popularidad, para completar si mis generos tienen pocos en la lista
-    private fun deTendencias(items: List<ItemConResenasUi>): List<ItemConResenasUi> {
-        val enLaLista = items.filter { it.item.tendencia != null }.sortedBy { it.item.tendencia ?: Int.MAX_VALUE }
-        val demas = items.filter { it.item.tendencia == null }.sortedByDescending { it.popularidad }
+    // Primero los que estan en el Top Colombia, del puesto 1 hacia abajo; despues los demas por
+    // popularidad, para completar la fila si la lista tiene pocos de ese tipo
+    private fun deTendenciasColombia(items: List<ItemConResenasUi>): List<ItemConResenasUi> {
+        val enLaLista = items.filter { it.item.tendenciaColombia != null }
+            .sortedBy { it.item.tendenciaColombia ?: Int.MAX_VALUE }
+        val demas = items.filter { it.item.tendenciaColombia == null }.sortedByDescending { it.popularidad }
 
         return enLaLista + demas
     }

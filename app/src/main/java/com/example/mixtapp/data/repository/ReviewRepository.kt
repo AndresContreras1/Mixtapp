@@ -240,13 +240,11 @@ class ReviewRepository @Inject constructor(
         }
     }
 
-    // Una cuenta creada antes del sprint 10 no tiene documento en usuarios: se usa su correo.
-    // Si Firestore falla por otra razon, la excepcion sigue y falla todo el guardado, como en clase
-    private suspend fun nombreDelUsuario(usuarioId: String): String {
-        val usuario = usuarioRemoteDataSource.getUsuarioById(usuarioId)
-
-        return usuario?.toUsuarioUi()?.nombre
-            ?: authRemoteDataSource.currentUser?.email?.substringBefore("@")
-            ?: ""
-    }
+    // Una cuenta creada antes del sprint 10 no tiene documento en usuarios: se usa su correo
+    private suspend fun nombreDelUsuario(usuarioId: String): String =
+        nombreDeLaSesion(
+            usuarioRemoteDataSource = usuarioRemoteDataSource,
+            authRemoteDataSource = authRemoteDataSource,
+            usuarioId = usuarioId,
+        )
 }

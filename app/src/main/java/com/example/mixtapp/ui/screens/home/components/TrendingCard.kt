@@ -26,10 +26,12 @@ import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.ItemAsyncImage
 
 // La tarjeta grande del inicio: la portada del album en tendencia a todo el ancho y, sobre una
-// franja translucida, su titulo, el artista y su puesto en la lista de su genero
+// franja translucida, su titulo, el artista y su puesto en la lista de su genero o, en la pestana
+// Tendencias, en el Top Colombia
 @Composable
 fun TrendingCard(
     item: ItemUi,
+    enColombia: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -76,10 +78,14 @@ fun TrendingCard(
                 )
 
                 // Si ningun album esta en la lista, la tarjeta muestra el mas popular sin puesto
-                val puesto = item.tendencia
+                val puesto = if (enColombia) item.tendenciaColombia else item.tendencia
                 if (puesto != null) {
                     Text(
-                        text = stringResource(R.string.puesto_en_genero, puesto, item.genero),
+                        text = if (enColombia) {
+                            stringResource(R.string.puesto_en_colombia, puesto)
+                        } else {
+                            stringResource(R.string.puesto_en_genero, puesto, item.genero)
+                        },
                         color = MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.labelLarge,
                         fontWeight = FontWeight.Bold,
@@ -96,6 +102,7 @@ fun TrendingCardPreview() {
     MixtappTheme(darkTheme = true) {
         TrendingCard(
             item = LocalPreviewProvider.karolG,
+            enColombia = false,
             onClick = {},
         )
     }

@@ -3,6 +3,7 @@ package com.example.mixtapp.data.injection
 import com.example.mixtapp.data.datasource.AlbumRemoteDataSource
 import com.example.mixtapp.data.datasource.ArtistaRemoteDataSource
 import com.example.mixtapp.data.datasource.CancionRemoteDataSource
+import com.example.mixtapp.data.datasource.DueloRemoteDataSource
 import com.example.mixtapp.data.datasource.HistoriaRemoteDataSource
 import com.example.mixtapp.data.datasource.NotificacionRemoteDataSource
 import com.example.mixtapp.data.datasource.ReviewRemoteDataSource
@@ -10,6 +11,7 @@ import com.example.mixtapp.data.datasource.UsuarioRemoteDataSource
 import com.example.mixtapp.data.datasource.impl.firestore.AlbumFirestoreDataSourceImpl
 import com.example.mixtapp.data.datasource.impl.firestore.ArtistaFirestoreDataSourceImpl
 import com.example.mixtapp.data.datasource.impl.firestore.CancionFirestoreDataSourceImpl
+import com.example.mixtapp.data.datasource.impl.firestore.DueloFirestoreDataSourceImpl
 import com.example.mixtapp.data.datasource.impl.firestore.HistoriaFirestoreDataSourceImpl
 import com.example.mixtapp.data.datasource.impl.firestore.NotificacionFirestoreDataSourceImpl
 import com.example.mixtapp.data.datasource.impl.firestore.ReviewFirestoreDataSourceImpl
@@ -59,4 +61,9 @@ abstract class DataSourceModule {
     abstract fun bindHistoriaRemoteDataSource(
         impl: HistoriaFirestoreDataSourceImpl
     ): HistoriaRemoteDataSource
+
+    @Binds
+    abstract fun bindDueloRemoteDataSource(
+        impl: DueloFirestoreDataSourceImpl
+    ): DueloRemoteDataSource
 }
