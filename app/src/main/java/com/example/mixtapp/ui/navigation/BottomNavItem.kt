@@ -5,9 +5,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.SportsMma
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.outlined.SportsMma
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.mixtapp.R
 
@@ -31,6 +33,12 @@ val bottomNavItems = listOf(
         outlineIcon = Icons.Outlined.Search,
         route = Screen.Search.route,
         label = R.string.search_title
+    ),
+    BottomNavItem(
+        filledIcon = Icons.Filled.SportsMma,
+        outlineIcon = Icons.Outlined.SportsMma,
+        route = Screen.Duelos.route,
+        label = R.string.nav_duelos
     ),
     BottomNavItem(
         filledIcon = Icons.Filled.Person,
