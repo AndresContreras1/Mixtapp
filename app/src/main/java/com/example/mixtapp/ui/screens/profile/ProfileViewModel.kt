@@ -8,6 +8,7 @@ import com.example.mixtapp.R
 import com.example.mixtapp.data.injection.IoDispatcher
 import com.example.mixtapp.data.repository.AuthRepository
 import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
+import com.example.mixtapp.data.repository.MixtapeRepository
 import com.example.mixtapp.data.repository.ReviewRepository
 import com.example.mixtapp.data.repository.StorageRepository
 import com.example.mixtapp.data.repository.UsuarioRepository
@@ -32,6 +33,7 @@ class ProfileViewModel @Inject constructor(
     private val storageRepository: StorageRepository,
     private val reviewRepository: ReviewRepository,
     private val usuarioRepository: UsuarioRepository,
+    private val mixtapeRepository: MixtapeRepository,
     // Las corrutinas se lanzan en este hilo; las pruebas pasan uno de prueba
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
@@ -58,6 +60,7 @@ class ProfileViewModel @Inject constructor(
         escucharMisResenas()
         escucharMisFavoritos()
         escucharMisGuardados()
+        escucharMisMixtapes()
     }
 
     // Mis datos en vivo: si alguien me sigue desde otro celular, el contador cambia solo. Si mi
@@ -153,6 +156,39 @@ class ProfileViewModel @Inject constructor(
                 .collect { guardados ->
                     _uiState.update { it.copy(guardados = guardados, errorGuardadosRes = null) }
                 }
+        }
+    }
+
+    private fun escucharMisMixtapes() {
+        viewModelScope.launch(ioDispatcher) {
+            mixtapeRepository.obtenerMisMixtapes()
+                .catch { e ->
+                    Log.d("ProfileViewModel", "escucharMisMixtapes: ${e.message}")
+                    _uiState.update { it.copy(errorMixtapesRes = mensajeDeError(error = e, generico = R.string.error_cargar_contenido)) }
+                }
+                .collect { mixtapes ->
+                    _uiState.update { it.copy(mixtapes = mixtapes, errorMixtapesRes = null) }
+                }
+        }
+    }
+
+    fun setShowCreateMixtapeDialog(show: Boolean) {
+        _uiState.update { it.copy(showCreateMixtapeDialog = show) }
+    }
+
+    fun crearMixtape(nombre: String, descripcion: String) {
+        viewModelScope.launch(ioDispatcher) {
+            val result = mixtapeRepository.crearMixtape(nombre = nombre, descripcion = descripcion)
+            if (result.isSuccess) {
+                _uiState.update { it.copy(showCreateMixtapeDialog = false, errorAccionRes = null) }
+            } else {
+                _uiState.update {
+                    it.copy(
+                        showCreateMixtapeDialog = false,
+                        errorAccionRes = mensajeDeError(error = result.exceptionOrNull(), generico = R.string.error_generico)
+                    )
+                }
+            }
         }
     }
 

@@ -16,6 +16,8 @@ import com.example.mixtapp.data.datasource.impl.firestore.HistoriaFirestoreDataS
 import com.example.mixtapp.data.datasource.impl.firestore.NotificacionFirestoreDataSourceImpl
 import com.example.mixtapp.data.datasource.impl.firestore.ReviewFirestoreDataSourceImpl
 import com.example.mixtapp.data.datasource.impl.firestore.UsuarioFirestoreDataSourceImpl
+import com.example.mixtapp.data.datasource.MixtapeRemoteDataSource
+import com.example.mixtapp.data.datasource.impl.firestore.MixtapeFirestoreDataSourceImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -66,4 +68,9 @@ abstract class DataSourceModule {
     abstract fun bindDueloRemoteDataSource(
         impl: DueloFirestoreDataSourceImpl
     ): DueloRemoteDataSource
+
+    @Binds
+    abstract fun bindMixtapeRemoteDataSource(
+        impl: MixtapeFirestoreDataSourceImpl
+    ): MixtapeRemoteDataSource
 }

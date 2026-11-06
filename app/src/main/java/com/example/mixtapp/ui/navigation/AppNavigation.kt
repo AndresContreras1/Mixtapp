@@ -47,6 +47,8 @@ import com.example.mixtapp.ui.screens.splash.SplashScreen
 import com.example.mixtapp.ui.screens.splash.SplashViewModel
 import com.example.mixtapp.ui.screens.userprofile.UserProfileScreen
 import com.example.mixtapp.ui.screens.userprofile.UserProfileViewModel
+import com.example.mixtapp.ui.screens.mixtapedetail.MixtapeDetailScreen
+import com.example.mixtapp.ui.screens.mixtapedetail.MixtapeDetailViewModel
 
 private fun NavHostController.navegarLimpiandoLaPila(ruta: String) {
     navigate(ruta) {
@@ -62,6 +64,10 @@ private fun NavHostController.abrirItem(tipo: String, itemId: String) {
 
 private fun NavHostController.abrirPerfil(userId: String) {
     navigate(Screen.UserProfile.createRoute(userId = userId))
+}
+
+private fun NavHostController.abrirMixtapeDetail(mixtapeId: String) {
+    navigate(Screen.MixtapeDetail.createRoute(mixtapeId = mixtapeId))
 }
 
 private fun NavHostController.abrirEscribirResena(tipo: String, itemId: String) {
@@ -253,7 +259,10 @@ fun AppNavigation(
                 onFollowListClick = { userId, tipo ->
                     navController.abrirLista(userId = userId, tipo = tipo)
                 },
-                onSeeAllReviewsClick = { navController.navigate(Screen.MyReviews.route) }
+                onSeeAllReviewsClick = { navController.navigate(Screen.MyReviews.route) },
+                onMixtapeClick = { mixtapeId ->
+                    navController.abrirMixtapeDetail(mixtapeId = mixtapeId)
+                }
             )
         }
 
@@ -265,6 +274,25 @@ fun AppNavigation(
                 // El perfil escucha su documento en vivo, asi que ya sale con los cambios
                 onGuardado = { navController.popBackStack() },
                 onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable(
+            route = Screen.MixtapeDetail.route,
+            arguments = listOf(
+                navArgument(name = "mixtapeId") { type = NavType.StringType }
+            )
+        ) {
+            val mixtapeDetailViewModel: MixtapeDetailViewModel = hiltViewModel()
+            val mixtapeId = it.arguments?.getString("mixtapeId") ?: ""
+
+            MixtapeDetailScreen(
+                mixtapeId = mixtapeId,
+                mixtapeDetailViewModel = mixtapeDetailViewModel,
+                onBackClick = { navController.popBackStack() },
+                onItemClick = { tipo, itemId ->
+                    navController.abrirItem(tipo = tipo, itemId = itemId)
+                }
             )
         }
 

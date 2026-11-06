@@ -276,10 +276,27 @@
 
     <!-- mi perfil, perfil de otro usuario y listas de seguidores -->
     <string name="profile_tab_guardados">Guardados</string>
+    <string name="profile_tab_mixtapes">Mixtapes</string>
     <string name="actividad_reciente">Actividad reciente</string>
     <string name="sin_guardados">Guarda álbumes, canciones o artistas desde su detalle</string>
     <string name="sin_favoritos_usuario">Todavía no le ha dado me gusta a nada</string>
     <string name="sin_resenas_usuario">Todavía no ha escrito reseñas</string>
+
+    <!-- mixtapes -->
+    <string name="crear_mixtape">Crear Mixtape</string>
+    <string name="nueva_mixtape">Nueva Lista</string>
+    <string name="nombre_mixtape">Nombre de la lista</string>
+    <string name="descripcion_mixtape">Descripción (opcional)</string>
+    <string name="agregar_a_mixtape">Agregar a Mixtape</string>
+    <string name="seleccionar_mixtape">Selecciona una lista</string>
+    <string name="sin_mixtapes">Aún no tienes listas. ¡Crea una para organizar tus álbumes y canciones favoritas!</string>
+    <string name="sin_mixtapes_usuario">Este usuario aún no ha creado listas.</string>
+    <string name="sin_items_mixtape">Esta lista aún no tiene elementos. Agrégalos desde el detalle de cualquier álbum o canción.</string>
+    <string name="elementos_mixtape">%1$d elementos</string>
+    <string name="un_elemento_mixtape">1 elemento</string>
+    <string name="eliminar_mixtape">Eliminar Mixtape</string>
+    <string name="quitar_de_mixtape">Quitar de la lista</string>
+    <string name="item_agregado_a_mixtape">Agregado a la lista</string>
 
     <!-- perfil: encabezado, pestañas e Instagram -->
     <string name="label_instagram">Instagram</string>
