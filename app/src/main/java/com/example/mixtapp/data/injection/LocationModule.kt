@@ -7,6 +7,8 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 
+// La ubicacion del celular: los ViewModels reciben el contrato y Hilt entrega la implementacion de
+// Android. En las pruebas se reemplaza por un mock
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class LocationModule {
