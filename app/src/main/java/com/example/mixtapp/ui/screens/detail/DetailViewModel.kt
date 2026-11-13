@@ -6,7 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
 import com.example.mixtapp.data.injection.IoDispatcher
 import com.example.mixtapp.data.repository.CatalogoRepository
+import com.example.mixtapp.data.repository.MixtapeRepository
 import com.example.mixtapp.data.repository.ReviewRepository
+import com.example.mixtapp.data.model.toItemResumenUi
 import com.example.mixtapp.ui.utils.mensajeDeError
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -23,19 +25,16 @@ import javax.inject.Inject
 class DetailViewModel @Inject constructor(
     private val catalogoRepository: CatalogoRepository,
     private val reviewRepository: ReviewRepository,
-    // Las corrutinas se lanzan en este hilo; las pruebas pasan uno de prueba
+    private val mixtapeRepository: MixtapeRepository,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(DetailState())
     val uiState: StateFlow<DetailState> = _uiState.asStateFlow()
 
-    // El flujo se escucha mientras exista el ViewModel: si se volviera a pedir cada vez que la
-    // pantalla se muestra, se acumularian listeners
     private var escuchando = false
+    private var escuchandoMixtapes = false
 
-    // Datos en vivo: mi like, mi guardado y las resenas (una nueva, un like desde otro celular)
-    // llegan solos y la pantalla se vuelve a pintar, sin salir y volver a entrar
     fun getItem(tipo: String, itemId: String) {
         if (escuchando) return
         escuchando = true
@@ -46,7 +45,6 @@ class DetailViewModel @Inject constructor(
             catalogoRepository.getItemLive(tipo = tipo, itemId = itemId)
                 .catch { e ->
                     Log.d("DetailViewModel", "getItem: ${e.message}")
-                    // Si se cerro con error se puede volver a escuchar al entrar de nuevo
                     escuchando = false
                     _uiState.update {
                         it.copy(
@@ -67,8 +65,6 @@ class DetailViewModel @Inject constructor(
         }
     }
 
-    // No se copia el estado a mano: la transaccion cambia likesCount del item, eso dispara el
-    // listener y llega el corazon y el contador al dia
     fun sendOrDeleteLikeItem() {
         val item = _uiState.value.itemConResenas?.item ?: return
 
@@ -91,8 +87,6 @@ class DetailViewModel @Inject constructor(
         }
     }
 
-    // Guarda el item en mi perfil o lo quita. El marcador cambia cuando llega mi guardado por el
-    // listener, y el item aparece en la pestana Guardados del perfil
     fun sendOrDeleteGuardado() {
         val item = _uiState.value.itemConResenas?.item ?: return
 
@@ -115,8 +109,6 @@ class DetailViewModel @Inject constructor(
         }
     }
 
-    // El like de una resena: tampoco se copia a mano, llega la resena nueva por el listener del
-    // detalle, en este celular y en los demas que tengan el item abierto
     fun sendOrDeleteLikeResena(reviewId: String) {
         viewModelScope.launch(ioDispatcher) {
             val result = reviewRepository.sendOrDeleteLike(reviewId = reviewId)
@@ -137,8 +129,6 @@ class DetailViewModel @Inject constructor(
         }
     }
 
-    // Al quitar mi resena no se toca la lista a mano: el listener trae las resenas sin ella y el
-    // promedio recalculado
     fun eliminarMiResena(reviewId: String) {
         if (_uiState.value.eliminando) return
 
@@ -164,4 +154,40 @@ class DetailViewModel @Inject constructor(
         }
     }
 
+    fun setShowAddToMixtapeDialog(show: Boolean) {
+        _uiState.update { it.copy(showAddToMixtapeDialog = show) }
+        if (show && !escuchandoMixtapes) {
+            escuchandoMixtapes = true
+            viewModelScope.launch(ioDispatcher) {
+                mixtapeRepository.obtenerMisMixtapes()
+                    .catch { e ->
+                        Log.d("DetailViewModel", "obtenerMisMixtapes: ${e.message}")
+                        escuchandoMixtapes = false
+                    }
+                    .collect { mixtapes ->
+                        _uiState.update { it.copy(misMixtapes = mixtapes) }
+                    }
+            }
+        }
+    }
+
+    fun agregarItemAMixtape(mixtapeId: String) {
+        val item = _uiState.value.itemConResenas?.item ?: return
+        viewModelScope.launch(ioDispatcher) {
+            val result = mixtapeRepository.agregarItemAMixtape(mixtapeId = mixtapeId, item = item.toItemResumenUi())
+            if (result.isSuccess) {
+                _uiState.update { it.copy(showAddToMixtapeDialog = false, errorAccionRes = null) }
+            } else {
+                _uiState.update {
+                    it.copy(
+                        showAddToMixtapeDialog = false,
+                        errorAccionRes = mensajeDeError(
+                            error = result.exceptionOrNull(),
+                            generico = R.string.error_guardar_item,
+                        )
+                    )
+                }
+            }
+        }
+    }
 }

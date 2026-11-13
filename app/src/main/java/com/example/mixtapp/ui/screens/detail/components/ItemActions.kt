@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material3.Icon
@@ -24,8 +25,7 @@ import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppButton
 import com.example.mixtapp.ui.utils.LikeButton
 
-// Las acciones del item: calificarlo (o editar mi calificacion), darle like y guardarlo en mi
-// perfil. El corazon y el marcador cambian cuando llega el item por el listener
+// Las acciones del item: calificarlo (o editar mi calificacion), darle like, guardarlo y agregarlo a mixtape
 @Composable
 fun ItemActions(
     // Si ya escribi mi resena, el boton la edita
@@ -36,6 +36,7 @@ fun ItemActions(
     onRateClick: () -> Unit,
     onLikeClick: () -> Unit,
     onSaveClick: () -> Unit,
+    onAddToMixtapeClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -50,7 +51,7 @@ fun ItemActions(
                 .testTag("btnCalificar"),
         )
 
-        Spacer(modifier = Modifier.width(8.dp))
+        Spacer(modifier = Modifier.width(4.dp))
 
         LikeButton(
             likesText = likesText,
@@ -59,6 +60,19 @@ fun ItemActions(
             contentDescriptionRes = R.string.like_item,
             modifier = Modifier.testTag("btnLikeItem"),
         )
+
+        // Boton para agregar a mixtape
+        IconButton(
+            onClick = onAddToMixtapeClick,
+            modifier = Modifier.testTag("btnAddToMixtape"),
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.PlaylistAdd,
+                contentDescription = stringResource(R.string.agregar_a_mixtape),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(26.dp),
+            )
+        }
 
         // Lo guardado aparece en la pestana Guardados del perfil
         IconButton(
@@ -89,6 +103,7 @@ fun ItemActionsPreview() {
             onRateClick = {},
             onLikeClick = {},
             onSaveClick = {},
+            onAddToMixtapeClick = {},
         )
     }
 }

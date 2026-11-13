@@ -20,9 +20,9 @@ class BaseApplication : Application() {
         // desde el emulador de Android el computador es 10.0.2.2. BuildConfig es el de la app, no el
         // de Firebase
         if (BuildConfig.DEBUG) {
-            Firebase.firestore.useEmulator("10.0.2.2", 8080)
+            // Firebase.firestore.useEmulator("10.0.2.2", 8080)
             Log.d("BaseApplication", "Emulando Firestore")
-            Firebase.auth.useEmulator("10.0.2.2", 9099)
+            // Firebase.auth.useEmulator("10.0.2.2", 9099)
         }
     }
 }

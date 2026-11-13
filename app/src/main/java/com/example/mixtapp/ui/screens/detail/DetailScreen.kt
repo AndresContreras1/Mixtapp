@@ -21,11 +21,13 @@ import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalPreviewProvider
 import com.example.mixtapp.data.model.ItemConResenasUi
+import com.example.mixtapp.data.model.MixtapeUi
 import com.example.mixtapp.ui.screens.detail.components.DatosCuriososButton
 import com.example.mixtapp.ui.screens.detail.components.EnlacesDelItem
 import com.example.mixtapp.ui.screens.detail.components.ItemActions
 import com.example.mixtapp.ui.screens.detail.components.ItemHeader
 import com.example.mixtapp.ui.screens.detail.components.ItemStats
+import com.example.mixtapp.ui.screens.mixtapes.AddItemToMixtapeDialog
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppBackground
 import com.example.mixtapp.ui.utils.EmptyMessage
@@ -62,9 +64,15 @@ fun DetailScreen(
         itemConResenas = state.itemConResenas,
         errorMessageRes = state.errorMessageRes,
         errorAccionRes = state.errorAccionRes,
+        showAddToMixtapeDialog = state.showAddToMixtapeDialog,
+        misMixtapes = state.misMixtapes,
         onRateClick = onRateClick,
         onLikeClick = { detailViewModel.sendOrDeleteLikeItem() },
         onSaveClick = { detailViewModel.sendOrDeleteGuardado() },
+        onAddToMixtapeClick = { detailViewModel.setShowAddToMixtapeDialog(true) },
+        onDismissMixtapeDialog = { detailViewModel.setShowAddToMixtapeDialog(false) },
+        onSelectMixtape = { mixtapeId -> detailViewModel.agregarItemAMixtape(mixtapeId) },
+        onCreateNewMixtapeClick = { detailViewModel.setShowAddToMixtapeDialog(false) },
         onDatosCuriososClick = onDatosCuriososClick,
         onReviewLikeClick = { detailViewModel.sendOrDeleteLikeResena(reviewId = it) },
         onDeleteMyReviewClick = { detailViewModel.eliminarMiResena(reviewId = it) },
@@ -81,9 +89,15 @@ fun DetailScreenContent(
     itemConResenas: ItemConResenasUi?,
     @StringRes errorMessageRes: Int?,
     @StringRes errorAccionRes: Int?,
+    showAddToMixtapeDialog: Boolean,
+    misMixtapes: List<MixtapeUi>,
     onRateClick: () -> Unit,
     onLikeClick: () -> Unit,
     onSaveClick: () -> Unit,
+    onAddToMixtapeClick: () -> Unit,
+    onDismissMixtapeDialog: () -> Unit,
+    onSelectMixtape: (String) -> Unit,
+    onCreateNewMixtapeClick: () -> Unit,
     onDatosCuriososClick: () -> Unit,
     onReviewLikeClick: (String) -> Unit,
     onDeleteMyReviewClick: (String) -> Unit,
@@ -134,6 +148,7 @@ fun DetailScreenContent(
                                 onRateClick = onRateClick,
                                 onLikeClick = onLikeClick,
                                 onSaveClick = onSaveClick,
+                                onAddToMixtapeClick = onAddToMixtapeClick,
                             )
 
                             ErrorMessage(
@@ -192,6 +207,15 @@ fun DetailScreenContent(
                 }
             }
         }
+
+        if (showAddToMixtapeDialog) {
+            AddItemToMixtapeDialog(
+                misMixtapes = misMixtapes,
+                onDismiss = onDismissMixtapeDialog,
+                onSelectMixtape = onSelectMixtape,
+                onCreateNewClick = onCreateNewMixtapeClick,
+            )
+        }
     }
 }
 
@@ -204,9 +228,15 @@ fun DetailScreenPreview() {
             itemConResenas = LocalPreviewProvider.itemConResenas,
             errorMessageRes = null,
             errorAccionRes = null,
+            showAddToMixtapeDialog = false,
+            misMixtapes = emptyList(),
             onRateClick = {},
             onLikeClick = {},
             onSaveClick = {},
+            onAddToMixtapeClick = {},
+            onDismissMixtapeDialog = {},
+            onSelectMixtape = {},
+            onCreateNewMixtapeClick = {},
             onDatosCuriososClick = {},
             onReviewLikeClick = {},
             onDeleteMyReviewClick = {},

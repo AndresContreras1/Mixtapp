@@ -2,6 +2,7 @@ package com.example.mixtapp.ui.screens.detail
 
 import androidx.annotation.StringRes
 import com.example.mixtapp.data.model.ItemConResenasUi
+import com.example.mixtapp.data.model.MixtapeUi
 
 // El item es nulable porque puede que el id no exista. Sirve igual para un album, una cancion o
 // un artista
@@ -15,4 +16,6 @@ data class DetailState(
     @StringRes val errorMessageRes: Int? = null,
     // Error de un boton (like, guardar, eliminar): la pantalla sigue mostrando el item
     @StringRes val errorAccionRes: Int? = null,
+    val showAddToMixtapeDialog: Boolean = false,
+    val misMixtapes: List<MixtapeUi> = emptyList(),
 )
