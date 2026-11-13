@@ -1,4 +1,3 @@
-
 package com.example.mixtapp.ui.screens.review
 
 import androidx.lifecycle.ViewModel
@@ -26,6 +25,7 @@ import javax.inject.Inject
 class WriteReviewViewModel @Inject constructor(
     private val catalogoRepository: CatalogoRepository,
     private val reviewRepository: ReviewRepository,
+    // Donde estoy al publicar, para el marcador del mapa
     private val locationProvider: LocationProvider,
     // Las corrutinas se lanzan en este hilo; las pruebas pasan uno de prueba
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
@@ -34,30 +34,23 @@ class WriteReviewViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(WriteReviewState())
     val uiState: StateFlow<WriteReviewState> = _uiState.asStateFlow()
 
-    // Se pide una sola vez: si se volviera a pedir al mostrar la pantalla otra vez,
-    // se borraria lo que ya se escribio
+    // Se pide una sola vez: si se volviera a pedir al mostrar la pantalla otra vez, se borraria lo
+    // que ya se escribio
     private var cargado = false
 
-    // Buscar el item es responsabilidad del ViewModel, no de la navegacion.
-    // Llega con sus resenas, y entre ellas la mia si ya lo califique
+    // Buscar el item es responsabilidad del ViewModel, no de la navegacion. Llega con sus resenas,
+    // y entre ellas la mia si ya lo califique
     fun getItem(tipo: String, itemId: String) {
         if (cargado) return
         cargado = true
 
         viewModelScope.launch(ioDispatcher) {
-            _uiState.update {
-                it.copy(isLoading = true, errorMessageRes = null)
-            }
+            _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
 
-            val result = catalogoRepository.getItemConResenas(
-                tipo = tipo,
-                itemId = itemId
-            )
-
+            val result = catalogoRepository.getItemConResenas(tipo = tipo, itemId = itemId)
             val itemConResenas = result.getOrNull()
 
             if (result.isSuccess && itemConResenas != null) {
-
                 // Solo se permite una resena por item: si ya existe se edita
                 val miResena = itemConResenas.reviews.find { it.isMine }
 
@@ -72,11 +65,9 @@ class WriteReviewViewModel @Inject constructor(
                         errorMessageRes = null,
                     )
                 }
-
             } else {
                 // Si fallo se puede volver a pedir
                 cargado = false
-
                 _uiState.update {
                     it.copy(
                         isLoading = false,
@@ -96,35 +87,25 @@ class WriteReviewViewModel @Inject constructor(
         val calificacionActual = _uiState.value.rating
         val nueva = if (rating == calificacionActual) 0 else rating
 
-        _uiState.update {
-            it.copy(rating = nueva)
-        }
+        _uiState.update { it.copy(rating = nueva) }
     }
 
     // El texto se corta en el limite: el contador nunca pasa del maximo
     fun updateReviewText(reviewText: String) {
         _uiState.update {
-            it.copy(
-                reviewText = reviewText.take(MAX_REVIEW_LENGTH),
-                errorMessageRes = null
-            )
+            it.copy(reviewText = reviewText.take(MAX_REVIEW_LENGTH), errorMessageRes = null)
         }
     }
 
     // La fecha no puede ser mas larga que AAAA-MM-DD
     fun updateListenedDate(listenedDate: String) {
         _uiState.update {
-            it.copy(
-                listenedDate = listenedDate.take(MAX_DATE_LENGTH),
-                errorMessageRes = null
-            )
+            it.copy(listenedDate = listenedDate.take(MAX_DATE_LENGTH), errorMessageRes = null)
         }
     }
 
-    // Valida el formulario y guarda la resena.
-    // No se vuelve atras hasta que la base confirma
+    // Valida el formulario y guarda la resena. No se vuelve atras hasta que la base confirma
     fun publicarResena() {
-
         val estado = _uiState.value
         val item = estado.item ?: return
         val texto = estado.reviewText.trim()
@@ -140,25 +121,16 @@ class WriteReviewViewModel @Inject constructor(
 
         // Si el formulario no pasa las validaciones no se consulta la base
         if (errorRes != null) {
-            _uiState.update {
-                it.copy(errorMessageRes = errorRes)
-            }
+            _uiState.update { it.copy(errorMessageRes = errorRes) }
             return
         }
 
         viewModelScope.launch(ioDispatcher) {
+            _uiState.update { it.copy(publicando = true, errorMessageRes = null) }
 
-            _uiState.update {
-                it.copy(publicando = true, errorMessageRes = null)
-            }
-
-            // Obtener la ubicacion solamente cuando se crea una resena nueva.
-            // Si es una edicion se conserva la ubicacion original.
-            val ubicacion = if (estado.reviewId == null) {
-                locationProvider.getCurrentLocation()
-            } else {
-                null
-            }
+            // La ubicacion solo se pide al publicar una resena nueva: al modificarla queda la de
+            // cuando se publico. Sin permiso llega null y se guarda sin ubicacion
+            val ubicacion = if (estado.reviewId == null) locationProvider.getCurrentLocation() else null
 
             val result = reviewRepository.guardarResena(
                 item = item,
@@ -166,22 +138,12 @@ class WriteReviewViewModel @Inject constructor(
                 texto = texto,
                 fecha = fecha,
                 reviewId = estado.reviewId,
-                latitude = ubicacion?.first,
-                longitude = ubicacion?.second
+                ubicacion = ubicacion,
             )
 
             if (result.isSuccess) {
-
-                _uiState.update {
-                    it.copy(
-                        publicando = false,
-                        navigate = true,
-                        errorMessageRes = null
-                    )
-                }
-
+                _uiState.update { it.copy(publicando = false, navigate = true, errorMessageRes = null) }
             } else {
-
                 _uiState.update {
                     it.copy(
                         publicando = false,
@@ -196,8 +158,8 @@ class WriteReviewViewModel @Inject constructor(
         }
     }
 
-    // La fecha es opcional; si se escribe, tiene que ser AAAA-MM-DD,
-    // existir en el calendario y no ser despues de hoy
+    // La fecha es opcional; si se escribe, tiene que ser AAAA-MM-DD, existir en el calendario (no
+    // hay 31 de febrero) y no ser despues de hoy
     private fun esFechaValida(fecha: String): Boolean {
         if (fecha.isEmpty()) return true
 
@@ -209,4 +171,5 @@ class WriteReviewViewModel @Inject constructor(
 
         return !dia.isAfter(LocalDate.now())
     }
+
 }

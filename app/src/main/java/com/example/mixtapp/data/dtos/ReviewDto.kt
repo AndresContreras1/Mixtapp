@@ -24,15 +24,14 @@ data class ReviewDto(
     // subcolecciones likes y comments
     val likesCount: Int,
     val commentsCount: Int,
+    // Donde se publico, para el mapa; null si no se dio permiso de ubicacion (o si es del backend)
+    val latitud: Double?,
+    val longitud: Double?,
     // No esta en la base: el data source lo llena buscando mi uid en la subcoleccion likes
     var liked: Boolean = false,
-    // Coordenadas de la ubicación de la persona para el mapa
-    val latitude: Double? = null,
-    val longitude: Double? = null,
-    val createdAtMillis: Long? = null,
 ) {
     // Firestore necesita un constructor vacio para convertir el documento en el DTO
-    constructor() : this("", 0, null, null, "", "", TIPO_ALBUM, null, null, null, null, 0, 0)
+    constructor() : this("", 0, null, null, "", "", TIPO_ALBUM, null, null, null, null, 0, 0, null, null)
 }
 
 // La copia del item que guarda la resena: lo que se ve en la tarjeta
@@ -70,8 +69,5 @@ fun ReviewDto.toReviewUi(usuarioActualId: String, ahora: Instant = Instant.now()
             imagenUrl = item?.imagenUrl ?: "",
         ),
         updatedAt = updatedAt ?: createdAt ?: "",
-        latitude = latitude,
-        longitude = longitude,
-        createdAtMillis = createdAtMillis,
     )
 }

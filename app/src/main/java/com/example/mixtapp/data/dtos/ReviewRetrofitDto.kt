@@ -50,6 +50,9 @@ fun ReviewRetrofitDto.toReviewDto(): ReviewDto {
         item = album?.let { ItemDeResenaDto(titulo = it.titulo, subtitulo = it.artista, imagenUrl = it.portadaUrl) },
         likesCount = 0,
         commentsCount = 0,
+        // El backend no guarda la ubicacion
+        latitud = null,
+        longitud = null,
     )
 }
 

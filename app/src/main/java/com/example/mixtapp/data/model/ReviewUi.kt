@@ -27,8 +27,4 @@ data class ReviewUi(
     val item: ItemResumenUi,
     // En formato ISO: ordena las listas por lo ultimo que se publico o edito
     val updatedAt: String,
-    // Ubicación
-    val latitude: Double? = null,
-    val longitude: Double? = null,
-    val createdAtMillis: Long? = null,
 )

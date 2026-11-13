@@ -124,6 +124,28 @@ class ReviewFirestoreDataSourceImpl @Inject constructor(
         awaitClose { listenerRegistration.remove() }
     }.map { reviews -> db.conMisLikes(reviews = reviews, currentUserId = currentUserId) }
 
+    // Solo las resenas publicadas desde esa fecha. createdAt va en formato ISO, asi que comparar el
+    // texto compara las fechas, y un filtro de rango sobre un solo campo no necesita indice
+    override fun listenReviewsDesde(desde: String): Flow<List<ReviewDto>> = callbackFlow {
+        val listenerRegistration = db.collection("reviews")
+            .whereGreaterThanOrEqualTo("createdAt", desde)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    close(error) // cierra el flujo con error
+                    return@addSnapshotListener
+                }
+                if (snapshot != null) {
+                    val reviews = snapshot.documents.mapNotNull { doc ->
+                        doc.toObject(ReviewDto::class.java)?.copy(id = doc.id)
+                    }
+                    trySend(reviews).isSuccess // envia la lista al flujo
+                }
+            }
+
+        // Cuando se sale del mapa nadie escucha el flujo y se quita el listener
+        awaitClose { listenerRegistration.remove() }
+    }
+
     // Escucha solo las resenas de este item. El listener no puede esperar otra consulta, asi que
     // mi like de cada resena se busca con exists() cada vez que llega la lista
     override fun listenReviewsDeItem(tipo: String, itemId: String, currentUserId: String): Flow<List<ReviewDto>> = callbackFlow {
@@ -237,37 +259,4 @@ class ReviewFirestoreDataSourceImpl @Inject constructor(
             pendientes.map { it.await() }
         }
     }
-
-    override fun listenRecentReviews(
-            desdeMillis: Long
-        ): Flow<List<ReviewDto>> = callbackFlow {
-
-            val listener = db.collection("reviews")
-                .whereGreaterThanOrEqualTo(
-                    "createdAtMillis",
-                    desdeMillis
-                )
-                .addSnapshotListener { snapshot, error ->
-
-                    if (error != null) {
-                        close(error)
-                        return@addSnapshotListener
-                    }
-
-                    if (snapshot != null) {
-
-                        val reviews = snapshot.documents.mapNotNull { doc ->
-                            doc.toObject(ReviewDto::class.java)
-                                ?.copy(id = doc.id)
-                        }
-
-                        trySend(reviews)
-                    }
-                }
-
-            awaitClose {
-                listener.remove()
-            }
-        }
-
 }

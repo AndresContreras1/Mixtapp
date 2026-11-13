@@ -18,10 +18,9 @@ data class CreateReviewDto(
     // Firestore no tiene joins: la resena guarda una copia de lo que se muestra del usuario y del item
     val usuario: CreateReviewUsuarioDto,
     val item: CreateReviewItemDto,
-    // Ubicación
-    val latitude: Double? = null,
-    val longitude: Double? = null,
-    createdAtMillis = if (reviewId == null) ahoraMillis else null,
+    // Donde se publico, para el mapa. Al modificarla no se cambia; null si no hay permiso
+    val latitud: Double?,
+    val longitud: Double?,
 )
 
 // Solo los datos del usuario que se muestran con la resena
