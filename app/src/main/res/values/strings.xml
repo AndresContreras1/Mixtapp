@@ -308,21 +308,29 @@
     <string name="sin_favoritos_usuario">Todavía no le ha dado me gusta a nada</string>
     <string name="sin_resenas_usuario">Todavía no ha escrito reseñas</string>
 
-    <!-- mixtapes -->
-    <string name="crear_mixtape">Crear Mixtape</string>
-    <string name="nueva_mixtape">Nueva Lista</string>
-    <string name="nombre_mixtape">Nombre de la lista</string>
-    <string name="descripcion_mixtape">Descripción (opcional)</string>
-    <string name="agregar_a_mixtape">Agregar a Mixtape</string>
-    <string name="seleccionar_mixtape">Selecciona una lista</string>
-    <string name="sin_mixtapes">Aún no tienes listas. ¡Crea una para organizar tus álbumes y canciones favoritas!</string>
-    <string name="sin_mixtapes_usuario">Este usuario aún no ha creado listas.</string>
-    <string name="sin_items_mixtape">Esta lista aún no tiene elementos. Agrégalos desde el detalle de cualquier álbum o canción.</string>
+    <!-- mixtapes: listas que arma el usuario -->
+    <string name="crear_mixtape">Crear mixtape</string>
+    <string name="nueva_mixtape">Nueva mixtape</string>
+    <string name="label_nombre_mixtape">Nombre</string>
+    <string name="nombre_mixtape_placeholder">Por ejemplo: Para entrenar</string>
+    <string name="label_descripcion_mixtape">Descripción (opcional)</string>
+    <string name="descripcion_mixtape_placeholder">¿De qué va esta mixtape?</string>
+    <string name="agregar_a_mixtape">Agregar a una mixtape</string>
+    <string name="elige_mixtape">Elige en qué mixtape lo guardas</string>
+    <string name="ya_esta_en_mixtape">Ya está</string>
+    <string name="sin_mixtapes">Todavía no tienes mixtapes. Crea una para juntar tus álbumes, canciones y artistas</string>
+    <string name="sin_items_mixtape">Esta mixtape está vacía. Agrega items desde el detalle de un álbum, una canción o un artista</string>
     <string name="elementos_mixtape">%1$d elementos</string>
     <string name="un_elemento_mixtape">1 elemento</string>
-    <string name="eliminar_mixtape">Eliminar Mixtape</string>
-    <string name="quitar_de_mixtape">Quitar de la lista</string>
-    <string name="item_agregado_a_mixtape">Agregado a la lista</string>
+    <string name="creada_por">Creada por %1$s</string>
+    <string name="eliminar_mixtape">Eliminar mixtape</string>
+    <string name="quitar_de_mixtape">Quitar de la mixtape</string>
+    <string name="mixtape_no_encontrada">Esta mixtape ya no existe</string>
+    <string name="error_nombre_mixtape_vacio">Ponle un nombre a la mixtape</string>
+    <string name="error_nombre_mixtape_largo">El nombre puede tener hasta 40 caracteres</string>
+    <string name="error_descripcion_mixtape_larga">La descripción puede tener hasta 150 caracteres</string>
+    <string name="error_crear_mixtape">No se pudo crear la mixtape</string>
+    <string name="error_mixtape">No se pudo actualizar la mixtape</string>
 
     <!-- perfil: encabezado, pestañas e Instagram -->
     <string name="label_instagram">Instagram</string>

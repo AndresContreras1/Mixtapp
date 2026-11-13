@@ -159,9 +159,10 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
+    // Mis mixtapes en vivo: una nueva, o un item agregado desde el detalle, llegan solos
     private fun escucharMisMixtapes() {
         viewModelScope.launch(ioDispatcher) {
-            mixtapeRepository.obtenerMisMixtapes()
+            mixtapeRepository.getMisMixtapesLive()
                 .catch { e ->
                     Log.d("ProfileViewModel", "escucharMisMixtapes: ${e.message}")
                     _uiState.update { it.copy(errorMixtapesRes = mensajeDeError(error = e, generico = R.string.error_cargar_contenido)) }
@@ -169,26 +170,6 @@ class ProfileViewModel @Inject constructor(
                 .collect { mixtapes ->
                     _uiState.update { it.copy(mixtapes = mixtapes, errorMixtapesRes = null) }
                 }
-        }
-    }
-
-    fun setShowCreateMixtapeDialog(show: Boolean) {
-        _uiState.update { it.copy(showCreateMixtapeDialog = show) }
-    }
-
-    fun crearMixtape(nombre: String, descripcion: String) {
-        viewModelScope.launch(ioDispatcher) {
-            val result = mixtapeRepository.crearMixtape(nombre = nombre, descripcion = descripcion)
-            if (result.isSuccess) {
-                _uiState.update { it.copy(showCreateMixtapeDialog = false, errorAccionRes = null) }
-            } else {
-                _uiState.update {
-                    it.copy(
-                        showCreateMixtapeDialog = false,
-                        errorAccionRes = mensajeDeError(error = result.exceptionOrNull(), generico = R.string.error_generico)
-                    )
-                }
-            }
         }
     }
 

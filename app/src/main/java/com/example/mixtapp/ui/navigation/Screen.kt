@@ -43,7 +43,15 @@ sealed class Screen(val route: String) {
         fun createRoute(userId: String, tipo: String) = "followList/$userId/$tipo"
     }
 
+    // Una mixtape con sus items
     data object MixtapeDetail : Screen(route = "mixtapeDetail/{mixtapeId}") {
         fun createRoute(mixtapeId: String) = "mixtapeDetail/$mixtapeId"
+    }
+
+    data object CrearMixtape : Screen(route = "crearMixtape")
+
+    // Elegir en cual de mis mixtapes va el item del detalle
+    data object AgregarAMixtape : Screen(route = "agregarAMixtape/{tipo}/{itemId}") {
+        fun createRoute(tipo: String, itemId: String) = "agregarAMixtape/$tipo/$itemId"
     }
 }

@@ -38,9 +38,9 @@ data class ProfileState(
     @StringRes val errorResenasRes: Int? = null,
     val guardados: List<ItemResumenUi> = emptyList(),
     @StringRes val errorGuardadosRes: Int? = null,
+    // Las mixtapes que arme, la mas nueva primero
     val mixtapes: List<MixtapeUi> = emptyList(),
     @StringRes val errorMixtapesRes: Int? = null,
-    val showCreateMixtapeDialog: Boolean = false,
     // El like o el borrado de una resena que no se pudo hacer
     @StringRes val errorAccionRes: Int? = null,
     // Mientras se borra no se manda otro borrado
