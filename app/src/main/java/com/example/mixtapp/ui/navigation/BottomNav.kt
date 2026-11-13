@@ -13,7 +13,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.mixtapp.ui.theme.MixtappTheme
 
-// La barra de abajo: Inicio, Buscar, Duelos y Perfil. Solo se ve en esas cuatro rutas (NavigationLogic)
+// La barra de abajo: Inicio, Buscar, Duelos, Mapa y Perfil. Solo se ve en esas cinco rutas (NavigationLogic)
 @Composable
 fun BottomNav(
     navController: NavHostController,

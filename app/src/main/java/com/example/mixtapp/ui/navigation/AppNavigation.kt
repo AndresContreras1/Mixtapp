@@ -33,6 +33,8 @@ import com.example.mixtapp.ui.screens.home.HomeScreen
 import com.example.mixtapp.ui.screens.home.HomeViewModel
 import com.example.mixtapp.ui.screens.login.LoginScreen
 import com.example.mixtapp.ui.screens.login.LoginViewModel
+import com.example.mixtapp.ui.screens.mapa.MapaScreen
+import com.example.mixtapp.ui.screens.mapa.MapaViewModel
 import com.example.mixtapp.ui.screens.mixtapedetail.MixtapeDetailScreen
 import com.example.mixtapp.ui.screens.mixtapedetail.MixtapeDetailViewModel
 import com.example.mixtapp.ui.screens.myreviews.MyReviewsScreen
@@ -157,6 +159,23 @@ fun AppNavigation(
                 },
                 onFollowingClick = { navController.navigate(Screen.Following.route) },
                 onNotificationsClick = { navController.navigate(Screen.Notifications.route) }
+            )
+        }
+
+        composable(route = Screen.Mapa.route) {
+            val mapaViewModel: MapaViewModel = hiltViewModel()
+
+            MapaScreen(
+                mapaViewModel = mapaViewModel,
+                onItemClick = { tipo, itemId ->
+                    navController.abrirItem(tipo = tipo, itemId = itemId)
+                },
+                onAuthorClick = { userId ->
+                    navController.abrirPerfil(userId = userId)
+                },
+                onCommentsClick = { reviewId ->
+                    navController.abrirDiscusion(reviewId = reviewId)
+                }
             )
         }
 

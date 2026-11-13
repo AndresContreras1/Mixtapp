@@ -40,6 +40,7 @@ import com.example.mixtapp.ui.utils.AppTextField
 import com.example.mixtapp.ui.utils.ErrorBox
 import com.example.mixtapp.ui.utils.ErrorMessage
 import com.example.mixtapp.ui.utils.LoadingBox
+import com.example.mixtapp.ui.utils.PedirPermisoDeUbicacion
 import com.example.mixtapp.ui.utils.ScreenTitle
 import com.example.mixtapp.ui.utils.StarRating
 
@@ -55,6 +56,10 @@ fun WriteReviewScreen(
     modifier: Modifier = Modifier
 ) {
     val state by writeReviewViewModel.uiState.collectAsState()
+
+    // La resena nueva guarda donde se publico para el mapa: el permiso se pide al abrir la pantalla.
+    // Si se niega, se publica igual, sin ubicacion
+    PedirPermisoDeUbicacion()
 
     // Se vuelve atras solo cuando la base confirma que la resena quedo guardada
     LaunchedEffect(state.navigate) {

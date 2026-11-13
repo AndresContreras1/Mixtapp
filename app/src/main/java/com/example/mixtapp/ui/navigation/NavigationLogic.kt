@@ -7,6 +7,7 @@ object NavigationLogic {
         Screen.Home.route,
         Screen.Search.route,
         Screen.Duelos.route,
+        Screen.Mapa.route,
         Screen.Profile.route
     )
 
