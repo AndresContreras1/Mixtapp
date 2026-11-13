@@ -35,6 +35,8 @@ import com.example.mixtapp.ui.screens.notifications.NotificationsScreen
 import com.example.mixtapp.ui.screens.notifications.NotificationsViewModel
 import com.example.mixtapp.ui.screens.profile.ProfileScreen
 import com.example.mixtapp.ui.screens.profile.ProfileViewModel
+import com.example.mixtapp.ui.screens.resumen.ResumenScreen
+import com.example.mixtapp.ui.screens.resumen.ResumenViewModel
 import com.example.mixtapp.ui.screens.review.WriteReviewScreen
 import com.example.mixtapp.ui.screens.review.WriteReviewViewModel
 import com.example.mixtapp.ui.screens.search.SearchScreen
@@ -47,8 +49,6 @@ import com.example.mixtapp.ui.screens.splash.SplashScreen
 import com.example.mixtapp.ui.screens.splash.SplashViewModel
 import com.example.mixtapp.ui.screens.userprofile.UserProfileScreen
 import com.example.mixtapp.ui.screens.userprofile.UserProfileViewModel
-import com.example.mixtapp.ui.screens.mixtapedetail.MixtapeDetailScreen
-import com.example.mixtapp.ui.screens.mixtapedetail.MixtapeDetailViewModel
 
 private fun NavHostController.navegarLimpiandoLaPila(ruta: String) {
     navigate(ruta) {
@@ -64,10 +64,6 @@ private fun NavHostController.abrirItem(tipo: String, itemId: String) {
 
 private fun NavHostController.abrirPerfil(userId: String) {
     navigate(Screen.UserProfile.createRoute(userId = userId))
-}
-
-private fun NavHostController.abrirMixtapeDetail(mixtapeId: String) {
-    navigate(Screen.MixtapeDetail.createRoute(mixtapeId = mixtapeId))
 }
 
 private fun NavHostController.abrirEscribirResena(tipo: String, itemId: String) {
@@ -260,9 +256,16 @@ fun AppNavigation(
                     navController.abrirLista(userId = userId, tipo = tipo)
                 },
                 onSeeAllReviewsClick = { navController.navigate(Screen.MyReviews.route) },
-                onMixtapeClick = { mixtapeId ->
-                    navController.abrirMixtapeDetail(mixtapeId = mixtapeId)
-                }
+                onResumenClick = { navController.navigate(Screen.Resumen.route) }
+            )
+        }
+
+        composable(route = Screen.Resumen.route) {
+            val resumenViewModel: ResumenViewModel = hiltViewModel()
+
+            ResumenScreen(
+                resumenViewModel = resumenViewModel,
+                onBackClick = { navController.popBackStack() }
             )
         }
 
@@ -274,25 +277,6 @@ fun AppNavigation(
                 // El perfil escucha su documento en vivo, asi que ya sale con los cambios
                 onGuardado = { navController.popBackStack() },
                 onBackClick = { navController.popBackStack() }
-            )
-        }
-
-        composable(
-            route = Screen.MixtapeDetail.route,
-            arguments = listOf(
-                navArgument(name = "mixtapeId") { type = NavType.StringType }
-            )
-        ) {
-            val mixtapeDetailViewModel: MixtapeDetailViewModel = hiltViewModel()
-            val mixtapeId = it.arguments?.getString("mixtapeId") ?: ""
-
-            MixtapeDetailScreen(
-                mixtapeId = mixtapeId,
-                mixtapeDetailViewModel = mixtapeDetailViewModel,
-                onBackClick = { navController.popBackStack() },
-                onItemClick = { tipo, itemId ->
-                    navController.abrirItem(tipo = tipo, itemId = itemId)
-                }
             )
         }
 

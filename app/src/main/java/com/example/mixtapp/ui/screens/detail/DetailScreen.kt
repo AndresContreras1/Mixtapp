@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -21,13 +23,12 @@ import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalPreviewProvider
 import com.example.mixtapp.data.model.ItemConResenasUi
-import com.example.mixtapp.data.model.MixtapeUi
 import com.example.mixtapp.ui.screens.detail.components.DatosCuriososButton
+import com.example.mixtapp.ui.screens.detail.components.SonandoButton
 import com.example.mixtapp.ui.screens.detail.components.EnlacesDelItem
 import com.example.mixtapp.ui.screens.detail.components.ItemActions
 import com.example.mixtapp.ui.screens.detail.components.ItemHeader
 import com.example.mixtapp.ui.screens.detail.components.ItemStats
-import com.example.mixtapp.ui.screens.mixtapes.AddItemToMixtapeDialog
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppBackground
 import com.example.mixtapp.ui.utils.EmptyMessage
@@ -64,16 +65,12 @@ fun DetailScreen(
         itemConResenas = state.itemConResenas,
         errorMessageRes = state.errorMessageRes,
         errorAccionRes = state.errorAccionRes,
-        showAddToMixtapeDialog = state.showAddToMixtapeDialog,
-        misMixtapes = state.misMixtapes,
+        avisoSonandoRes = state.avisoSonandoRes,
         onRateClick = onRateClick,
         onLikeClick = { detailViewModel.sendOrDeleteLikeItem() },
         onSaveClick = { detailViewModel.sendOrDeleteGuardado() },
-        onAddToMixtapeClick = { detailViewModel.setShowAddToMixtapeDialog(true) },
-        onDismissMixtapeDialog = { detailViewModel.setShowAddToMixtapeDialog(false) },
-        onSelectMixtape = { mixtapeId -> detailViewModel.agregarItemAMixtape(mixtapeId) },
-        onCreateNewMixtapeClick = { detailViewModel.setShowAddToMixtapeDialog(false) },
         onDatosCuriososClick = onDatosCuriososClick,
+        onSonandoClick = { detailViewModel.ponerSonando() },
         onReviewLikeClick = { detailViewModel.sendOrDeleteLikeResena(reviewId = it) },
         onDeleteMyReviewClick = { detailViewModel.eliminarMiResena(reviewId = it) },
         onBackClick = onBackClick,
@@ -89,16 +86,12 @@ fun DetailScreenContent(
     itemConResenas: ItemConResenasUi?,
     @StringRes errorMessageRes: Int?,
     @StringRes errorAccionRes: Int?,
-    showAddToMixtapeDialog: Boolean,
-    misMixtapes: List<MixtapeUi>,
+    @StringRes avisoSonandoRes: Int?,
     onRateClick: () -> Unit,
     onLikeClick: () -> Unit,
     onSaveClick: () -> Unit,
-    onAddToMixtapeClick: () -> Unit,
-    onDismissMixtapeDialog: () -> Unit,
-    onSelectMixtape: (String) -> Unit,
-    onCreateNewMixtapeClick: () -> Unit,
     onDatosCuriososClick: () -> Unit,
+    onSonandoClick: () -> Unit,
     onReviewLikeClick: (String) -> Unit,
     onDeleteMyReviewClick: (String) -> Unit,
     onBackClick: () -> Unit,
@@ -148,7 +141,6 @@ fun DetailScreenContent(
                                 onRateClick = onRateClick,
                                 onLikeClick = onLikeClick,
                                 onSaveClick = onSaveClick,
-                                onAddToMixtapeClick = onAddToMixtapeClick,
                             )
 
                             ErrorMessage(
@@ -164,6 +156,24 @@ fun DetailScreenContent(
                             onClick = onDatosCuriososClick,
                             modifier = Modifier.padding(top = 16.dp),
                         )
+                    }
+
+                    // Lo ven mis seguidores en Siguiendo; el aviso confirma que ya quedo
+                    item {
+                        Column(modifier = Modifier.padding(top = 12.dp)) {
+                            SonandoButton(onClick = onSonandoClick)
+
+                            if (avisoSonandoRes != null) {
+                                Text(
+                                    text = stringResource(avisoSonandoRes),
+                                    color = MaterialTheme.colorScheme.primary,
+                                    style = MaterialTheme.typography.labelLarge,
+                                    modifier = Modifier
+                                        .padding(top = 8.dp, start = 20.dp)
+                                        .testTag("avisoSonando"),
+                                )
+                            }
+                        }
                     }
 
                     item {
@@ -207,15 +217,6 @@ fun DetailScreenContent(
                 }
             }
         }
-
-        if (showAddToMixtapeDialog) {
-            AddItemToMixtapeDialog(
-                misMixtapes = misMixtapes,
-                onDismiss = onDismissMixtapeDialog,
-                onSelectMixtape = onSelectMixtape,
-                onCreateNewClick = onCreateNewMixtapeClick,
-            )
-        }
     }
 }
 
@@ -228,16 +229,12 @@ fun DetailScreenPreview() {
             itemConResenas = LocalPreviewProvider.itemConResenas,
             errorMessageRes = null,
             errorAccionRes = null,
-            showAddToMixtapeDialog = false,
-            misMixtapes = emptyList(),
+            avisoSonandoRes = null,
             onRateClick = {},
             onLikeClick = {},
             onSaveClick = {},
-            onAddToMixtapeClick = {},
-            onDismissMixtapeDialog = {},
-            onSelectMixtape = {},
-            onCreateNewMixtapeClick = {},
             onDatosCuriososClick = {},
+            onSonandoClick = {},
             onReviewLikeClick = {},
             onDeleteMyReviewClick = {},
             onBackClick = {},

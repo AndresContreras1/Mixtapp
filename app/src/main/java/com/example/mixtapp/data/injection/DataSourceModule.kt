@@ -7,6 +7,7 @@ import com.example.mixtapp.data.datasource.DueloRemoteDataSource
 import com.example.mixtapp.data.datasource.HistoriaRemoteDataSource
 import com.example.mixtapp.data.datasource.NotificacionRemoteDataSource
 import com.example.mixtapp.data.datasource.ReviewRemoteDataSource
+import com.example.mixtapp.data.datasource.SonandoRemoteDataSource
 import com.example.mixtapp.data.datasource.UsuarioRemoteDataSource
 import com.example.mixtapp.data.datasource.impl.firestore.AlbumFirestoreDataSourceImpl
 import com.example.mixtapp.data.datasource.impl.firestore.ArtistaFirestoreDataSourceImpl
@@ -15,9 +16,8 @@ import com.example.mixtapp.data.datasource.impl.firestore.DueloFirestoreDataSour
 import com.example.mixtapp.data.datasource.impl.firestore.HistoriaFirestoreDataSourceImpl
 import com.example.mixtapp.data.datasource.impl.firestore.NotificacionFirestoreDataSourceImpl
 import com.example.mixtapp.data.datasource.impl.firestore.ReviewFirestoreDataSourceImpl
+import com.example.mixtapp.data.datasource.impl.firestore.SonandoFirestoreDataSourceImpl
 import com.example.mixtapp.data.datasource.impl.firestore.UsuarioFirestoreDataSourceImpl
-import com.example.mixtapp.data.datasource.MixtapeRemoteDataSource
-import com.example.mixtapp.data.datasource.impl.firestore.MixtapeFirestoreDataSourceImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -70,7 +70,7 @@ abstract class DataSourceModule {
     ): DueloRemoteDataSource
 
     @Binds
-    abstract fun bindMixtapeRemoteDataSource(
-        impl: MixtapeFirestoreDataSourceImpl
-    ): MixtapeRemoteDataSource
+    abstract fun bindSonandoRemoteDataSource(
+        impl: SonandoFirestoreDataSourceImpl
+    ): SonandoRemoteDataSource
 }

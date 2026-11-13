@@ -146,10 +146,11 @@ class UsuarioRepositoryIntegrationTest {
         crearMiDocumento()
         //Act
         val result = usuarioRepository.followOrUnfollow("usuario_2")
-        //Assert: usuario_2 tenia 20 seguidores; el perfil en vivo me muestra siguiendolo
-        val perfil = usuarioRepository.getUsuarioByIdLive("usuario_2").first { it.siguiendo }
+        //Assert: usuario_2 tenia 20 seguidores. El listener puede enviar primero el documento viejo
+        // de la cache, asi que se espera el que ya trae el contador nuevo
+        val perfil = usuarioRepository.getUsuarioByIdLive("usuario_2").first { it.seguidores == 21 }
         Truth.assertThat(result.isSuccess).isTrue()
-        Truth.assertThat(perfil.seguidores).isEqualTo(21)
+        Truth.assertThat(perfil.siguiendo).isTrue()
     }
 
     @Test

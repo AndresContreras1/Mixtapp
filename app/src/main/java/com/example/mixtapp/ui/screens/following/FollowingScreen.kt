@@ -25,7 +25,9 @@ import com.example.mixtapp.data.local.LocalPreviewProvider
 import com.example.mixtapp.data.model.FollowingUi
 import com.example.mixtapp.data.model.ItemResumenUi
 import com.example.mixtapp.data.model.ReviewUi
+import com.example.mixtapp.data.model.SonandoUi
 import com.example.mixtapp.ui.screens.following.components.FollowingUsersRow
+import com.example.mixtapp.ui.screens.following.components.SonandoAhoraRow
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppBackground
 import com.example.mixtapp.ui.utils.AppTextField
@@ -35,6 +37,7 @@ import com.example.mixtapp.ui.utils.ErrorMessage
 import com.example.mixtapp.ui.utils.LoadingBox
 import com.example.mixtapp.ui.utils.ReviewCard
 import com.example.mixtapp.ui.utils.ScreenTitle
+import com.example.mixtapp.ui.utils.SectionTitle
 
 @Composable
 fun FollowingScreen(
@@ -54,6 +57,10 @@ fun FollowingScreen(
         isLoading = state.isLoading,
         errorMessageRes = state.errorMessageRes,
         errorAccionRes = state.errorAccionRes,
+        sonando = state.sonando,
+        errorSonandoRes = state.errorSonandoRes,
+        onReaccionarClick = { followingViewModel.reaccionar(sonando = it) },
+        onQuitarSonandoClick = { followingViewModel.quitarSonando() },
         onFriendQueryChange = { followingViewModel.updateFriendQuery(friendQuery = it) },
         onLikeClick = { followingViewModel.sendOrDeleteLike(reviewId = it) },
         onAuthorClick = onAuthorClick,
@@ -72,6 +79,10 @@ fun FollowingScreenContent(
     isLoading: Boolean,
     @StringRes errorMessageRes: Int?,
     @StringRes errorAccionRes: Int?,
+    sonando: List<SonandoUi>,
+    @StringRes errorSonandoRes: Int?,
+    onReaccionarClick: (SonandoUi) -> Unit,
+    onQuitarSonandoClick: () -> Unit,
     onFriendQueryChange: (String) -> Unit,
     onLikeClick: (String) -> Unit,
     onAuthorClick: (String) -> Unit,
@@ -112,6 +123,29 @@ fun FollowingScreenContent(
                             style = MaterialTheme.typography.titleSmall,
                             modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 16.dp),
                         )
+                    }
+
+                    // Lo que suena ahora: si nadie esta escuchando nada, la fila no sale
+                    if (sonando.isNotEmpty() || errorSonandoRes != null) {
+                        item {
+                            Column(modifier = Modifier.padding(bottom = 16.dp)) {
+                                SectionTitle(
+                                    title = stringResource(R.string.sonando_ahora),
+                                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
+                                )
+                                ErrorMessage(
+                                    messageRes = errorSonandoRes,
+                                    modifier = Modifier.padding(horizontal = 20.dp),
+                                )
+                                SonandoAhoraRow(
+                                    sonando = sonando,
+                                    onItemClick = { onItemClick(it.item) },
+                                    onUserClick = onAuthorClick,
+                                    onReaccionarClick = onReaccionarClick,
+                                    onQuitarClick = onQuitarSonandoClick,
+                                )
+                            }
+                        }
                     }
 
                     // Si todavia no sigo a nadie no se deja la fila vacia
@@ -181,6 +215,10 @@ fun FollowingScreenPreview() {
             isLoading = false,
             errorMessageRes = null,
             errorAccionRes = null,
+            sonando = emptyList(),
+            errorSonandoRes = null,
+            onReaccionarClick = {},
+            onQuitarSonandoClick = {},
             onFriendQueryChange = {},
             onLikeClick = {},
             onAuthorClick = {},

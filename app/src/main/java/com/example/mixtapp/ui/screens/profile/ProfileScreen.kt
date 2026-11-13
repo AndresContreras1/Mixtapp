@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -23,35 +24,32 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalPreviewProvider
 import com.example.mixtapp.data.model.ItemResumenUi
-import com.example.mixtapp.data.model.MixtapeUi
 import com.example.mixtapp.data.model.ReviewUi
 import com.example.mixtapp.ui.screens.followlist.LISTA_SEGUIDORES
 import com.example.mixtapp.ui.screens.followlist.LISTA_SEGUIDOS
-import com.example.mixtapp.ui.screens.mixtapes.CreateMixtapeDialog
-import com.example.mixtapp.ui.screens.mixtapes.components.MixtapeCard
 import com.example.mixtapp.ui.screens.profile.components.GUARDADOS_POR_FILA
 import com.example.mixtapp.ui.screens.profile.components.LogoutButton
 import com.example.mixtapp.ui.screens.profile.components.ProfileTabs
 import com.example.mixtapp.ui.screens.profile.components.SavedItemsRow
 import com.example.mixtapp.ui.screens.profile.model.PESTANA_GUARDADOS
-import com.example.mixtapp.ui.screens.profile.model.PESTANA_MIXTAPES
 import com.example.mixtapp.ui.screens.profile.model.PESTANA_PERFIL
 import com.example.mixtapp.ui.screens.profile.model.ProfileTabUi
 import com.example.mixtapp.ui.screens.profile.model.profileTabs
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppBackground
-import com.example.mixtapp.ui.utils.AppButton
 import com.example.mixtapp.ui.utils.EmptyMessage
 import com.example.mixtapp.ui.utils.ErrorBox
 import com.example.mixtapp.ui.utils.ErrorMessage
 import com.example.mixtapp.ui.utils.FavoriteSection
 import com.example.mixtapp.ui.utils.LoadingBox
+import com.example.mixtapp.ui.utils.OpcionOvalada
 import com.example.mixtapp.ui.utils.ProfileHeader
 import com.example.mixtapp.ui.utils.ReviewCard
 import com.example.mixtapp.ui.utils.ScreenTitle
@@ -67,20 +65,24 @@ fun ProfileScreen(
     onEditReviewClick: (String, String) -> Unit,
     onFollowListClick: (userId: String, tipo: String) -> Unit,
     onSeeAllReviewsClick: () -> Unit,
-    onMixtapeClick: (String) -> Unit,
+    onResumenClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val state by profileViewModel.uiState.collectAsState()
 
+    // Cerrar sesion esta al final del perfil y tambien en el error, para que nadie quede atrapado
     val onLogoutClick = {
         profileViewModel.cerrarSesion()
         logoutButtonPressed()
     }
 
+    // Los flujos se escuchan desde el init del ViewModel. Mis datos se piden otra vez al volver (por
+    // ejemplo de Ajustes) por si mi documento no existia; la bandera evita un segundo listener
     LaunchedEffect(Unit) {
         profileViewModel.escucharMiPerfil()
     }
 
+    // Con una copia local, Kotlin sabe que no es nulo despues de revisarlo: no hace falta el !!
     val errorMessageRes = state.errorMessageRes
 
     Box(modifier = modifier.fillMaxSize()) {
@@ -90,6 +92,7 @@ fun ProfileScreen(
             state.isLoading -> {
                 LoadingBox()
             }
+            // Sin mis datos solo se muestra el motivo del error y la salida para cerrar sesion
             errorMessageRes != null && state.usuario.isEmpty() -> {
                 Column(
                     modifier = Modifier
@@ -113,6 +116,7 @@ fun ProfileScreen(
                 profileImageUrl = state.profileImageUrl,
                 subiendoImagen = state.subiendoImagen,
                 errorImagenRes = state.errorImagenRes,
+                // Si ya habia datos que mostrar, el error de mis datos sale como aviso
                 avisoRes = state.avisoPerfilRes ?: errorMessageRes,
                 tabs = state.tabs,
                 selectedTabId = state.selectedTabId,
@@ -123,9 +127,8 @@ fun ProfileScreen(
                 errorAccionRes = state.errorAccionRes,
                 guardados = state.guardados,
                 errorGuardadosRes = state.errorGuardadosRes,
-                mixtapes = state.mixtapes,
-                errorMixtapesRes = state.errorMixtapesRes,
                 onSettingsClick = onSettingsClick,
+                // Mis contadores abren mi lista de seguidores o de seguidos con mi uid
                 onSeguidoresClick = { onFollowListClick(state.miId, LISTA_SEGUIDORES) },
                 onSeguidosClick = { onFollowListClick(state.miId, LISTA_SEGUIDOS) },
                 onImagePicked = { profileViewModel.subirFotoDePerfil(uri = it) },
@@ -133,19 +136,12 @@ fun ProfileScreen(
                 onItemClick = { item -> onItemClick(item.tipo, item.id) },
                 onLikeClick = { profileViewModel.sendOrDeleteLike(reviewId = it) },
                 onCommentsClick = onCommentsClick,
+                // Editar abre Escribir resena con lo que califique
                 onEditClick = { review -> onEditReviewClick(review.item.tipo, review.item.id) },
                 onDeleteClick = { profileViewModel.eliminarResena(reviewId = it) },
                 onSeeAllReviewsClick = onSeeAllReviewsClick,
+                onResumenClick = onResumenClick,
                 onLogoutClick = onLogoutClick,
-                onCreateMixtapeClick = { profileViewModel.setShowCreateMixtapeDialog(true) },
-                onMixtapeClick = onMixtapeClick,
-            )
-        }
-
-        if (state.showCreateMixtapeDialog) {
-            CreateMixtapeDialog(
-                onDismiss = { profileViewModel.setShowCreateMixtapeDialog(false) },
-                onCreate = { nombre, desc -> profileViewModel.crearMixtape(nombre, desc) }
             )
         }
     }
@@ -173,8 +169,6 @@ fun ProfileScreenContent(
     @StringRes errorAccionRes: Int?,
     guardados: List<ItemResumenUi>,
     @StringRes errorGuardadosRes: Int?,
-    mixtapes: List<MixtapeUi>,
-    @StringRes errorMixtapesRes: Int?,
     onSettingsClick: () -> Unit,
     onSeguidoresClick: () -> Unit,
     onSeguidosClick: () -> Unit,
@@ -186,13 +180,14 @@ fun ProfileScreenContent(
     onEditClick: (ReviewUi) -> Unit,
     onDeleteClick: (String) -> Unit,
     onSeeAllReviewsClick: () -> Unit,
+    onResumenClick: () -> Unit,
     onLogoutClick: () -> Unit,
-    onCreateMixtapeClick: () -> Unit,
-    onMixtapeClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    // Toda la pantalla es una sola lista: el encabezado y las pestanas suben con el contenido
     LazyColumn(
         modifier = modifier.fillMaxSize(),
+        // Abajo queda espacio para que el boton + no tape el ultimo elemento
         contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 96.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
@@ -243,6 +238,7 @@ fun ProfileScreenContent(
                     onImagePicked = onImagePicked
                 )
 
+                // La foto que no se pudo subir, debajo de la pestana de Cambiar foto
                 ErrorMessage(
                     messageRes = errorImagenRes,
                     modifier = Modifier.padding(top = 8.dp)
@@ -259,36 +255,23 @@ fun ProfileScreenContent(
                     guardados.isEmpty() -> item {
                         EmptyMessage(messageRes = R.string.sin_guardados, modifier = Modifier.fillMaxWidth())
                     }
+                    // La cuadricula se arma con filas de tres: cada fila es un item de la lista
                     else -> items(guardados.chunked(GUARDADOS_POR_FILA)) { fila ->
                         SavedItemsRow(items = fila, onItemClick = onItemClick)
                     }
                 }
             }
-            PESTANA_MIXTAPES -> {
+            else -> {
+                // Mis numeros de la app en tarjetas que se van descubriendo
                 item {
-                    AppButton(
-                        texto = stringResource(R.string.crear_mixtape),
-                        onClick = onCreateMixtapeClick,
-                        modifier = Modifier.fillMaxWidth()
+                    OpcionOvalada(
+                        icono = Icons.Outlined.AutoAwesome,
+                        texto = stringResource(R.string.resumen_titulo),
+                        onClick = onResumenClick,
+                        modifier = Modifier.testTag("btnResumen"),
                     )
                 }
-                when {
-                    errorMixtapesRes != null -> item {
-                        ErrorMessage(messageRes = errorMixtapesRes)
-                    }
-                    mixtapes.isEmpty() -> item {
-                        EmptyMessage(messageRes = R.string.sin_mixtapes, modifier = Modifier.fillMaxWidth())
-                    }
-                    else -> items(mixtapes) { mixtape ->
-                        MixtapeCard(
-                            mixtape = mixtape,
-                            onClick = { onMixtapeClick(mixtape.id) },
-                            modifier = Modifier.padding(vertical = 4.dp)
-                        )
-                    }
-                }
-            }
-            else -> {
+
                 item {
                     FavoriteSection(
                         favoritos = favoritos,
@@ -306,6 +289,7 @@ fun ProfileScreenContent(
                             onActionClick = onSeeAllReviewsClick
                         )
 
+                        // Un like o un borrado que fallo
                         ErrorMessage(messageRes = errorAccionRes)
                     }
                 }
@@ -320,6 +304,7 @@ fun ProfileScreenContent(
                     else -> items(resenasRecientes) { review ->
                         ReviewCard(
                             review = review,
+                            // Soy yo: tocar mi nombre no abre nada
                             onAuthorClick = {},
                             onLikeClick = onLikeClick,
                             onCommentsClick = onCommentsClick,
@@ -338,6 +323,54 @@ fun ProfileScreenContent(
                     )
                 }
             }
+        }
+    }
+}
+
+@Composable
+@Preview(showBackground = true, device = "spec:width=393dp,height=852dp")
+fun ProfileScreenPreview() {
+    MixtappTheme(darkTheme = true) {
+        val usuario = LocalPreviewProvider.usuario
+
+        Box {
+            AppBackground()
+
+            ProfileScreenContent(
+                usuario = usuario.username,
+                nombre = usuario.nombre,
+                bio = usuario.bio,
+                instagram = usuario.instagram,
+                instagramUrl = usuario.instagramUrl,
+                seguidores = usuario.seguidores,
+                seguidos = usuario.seguidos,
+                profileImageUrl = usuario.fotoUrl,
+                subiendoImagen = false,
+                errorImagenRes = null,
+                avisoRes = null,
+                tabs = profileTabs,
+                selectedTabId = PESTANA_PERFIL,
+                favoritos = LocalPreviewProvider.favoritos,
+                errorFavoritosRes = null,
+                resenasRecientes = listOf(LocalPreviewProvider.miReview),
+                errorResenasRes = null,
+                errorAccionRes = null,
+                guardados = LocalPreviewProvider.favoritos,
+                errorGuardadosRes = null,
+                onSettingsClick = {},
+                onSeguidoresClick = {},
+                onSeguidosClick = {},
+                onImagePicked = {},
+                onTabSelected = {},
+                onItemClick = {},
+                onLikeClick = {},
+                onCommentsClick = {},
+                onEditClick = {},
+                onDeleteClick = {},
+                onSeeAllReviewsClick = {},
+                onResumenClick = {},
+                onLogoutClick = {},
+            )
         }
     }
 }

@@ -11,7 +11,6 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
-import androidx.test.espresso.Espresso
 import com.example.mixtapp.MainActivity
 import com.example.mixtapp.R
 import com.example.mixtapp.cargarDatosDePrueba
@@ -112,8 +111,8 @@ class RegistroYLikeE2E {
         composeRule.esperarTexto(tag = "likes_review_1", texto = "1")
         composeRule.onNodeWithTag("likes_review_1").assertTextContains("1")
 
-        // Vuelve atras, entra otra vez a la publicacion y quita el like: el contador baja a 0
-        Espresso.pressBack()
+        // Vuelve con la flecha, entra otra vez a la publicacion y quita el like: el contador baja a 0
+        composeRule.tocarVolver(listaTag = "listaDetalle")
         composeRule.esperarTag("homeScreen")
         abrirPrimeraPublicacion()
         composeRule.esperarTexto(tag = "likes_review_1", texto = "1")

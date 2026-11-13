@@ -3,6 +3,7 @@ package com.example.mixtapp.ui.screens.following
 import androidx.annotation.StringRes
 import com.example.mixtapp.data.model.FollowingUi
 import com.example.mixtapp.data.model.ReviewUi
+import com.example.mixtapp.data.model.SonandoUi
 
 data class FollowingState(
     // Es nulable porque puede que todavia no hayan llegado los datos
@@ -16,4 +17,7 @@ data class FollowingState(
     @StringRes val errorMessageRes: Int? = null,
     // Fallo un like: la lista sigue visible y el error sale encima
     @StringRes val errorAccionRes: Int? = null,
+    // Lo que escucho yo y lo que escuchan quienes sigo; su error va aparte para no tapar las resenas
+    val sonando: List<SonandoUi> = emptyList(),
+    @StringRes val errorSonandoRes: Int? = null,
 )
