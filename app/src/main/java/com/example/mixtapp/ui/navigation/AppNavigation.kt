@@ -35,6 +35,8 @@ import com.example.mixtapp.ui.screens.notifications.NotificationsScreen
 import com.example.mixtapp.ui.screens.notifications.NotificationsViewModel
 import com.example.mixtapp.ui.screens.profile.ProfileScreen
 import com.example.mixtapp.ui.screens.profile.ProfileViewModel
+import com.example.mixtapp.ui.screens.resumen.ResumenScreen
+import com.example.mixtapp.ui.screens.resumen.ResumenViewModel
 import com.example.mixtapp.ui.screens.review.WriteReviewScreen
 import com.example.mixtapp.ui.screens.review.WriteReviewViewModel
 import com.example.mixtapp.ui.screens.search.SearchScreen
@@ -253,7 +255,17 @@ fun AppNavigation(
                 onFollowListClick = { userId, tipo ->
                     navController.abrirLista(userId = userId, tipo = tipo)
                 },
-                onSeeAllReviewsClick = { navController.navigate(Screen.MyReviews.route) }
+                onSeeAllReviewsClick = { navController.navigate(Screen.MyReviews.route) },
+                onResumenClick = { navController.navigate(Screen.Resumen.route) }
+            )
+        }
+
+        composable(route = Screen.Resumen.route) {
+            val resumenViewModel: ResumenViewModel = hiltViewModel()
+
+            ResumenScreen(
+                resumenViewModel = resumenViewModel,
+                onBackClick = { navController.popBackStack() }
             )
         }
 

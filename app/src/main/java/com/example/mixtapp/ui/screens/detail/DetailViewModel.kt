@@ -7,6 +7,7 @@ import com.example.mixtapp.R
 import com.example.mixtapp.data.injection.IoDispatcher
 import com.example.mixtapp.data.repository.CatalogoRepository
 import com.example.mixtapp.data.repository.ReviewRepository
+import com.example.mixtapp.data.repository.SonandoRepository
 import com.example.mixtapp.ui.utils.mensajeDeError
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -23,6 +24,7 @@ import javax.inject.Inject
 class DetailViewModel @Inject constructor(
     private val catalogoRepository: CatalogoRepository,
     private val reviewRepository: ReviewRepository,
+    private val sonandoRepository: SonandoRepository,
     // Las corrutinas se lanzan en este hilo; las pruebas pasan uno de prueba
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
@@ -84,6 +86,30 @@ class DetailViewModel @Inject constructor(
                             error = result.exceptionOrNull(),
                             generico = R.string.error_me_gusta,
                             noEncontrado = R.string.album_no_encontrado,
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+    // Pone el item en "sonando ahora". Mis seguidores lo ven en Siguiendo por el listener; aqui
+    // solo queda el aviso de que ya se puso
+    fun ponerSonando() {
+        val item = _uiState.value.itemConResenas?.item ?: return
+
+        viewModelScope.launch(ioDispatcher) {
+            val result = sonandoRepository.ponerSonando(item = item)
+
+            if (result.isSuccess) {
+                _uiState.update { it.copy(avisoSonandoRes = R.string.sonando_publicado, errorAccionRes = null) }
+            } else {
+                _uiState.update {
+                    it.copy(
+                        avisoSonandoRes = null,
+                        errorAccionRes = mensajeDeError(
+                            error = result.exceptionOrNull(),
+                            generico = R.string.error_sonando,
                         )
                     )
                 }
