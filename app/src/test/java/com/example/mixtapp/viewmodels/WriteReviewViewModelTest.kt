@@ -1,7 +1,9 @@
 package com.example.mixtapp.viewmodels
 
 import com.example.mixtapp.R
+import com.example.mixtapp.data.datasource.LocationProvider
 import com.example.mixtapp.data.local.LocalPreviewProvider
+import com.example.mixtapp.data.model.Coordenadas
 import com.example.mixtapp.data.model.TIPO_ALBUM
 import com.example.mixtapp.data.repository.CatalogoRepository
 import com.example.mixtapp.data.repository.ReviewRepository
@@ -27,8 +29,10 @@ import org.junit.Test
 class WriteReviewViewModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
+    private val bogota = Coordenadas(latitud = 4.65, longitud = -74.06)
     private lateinit var catalogoRepository: CatalogoRepository
     private lateinit var reviewRepository: ReviewRepository
+    private lateinit var locationProvider: LocationProvider
     private lateinit var viewModel: WriteReviewViewModel
 
     @Before
@@ -36,7 +40,11 @@ class WriteReviewViewModelTest {
         Dispatchers.setMain(testDispatcher)
         catalogoRepository = mockk()
         reviewRepository = mockk()
-        viewModel = WriteReviewViewModel(catalogoRepository, reviewRepository, testDispatcher)
+        locationProvider = mockk()
+        viewModel = WriteReviewViewModel(catalogoRepository, reviewRepository, locationProvider, testDispatcher)
+
+        // El celular esta en Bogota
+        coEvery { locationProvider.getCurrentLocation() } returns bogota
 
         // El album de ejemplo, sin resenas: el formulario arranca vacio
         coEvery { catalogoRepository.getItemConResenas(TIPO_ALBUM, "album_from_zero") } returns
@@ -88,7 +96,7 @@ class WriteReviewViewModelTest {
         viewModel.updateRating(5)
         viewModel.updateReviewText("Muy bueno")
         viewModel.updateListenedDate("2026-10-30")
-        coEvery { reviewRepository.guardarResena(any(), any(), any(), any(), any()) } returns Result.success(Unit)
+        coEvery { reviewRepository.guardarResena(any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
         //Act
         viewModel.publicarResena()
         advanceUntilIdle()
@@ -96,5 +104,21 @@ class WriteReviewViewModelTest {
         val state = viewModel.uiState.value
         assertThat(state.navigate).isTrue()
         assertThat(state.errorMessageRes).isNull()
+    }
+
+    @Test
+    fun publicarResena_nueva_guardaDondeEstoy() = runTest {
+        //Arrange: la resena nueva se publica con la ubicacion del celular
+        abrirFormulario()
+        viewModel.updateRating(5)
+        viewModel.updateReviewText("Muy bueno")
+        coEvery {
+            reviewRepository.guardarResena(any(), any(), any(), any(), null, bogota)
+        } returns Result.success(Unit)
+        //Act
+        viewModel.publicarResena()
+        advanceUntilIdle()
+        //Assert: solo navega si el repositorio recibio la ubicacion
+        assertThat(viewModel.uiState.value.navigate).isTrue()
     }
 }
