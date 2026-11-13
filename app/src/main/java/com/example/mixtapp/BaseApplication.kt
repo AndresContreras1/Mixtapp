@@ -7,6 +7,7 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
 import dagger.hilt.android.HiltAndroidApp
+import org.maplibre.android.MapLibre
 
 // Punto de entrada de Hilt: aqui se crean los objetos del modulo al arrancar la app
 @HiltAndroidApp
@@ -14,6 +15,7 @@ class BaseApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        MapLibre.getInstance(this)
         FirebaseApp.initializeApp(this)
 
         // En modo debug la app usa el emulador de Firebase (Firebase CLI) que corre en el computador:

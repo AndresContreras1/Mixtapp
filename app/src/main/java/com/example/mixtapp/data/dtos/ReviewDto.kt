@@ -26,6 +26,10 @@ data class ReviewDto(
     val commentsCount: Int,
     // No esta en la base: el data source lo llena buscando mi uid en la subcoleccion likes
     var liked: Boolean = false,
+    // Coordenadas de la ubicación de la persona para el mapa
+    val latitude: Double? = null,
+    val longitude: Double? = null,
+    val createdAtMillis: Long? = null,
 ) {
     // Firestore necesita un constructor vacio para convertir el documento en el DTO
     constructor() : this("", 0, null, null, "", "", TIPO_ALBUM, null, null, null, null, 0, 0)
@@ -66,5 +70,8 @@ fun ReviewDto.toReviewUi(usuarioActualId: String, ahora: Instant = Instant.now()
             imagenUrl = item?.imagenUrl ?: "",
         ),
         updatedAt = updatedAt ?: createdAt ?: "",
+        latitude = latitude,
+        longitude = longitude,
+        createdAtMillis = createdAtMillis,
     )
 }

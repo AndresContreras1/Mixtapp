@@ -99,5 +99,9 @@ dependencies {
     kspAndroidTest(libs.dagger.hilt.compiler)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+    // Integración de Open Street Maps
+    implementation(libs.osmdroid.android)
+    implementation(libs.maplibre.android)
+    implementation(libs.play.services.location)
 
 }

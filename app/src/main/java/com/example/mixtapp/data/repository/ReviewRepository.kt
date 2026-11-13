@@ -79,6 +79,8 @@ class ReviewRepository @Inject constructor(
         texto: String,
         fecha: String,
         reviewId: String?,
+        latitude: Double? = null,
+        longitude: Double? = null,
     ): Result<Unit> {
         return try {
             val usuarioId = authRemoteDataSource.currentUser?.uid
