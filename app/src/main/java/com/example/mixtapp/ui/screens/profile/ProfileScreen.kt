@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -23,6 +24,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -47,6 +49,7 @@ import com.example.mixtapp.ui.utils.ErrorBox
 import com.example.mixtapp.ui.utils.ErrorMessage
 import com.example.mixtapp.ui.utils.FavoriteSection
 import com.example.mixtapp.ui.utils.LoadingBox
+import com.example.mixtapp.ui.utils.OpcionOvalada
 import com.example.mixtapp.ui.utils.ProfileHeader
 import com.example.mixtapp.ui.utils.ReviewCard
 import com.example.mixtapp.ui.utils.ScreenTitle
@@ -62,6 +65,7 @@ fun ProfileScreen(
     onEditReviewClick: (String, String) -> Unit,
     onFollowListClick: (userId: String, tipo: String) -> Unit,
     onSeeAllReviewsClick: () -> Unit,
+    onResumenClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val state by profileViewModel.uiState.collectAsState()
@@ -136,6 +140,7 @@ fun ProfileScreen(
                 onEditClick = { review -> onEditReviewClick(review.item.tipo, review.item.id) },
                 onDeleteClick = { profileViewModel.eliminarResena(reviewId = it) },
                 onSeeAllReviewsClick = onSeeAllReviewsClick,
+                onResumenClick = onResumenClick,
                 onLogoutClick = onLogoutClick,
             )
         }
@@ -175,6 +180,7 @@ fun ProfileScreenContent(
     onEditClick: (ReviewUi) -> Unit,
     onDeleteClick: (String) -> Unit,
     onSeeAllReviewsClick: () -> Unit,
+    onResumenClick: () -> Unit,
     onLogoutClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -256,6 +262,16 @@ fun ProfileScreenContent(
                 }
             }
             else -> {
+                // Mis numeros de la app en tarjetas que se van descubriendo
+                item {
+                    OpcionOvalada(
+                        icono = Icons.Outlined.AutoAwesome,
+                        texto = stringResource(R.string.resumen_titulo),
+                        onClick = onResumenClick,
+                        modifier = Modifier.testTag("btnResumen"),
+                    )
+                }
+
                 item {
                     FavoriteSection(
                         favoritos = favoritos,
@@ -352,6 +368,7 @@ fun ProfileScreenPreview() {
                 onEditClick = {},
                 onDeleteClick = {},
                 onSeeAllReviewsClick = {},
+                onResumenClick = {},
                 onLogoutClick = {},
             )
         }
