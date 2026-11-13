@@ -30,4 +30,5 @@ interface ReviewRemoteDataSource {
     suspend fun sendOrDeleteLikeComentario(reviewId: String, comentarioId: String, userId: String): Unit
     // Los comentarios en vivo, con mis likes: es como un chat, cada comentario nuevo llega solo
     fun listenComentarios(reviewId: String, currentUserId: String = ""): Flow<List<ComentarioDto>>
-}
+
+    fun listenRecentReviews( desdeMillis: Long ): Flow<List<ReviewDto>> }

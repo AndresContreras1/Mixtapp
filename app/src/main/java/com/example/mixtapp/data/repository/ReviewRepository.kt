@@ -1,3 +1,4 @@
+```kotlin
 package com.example.mixtapp.data.repository
 
 import android.util.Log
@@ -23,47 +24,53 @@ import retrofit2.HttpException
 import java.time.Instant
 import javax.inject.Inject
 
-// Organiza varios data sources: las resenas con sus comentarios, el usuario que se copia en cada
-// una y Authentication para saber quien es el usuario de la app.
-// Recibe los contratos: para volver al backend de Express basta con cambiar los @Binds de
-// DataSourceModule a las implementaciones de Retrofit
+// Organiza varios data sources: las reseñas con sus comentarios,
+// el usuario que se copia en cada una y Authentication.
 class ReviewRepository @Inject constructor(
     private val reviewRemoteDataSource: ReviewRemoteDataSource,
     private val usuarioRemoteDataSource: UsuarioRemoteDataSource,
     private val authRemoteDataSource: AuthRemoteDataSource
 ) {
 
-    // Da el like o lo quita: el data source decide segun si ya existe. El corazon y el contador
-    // cambian cuando llega la resena nueva por el listener
+    // Da el like o lo quita.
     suspend fun sendOrDeleteLike(reviewId: String): Result<Unit> {
         return try {
             val usuarioId = authRemoteDataSource.currentUser?.uid
                 ?: return Result.failure(SinSesionException())
 
-            reviewRemoteDataSource.sendOrDeleteLike(reviewId = reviewId, userId = usuarioId)
+            reviewRemoteDataSource.sendOrDeleteLike(
+                reviewId = reviewId,
+                userId = usuarioId
+            )
+
             Result.success(Unit)
+
         } catch (e: HttpException) {
             Log.d("ReviewRepository", "sendOrDeleteLike: ${e.message}")
             Result.failure(errorDelBackend(e))
+
         } catch (e: FirebaseFirestoreException) {
             Log.d("ReviewRepository", "sendOrDeleteLike: ${e.message}")
             Result.failure(errorDeFirestore(e))
+
         } catch (e: Exception) {
             Log.d("ReviewRepository", "sendOrDeleteLike: ${e.message}")
             Result.failure(ErrorInesperadoException())
         }
     }
 
-    // Mis resenas en vivo, la ultima publicada o editada primero: un like en otro celular cambia el
-    // contador sin salir de la pantalla. Como en clase, retorna el flujo y no un Result: los errores
-    // los recibe el ViewModel en el catch
+    // Mis reseñas en vivo.
     fun getMyReviewsLive(): Flow<List<ReviewUi>> {
         val usuarioId = authRemoteDataSource.currentUser?.uid ?: ""
 
-        return usuarioRemoteDataSource.listenReviewsDeUsuario(usuarioId, currentUserId = usuarioId)
+        return usuarioRemoteDataSource.listenReviewsDeUsuario(
+            usuarioId,
+            currentUserId = usuarioId
+        )
             .map { reviews ->
-                // Las fechas van en formato ISO, asi que ordenar el texto ordena las fechas
-                reviews.map { it.toReviewUi(usuarioActualId = usuarioId) }.sortedByDescending { it.updatedAt }
+                reviews
+                    .map { it.toReviewUi(usuarioActualId = usuarioId) }
+                    .sortedByDescending { it.updatedAt }
             }
             .catch { e ->
                 Log.d("ReviewRepository", "getMyReviewsLive: ${e.message}")
@@ -71,8 +78,45 @@ class ReviewRepository @Inject constructor(
             }
     }
 
-    // Si llega el id de la resena se modifica; si no, se crea. El item llega de Escribir resena,
-    // que ya lo tiene cargado: de ahi sale la copia que guarda la resena
+    // Obtiene las reseñas publicadas durante las últimas 24 horas
+    // que tengan coordenadas para poder mostrarlas en el mapa.
+    fun getRecentReviewsLive(): Flow<List<ReviewUi>> {
+
+        val usuarioId = authRemoteDataSource.currentUser?.uid ?: ""
+
+        val hace24Horas = Instant.now()
+            .minusSeconds(24 * 60 * 60)
+            .toEpochMilli()
+
+        return reviewRemoteDataSource
+            .listenRecentReviews(hace24Horas)
+            .map { reviews ->
+
+                reviews
+                    .filter { review ->
+                        review.latitude != null &&
+                        review.longitude != null &&
+                        (review.createdAtMillis ?: 0L) >= hace24Horas
+                    }
+                    .map { review ->
+                        review.toReviewUi(
+                            usuarioActualId = usuarioId
+                        )
+                    }
+                    .sortedByDescending { review ->
+                        review.createdAtMillis ?: 0L
+                    }
+            }
+            .catch { e ->
+                Log.d(
+                    "ReviewRepository",
+                    "getRecentReviewsLive: ${e.message}"
+                )
+                throw errorDelFlujo(e)
+            }
+    }
+
+    // Si llega el id de la reseña se modifica; si no, se crea.
     suspend fun guardarResena(
         item: ItemUi,
         rating: Int,
@@ -86,12 +130,12 @@ class ReviewRepository @Inject constructor(
             val usuarioId = authRemoteDataSource.currentUser?.uid
                 ?: return Result.failure(SinSesionException())
 
-            // En formato ISO, como los comentarios: la resena nueva guarda las dos fechas y al
-            // modificarla solo cambia updatedAt
-            val ahora = Instant.now().toString()
+            // Se generan las fechas de creación y actualización.
+            val instanteActual = Instant.now()
+            val ahora = instanteActual.toString()
+            val ahoraMillis = instanteActual.toEpochMilli()
 
-            // La resena guarda una copia de lo que se muestra del usuario y del item, porque en
-            // Firestore no hay joins. Solo se copia lo que se ve, no todo el usuario
+            // Se guarda una copia de la información del usuario y del item.
             val createReviewDto = CreateReviewDto(
                 usuarioId = usuarioId,
                 itemId = item.id,
@@ -101,29 +145,50 @@ class ReviewRepository @Inject constructor(
                 fechaEscucha = if (fecha.isEmpty()) null else fecha,
                 likesCount = 0,
                 commentsCount = 0,
+
+                // La fecha de creación solo se asigna al publicar.
                 createdAt = if (reviewId == null) ahora else null,
+
+                // Fecha en milisegundos para filtrar las últimas 24 horas.
+                createdAtMillis = if (reviewId == null) ahoraMillis else null,
+
                 updatedAt = ahora,
+
+                // Las coordenadas solo se asignan al crear la reseña.
+                latitude = if (reviewId == null) latitude else null,
+                longitude = if (reviewId == null) longitude else null,
+
                 usuario = CreateReviewUsuarioDto(
                     nombre = nombreDelUsuario(usuarioId = usuarioId),
-                    fotoUrl = authRemoteDataSource.currentUser?.photoUrl?.toString(),
+                    fotoUrl = authRemoteDataSource.currentUser?.photoUrl?.toString()
                 ),
+
                 item = CreateReviewItemDto(
                     titulo = item.titulo,
                     subtitulo = item.subtitulo,
-                    imagenUrl = item.imagenUrl,
-                ),
+                    imagenUrl = item.imagenUrl
+                )
             )
 
-            if (reviewId != null) reviewRemoteDataSource.updateReview(reviewId, createReviewDto)
-            else reviewRemoteDataSource.createReview(createReviewDto)
+            if (reviewId != null) {
+                reviewRemoteDataSource.updateReview(
+                    reviewId,
+                    createReviewDto
+                )
+            } else {
+                reviewRemoteDataSource.createReview(createReviewDto)
+            }
 
             Result.success(Unit)
+
         } catch (e: HttpException) {
             Log.d("ReviewRepository", "guardarResena: ${e.message}")
             Result.failure(errorDelBackend(e))
+
         } catch (e: FirebaseFirestoreException) {
             Log.d("ReviewRepository", "guardarResena: ${e.message}")
             Result.failure(errorDeFirestore(e))
+
         } catch (e: Exception) {
             Log.d("ReviewRepository", "guardarResena: ${e.message}")
             Result.failure(ErrorInesperadoException())
@@ -134,34 +199,48 @@ class ReviewRepository @Inject constructor(
         return try {
             reviewRemoteDataSource.deleteReview(reviewId)
             Result.success(Unit)
+
         } catch (e: HttpException) {
             Log.d("ReviewRepository", "eliminarResena: ${e.message}")
             Result.failure(errorDelBackend(e))
+
         } catch (e: FirebaseFirestoreException) {
             Log.d("ReviewRepository", "eliminarResena: ${e.message}")
             Result.failure(errorDeFirestore(e))
+
         } catch (e: Exception) {
             Log.d("ReviewRepository", "eliminarResena: ${e.message}")
             Result.failure(ErrorInesperadoException())
         }
     }
 
-    // La discusion en vivo con dos listeners: la resena (mi like y sus contadores) y sus comentarios.
-    // Cuando llega cualquiera de los dos, combine arma la discusion de nuevo, como en Siguiendo
+    // La discusión en vivo combina la reseña y sus comentarios.
     fun getDiscussionLive(reviewId: String): Flow<DiscussionUi> {
         val usuarioId = authRemoteDataSource.currentUser?.uid ?: ""
 
         return combine(
-            reviewRemoteDataSource.listenReviewById(reviewId, currentUserId = usuarioId),
-            reviewRemoteDataSource.listenComentarios(reviewId, currentUserId = usuarioId),
+            reviewRemoteDataSource.listenReviewById(
+                reviewId,
+                currentUserId = usuarioId
+            ),
+            reviewRemoteDataSource.listenComentarios(
+                reviewId,
+                currentUserId = usuarioId
+            )
         ) { review, comentarios ->
-            // El data source envia null si la resena no existe: el repositorio decide el error
-            if (review == null) throw ContenidoNoEncontradoException()
+
+            if (review == null) {
+                throw ContenidoNoEncontradoException()
+            }
 
             DiscussionUi(
                 id = reviewId,
                 review = review.toReviewUi(usuarioActualId = usuarioId),
-                comments = enHilo(comentarios = comentarios.map { it.toDiscussionCommentUi() }),
+                comments = enHilo(
+                    comentarios = comentarios.map {
+                        it.toDiscussionCommentUi()
+                    }
+                )
             )
         }
             .catch { e ->
@@ -170,8 +249,7 @@ class ReviewRepository @Inject constructor(
             }
     }
 
-    // El comentario guarda una copia de mi nombre y mi foto, igual que la resena. Si es una
-    // respuesta, llega el id del comentario principal
+    // Publica un comentario o una respuesta.
     suspend fun publicarComentario(
         reviewId: String,
         texto: String,
@@ -186,30 +264,40 @@ class ReviewRepository @Inject constructor(
                 contenido = texto,
                 parentCommentId = parentCommentId,
                 likesCount = 0,
-                // En formato ISO, para que la lista se ordene por esta fecha
                 createdAt = Instant.now().toString(),
+
                 usuario = CreateReviewUsuarioDto(
                     nombre = nombreDelUsuario(usuarioId = usuarioId),
-                    fotoUrl = authRemoteDataSource.currentUser?.photoUrl?.toString(),
-                ),
+                    fotoUrl = authRemoteDataSource.currentUser?.photoUrl?.toString()
+                )
             )
 
-            reviewRemoteDataSource.createComentario(reviewId = reviewId, comentario = createComentarioDto)
+            reviewRemoteDataSource.createComentario(
+                reviewId = reviewId,
+                comentario = createComentarioDto
+            )
+
             Result.success(Unit)
+
         } catch (e: HttpException) {
             Log.d("ReviewRepository", "publicarComentario: ${e.message}")
             Result.failure(errorDelBackend(e))
+
         } catch (e: FirebaseFirestoreException) {
             Log.d("ReviewRepository", "publicarComentario: ${e.message}")
             Result.failure(errorDeFirestore(e))
+
         } catch (e: Exception) {
             Log.d("ReviewRepository", "publicarComentario: ${e.message}")
             Result.failure(ErrorInesperadoException())
         }
     }
 
-    // Da el like al comentario o lo quita: el data source decide segun si ya existe
-    suspend fun sendOrDeleteLikeComentario(reviewId: String, commentId: String): Result<Unit> {
+    // Da like a un comentario o lo quita.
+    suspend fun sendOrDeleteLikeComentario(
+        reviewId: String,
+        commentId: String
+    ): Result<Unit> {
         return try {
             val usuarioId = authRemoteDataSource.currentUser?.uid
                 ?: return Result.failure(SinSesionException())
@@ -217,36 +305,43 @@ class ReviewRepository @Inject constructor(
             reviewRemoteDataSource.sendOrDeleteLikeComentario(
                 reviewId = reviewId,
                 comentarioId = commentId,
-                userId = usuarioId,
+                userId = usuarioId
             )
+
             Result.success(Unit)
+
         } catch (e: HttpException) {
             Log.d("ReviewRepository", "sendOrDeleteLikeComentario: ${e.message}")
             Result.failure(errorDelBackend(e))
+
         } catch (e: FirebaseFirestoreException) {
             Log.d("ReviewRepository", "sendOrDeleteLikeComentario: ${e.message}")
             Result.failure(errorDeFirestore(e))
+
         } catch (e: Exception) {
             Log.d("ReviewRepository", "sendOrDeleteLikeComentario: ${e.message}")
             Result.failure(ErrorInesperadoException())
         }
     }
 
-    // Los comentarios llegan del mas viejo al mas nuevo: cada comentario principal va seguido de
-    // sus respuestas
-    private fun enHilo(comentarios: List<DiscussionCommentUi>): List<DiscussionCommentUi> {
+    // Organiza los comentarios principales junto con sus respuestas.
+    private fun enHilo(
+        comentarios: List<DiscussionCommentUi>
+    ): List<DiscussionCommentUi> {
         val principales = comentarios.filter { it.parentId == null }
 
         return principales.flatMap { principal ->
-            listOf(principal) + comentarios.filter { it.parentId == principal.id }
+            listOf(principal) + comentarios.filter {
+                it.parentId == principal.id
+            }
         }
     }
 
-    // Una cuenta creada antes del sprint 10 no tiene documento en usuarios: se usa su correo
+    // Obtiene el nombre del usuario.
     private suspend fun nombreDelUsuario(usuarioId: String): String =
         nombreDeLaSesion(
             usuarioRemoteDataSource = usuarioRemoteDataSource,
             authRemoteDataSource = authRemoteDataSource,
-            usuarioId = usuarioId,
+            usuarioId = usuarioId
         )
 }

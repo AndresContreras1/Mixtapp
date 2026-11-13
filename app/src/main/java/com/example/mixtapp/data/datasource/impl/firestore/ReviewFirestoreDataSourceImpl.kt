@@ -237,4 +237,37 @@ class ReviewFirestoreDataSourceImpl @Inject constructor(
             pendientes.map { it.await() }
         }
     }
+
+    override fun listenRecentReviews(
+            desdeMillis: Long
+        ): Flow<List<ReviewDto>> = callbackFlow {
+
+            val listener = db.collection("reviews")
+                .whereGreaterThanOrEqualTo(
+                    "createdAtMillis",
+                    desdeMillis
+                )
+                .addSnapshotListener { snapshot, error ->
+
+                    if (error != null) {
+                        close(error)
+                        return@addSnapshotListener
+                    }
+
+                    if (snapshot != null) {
+
+                        val reviews = snapshot.documents.mapNotNull { doc ->
+                            doc.toObject(ReviewDto::class.java)
+                                ?.copy(id = doc.id)
+                        }
+
+                        trySend(reviews)
+                    }
+                }
+
+            awaitClose {
+                listener.remove()
+            }
+        }
+
 }

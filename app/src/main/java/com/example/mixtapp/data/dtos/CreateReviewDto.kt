@@ -21,7 +21,7 @@ data class CreateReviewDto(
     // Ubicación
     val latitude: Double? = null,
     val longitude: Double? = null,
-    val createdAtMillis: Long? = null,
+    createdAtMillis = if (reviewId == null) ahoraMillis else null,
 )
 
 // Solo los datos del usuario que se muestran con la resena
