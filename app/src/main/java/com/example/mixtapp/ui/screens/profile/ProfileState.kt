@@ -2,6 +2,7 @@ package com.example.mixtapp.ui.screens.profile
 
 import androidx.annotation.StringRes
 import com.example.mixtapp.data.model.ItemResumenUi
+import com.example.mixtapp.data.model.MixtapeUi
 import com.example.mixtapp.data.model.ReviewUi
 import com.example.mixtapp.ui.screens.profile.model.PESTANA_PERFIL
 import com.example.mixtapp.ui.screens.profile.model.ProfileTabUi
@@ -37,6 +38,9 @@ data class ProfileState(
     @StringRes val errorResenasRes: Int? = null,
     val guardados: List<ItemResumenUi> = emptyList(),
     @StringRes val errorGuardadosRes: Int? = null,
+    // Las mixtapes que arme, la mas nueva primero
+    val mixtapes: List<MixtapeUi> = emptyList(),
+    @StringRes val errorMixtapesRes: Int? = null,
     // El like o el borrado de una resena que no se pudo hacer
     @StringRes val errorAccionRes: Int? = null,
     // Mientras se borra no se manda otro borrado

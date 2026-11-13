@@ -4,12 +4,16 @@ import android.util.Log
 import com.example.mixtapp.data.dtos.AlbumDto
 import com.example.mixtapp.data.dtos.CreateComentarioDto
 import com.example.mixtapp.data.dtos.CreateDueloDto
+import com.example.mixtapp.data.dtos.CreateMixtapeDto
+import com.example.mixtapp.data.dtos.CreateReaccionDto
 import com.example.mixtapp.data.dtos.CreateReviewDto
 import com.example.mixtapp.data.dtos.CreateReviewItemDto
 import com.example.mixtapp.data.dtos.CreateReviewUsuarioDto
+import com.example.mixtapp.data.dtos.CreateSonandoDto
 import com.example.mixtapp.data.dtos.CreateVotoDto
 import com.example.mixtapp.data.dtos.HistoriaDto
 import com.example.mixtapp.data.dtos.ItemDelDueloDto
+import com.example.mixtapp.data.dtos.ItemMixtapeDto
 import com.example.mixtapp.data.dtos.SeccionDto
 import com.example.mixtapp.data.dtos.UsuarioPerfilFirestoreDto
 import com.example.mixtapp.data.model.TIPO_ALBUM
@@ -185,6 +189,77 @@ suspend fun limpiarBase(db: FirebaseFirestore) {
 
         dueloDoc.reference.delete().await()
     }
+
+    // Las mixtapes no tienen subcolecciones
+    val mixtapes = db.collection("mixtapes").get().await()
+    for (mixtapeDoc in mixtapes) mixtapeDoc.reference.delete().await()
+
+    val sonando = db.collection("sonando").get().await()
+    for (sonandoDoc in sonando) {
+        val reacciones = sonandoDoc.reference.collection("reacciones").get().await()
+        for (reaccion in reacciones) reaccion.reference.delete().await()
+
+        sonandoDoc.reference.delete().await()
+    }
+}
+
+// Una mixtape vacia del usuario i, como la arma el repositorio
+fun generateMixtape(i: Int, createdAt: String = "2025-01-0${i}T00:00:00Z"): CreateMixtapeDto {
+    val usuario = generateUsuario(i)
+
+    return CreateMixtapeDto(
+        nombre = "Mixtape $i",
+        descripcion = null,
+        usuarioId = usuario.id,
+        usuarioNombre = usuario.nombre,
+        usuarioFotoUrl = usuario.fotoUrl,
+        items = emptyList(),
+        createdAt = createdAt,
+    )
+}
+
+// La copia del album i que se agrega a una mixtape
+fun generateItemMixtape(i: Int): ItemMixtapeDto {
+    val album = generateAlbum(i)
+
+    return ItemMixtapeDto(
+        id = album.id,
+        tipo = TIPO_ALBUM,
+        titulo = album.titulo,
+        subtitulo = album.artista,
+        imagenUrl = album.portadaUrl,
+        genero = album.genero,
+    )
+}
+
+// Lo que el usuario i pone a sonar: el album_1, como lo arma el repositorio
+fun generateSonando(i: Int, actualizadoEn: String = "2025-01-0${i}T00:00:00Z"): CreateSonandoDto {
+    val usuario = generateUsuario(i)
+    val album = generateAlbum(1)
+
+    return CreateSonandoDto(
+        usuario = CreateReviewUsuarioDto(nombre = usuario.nombre, fotoUrl = usuario.fotoUrl),
+        itemId = album.id,
+        tipo = TIPO_ALBUM,
+        titulo = album.titulo,
+        subtitulo = album.artista,
+        imagenUrl = album.portadaUrl,
+        reaccionesCount = 0,
+        actualizadoEn = actualizadoEn,
+    )
+}
+
+// La reaccion 🔥 del usuario i a lo que suena el album_1
+fun generateReaccion(i: Int): CreateReaccionDto {
+    val usuario = generateUsuario(i)
+
+    return CreateReaccionDto(
+        usuarioId = usuario.id,
+        itemId = generateAlbum(1).id,
+        nombre = usuario.nombre,
+        fotoUrl = usuario.fotoUrl,
+        createdAt = "2025-01-0${i}T00:00:00Z",
+    )
 }
 
 // El duelo de prueba entre album_1 y album_2, como lo arma el repositorio con el primer voto

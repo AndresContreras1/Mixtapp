@@ -66,14 +66,17 @@ Universidad Javeriana.
 | Discusión de una reseña: comentarios, respuestas y likes a cada comentario, **en tiempo real**. Se abre desde cualquier tarjeta de reseña, aunque no sigas a quien la escribió | Funcionando, Firestore |
 | Notificaciones en tres pestañas, **en tiempo real**: Mías (me gusta a mis reseñas y a mis comentarios, comentarios, respuestas y seguidores nuevos, marcadas como leídas), Discusiones (reseñas nuevas de quienes sigo) y Lanzamientos (lo más nuevo de los artistas que me gustan) | Funcionando, Firestore y Cloud Functions |
 | **Duelos del día** (pestaña Duelos de la barra): cada día un duelo de álbumes, uno de canciones y uno de artistas, dos del mismo género; se vota por el mejor del día con una opinión opcional y los porcentajes y las opiniones cambian **en tiempo real** | Funcionando, Firestore |
+| **Mixtapes**: listas propias de álbumes, canciones y artistas. Se crean desde la pestaña Mixtapes del perfil, se llenan con el botón de lista del detalle y en su detalle se quitan items o se borra la mixtape, **en tiempo real** | Funcionando, Firestore |
+| **Tu año en Mixtapp** (desde el perfil): tarjetas que se descubren una por una con mis reseñas y mi promedio, mi género y mi artista, lo que mejor califiqué, mi reseña con más me gusta y mis números en la comunidad | Funcionando, Firestore |
+| **Sonando ahora**: desde el detalle pongo lo que estoy escuchando; en Siguiendo aparece en vivo lo que escuchan quienes sigo (de las últimas 12 horas) y les puedo dar 🔥, que les llega como notificación | Funcionando, Firestore y Cloud Functions |
 | Notificación push de las mismas acciones | FCM y Cloud Functions, con el Firebase real (en modo debug las funciones no corren) |
 | Foto de perfil subida a Firebase Storage | Funcionando |
 | Consumo del backend de Express con Retrofit | Implementado, intercambiable con Firestore |
 | Modo claro y modo oscuro: la app sigue el del celular | Funcionando |
 | Modo debug contra el emulador de Firebase (Firebase CLI) | Funcionando |
 | Catálogo y datos falsos con Faker para el emulador o el Firebase real | Script en [mixtapp-functions](https://github.com/AndresContreras1/mixtapp-functions) |
-| Pruebas de integración de los data sources y los repositorios contra el emulador | 31 + 17 pruebas |
-| Pruebas con mocks (MockK) del repositorio, con sus mapeos, y de los ViewModels | 21 + 27 pruebas, más 32 de mapeos y datos locales |
+| Pruebas de integración de los data sources y los repositorios contra el emulador | 43 + 17 pruebas |
+| Pruebas con mocks (MockK) del repositorio, con sus mapeos, y de los ViewModels | 33 + 40 pruebas, más 32 de mapeos y datos locales |
 | Pruebas de integración del ViewModel de registro contra el emulador | 2 pruebas |
 | Pruebas end to end de los dos casos de uso del sprint 13 | 2 pruebas |
 
@@ -136,6 +139,9 @@ lógica: filtrar, ordenar y decidir qué se muestra. **La pantalla** pinta y avi
 | `artistas` | `artista_<nombre>` | `nombre`, `fotoUrl`, `genero`, `subgenero` (texto) · `grupo`, `instagram` (texto o null) · `likesCount` (número) · `tendencia`, `tendenciaColombia` (número o null) |
 | `historias` | el id del item | `tipo` (texto) · `secciones` (arreglo de mapas con `titulo` y `texto`): los datos curiosos. Van aparte del item para que el inicio no descargue ese texto |
 | `duelos` | `dia_<número del día>_<tipo>` | `dia` (número) · `tipo`, `genero` (texto) · `itemA`, `itemB` (mapas con `id`, `titulo`, `subtitulo` e `imagenUrl`: la copia de los dos items) · `votosA`, `votosB` (número) · `createdAt` (texto ISO). Lo crea el primer voto del día |
+| `mixtapes` | id aleatorio | `nombre` (texto, hasta 40) · `descripcion` (texto o null, hasta 150) · `usuarioId`, `usuarioNombre`, `usuarioFotoUrl` (quién la creó, con la copia de su nombre y su foto) · `items` (arreglo de mapas con `id`, `tipo`, `titulo`, `subtitulo`, `imagenUrl` y `genero`: la copia de cada item) · `createdAt` (texto ISO) |
+| `sonando` | el uid de quien escucha | `itemId`, `tipo`, `titulo`, `subtitulo`, `imagenUrl` (la copia del item) · `usuario` (mapa con `nombre` y `fotoUrl`) · `reaccionesCount` (número) · `actualizadoEn` (texto ISO). Uno por usuario: poner otro lo reemplaza |
+| `sonando/<uid>/reacciones` | `<itemId>_<uid de quien reaccionó>` | `usuarioId`, `itemId`, `nombre`, `fotoUrl`, `createdAt`. El item va en el id para que una reacción a lo que sonaba antes no cuente para lo que suena ahora |
 | `duelos/<id>/votos` | el uid de quien votó | `opcion` (`a` o `b`) · `opinion` (texto, hasta 140) · `usuario` (mapa con `nombre` y `fotoUrl`) · `createdAt` (texto ISO). Cada usuario tiene un solo voto por duelo |
 | `albumes/<id>/likes`, `canciones/<id>/likes`, `artistas/<id>/likes` | el uid de quien dio like | `timestamp` |
 | `reviews` | id aleatorio | `usuarioId`, `itemId`, `tipo` (texto) · `calificacion` (número) · `comentario` (texto) · `fechaEscucha` (texto `AAAA-MM-DD` o null) · `createdAt`, `updatedAt` (texto ISO) · `likesCount`, `commentsCount` (número) · `usuario` y `item` (mapas) |
@@ -286,6 +292,21 @@ La pantalla de notificaciones tiene tres pestañas, todas en vivo:
   discusión, Siguiendo, mi perfil con sus pestañas, el perfil de otro usuario, Mis reseñas, las
   listas de seguidores y las notificaciones. Los formularios (escribir reseña, editar perfil) y los
   datos curiosos leen una sola vez.
+- **Las mixtapes guardan la copia de sus items dentro del documento**, como la reseña guarda la de
+  su item: el perfil y el detalle las pintan sin otra consulta. Agregar y quitar van en una
+  transacción que lee la lista y la escribe completa, así dos celulares no se pisan, y un item no se
+  repite. Crear una mixtape y elegir en cuál va un item son pantallas propias (`crearMixtape` y
+  `agregarAMixtape/{tipo}/{itemId}`), con el formulario y la validación en su ViewModel; al
+  terminar vuelven atrás con `LaunchedEffect` sobre `navigate`.
+- **Tu año en Mixtapp lo calcula el ViewModel** con lo que ya llega en vivo: el catálogo (con mis
+  reseñas marcadas), mis me gusta y mi perfil. El género y el artista favoritos salen de lo que me
+  gusta (me gusta y reseñas de 3 estrellas o más), igual que Para ti. Las tarjetas sin datos no
+  salen, y cada una aparece con `AnimatedVisibility` (`fadeIn`) al tocar Siguiente.
+- **Sonando ahora** es un documento por usuario en `sonando`. El repositorio junta dos listeners con
+  `combine`: lo que suena y a quiénes sigo, y deja lo mío primero y lo de mis seguidos de las
+  últimas 12 horas. El 🔥 va en una transacción, como un like (la reacción y el contador). Poner
+  otra cosa a sonar borra las reacciones anteriores. La Cloud Function
+  `sendSonandoReactionNotification` avisa con una notificación y un push.
 - **Los duelos no necesitan un servidor que los cree.** El id es el número del día en Colombia
   (`(milisegundos − 5 h) / 1 día`) y el tipo, así que todos los celulares llegan al mismo documento.
   El par sale del catálogo: cada tipo toma un género que rota con los días (solo los que tienen dos
@@ -378,7 +399,11 @@ Están en `app/src/test`, por capa. Corren en el computador, sin emulador: clic 
 | `viewmodels/SignUpViewModelTest` | 4 | registro válido, contraseña de 4 caracteres, correo ya registrado y sin aceptar los términos |
 | `viewmodels/LoginViewModelTest` | 2 | credenciales válidas y contraseña incorrecta |
 | `viewmodels/WriteReviewViewModelTest` | 3 | sin texto, fecha con mes 13 y reseña válida |
-| `viewmodels/DetailViewModelTest` | 3 | el item que existe se muestra sin error, el que no existe da su mensaje y el like sin conexión (el error es del botón, el item se sigue viendo) |
+| `viewmodels/DetailViewModelTest` | 5 | el item que existe se muestra sin error, el que no existe da su mensaje, el like sin conexión (el error es del botón, el item se sigue viendo) y poner el item a sonar (aviso, o error sin conexión) |
+| `repository/MixtapeRepositoryTest` | 6 | el mapeo de mis mixtapes con sus items y su dueño, la descripción nula queda vacía, la mixtape que no existe, crear sin sesión, crear retorna el id y agregar con el data source que falla |
+| `viewmodels/CrearMixtapeViewModelTest` | 4 | sin nombre, nombre de 41 caracteres, datos válidos (navega y quita los espacios) y el error sin conexión |
+| `repository/SonandoRepositoryTest` | 6 | solo lo mío y lo de quienes sigo, con lo mío primero; lo de hace más de 12 horas no sale; el mapeo del item, las reacciones y hace cuánto; poner a sonar sin sesión y con el data source que falla; no se le reacciona a lo mío |
+| `viewmodels/ResumenViewModelTest` | 7 | el total y el promedio con un decimal, el género y el artista favoritos, las reseñas de otros no cuentan, la mejor calificada y la de más me gusta, los seguidores, Siguiente no pasa de la última tarjeta y Ver de nuevo vuelve a la primera |
 | `repository/DueloRepositoryTest` | 6 | el duelo sin documento (0 votos y sin items), los items del documento con su tipo, mi voto entre los votos (mi opción y `esMio`), votar sin sesión, votar bien y el data source que falla |
 | `viewmodels/DuelosViewModelTest` | 8 | el par de hoy son dos distintos del mismo género y tipo, el tipo sin dos del mismo género no tiene duelo, si alguien ya votó los items salen del documento, votar sin elegir, votar bien limpia el formulario, el error sin conexión conserva la opinión, la opinión se corta en 140 y cambiar de pestaña limpia el formulario |
 | `viewmodels/HomeViewModelTest` | 7 | Para ti con 9 me gusta de metal y 1 de reggaetón saca un solo reggaetón; Descubre no muestra lo que ya tiene mi me gusta y pone primero mi género (si no alcanza, completa con otros); Tendencias pone primero el Top Colombia aunque me guste otro género y su tarjeta es el #1 de Colombia; la tarjeta de Para ti es un álbum en lista de mi género, también al volver a entrar varias veces, y sin álbumes en lista es el más popular |
@@ -401,6 +426,8 @@ prendido y la Firebase CLI corriendo (`firebase emulators:start --only firestore
 |---|---|---|
 | `datasource/UsuarioFirestoreDataSourceTest` | 8 | leer por id (válido y que no existe → `null`), registrar, seguir, el contador de seguidores, dejar de seguir, la lista de seguidores y las reseñas de un usuario |
 | `datasource/AlbumFirestoreDataSourceTest` | 7 | leer por id (válido y que no existe → `null`), el like a un álbum (queda `liked`, sube `likesCount` y deja la copia en `usuarios/<uid>/likes`, cada uno en su prueba), quitarlo y el listener con mi like |
+| `datasource/MixtapeFirestoreDataSourceTest` | 5 | crear una mixtape aparece en las del usuario, la más nueva primero, agregar dos veces el mismo item no lo repite, quitar uno de dos y borrarla |
+| `datasource/SonandoFirestoreDataSourceTest` | 7 | poner a sonar aparece en la lista, la más reciente primero, el 🔥 sube el contador y queda marcado, el segundo 🔥 lo quita, volver a poner lo mismo reinicia las reacciones y quitarlo borra el documento con sus reacciones |
 | `datasource/DueloFirestoreDataSourceTest` | 6 | el duelo en el que nadie ha votado (`null`), el primer voto crea el duelo con ese voto, el voto de otro suma sin crear otro duelo, cambiar de opción pasa el voto al otro, votar dos veces por el mismo no suma dos veces y las opiniones del más nuevo al más viejo |
 | `datasource/HistoriaFirestoreDataSourceTest` | 2 | la historia de un álbum con sus secciones en orden, y la de un item que no tiene (`null`) |
 | `datasource/ReviewFirestoreDataSourceTest` | 8 | leer por id, like y su contador, comentar y `commentsCount`, el orden de los comentarios, like a un comentario y borrar la reseña con sus comentarios |
@@ -525,8 +552,8 @@ app/src/main/java/com/example/mixtapp/
 ├── data/
 │   ├── datasource/      contratos · Auth · Storage · Messaging · Busqueda (local)
 │   │   ├── impl/
-│   │   │   ├── firestore/   Album · Cancion · Artista · Review · Usuario · Notificacion · Historia · Duelo · MisLikes
-│   │   │   └── retrofit/    Album · Cancion · Artista · Review · Usuario · Notificacion · Historia · Duelo
+│   │   │   ├── firestore/   Album · Cancion · Artista · Review · Usuario · Notificacion · Historia · Duelo · Sonando · Mixtape · MisLikes
+│   │   │   └── retrofit/    Album · Cancion · Artista · Review · Usuario · Notificacion · Historia · Duelo · Sonando · Mixtape
 │   │   └── services/    servicios de Retrofit · MyFirebaseMessagingService
 │   ├── dtos/            DTO de cada base, sus funciones de mapeo y Formatos (14K, 3 h, links)
 │   ├── injection/       FirebaseHiltModule · AppModule · DataSourceModule · CoroutineModule

@@ -8,6 +8,7 @@ sealed class Screen(val route: String) {
     data object Home : Screen(route = "home")
     data object Search : Screen(route = "search")
     data object Duelos : Screen(route = "duelos")
+    data object Resumen : Screen(route = "resumen")
     data object MyReviews : Screen(route = "myReviews")
     data object Profile : Screen(route = "profile")
     data object Following : Screen(route = "following")
@@ -40,5 +41,17 @@ sealed class Screen(val route: String) {
     // Los seguidores o los seguidos de un usuario: el tipo dice cual de las dos listas
     data object FollowList : Screen(route = "followList/{userId}/{tipo}") {
         fun createRoute(userId: String, tipo: String) = "followList/$userId/$tipo"
+    }
+
+    // Una mixtape con sus items
+    data object MixtapeDetail : Screen(route = "mixtapeDetail/{mixtapeId}") {
+        fun createRoute(mixtapeId: String) = "mixtapeDetail/$mixtapeId"
+    }
+
+    data object CrearMixtape : Screen(route = "crearMixtape")
+
+    // Elegir en cual de mis mixtapes va el item del detalle
+    data object AgregarAMixtape : Screen(route = "agregarAMixtape/{tipo}/{itemId}") {
+        fun createRoute(tipo: String, itemId: String) = "agregarAMixtape/$tipo/$itemId"
     }
 }

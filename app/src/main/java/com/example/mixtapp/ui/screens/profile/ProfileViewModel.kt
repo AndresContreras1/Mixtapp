@@ -8,6 +8,7 @@ import com.example.mixtapp.R
 import com.example.mixtapp.data.injection.IoDispatcher
 import com.example.mixtapp.data.repository.AuthRepository
 import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
+import com.example.mixtapp.data.repository.MixtapeRepository
 import com.example.mixtapp.data.repository.ReviewRepository
 import com.example.mixtapp.data.repository.StorageRepository
 import com.example.mixtapp.data.repository.UsuarioRepository
@@ -32,6 +33,7 @@ class ProfileViewModel @Inject constructor(
     private val storageRepository: StorageRepository,
     private val reviewRepository: ReviewRepository,
     private val usuarioRepository: UsuarioRepository,
+    private val mixtapeRepository: MixtapeRepository,
     // Las corrutinas se lanzan en este hilo; las pruebas pasan uno de prueba
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
@@ -58,6 +60,7 @@ class ProfileViewModel @Inject constructor(
         escucharMisResenas()
         escucharMisFavoritos()
         escucharMisGuardados()
+        escucharMisMixtapes()
     }
 
     // Mis datos en vivo: si alguien me sigue desde otro celular, el contador cambia solo. Si mi
@@ -152,6 +155,20 @@ class ProfileViewModel @Inject constructor(
                 }
                 .collect { guardados ->
                     _uiState.update { it.copy(guardados = guardados, errorGuardadosRes = null) }
+                }
+        }
+    }
+
+    // Mis mixtapes en vivo: una nueva, o un item agregado desde el detalle, llegan solos
+    private fun escucharMisMixtapes() {
+        viewModelScope.launch(ioDispatcher) {
+            mixtapeRepository.getMisMixtapesLive()
+                .catch { e ->
+                    Log.d("ProfileViewModel", "escucharMisMixtapes: ${e.message}")
+                    _uiState.update { it.copy(errorMixtapesRes = mensajeDeError(error = e, generico = R.string.error_cargar_contenido)) }
+                }
+                .collect { mixtapes ->
+                    _uiState.update { it.copy(mixtapes = mixtapes, errorMixtapesRes = null) }
                 }
         }
     }

@@ -15,4 +15,6 @@ data class DetailState(
     @StringRes val errorMessageRes: Int? = null,
     // Error de un boton (like, guardar, eliminar): la pantalla sigue mostrando el item
     @StringRes val errorAccionRes: Int? = null,
+    // El aviso de que el item quedo en "sonando ahora"
+    @StringRes val avisoSonandoRes: Int? = null,
 )

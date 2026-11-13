@@ -9,6 +9,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.mixtapp.data.model.TIPO_ALBUM
+import com.example.mixtapp.ui.screens.agregaramixtape.AgregarAMixtapeScreen
+import com.example.mixtapp.ui.screens.agregaramixtape.AgregarAMixtapeViewModel
+import com.example.mixtapp.ui.screens.crearmixtape.CrearMixtapeScreen
+import com.example.mixtapp.ui.screens.crearmixtape.CrearMixtapeViewModel
 import com.example.mixtapp.ui.screens.datoscuriosos.DatosCuriososScreen
 import com.example.mixtapp.ui.screens.datoscuriosos.DatosCuriososViewModel
 import com.example.mixtapp.ui.screens.detail.DetailScreen
@@ -29,12 +33,16 @@ import com.example.mixtapp.ui.screens.home.HomeScreen
 import com.example.mixtapp.ui.screens.home.HomeViewModel
 import com.example.mixtapp.ui.screens.login.LoginScreen
 import com.example.mixtapp.ui.screens.login.LoginViewModel
+import com.example.mixtapp.ui.screens.mixtapedetail.MixtapeDetailScreen
+import com.example.mixtapp.ui.screens.mixtapedetail.MixtapeDetailViewModel
 import com.example.mixtapp.ui.screens.myreviews.MyReviewsScreen
 import com.example.mixtapp.ui.screens.myreviews.MyReviewsViewModel
 import com.example.mixtapp.ui.screens.notifications.NotificationsScreen
 import com.example.mixtapp.ui.screens.notifications.NotificationsViewModel
 import com.example.mixtapp.ui.screens.profile.ProfileScreen
 import com.example.mixtapp.ui.screens.profile.ProfileViewModel
+import com.example.mixtapp.ui.screens.resumen.ResumenScreen
+import com.example.mixtapp.ui.screens.resumen.ResumenViewModel
 import com.example.mixtapp.ui.screens.review.WriteReviewScreen
 import com.example.mixtapp.ui.screens.review.WriteReviewViewModel
 import com.example.mixtapp.ui.screens.search.SearchScreen
@@ -58,6 +66,10 @@ private fun NavHostController.navegarLimpiandoLaPila(ruta: String) {
 // varias pantallas
 private fun NavHostController.abrirItem(tipo: String, itemId: String) {
     navigate(Screen.Detail.createRoute(tipo = tipo, itemId = itemId))
+}
+
+private fun NavHostController.abrirMixtape(mixtapeId: String) {
+    navigate(Screen.MixtapeDetail.createRoute(mixtapeId = mixtapeId))
 }
 
 private fun NavHostController.abrirPerfil(userId: String) {
@@ -253,7 +265,69 @@ fun AppNavigation(
                 onFollowListClick = { userId, tipo ->
                     navController.abrirLista(userId = userId, tipo = tipo)
                 },
-                onSeeAllReviewsClick = { navController.navigate(Screen.MyReviews.route) }
+                onSeeAllReviewsClick = { navController.navigate(Screen.MyReviews.route) },
+                onResumenClick = { navController.navigate(Screen.Resumen.route) },
+                onCrearMixtapeClick = { navController.navigate(Screen.CrearMixtape.route) },
+                onMixtapeClick = { mixtapeId ->
+                    navController.abrirMixtape(mixtapeId = mixtapeId)
+                }
+            )
+        }
+
+        composable(route = Screen.CrearMixtape.route) {
+            val crearMixtapeViewModel: CrearMixtapeViewModel = hiltViewModel()
+
+            CrearMixtapeScreen(
+                crearMixtapeViewModel = crearMixtapeViewModel,
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable(
+            route = Screen.MixtapeDetail.route,
+            arguments = listOf(
+                navArgument(name = "mixtapeId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val mixtapeDetailViewModel: MixtapeDetailViewModel = hiltViewModel()
+            val mixtapeId = backStackEntry.arguments?.getString("mixtapeId") ?: ""
+
+            MixtapeDetailScreen(
+                mixtapeId = mixtapeId,
+                mixtapeDetailViewModel = mixtapeDetailViewModel,
+                onItemClick = { tipo, itemId ->
+                    navController.abrirItem(tipo = tipo, itemId = itemId)
+                },
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable(
+            route = Screen.AgregarAMixtape.route,
+            arguments = listOf(
+                navArgument(name = "tipo") { type = NavType.StringType },
+                navArgument(name = "itemId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val agregarAMixtapeViewModel: AgregarAMixtapeViewModel = hiltViewModel()
+            val tipo = backStackEntry.arguments?.getString("tipo") ?: ""
+            val itemId = backStackEntry.arguments?.getString("itemId") ?: ""
+
+            AgregarAMixtapeScreen(
+                tipo = tipo,
+                itemId = itemId,
+                agregarAMixtapeViewModel = agregarAMixtapeViewModel,
+                onCrearMixtapeClick = { navController.navigate(Screen.CrearMixtape.route) },
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable(route = Screen.Resumen.route) {
+            val resumenViewModel: ResumenViewModel = hiltViewModel()
+
+            ResumenScreen(
+                resumenViewModel = resumenViewModel,
+                onBackClick = { navController.popBackStack() }
             )
         }
 
@@ -289,6 +363,9 @@ fun AppNavigation(
                 },
                 onDatosCuriososClick = {
                     navController.navigate(Screen.DatosCuriosos.createRoute(tipo = tipo, itemId = itemId))
+                },
+                onAddToMixtapeClick = {
+                    navController.navigate(Screen.AgregarAMixtape.createRoute(tipo = tipo, itemId = itemId))
                 },
                 onBackClick = { navController.popBackStack() },
                 onAuthorClick = { userId ->

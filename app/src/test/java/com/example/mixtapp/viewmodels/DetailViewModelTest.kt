@@ -8,6 +8,7 @@ import com.example.mixtapp.data.repository.CatalogoRepository
 import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
 import com.example.mixtapp.data.repository.ReviewRepository
 import com.example.mixtapp.data.repository.SinConexionException
+import com.example.mixtapp.data.repository.SonandoRepository
 import com.example.mixtapp.ui.screens.detail.DetailViewModel
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
@@ -33,6 +34,7 @@ class DetailViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var catalogoRepository: CatalogoRepository
     private lateinit var reviewRepository: ReviewRepository
+    private lateinit var sonandoRepository: SonandoRepository
     private lateinit var viewModel: DetailViewModel
 
     @Before
@@ -40,7 +42,8 @@ class DetailViewModelTest {
         Dispatchers.setMain(testDispatcher)
         catalogoRepository = mockk()
         reviewRepository = mockk()
-        viewModel = DetailViewModel(catalogoRepository, reviewRepository, testDispatcher)
+        sonandoRepository = mockk()
+        viewModel = DetailViewModel(catalogoRepository, reviewRepository, sonandoRepository, testDispatcher)
     }
 
     @After
@@ -61,6 +64,40 @@ class DetailViewModelTest {
         assertThat(state.isLoading).isFalse()
         assertThat(state.itemConResenas?.item?.id).isEqualTo(LocalPreviewProvider.itemConResenas.item.id)
         assertThat(state.errorMessageRes).isNull()
+    }
+
+    @Test
+    fun ponerSonando_itemCargado_avisoDePublicado() = runTest {
+        //Arrange: el item ya esta en pantalla
+        coEvery { catalogoRepository.getItemLive(TIPO_ALBUM, "album_from_zero") } returns
+            flowOf(LocalPreviewProvider.itemConResenas)
+        coEvery { sonandoRepository.ponerSonando(any()) } returns Result.success(Unit)
+        viewModel.getItem(TIPO_ALBUM, "album_from_zero")
+        advanceUntilIdle()
+        //Act
+        viewModel.ponerSonando()
+        advanceUntilIdle()
+        //Assert
+        val state = viewModel.uiState.value
+        assertThat(state.avisoSonandoRes).isEqualTo(R.string.sonando_publicado)
+        assertThat(state.errorAccionRes).isNull()
+    }
+
+    @Test
+    fun ponerSonando_sinConexion_errorYSinAviso() = runTest {
+        //Arrange
+        coEvery { catalogoRepository.getItemLive(TIPO_ALBUM, "album_from_zero") } returns
+            flowOf(LocalPreviewProvider.itemConResenas)
+        coEvery { sonandoRepository.ponerSonando(any()) } returns Result.failure(SinConexionException())
+        viewModel.getItem(TIPO_ALBUM, "album_from_zero")
+        advanceUntilIdle()
+        //Act
+        viewModel.ponerSonando()
+        advanceUntilIdle()
+        //Assert
+        val state = viewModel.uiState.value
+        assertThat(state.avisoSonandoRes).isNull()
+        assertThat(state.errorAccionRes).isEqualTo(R.string.error_sin_conexion)
     }
 
     @Test

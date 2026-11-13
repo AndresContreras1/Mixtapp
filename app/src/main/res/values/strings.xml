@@ -172,6 +172,32 @@
     <string name="nav_home">Inicio</string>
     <string name="nav_profile">Perfil</string>
     <string name="nav_duelos">Duelos</string>
+    <string name="resumen_titulo">Tu año en Mixtapp</string>
+    <string name="resumen_subtitulo">Lo que dijiste de la música, en números. Descúbrelo tarjeta por tarjeta</string>
+    <string name="resumen_siguiente">Siguiente</string>
+    <string name="resumen_ver_de_nuevo">Ver de nuevo</string>
+    <string name="resumen_resenas_titulo">Reseñas que escribiste</string>
+    <string name="resumen_sin_resenas">Todavía no has reseñado nada: califica tu primer disco</string>
+    <string name="resumen_promedio">Tu calificación promedio: %1$s estrellas</string>
+    <string name="resumen_genero_titulo">Tu género</string>
+    <string name="resumen_genero_detalle">Es el que más te gusta y el que más reseñaste bien</string>
+    <string name="resumen_artista_titulo">Tu artista</string>
+    <string name="resumen_artista_detalle">Lo que más te gusta de la música</string>
+    <string name="resumen_mejor_titulo">Lo que mejor calificaste</string>
+    <string name="resumen_mejor_detalle">%1$d estrellas</string>
+    <string name="resumen_querida_titulo">Tu reseña favorita de la comunidad</string>
+    <string name="resumen_querida_detalle">%1$d me gusta en tu reseña</string>
+    <string name="resumen_social_titulo">Tu música en comunidad</string>
+    <string name="resumen_me_gusta">%1$d me gusta</string>
+    <string name="resumen_social_detalle">%1$d seguidores · sigues a %2$d</string>
+    <string name="sonando_ahora">Sonando ahora</string>
+    <string name="estoy_escuchando_esto">Estoy escuchando esto</string>
+    <string name="sonando_publicado">Listo: tus seguidores lo ven en Sonando ahora</string>
+    <string name="dejar_de_sonar">Ya no lo escucho</string>
+    <string name="reaccion_fuego">🔥 %1$d</string>
+    <string name="error_sonando">No se pudo actualizar lo que estás escuchando</string>
+    <string name="error_reaccionar">No se pudo enviar tu 🔥</string>
+    <string name="notificacion_reaccion_sonando">%1$s le dio 🔥 a lo que escuchas: %2$s</string>
     <string name="duelos_title">Duelo del día</string>
     <string name="duelo_tab_albumes">Álbumes</string>
     <string name="duelo_tab_canciones">Canciones</string>
@@ -276,10 +302,35 @@
 
     <!-- mi perfil, perfil de otro usuario y listas de seguidores -->
     <string name="profile_tab_guardados">Guardados</string>
+    <string name="profile_tab_mixtapes">Mixtapes</string>
     <string name="actividad_reciente">Actividad reciente</string>
     <string name="sin_guardados">Guarda álbumes, canciones o artistas desde su detalle</string>
     <string name="sin_favoritos_usuario">Todavía no le ha dado me gusta a nada</string>
     <string name="sin_resenas_usuario">Todavía no ha escrito reseñas</string>
+
+    <!-- mixtapes: listas que arma el usuario -->
+    <string name="crear_mixtape">Crear mixtape</string>
+    <string name="nueva_mixtape">Nueva mixtape</string>
+    <string name="label_nombre_mixtape">Nombre</string>
+    <string name="nombre_mixtape_placeholder">Por ejemplo: Para entrenar</string>
+    <string name="label_descripcion_mixtape">Descripción (opcional)</string>
+    <string name="descripcion_mixtape_placeholder">¿De qué va esta mixtape?</string>
+    <string name="agregar_a_mixtape">Agregar a una mixtape</string>
+    <string name="elige_mixtape">Elige en qué mixtape lo guardas</string>
+    <string name="ya_esta_en_mixtape">Ya está</string>
+    <string name="sin_mixtapes">Todavía no tienes mixtapes. Crea una para juntar tus álbumes, canciones y artistas</string>
+    <string name="sin_items_mixtape">Esta mixtape está vacía. Agrega items desde el detalle de un álbum, una canción o un artista</string>
+    <string name="elementos_mixtape">%1$d elementos</string>
+    <string name="un_elemento_mixtape">1 elemento</string>
+    <string name="creada_por">Creada por %1$s</string>
+    <string name="eliminar_mixtape">Eliminar mixtape</string>
+    <string name="quitar_de_mixtape">Quitar de la mixtape</string>
+    <string name="mixtape_no_encontrada">Esta mixtape ya no existe</string>
+    <string name="error_nombre_mixtape_vacio">Ponle un nombre a la mixtape</string>
+    <string name="error_nombre_mixtape_largo">El nombre puede tener hasta 40 caracteres</string>
+    <string name="error_descripcion_mixtape_larga">La descripción puede tener hasta 150 caracteres</string>
+    <string name="error_crear_mixtape">No se pudo crear la mixtape</string>
+    <string name="error_mixtape">No se pudo actualizar la mixtape</string>
 
     <!-- perfil: encabezado, pestañas e Instagram -->
     <string name="label_instagram">Instagram</string>
