@@ -47,6 +47,7 @@ fun DetailScreen(
     detailViewModel: DetailViewModel,
     onRateClick: () -> Unit,
     onDatosCuriososClick: () -> Unit,
+    onAddToMixtapeClick: () -> Unit,
     onBackClick: () -> Unit,
     onAuthorClick: (String) -> Unit,
     onCommentsClick: (String) -> Unit,
@@ -69,6 +70,7 @@ fun DetailScreen(
         onRateClick = onRateClick,
         onLikeClick = { detailViewModel.sendOrDeleteLikeItem() },
         onSaveClick = { detailViewModel.sendOrDeleteGuardado() },
+        onAddToMixtapeClick = onAddToMixtapeClick,
         onDatosCuriososClick = onDatosCuriososClick,
         onSonandoClick = { detailViewModel.ponerSonando() },
         onReviewLikeClick = { detailViewModel.sendOrDeleteLikeResena(reviewId = it) },
@@ -90,6 +92,7 @@ fun DetailScreenContent(
     onRateClick: () -> Unit,
     onLikeClick: () -> Unit,
     onSaveClick: () -> Unit,
+    onAddToMixtapeClick: () -> Unit,
     onDatosCuriososClick: () -> Unit,
     onSonandoClick: () -> Unit,
     onReviewLikeClick: (String) -> Unit,
@@ -141,6 +144,7 @@ fun DetailScreenContent(
                                 onRateClick = onRateClick,
                                 onLikeClick = onLikeClick,
                                 onSaveClick = onSaveClick,
+                                onAddToMixtapeClick = onAddToMixtapeClick,
                             )
 
                             ErrorMessage(
@@ -233,6 +237,7 @@ fun DetailScreenPreview() {
             onRateClick = {},
             onLikeClick = {},
             onSaveClick = {},
+            onAddToMixtapeClick = {},
             onDatosCuriososClick = {},
             onSonandoClick = {},
             onReviewLikeClick = {},

@@ -5,6 +5,7 @@ import com.example.mixtapp.data.datasource.ArtistaRemoteDataSource
 import com.example.mixtapp.data.datasource.CancionRemoteDataSource
 import com.example.mixtapp.data.datasource.DueloRemoteDataSource
 import com.example.mixtapp.data.datasource.HistoriaRemoteDataSource
+import com.example.mixtapp.data.datasource.MixtapeRemoteDataSource
 import com.example.mixtapp.data.datasource.NotificacionRemoteDataSource
 import com.example.mixtapp.data.datasource.ReviewRemoteDataSource
 import com.example.mixtapp.data.datasource.SonandoRemoteDataSource
@@ -14,6 +15,7 @@ import com.example.mixtapp.data.datasource.impl.firestore.ArtistaFirestoreDataSo
 import com.example.mixtapp.data.datasource.impl.firestore.CancionFirestoreDataSourceImpl
 import com.example.mixtapp.data.datasource.impl.firestore.DueloFirestoreDataSourceImpl
 import com.example.mixtapp.data.datasource.impl.firestore.HistoriaFirestoreDataSourceImpl
+import com.example.mixtapp.data.datasource.impl.firestore.MixtapeFirestoreDataSourceImpl
 import com.example.mixtapp.data.datasource.impl.firestore.NotificacionFirestoreDataSourceImpl
 import com.example.mixtapp.data.datasource.impl.firestore.ReviewFirestoreDataSourceImpl
 import com.example.mixtapp.data.datasource.impl.firestore.SonandoFirestoreDataSourceImpl
@@ -73,4 +75,9 @@ abstract class DataSourceModule {
     abstract fun bindSonandoRemoteDataSource(
         impl: SonandoFirestoreDataSourceImpl
     ): SonandoRemoteDataSource
+
+    @Binds
+    abstract fun bindMixtapeRemoteDataSource(
+        impl: MixtapeFirestoreDataSourceImpl
+    ): MixtapeRemoteDataSource
 }
