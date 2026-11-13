@@ -6,8 +6,10 @@ import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
 import com.example.mixtapp.data.injection.IoDispatcher
 import com.example.mixtapp.data.model.ReviewUi
+import com.example.mixtapp.data.model.SonandoUi
 import com.example.mixtapp.data.repository.ReviewRepository
 import com.example.mixtapp.data.repository.SocialRepository
+import com.example.mixtapp.data.repository.SonandoRepository
 import com.example.mixtapp.ui.utils.mensajeDeError
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -24,6 +26,7 @@ import javax.inject.Inject
 class FollowingViewModel @Inject constructor(
     private val socialRepository: SocialRepository,
     private val reviewRepository: ReviewRepository,
+    private val sonandoRepository: SonandoRepository,
     // Las corrutinas se lanzan en este hilo; las pruebas pasan uno de prueba
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
@@ -35,6 +38,61 @@ class FollowingViewModel @Inject constructor(
     // Si se pidiera en cada LaunchedEffect se acumularian listeners
     init {
         escucharSeguidos()
+        escucharSonando()
+    }
+
+    // Cuando alguien que sigo pone otra cancion, o le llega un 🔥, la fila cambia sola
+    private fun escucharSonando() {
+        viewModelScope.launch(ioDispatcher) {
+            sonandoRepository.getSonandoLive()
+                .catch { e ->
+                    Log.d("FollowingViewModel", "escucharSonando: ${e.message}")
+                    _uiState.update {
+                        it.copy(errorSonandoRes = mensajeDeError(error = e, generico = R.string.error_cargar_contenido))
+                    }
+                }
+                .collect { sonando ->
+                    _uiState.update { it.copy(sonando = sonando, errorSonandoRes = null) }
+                }
+        }
+    }
+
+    // El 🔥 se pone o se quita; el contador llega por el listener, no se suma a mano
+    fun reaccionar(sonando: SonandoUi) {
+        viewModelScope.launch(ioDispatcher) {
+            val result = sonandoRepository.reaccionar(sonando = sonando)
+
+            if (result.isSuccess) {
+                _uiState.update { it.copy(errorSonandoRes = null) }
+            } else {
+                _uiState.update {
+                    it.copy(
+                        errorSonandoRes = mensajeDeError(
+                            error = result.exceptionOrNull(),
+                            generico = R.string.error_reaccionar,
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+    // Quita lo que estoy escuchando: desaparece de la fila cuando llega la lista por el listener
+    fun quitarSonando() {
+        viewModelScope.launch(ioDispatcher) {
+            val result = sonandoRepository.quitarSonando()
+
+            if (result.isFailure) {
+                _uiState.update {
+                    it.copy(
+                        errorSonandoRes = mensajeDeError(
+                            error = result.exceptionOrNull(),
+                            generico = R.string.error_sonando,
+                        )
+                    )
+                }
+            }
+        }
     }
 
     // Una resena nueva, un like o seguir a alguien llegan solos, sin salir y volver

@@ -6,6 +6,8 @@ const val NOTIFICACION_LIKE_COMENTARIO = "like_comentario"
 const val NOTIFICACION_COMENTARIO = "comentario"
 const val NOTIFICACION_RESPUESTA = "respuesta"
 const val NOTIFICACION_SEGUIDOR = "seguidor"
+// Alguien le dio 🔥 a lo que estoy escuchando
+const val NOTIFICACION_REACCION_SONANDO = "reaccion_sonando"
 
 data class NotificationUi(
     val id: String,

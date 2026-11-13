@@ -32,6 +32,7 @@ import com.example.mixtapp.data.local.LocalPreviewProvider
 import com.example.mixtapp.data.model.NOTIFICACION_COMENTARIO
 import com.example.mixtapp.data.model.NOTIFICACION_LIKE
 import com.example.mixtapp.data.model.NOTIFICACION_LIKE_COMENTARIO
+import com.example.mixtapp.data.model.NOTIFICACION_REACCION_SONANDO
 import com.example.mixtapp.data.model.NOTIFICACION_RESPUESTA
 import com.example.mixtapp.data.model.NotificationUi
 import com.example.mixtapp.ui.theme.MixtappTheme
@@ -141,6 +142,7 @@ private fun textoDeNotificacion(notification: NotificationUi): String {
             stringResource(R.string.notificacion_comentario, nombre, titulo)
         }
         NOTIFICACION_RESPUESTA -> stringResource(R.string.notificacion_respuesta, nombre)
+        NOTIFICACION_REACCION_SONANDO -> stringResource(R.string.notificacion_reaccion_sonando, nombre, titulo)
         // NOTIFICACION_SEGUIDOR
         else -> stringResource(R.string.notificacion_seguidor, nombre)
     }
