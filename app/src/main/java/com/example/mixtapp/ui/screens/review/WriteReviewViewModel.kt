@@ -3,6 +3,7 @@ package com.example.mixtapp.ui.screens.review
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
+import com.example.mixtapp.data.datasource.LocationProvider
 import com.example.mixtapp.data.injection.IoDispatcher
 import com.example.mixtapp.data.model.MAX_DATE_LENGTH
 import com.example.mixtapp.data.model.MAX_REVIEW_LENGTH
@@ -24,6 +25,8 @@ import javax.inject.Inject
 class WriteReviewViewModel @Inject constructor(
     private val catalogoRepository: CatalogoRepository,
     private val reviewRepository: ReviewRepository,
+    // Donde estoy al publicar, para el marcador del mapa
+    private val locationProvider: LocationProvider,
     // Las corrutinas se lanzan en este hilo; las pruebas pasan uno de prueba
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
@@ -125,12 +128,17 @@ class WriteReviewViewModel @Inject constructor(
         viewModelScope.launch(ioDispatcher) {
             _uiState.update { it.copy(publicando = true, errorMessageRes = null) }
 
+            // La ubicacion solo se pide al publicar una resena nueva: al modificarla queda la de
+            // cuando se publico. Sin permiso llega null y se guarda sin ubicacion
+            val ubicacion = if (estado.reviewId == null) locationProvider.getCurrentLocation() else null
+
             val result = reviewRepository.guardarResena(
                 item = item,
                 rating = estado.rating,
                 texto = texto,
                 fecha = fecha,
                 reviewId = estado.reviewId,
+                ubicacion = ubicacion,
             )
 
             if (result.isSuccess) {

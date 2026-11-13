@@ -94,7 +94,18 @@ fun generateReview(usuario: UsuarioPerfilFirestoreDto, album: AlbumDto): CreateR
     updatedAt = "2025-01-01T00:00:00Z",
     usuario = CreateReviewUsuarioDto(nombre = usuario.nombre, fotoUrl = usuario.fotoUrl),
     item = CreateReviewItemDto(titulo = album.titulo, subtitulo = album.artista, imagenUrl = album.portadaUrl),
+    latitud = null,
+    longitud = null,
 )
+
+// Una resena publicada hace un rato desde Bogota, para el mapa de las ultimas 24 horas
+fun generateReviewConUbicacion(usuario: UsuarioPerfilFirestoreDto, album: AlbumDto, createdAt: String): CreateReviewDto =
+    generateReview(usuario = usuario, album = album).copy(
+        createdAt = createdAt,
+        updatedAt = createdAt,
+        latitud = 4.65,
+        longitud = -74.06,
+    )
 
 // Carga 10 usuarios, 5 albumes con sus datos curiosos y la resena "review_i" del usuario i al
 // album i (i de 1 a 5)

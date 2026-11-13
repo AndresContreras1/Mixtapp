@@ -3,7 +3,9 @@ package com.example.mixtapp.datasource
 import com.example.mixtapp.cargarDatosDePrueba
 import com.example.mixtapp.conectarEmulador
 import com.example.mixtapp.data.datasource.impl.firestore.ReviewFirestoreDataSourceImpl
+import com.example.mixtapp.generateAlbum
 import com.example.mixtapp.generateComentario
+import com.example.mixtapp.generateReviewConUbicacion
 import com.example.mixtapp.generateUsuario
 import com.example.mixtapp.limpiarBase
 import com.google.common.truth.Truth
@@ -119,6 +121,19 @@ class ReviewFirestoreDataSourceTest {
             .first { it.firstOrNull()?.likesCount == 1 }.first()
         Truth.assertThat(comentario.liked).isTrue()
         Truth.assertThat(comentario.likesCount).isEqualTo(1)
+    }
+
+    @Test
+    fun listenReviewsDesde_unaRecienteYOtraVieja_soloLaReciente() = runTest {
+        //Arrange: las resenas de los datos de prueba son de 2025; esta es de hoy
+        val hace1Hora = java.time.Instant.now().minusSeconds(60 * 60).toString()
+        val hace24Horas = java.time.Instant.now().minusSeconds(24 * 60 * 60).toString()
+        dataSource.createReview(generateReviewConUbicacion(generateUsuario(2), generateAlbum(2), createdAt = hace1Hora))
+        //Act
+        val recientes = dataSource.listenReviewsDesde(desde = hace24Horas).first { it.isNotEmpty() }
+        //Assert: llega con su ubicacion
+        Truth.assertThat(recientes).hasSize(1)
+        Truth.assertThat(recientes[0].latitud).isEqualTo(4.65)
     }
 
     @Test

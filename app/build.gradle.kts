@@ -99,5 +99,7 @@ dependencies {
     kspAndroidTest(libs.dagger.hilt.compiler)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+    // Mapa de OpenStreetMap: libre y sin servicios de Google
+    implementation(libs.osmdroid.android)
 
 }

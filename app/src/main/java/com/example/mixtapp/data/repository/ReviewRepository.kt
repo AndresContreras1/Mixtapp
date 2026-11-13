@@ -10,9 +10,11 @@ import com.example.mixtapp.data.dtos.CreateReviewItemDto
 import com.example.mixtapp.data.dtos.CreateReviewUsuarioDto
 import com.example.mixtapp.data.dtos.toDiscussionCommentUi
 import com.example.mixtapp.data.dtos.toReviewUi
+import com.example.mixtapp.data.model.Coordenadas
 import com.example.mixtapp.data.model.DiscussionCommentUi
 import com.example.mixtapp.data.model.DiscussionUi
 import com.example.mixtapp.data.model.ItemUi
+import com.example.mixtapp.data.model.ResenaEnMapaUi
 import com.example.mixtapp.data.model.ReviewUi
 import com.google.firebase.firestore.FirebaseFirestoreException
 import kotlinx.coroutines.flow.Flow
@@ -22,6 +24,9 @@ import kotlinx.coroutines.flow.map
 import retrofit2.HttpException
 import java.time.Instant
 import javax.inject.Inject
+
+// El mapa muestra las resenas publicadas en las ultimas 24 horas, para no saturarlo
+private const val HORAS_DEL_MAPA = 24L
 
 // Organiza varios data sources: las resenas con sus comentarios, el usuario que se copia en cada
 // una y Authentication para saber quien es el usuario de la app.
@@ -79,6 +84,8 @@ class ReviewRepository @Inject constructor(
         texto: String,
         fecha: String,
         reviewId: String?,
+        // Donde estoy al publicar; null si no hay permiso o no se pudo leer
+        ubicacion: Coordenadas? = null,
     ): Result<Unit> {
         return try {
             val usuarioId = authRemoteDataSource.currentUser?.uid
@@ -110,6 +117,9 @@ class ReviewRepository @Inject constructor(
                     subtitulo = item.subtitulo,
                     imagenUrl = item.imagenUrl,
                 ),
+                // Al modificarla el data source no cambia la ubicacion: queda la de cuando se publico
+                latitud = ubicacion?.latitud,
+                longitud = ubicacion?.longitud,
             )
 
             if (reviewId != null) reviewRemoteDataSource.updateReview(reviewId, createReviewDto)
@@ -142,6 +152,38 @@ class ReviewRepository @Inject constructor(
             Log.d("ReviewRepository", "eliminarResena: ${e.message}")
             Result.failure(ErrorInesperadoException())
         }
+    }
+
+    // Las resenas de las ultimas 24 horas que tienen ubicacion, la mas nueva primero: cada una es
+    // un marcador del mapa. Una nueva llega sola por el listener
+    fun getResenasEnElMapaLive(ahora: Instant = Instant.now()): Flow<List<ResenaEnMapaUi>> {
+        val usuarioId = authRemoteDataSource.currentUser?.uid ?: ""
+        // En formato ISO, como createdAt
+        val desde = ahora.minusSeconds(HORAS_DEL_MAPA * 60 * 60).toString()
+
+        return reviewRemoteDataSource.listenReviewsDesde(desde = desde)
+            .map { reviews ->
+                reviews
+                    .sortedByDescending { it.createdAt }
+                    .mapNotNull { review ->
+                        val latitud = review.latitud
+                        val longitud = review.longitud
+                        // Sin ubicacion no hay donde poner el marcador
+                        if (latitud == null || longitud == null) {
+                            null
+                        } else {
+                            ResenaEnMapaUi(
+                                review = review.toReviewUi(usuarioActualId = usuarioId, ahora = ahora),
+                                latitud = latitud,
+                                longitud = longitud,
+                            )
+                        }
+                    }
+            }
+            .catch { e ->
+                Log.d("ReviewRepository", "getResenasEnElMapaLive: ${e.message}")
+                throw errorDelFlujo(e)
+            }
     }
 
     // La discusion en vivo con dos listeners: la resena (mi like y sus contadores) y sus comentarios.

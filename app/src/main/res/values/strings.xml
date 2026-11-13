@@ -172,6 +172,12 @@
     <string name="nav_home">Inicio</string>
     <string name="nav_profile">Perfil</string>
     <string name="nav_duelos">Duelos</string>
+    <string name="nav_mapa">Mapa</string>
+    <string name="mapa_titulo">Reseñas de las últimas 24 horas</string>
+    <string name="mapa_cantidad_resenas">%1$d reseñas · toca un marcador para verla</string>
+    <string name="mapa_sin_resenas">Nadie ha publicado una reseña con ubicación en las últimas 24 horas</string>
+    <string name="cargando_mapa">Cargando las reseñas…</string>
+    <string name="cerrar_resena_del_mapa">Cerrar la reseña</string>
     <string name="resumen_titulo">Tu año en Mixtapp</string>
     <string name="resumen_subtitulo">Lo que dijiste de la música, en números. Descúbrelo tarjeta por tarjeta</string>
     <string name="resumen_siguiente">Siguiente</string>

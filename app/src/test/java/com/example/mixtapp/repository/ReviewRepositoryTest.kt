@@ -13,6 +13,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
+import java.time.Instant
 import org.junit.Before
 import org.junit.Test
 
@@ -65,6 +66,25 @@ class ReviewRepositoryTest {
         //Assert
         Truth.assertThat(discussion.comments.map { it.content }).containsExactly("A", "Respuesta a A", "B").inOrder()
         Truth.assertThat(discussion.comments[1].isReply).isTrue()
+    }
+
+    @Test
+    fun getResenasEnElMapaLive_conYSinUbicacion_soloLasQueTienenUbicacion() = runTest {
+        //Arrange: el data source ya trae solo las de las ultimas 24 horas
+        val ahora = Instant.parse("2026-11-13T12:00:00Z")
+        coEvery { reviewDataSource.listenReviewsDesde("2026-11-12T12:00:00Z") } returns flowOf(
+            listOf(
+                ReviewDto().copy(id = "vieja", createdAt = "2026-11-13T08:00:00Z", latitud = 4.6, longitud = -74.0),
+                ReviewDto().copy(id = "sin_ubicacion", createdAt = "2026-11-13T09:00:00Z"),
+                ReviewDto().copy(id = "nueva", createdAt = "2026-11-13T11:00:00Z", latitud = 6.2, longitud = -75.5),
+            )
+        )
+        //Act
+        val resenas = repository.getResenasEnElMapaLive(ahora = ahora).first()
+        //Assert: la mas nueva primero, con sus coordenadas
+        Truth.assertThat(resenas.map { it.review.id }).containsExactly("nueva", "vieja").inOrder()
+        Truth.assertThat(resenas[0].latitud).isEqualTo(6.2)
+        Truth.assertThat(resenas[0].longitud).isEqualTo(-75.5)
     }
 
     @Test

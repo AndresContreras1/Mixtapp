@@ -3,10 +3,12 @@ package com.example.mixtapp.ui.navigation
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.SportsMma
 import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Map
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.SportsMma
@@ -39,6 +41,12 @@ val bottomNavItems = listOf(
         outlineIcon = Icons.Outlined.SportsMma,
         route = Screen.Duelos.route,
         label = R.string.nav_duelos
+    ),
+    BottomNavItem(
+        filledIcon = Icons.Filled.Map,
+        outlineIcon = Icons.Outlined.Map,
+        route = Screen.Mapa.route,
+        label = R.string.nav_mapa
     ),
     BottomNavItem(
         filledIcon = Icons.Filled.Person,
