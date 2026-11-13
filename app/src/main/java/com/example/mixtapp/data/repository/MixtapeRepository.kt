@@ -1,117 +1,142 @@
 package com.example.mixtapp.data.repository
 
+import android.util.Log
+import com.example.mixtapp.data.datasource.AuthRemoteDataSource
 import com.example.mixtapp.data.datasource.MixtapeRemoteDataSource
 import com.example.mixtapp.data.datasource.UsuarioRemoteDataSource
+import com.example.mixtapp.data.dtos.CreateMixtapeDto
 import com.example.mixtapp.data.dtos.toItemMixtapeDto
 import com.example.mixtapp.data.dtos.toMixtapeUi
-import com.example.mixtapp.data.model.ItemResumenUi
+import com.example.mixtapp.data.model.ItemUi
 import com.example.mixtapp.data.model.MixtapeUi
+import com.example.mixtapp.data.model.toItemResumenUi
 import com.google.firebase.firestore.FirebaseFirestoreException
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import retrofit2.HttpException
+import java.time.Instant
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
+// Organiza las mixtapes: su data source, el usuario que se copia en cada una y Authentication para
+// saber quien es el usuario de la app
 class MixtapeRepository @Inject constructor(
     private val mixtapeRemoteDataSource: MixtapeRemoteDataSource,
-    private val authRepository: AuthRepository,
     private val usuarioRemoteDataSource: UsuarioRemoteDataSource,
+    private val authRemoteDataSource: AuthRemoteDataSource
 ) {
-    fun obtenerMixtapesDeUsuario(usuarioId: String): Flow<List<MixtapeUi>> {
-        val currentUid = authRepository.currentUser?.uid ?: ""
-        return mixtapeRemoteDataSource.escucharMixtapesDelUsuario(
-            usuarioId = usuarioId,
-            currentUserId = currentUid,
-        ).map { lista ->
-            lista.map { it.toMixtapeUi(usuarioActualId = currentUid) }
-        }
+
+    // Mis mixtapes en vivo: una nueva, o un item agregado desde el detalle, llegan solos
+    fun getMisMixtapesLive(): Flow<List<MixtapeUi>> {
+        val usuarioId = authRemoteDataSource.currentUser?.uid ?: ""
+
+        return mixtapeRemoteDataSource.listenMixtapesDeUsuario(usuarioId)
+            .map { mixtapes -> mixtapes.map { it.toMixtapeUi(usuarioActualId = usuarioId) } }
+            .catch { e ->
+                Log.d("MixtapeRepository", "getMisMixtapesLive: ${e.message}")
+                throw errorDelFlujo(e)
+            }
     }
 
-    fun obtenerMisMixtapes(): Flow<List<MixtapeUi>> {
-        val currentUid = authRepository.currentUser?.uid ?: ""
-        return obtenerMixtapesDeUsuario(usuarioId = currentUid)
+    // Una mixtape en vivo. El data source envia null si no existe: el repositorio decide el error
+    fun getMixtapeLive(id: String): Flow<MixtapeUi> {
+        val usuarioId = authRemoteDataSource.currentUser?.uid ?: ""
+
+        return mixtapeRemoteDataSource.listenMixtapeById(id)
+            .map { dto -> dto?.toMixtapeUi(usuarioActualId = usuarioId) ?: throw ContenidoNoEncontradoException() }
+            .catch { e ->
+                Log.d("MixtapeRepository", "getMixtapeLive: ${e.message}")
+                throw errorDelFlujo(e)
+            }
     }
 
-    fun obtenerMixtapePorId(id: String): Flow<MixtapeUi?> {
-        val currentUid = authRepository.currentUser?.uid ?: ""
-        return mixtapeRemoteDataSource.escucharMixtapePorId(
-            id = id,
-            currentUserId = currentUid,
-        ).map { dto ->
-            dto?.toMixtapeUi(usuarioActualId = currentUid)
-        }
-    }
-
-    suspend fun crearMixtape(
-        nombre: String,
-        descripcion: String?,
-        primerItem: ItemResumenUi? = null
-    ): Result<String> {
-        val currentUser = authRepository.currentUser
-            ?: return Result.failure(SinSesionException())
-
-        val usuarioProfile = usuarioRemoteDataSource.getUsuarioById(currentUser.uid)?.toUsuarioUi()
-        val usuarioNombre = usuarioProfile?.nombre ?: currentUser.displayName ?: currentUser.email?.substringBefore("@") ?: "Usuario"
-        val usuarioFotoUrl = usuarioProfile?.fotoUrl ?: currentUser.photoUrl?.toString()
-
+    // La mixtape guarda una copia de mi nombre y mi foto, como la resena
+    suspend fun crearMixtape(nombre: String, descripcion: String): Result<String> {
         return try {
-            val id = mixtapeRemoteDataSource.crearMixtape(
-                nombre = nombre.trim(),
-                descripcion = descripcion?.trim(),
-                usuarioId = currentUser.uid,
-                usuarioNombre = usuarioNombre,
-                usuarioFotoUrl = usuarioFotoUrl,
-                primerItem = primerItem?.toItemMixtapeDto()
+            val usuarioId = authRemoteDataSource.currentUser?.uid
+                ?: return Result.failure(SinSesionException())
+
+            val createMixtapeDto = CreateMixtapeDto(
+                nombre = nombre,
+                // Sin descripcion se guarda null, no un texto vacio
+                descripcion = descripcion.ifEmpty { null },
+                usuarioId = usuarioId,
+                usuarioNombre = nombreDeLaSesion(
+                    usuarioRemoteDataSource = usuarioRemoteDataSource,
+                    authRemoteDataSource = authRemoteDataSource,
+                    usuarioId = usuarioId,
+                ),
+                usuarioFotoUrl = authRemoteDataSource.currentUser?.photoUrl?.toString(),
+                items = emptyList(),
+                // En formato ISO, para ordenar mis mixtapes por esta fecha
+                createdAt = Instant.now().toString(),
             )
-            Result.success(id)
+
+            Result.success(mixtapeRemoteDataSource.crearMixtape(mixtape = createMixtapeDto))
+        } catch (e: HttpException) {
+            Log.d("MixtapeRepository", "crearMixtape: ${e.message}")
+            Result.failure(errorDelBackend(e))
+        } catch (e: FirebaseFirestoreException) {
+            Log.d("MixtapeRepository", "crearMixtape: ${e.message}")
+            Result.failure(errorDeFirestore(e))
         } catch (e: Exception) {
-            Result.failure(traducirExcepcion(e))
+            Log.d("MixtapeRepository", "crearMixtape: ${e.message}")
+            Result.failure(ErrorInesperadoException())
         }
     }
 
-    suspend fun agregarItemAMixtape(mixtapeId: String, item: ItemResumenUi): Result<Unit> {
+    // Se copia lo que se muestra del item. La mixtape cambia sola por el listener
+    suspend fun agregarItem(mixtapeId: String, item: ItemUi): Result<Unit> {
         return try {
-            mixtapeRemoteDataSource.agregarItemAMixtape(mixtapeId, item.toItemMixtapeDto())
+            if (authRemoteDataSource.currentUser == null) return Result.failure(SinSesionException())
+
+            mixtapeRemoteDataSource.agregarItem(mixtapeId = mixtapeId, item = item.toItemResumenUi().toItemMixtapeDto())
             Result.success(Unit)
+        } catch (e: HttpException) {
+            Log.d("MixtapeRepository", "agregarItem: ${e.message}")
+            Result.failure(errorDelBackend(e))
+        } catch (e: FirebaseFirestoreException) {
+            Log.d("MixtapeRepository", "agregarItem: ${e.message}")
+            Result.failure(errorDeFirestore(e))
         } catch (e: Exception) {
-            Result.failure(traducirExcepcion(e))
+            Log.d("MixtapeRepository", "agregarItem: ${e.message}")
+            Result.failure(ErrorInesperadoException())
         }
     }
 
-    suspend fun eliminarItemDeMixtape(mixtapeId: String, itemId: String): Result<Unit> {
+    suspend fun quitarItem(mixtapeId: String, itemId: String): Result<Unit> {
         return try {
-            mixtapeRemoteDataSource.eliminarItemDeMixtape(mixtapeId, itemId)
+            if (authRemoteDataSource.currentUser == null) return Result.failure(SinSesionException())
+
+            mixtapeRemoteDataSource.quitarItem(mixtapeId = mixtapeId, itemId = itemId)
             Result.success(Unit)
+        } catch (e: HttpException) {
+            Log.d("MixtapeRepository", "quitarItem: ${e.message}")
+            Result.failure(errorDelBackend(e))
+        } catch (e: FirebaseFirestoreException) {
+            Log.d("MixtapeRepository", "quitarItem: ${e.message}")
+            Result.failure(errorDeFirestore(e))
         } catch (e: Exception) {
-            Result.failure(traducirExcepcion(e))
+            Log.d("MixtapeRepository", "quitarItem: ${e.message}")
+            Result.failure(ErrorInesperadoException())
         }
     }
 
     suspend fun eliminarMixtape(mixtapeId: String): Result<Unit> {
         return try {
-            mixtapeRemoteDataSource.eliminarMixtape(mixtapeId)
-            Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(traducirExcepcion(e))
-        }
-    }
+            if (authRemoteDataSource.currentUser == null) return Result.failure(SinSesionException())
 
-    suspend fun toggleLikeMixtape(mixtapeId: String): Result<Unit> {
-        val currentUser = authRepository.currentUser
-            ?: return Result.failure(SinSesionException())
-        return try {
-            mixtapeRemoteDataSource.toggleLikeMixtape(mixtapeId, currentUser.uid)
+            mixtapeRemoteDataSource.eliminarMixtape(mixtapeId = mixtapeId)
             Result.success(Unit)
+        } catch (e: HttpException) {
+            Log.d("MixtapeRepository", "eliminarMixtape: ${e.message}")
+            Result.failure(errorDelBackend(e))
+        } catch (e: FirebaseFirestoreException) {
+            Log.d("MixtapeRepository", "eliminarMixtape: ${e.message}")
+            Result.failure(errorDeFirestore(e))
         } catch (e: Exception) {
-            Result.failure(traducirExcepcion(e))
+            Log.d("MixtapeRepository", "eliminarMixtape: ${e.message}")
+            Result.failure(ErrorInesperadoException())
         }
-    }
-
-    private fun traducirExcepcion(e: Exception): Exception = when (e) {
-        is FirebaseFirestoreException -> errorDeFirestore(e)
-        is HttpException -> errorDelBackend(e)
-        else -> ErrorInesperadoException()
     }
 }

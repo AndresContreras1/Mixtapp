@@ -1,130 +1,96 @@
 package com.example.mixtapp.data.datasource.impl.firestore
 
 import com.example.mixtapp.data.datasource.MixtapeRemoteDataSource
+import com.example.mixtapp.data.dtos.CreateMixtapeDto
 import com.example.mixtapp.data.dtos.ItemMixtapeDto
 import com.example.mixtapp.data.dtos.MixtapeDto
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
-import java.time.Instant
 import javax.inject.Inject
 
 class MixtapeFirestoreDataSourceImpl @Inject constructor(
     private val db: FirebaseFirestore
 ) : MixtapeRemoteDataSource {
 
-    override fun escucharMixtapesDelUsuario(
-        usuarioId: String,
-        currentUserId: String?
-    ): Flow<List<MixtapeDto>> = callbackFlow {
-        val listener = db.collection("mixtapes")
+    // El listener escucha las mixtapes de un usuario con whereEqualTo. Se ordenan aqui por la fecha
+    // (texto ISO) para no pedir un indice compuesto en Firestore
+    override fun listenMixtapesDeUsuario(usuarioId: String): Flow<List<MixtapeDto>> = callbackFlow {
+        val listenerRegistration = db.collection("mixtapes")
             .whereEqualTo("usuarioId", usuarioId)
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
-                    close(error)
+                    close(error) // cierra el flujo con error
                     return@addSnapshotListener
                 }
-
-                val mixtapes = snapshot?.documents?.mapNotNull { doc ->
-                    doc.toObject(MixtapeDto::class.java)?.copy(id = doc.id)
-                }?.sortedByDescending { it.createdAt } ?: emptyList()
-
-                trySend(mixtapes)
+                if (snapshot != null) {
+                    val mixtapes = snapshot.documents.mapNotNull { doc ->
+                        doc.toObject(MixtapeDto::class.java)?.copy(id = doc.id)
+                    }.sortedByDescending { it.createdAt }
+                    trySend(mixtapes).isSuccess // envia la lista al flujo
+                }
             }
 
-        awaitClose { listener.remove() }
+        // Cuando se sale de la pantalla nadie escucha el flujo y se quita el listener
+        awaitClose { listenerRegistration.remove() }
     }
 
-    override fun escucharMixtapePorId(
-        id: String,
-        currentUserId: String?
-    ): Flow<MixtapeDto?> = callbackFlow {
-        val listener = db.collection("mixtapes").document(id)
+    // Si la borran mientras se ve, toObject da null y se envia null: el repositorio decide el error
+    override fun listenMixtapeById(id: String): Flow<MixtapeDto?> = callbackFlow {
+        val listenerRegistration = db.collection("mixtapes").document(id)
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
-                    close(error)
+                    close(error) // cierra el flujo con error
                     return@addSnapshotListener
                 }
-
-                val mixtape = snapshot?.toObject(MixtapeDto::class.java)?.copy(id = snapshot.id)
-                trySend(mixtape)
-            }
-
-        awaitClose { listener.remove() }
-    }
-
-    override suspend fun crearMixtape(
-        nombre: String,
-        descripcion: String?,
-        usuarioId: String,
-        usuarioNombre: String,
-        usuarioFotoUrl: String?,
-        primerItem: ItemMixtapeDto?
-    ): String {
-        val docRef = db.collection("mixtapes").document()
-        val items = if (primerItem != null) listOf(primerItem) else emptyList()
-        val mixtape = MixtapeDto(
-            id = docRef.id,
-            nombre = nombre,
-            descripcion = descripcion,
-            usuarioId = usuarioId,
-            usuarioNombre = usuarioNombre,
-            usuarioFotoUrl = usuarioFotoUrl,
-            items = items,
-            likesCount = 0,
-            createdAt = Instant.now().toString()
-        )
-        docRef.set(mixtape).await()
-        return docRef.id
-    }
-
-    override suspend fun agregarItemAMixtape(mixtapeId: String, item: ItemMixtapeDto) {
-        val mixtapeRef = db.collection("mixtapes").document(mixtapeId)
-        db.runTransaction { transaction ->
-            val snapshot = transaction.get(mixtapeRef)
-            val mixtape = snapshot.toObject(MixtapeDto::class.java)
-            if (mixtape != null) {
-                val currentItems = mixtape.items.toMutableList()
-                if (currentItems.none { it.id == item.id }) {
-                    currentItems.add(item)
-                    transaction.update(mixtapeRef, "items", currentItems)
+                if (snapshot != null) {
+                    val mixtape = snapshot.toObject(MixtapeDto::class.java)?.copy(id = snapshot.id)
+                    trySend(mixtape).isSuccess // envia la mixtape (o null) al flujo
                 }
             }
-        }.await()
+
+        // Cuando se sale del detalle nadie escucha el flujo y se quita el listener
+        awaitClose { listenerRegistration.remove() }
     }
 
-    override suspend fun eliminarItemDeMixtape(mixtapeId: String, itemId: String) {
+    // add crea el documento con un id aleatorio, como un comentario
+    override suspend fun crearMixtape(mixtape: CreateMixtapeDto): String {
+        val documento = db.collection("mixtapes").add(mixtape).await()
+
+        return documento.id
+    }
+
+    // En una transaccion se lee la lista actual y se escribe con el item nuevo: si dos celulares
+    // agregan a la vez, ninguno borra lo del otro
+    override suspend fun agregarItem(mixtapeId: String, item: ItemMixtapeDto) {
         val mixtapeRef = db.collection("mixtapes").document(mixtapeId)
+
         db.runTransaction { transaction ->
-            val snapshot = transaction.get(mixtapeRef)
-            val mixtape = snapshot.toObject(MixtapeDto::class.java)
-            if (mixtape != null) {
-                val currentItems = mixtape.items.filterNot { it.id == itemId }
-                transaction.update(mixtapeRef, "items", currentItems)
+            val mixtape = transaction.get(mixtapeRef).toObject(MixtapeDto::class.java)
+
+            // Si la borraron o el item ya esta, no se escribe nada
+            if (mixtape != null && mixtape.items.none { it.id == item.id }) {
+                transaction.update(mixtapeRef, "items", mixtape.items + item)
             }
         }.await()
     }
 
+    override suspend fun quitarItem(mixtapeId: String, itemId: String) {
+        val mixtapeRef = db.collection("mixtapes").document(mixtapeId)
+
+        db.runTransaction { transaction ->
+            val mixtape = transaction.get(mixtapeRef).toObject(MixtapeDto::class.java)
+
+            if (mixtape != null) {
+                transaction.update(mixtapeRef, "items", mixtape.items.filterNot { it.id == itemId })
+            }
+        }.await()
+    }
+
+    // La mixtape no tiene subcolecciones: basta con borrar el documento
     override suspend fun eliminarMixtape(mixtapeId: String) {
         db.collection("mixtapes").document(mixtapeId).delete().await()
-    }
-
-    override suspend fun toggleLikeMixtape(mixtapeId: String, usuarioId: String) {
-        val mixtapeRef = db.collection("mixtapes").document(mixtapeId)
-        val likeRef = mixtapeRef.collection("likes").document(usuarioId)
-
-        db.runTransaction { transaction ->
-            val likeDoc = transaction.get(likeRef)
-            if (likeDoc.exists()) {
-                transaction.delete(likeRef)
-                transaction.update(mixtapeRef, "likesCount", FieldValue.increment(-1))
-            } else {
-                transaction.set(likeRef, mapOf("timestamp" to FieldValue.serverTimestamp()))
-                transaction.update(mixtapeRef, "likesCount", FieldValue.increment(1))
-            }
-        }.await()
     }
 }

@@ -4,32 +4,48 @@ import com.example.mixtapp.data.model.ItemResumenUi
 import com.example.mixtapp.data.model.MixtapeUi
 import java.time.Instant
 
-// DTO para el documento en la coleccion mixtapes
+// El documento mixtapes/{id}: una lista de albumes, canciones y artistas que arma un usuario. Los
+// items van dentro del documento como copia (titulo, portada): asi la lista se pinta sin otra
+// consulta, como la copia del item en la resena
 data class MixtapeDto(
-    val id: String = "",
-    val nombre: String = "",
-    val descripcion: String? = null,
-    val usuarioId: String = "",
-    val usuarioNombre: String = "",
-    val usuarioFotoUrl: String? = null,
-    val items: List<ItemMixtapeDto> = emptyList(),
-    val likesCount: Int = 0,
-    val createdAt: String? = null,
-    var liked: Boolean = false,
+    val id: String,
+    val nombre: String,
+    val descripcion: String?,
+    // Quien la creo, con la copia de su nombre y su foto
+    val usuarioId: String,
+    val usuarioNombre: String,
+    val usuarioFotoUrl: String?,
+    val items: List<ItemMixtapeDto>,
+    // En formato ISO: ordena mis mixtapes de la mas nueva a la mas vieja
+    val createdAt: String?,
 ) {
-    constructor() : this("", "", null, "", "", null, emptyList(), 0, null, false)
+    // Firestore necesita un constructor vacio para convertir el documento en el DTO
+    constructor() : this("", "", null, "", "", null, emptyList(), null)
 }
 
+// La copia de un item dentro de la mixtape, con su id y su tipo para abrir el detalle
 data class ItemMixtapeDto(
-    val id: String = "",
-    val tipo: String = "",
-    val titulo: String = "",
-    val subtitulo: String = "",
-    val imagenUrl: String = "",
-    val genero: String = "",
+    val id: String,
+    val tipo: String,
+    val titulo: String,
+    val subtitulo: String,
+    val imagenUrl: String,
+    val genero: String,
 ) {
+    // Firestore necesita un constructor vacio para convertir el documento en el DTO
     constructor() : this("", "", "", "", "", "")
 }
+
+// Lo que se manda para crear una mixtape. Empieza sin items
+data class CreateMixtapeDto(
+    val nombre: String,
+    val descripcion: String?,
+    val usuarioId: String,
+    val usuarioNombre: String,
+    val usuarioFotoUrl: String?,
+    val items: List<ItemMixtapeDto>,
+    val createdAt: String,
+)
 
 fun ItemResumenUi.toItemMixtapeDto(): ItemMixtapeDto {
     return ItemMixtapeDto(
@@ -62,12 +78,7 @@ fun MixtapeDto.toMixtapeUi(usuarioActualId: String, ahora: Instant = Instant.now
         usuarioNombre = usuarioNombre,
         usuarioFotoUrl = usuarioFotoUrl ?: "",
         items = items.map { it.toItemResumenUi() },
-        itemCount = items.size,
         isMine = usuarioId == usuarioActualId,
-        likes = likesCount,
-        likesText = formatoCantidad(likesCount),
-        isLiked = liked,
-        createdAt = createdAt ?: "",
         timeAgo = haceCuanto(fechaIso = createdAt, ahora = ahora),
     )
 }
