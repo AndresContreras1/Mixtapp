@@ -41,6 +41,7 @@ fun AgregarAMixtapeScreen(
     itemId: String,
     agregarAMixtapeViewModel: AgregarAMixtapeViewModel,
     onCrearMixtapeClick: () -> Unit,
+    onAgregado: () -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -51,9 +52,9 @@ fun AgregarAMixtapeScreen(
         agregarAMixtapeViewModel.getItem(tipo = tipo, itemId = itemId)
     }
 
-    // Cuando el item queda agregado se vuelve al detalle
+    // Cuando la base confirma que el item quedo en la mixtape
     LaunchedEffect(state.navigate) {
-        if (state.navigate) onBackClick()
+        if (state.navigate) onAgregado()
     }
 
     AgregarAMixtapeScreenContent(

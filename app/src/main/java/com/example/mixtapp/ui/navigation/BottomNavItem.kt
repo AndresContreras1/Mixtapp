@@ -23,6 +23,7 @@ data class BottomNavItem(
     @StringRes val label: Int
 )
 
+// Las cinco pestanas de la barra de abajo, en el orden en que se ven
 val bottomNavItems = listOf(
     BottomNavItem(
         filledIcon = Icons.Filled.Home,

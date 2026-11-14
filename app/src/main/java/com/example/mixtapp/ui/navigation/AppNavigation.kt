@@ -64,6 +64,12 @@ private fun NavHostController.navegarLimpiandoLaPila(ruta: String) {
     }
 }
 
+// Los argumentos de las rutas que abren un item: el tipo dice de que coleccion es el id
+private val argumentosDelItem = listOf(
+    navArgument(name = ARG_TIPO) { type = NavType.StringType },
+    navArgument(name = ARG_ITEM_ID) { type = NavType.StringType }
+)
+
 // Abrir un item, el perfil de un usuario, escribir una resena y abrir la discusion se repite en
 // varias pantallas
 private fun NavHostController.abrirItem(tipo: String, itemId: String) {
@@ -92,6 +98,8 @@ private fun NavHostController.abrirDiscusion(reviewId: String) {
     navigate(Screen.Discussion.createRoute(reviewId = reviewId))
 }
 
+// La navegacion de toda la app en un solo NavHost: cada ruta crea su ViewModel con Hilt y le pasa
+// a su pantalla lo que hace cada accion. Las pantallas no reciben el navController
 @Composable
 fun AppNavigation(
     navController: NavHostController,
@@ -224,14 +232,11 @@ fun AppNavigation(
 
         composable(
             route = Screen.WriteReview.route,
-            arguments = listOf(
-                navArgument(name = "tipo") { type = NavType.StringType },
-                navArgument(name = "itemId") { type = NavType.StringType }
-            )
+            arguments = argumentosDelItem
         ) {
             // Solo se obtienen el tipo y el id; buscar el item es tarea del ViewModel
-            val tipo = it.arguments?.getString("tipo") ?: TIPO_ALBUM
-            val itemId = it.arguments?.getString("itemId") ?: ""
+            val tipo = it.arguments?.getString(ARG_TIPO) ?: TIPO_ALBUM
+            val itemId = it.arguments?.getString(ARG_ITEM_ID) ?: ""
             val writeReviewViewModel: WriteReviewViewModel = hiltViewModel()
 
             WriteReviewScreen(
@@ -298,6 +303,8 @@ fun AppNavigation(
 
             CrearMixtapeScreen(
                 crearMixtapeViewModel = crearMixtapeViewModel,
+                // El perfil y Agregar a mixtape escuchan mis mixtapes, asi que ya sale la nueva
+                onCreada = { navController.popBackStack() },
                 onBackClick = { navController.popBackStack() }
             )
         }
@@ -307,9 +314,10 @@ fun AppNavigation(
             arguments = listOf(
                 navArgument(name = "mixtapeId") { type = NavType.StringType }
             )
-        ) { backStackEntry ->
+        ) {
+            // Solo se obtiene el id; buscar la mixtape es tarea del ViewModel
+            val mixtapeId = it.arguments?.getString("mixtapeId") ?: ""
             val mixtapeDetailViewModel: MixtapeDetailViewModel = hiltViewModel()
-            val mixtapeId = backStackEntry.arguments?.getString("mixtapeId") ?: ""
 
             MixtapeDetailScreen(
                 mixtapeId = mixtapeId,
@@ -323,20 +331,20 @@ fun AppNavigation(
 
         composable(
             route = Screen.AgregarAMixtape.route,
-            arguments = listOf(
-                navArgument(name = "tipo") { type = NavType.StringType },
-                navArgument(name = "itemId") { type = NavType.StringType }
-            )
-        ) { backStackEntry ->
+            arguments = argumentosDelItem
+        ) {
+            // Solo se obtienen el tipo y el id; buscar el item es tarea del ViewModel
+            val tipo = it.arguments?.getString(ARG_TIPO) ?: TIPO_ALBUM
+            val itemId = it.arguments?.getString(ARG_ITEM_ID) ?: ""
             val agregarAMixtapeViewModel: AgregarAMixtapeViewModel = hiltViewModel()
-            val tipo = backStackEntry.arguments?.getString("tipo") ?: ""
-            val itemId = backStackEntry.arguments?.getString("itemId") ?: ""
 
             AgregarAMixtapeScreen(
                 tipo = tipo,
                 itemId = itemId,
                 agregarAMixtapeViewModel = agregarAMixtapeViewModel,
                 onCrearMixtapeClick = { navController.navigate(Screen.CrearMixtape.route) },
+                // Al agregarlo se vuelve al detalle del item
+                onAgregado = { navController.popBackStack() },
                 onBackClick = { navController.popBackStack() }
             )
         }
@@ -363,14 +371,11 @@ fun AppNavigation(
 
         composable(
             route = Screen.Detail.route,
-            arguments = listOf(
-                navArgument(name = "tipo") { type = NavType.StringType },
-                navArgument(name = "itemId") { type = NavType.StringType }
-            )
+            arguments = argumentosDelItem
         ) {
             // Solo se obtienen el tipo y el id; buscar el item es tarea del ViewModel
-            val tipo = it.arguments?.getString("tipo") ?: TIPO_ALBUM
-            val itemId = it.arguments?.getString("itemId") ?: ""
+            val tipo = it.arguments?.getString(ARG_TIPO) ?: TIPO_ALBUM
+            val itemId = it.arguments?.getString(ARG_ITEM_ID) ?: ""
             val detailViewModel: DetailViewModel = hiltViewModel()
 
             DetailScreen(
@@ -398,13 +403,11 @@ fun AppNavigation(
 
         composable(
             route = Screen.DatosCuriosos.route,
-            arguments = listOf(
-                navArgument(name = "tipo") { type = NavType.StringType },
-                navArgument(name = "itemId") { type = NavType.StringType }
-            )
+            arguments = argumentosDelItem
         ) {
-            val tipo = it.arguments?.getString("tipo") ?: TIPO_ALBUM
-            val itemId = it.arguments?.getString("itemId") ?: ""
+            // Solo se obtienen el tipo y el id; buscar el item es tarea del ViewModel
+            val tipo = it.arguments?.getString(ARG_TIPO) ?: TIPO_ALBUM
+            val itemId = it.arguments?.getString(ARG_ITEM_ID) ?: ""
             val datosCuriososViewModel: DatosCuriososViewModel = hiltViewModel()
 
             DatosCuriososScreen(
@@ -445,12 +448,12 @@ fun AppNavigation(
             route = Screen.FollowList.route,
             arguments = listOf(
                 navArgument(name = "userId") { type = NavType.StringType },
-                navArgument(name = "tipo") { type = NavType.StringType }
+                navArgument(name = ARG_TIPO) { type = NavType.StringType }
             )
         ) {
             // Solo se obtienen el id y el tipo; buscar la lista es tarea del ViewModel
             val userId = it.arguments?.getString("userId") ?: ""
-            val tipo = it.arguments?.getString("tipo") ?: LISTA_SEGUIDORES
+            val tipo = it.arguments?.getString(ARG_TIPO) ?: LISTA_SEGUIDORES
             val followListViewModel: FollowListViewModel = hiltViewModel()
 
             FollowListScreen(

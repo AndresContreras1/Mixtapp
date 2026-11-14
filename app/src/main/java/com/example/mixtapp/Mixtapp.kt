@@ -13,15 +13,17 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.mixtapp.ui.navigation.AppNavigation
 import com.example.mixtapp.ui.navigation.BottomNav
 import com.example.mixtapp.ui.navigation.NavigationLogic
 import com.example.mixtapp.ui.navigation.Screen
 import com.example.mixtapp.ui.utils.WriteReviewFab
+import com.example.mixtapp.ui.utils.rutaActual
 import com.google.firebase.messaging.FirebaseMessaging
 
+// El unico Scaffold de la app: la barra de abajo, el boton + y la navegacion. Tambien pide el
+// permiso de notificaciones y el token de FCM al abrir la app
 @Composable
 fun Mixtapp(modifier: Modifier = Modifier) {
     // El contexto sirve para revisar si el permiso de notificaciones ya esta concedido
@@ -64,8 +66,7 @@ fun Mixtapp(modifier: Modifier = Modifier) {
     }
 
     val navController = rememberNavController()
-    val navBackStackEntry = navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry.value?.destination?.route
+    val currentRoute = rutaActual(navController)
 
     val mostrarBarra = NavigationLogic.shouldShowBottomBar(currentRoute)
     val mostrarFab = NavigationLogic.shouldShowFab(currentRoute)

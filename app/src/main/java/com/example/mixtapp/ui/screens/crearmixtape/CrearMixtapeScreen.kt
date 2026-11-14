@@ -29,14 +29,15 @@ import com.example.mixtapp.ui.utils.ScreenTitle
 @Composable
 fun CrearMixtapeScreen(
     crearMixtapeViewModel: CrearMixtapeViewModel,
+    onCreada: () -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val state by crearMixtapeViewModel.uiState.collectAsState()
 
-    // Cuando la mixtape queda creada se vuelve a la pantalla anterior
+    // Cuando la base confirma que la mixtape quedo creada
     LaunchedEffect(state.navigate) {
-        if (state.navigate) onBackClick()
+        if (state.navigate) onCreada()
     }
 
     CrearMixtapeScreenContent(
