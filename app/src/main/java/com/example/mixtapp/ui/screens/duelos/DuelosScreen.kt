@@ -54,7 +54,7 @@ fun DuelosScreen(
     onUserClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    // El catalogo y los votos llegan en vivo desde el ViewModel: la pantalla solo pinta lo que ya
+    // El catalogo y los votos llegan desde el ViewModel: la pantalla solo pinta lo que ya
     // viene armado
     val state by duelosViewModel.uiState.collectAsState()
 
@@ -67,7 +67,7 @@ fun DuelosScreen(
         enviando = state.enviando,
         isLoading = state.isLoading,
         errorMessageRes = state.errorMessageRes,
-        errorVotosRes = state.errorVotosRes,
+        errorVotosRes = state.erroresDeVotos[state.tipoElegido],
         errorVotoRes = state.errorVotoRes,
         onTabSelected = { duelosViewModel.selectTipo(tipo = it) },
         onOpcionClick = { duelosViewModel.elegirOpcion(opcion = it) },

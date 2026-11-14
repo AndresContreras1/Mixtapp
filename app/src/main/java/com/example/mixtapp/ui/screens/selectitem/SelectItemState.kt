@@ -10,11 +10,11 @@ data class SelectItemState(
     val query: String = "",
     val filters: List<SelectItemFilterUi> = selectItemFilters,
     val selectedFilterId: String = FILTRO_TODOS,
-    // Todo el catalogo en vivo: el texto y el filtro trabajan sobre esta lista
+    // Todo el catalogo con sus estrellas: el texto y el filtro trabajan sobre esta lista
     val catalogo: List<ItemConResenasUi> = emptyList(),
     // Ya vienen filtrados y ordenados por el ViewModel
     val resultados: List<ItemConResenasUi> = emptyList(),
-    // Arranca cargando porque lo primero que hace el ViewModel es escuchar el catalogo
-    val isLoading: Boolean = true,
+    // Se pone en true al pedir el catalogo y en false cuando llega o falla
+    val isLoading: Boolean = false,
     @StringRes val errorMessageRes: Int? = null,
 )

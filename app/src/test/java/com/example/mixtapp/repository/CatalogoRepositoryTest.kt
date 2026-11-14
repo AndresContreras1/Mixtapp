@@ -186,19 +186,19 @@ class CatalogoRepositoryTest {
 
     @Test
     fun getLanzamientosLive_meGustaUnArtista_susAlbumesYCancionesDelMasNuevo() = runTest {
-        //Arrange: me gusta Mike Shinoda (de Linkin Park): salen los albumes y las canciones de la
-        // banda, del mas nuevo al mas viejo; Metallica no
-        coEvery { albumDataSource.listenAlbumes() } returns flowOf(
+        //Arrange: el catalogo se lee una vez y me gusta Mike Shinoda (de Linkin Park): salen los
+        // albumes y las canciones de la banda, del mas nuevo al mas viejo; Metallica no
+        coEvery { albumDataSource.getAlbumes() } returns (
             listOf(
                 fromZero.copy(fechaLanzamiento = "2024-11-15"),
                 AlbumDto().copy(id = "album_2", titulo = "Hybrid Theory", artista = "Linkin Park", fechaLanzamiento = "2000-10-24"),
                 AlbumDto().copy(id = "album_3", titulo = "Master of Puppets", artista = "Metallica", fechaLanzamiento = "1986-03-03"),
             )
         )
-        coEvery { cancionDataSource.listenCanciones() } returns flowOf(
+        coEvery { cancionDataSource.getCanciones() } returns (
             listOf(CancionDto().copy(id = "cancion_1", titulo = "Numb", artista = "Linkin Park", fechaLanzamiento = "2003-03-25"))
         )
-        coEvery { artistaDataSource.listenArtistas() } returns flowOf(
+        coEvery { artistaDataSource.getArtistas() } returns (
             listOf(ArtistaDto().copy(id = "artista_1", nombre = "Mike Shinoda", grupo = "Linkin Park"))
         )
         coEvery { usuarioDataSource.listenLikes("yo") } returns flowOf(listOf(ItemDeUsuarioDto().copy(id = "artista_1")))

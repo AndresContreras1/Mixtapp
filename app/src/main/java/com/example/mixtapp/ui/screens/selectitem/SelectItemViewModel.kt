@@ -15,7 +15,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -30,34 +29,38 @@ class SelectItemViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(SelectItemState())
     val uiState: StateFlow<SelectItemState> = _uiState.asStateFlow()
 
-    // No recibe parametros: el catalogo en vivo se escucha una sola vez al crear el ViewModel
+    // No recibe parametros: el catalogo se lee una sola vez al crear el ViewModel
     init {
-        escucharCatalogo()
+        cargarCatalogo()
     }
 
-    // Si alguien califica algo mientras elijo, las estrellas de la lista se actualizan solas
-    private fun escucharCatalogo() {
+    // El catalogo con sus estrellas, una sola vez: mientras se elige que calificar no hace falta
+    // verlo cambiar, y escucharlo en vivo costaria una lectura por cada resena nueva de la app
+    private fun cargarCatalogo() {
+        _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
+
         viewModelScope.launch(ioDispatcher) {
-            catalogoRepository.getCatalogoLive()
-                .catch { e ->
-                    Log.d("SelectItemViewModel", "escucharCatalogo: ${e.message}")
-                    _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            errorMessageRes = mensajeDeError(error = e, generico = R.string.error_cargar_contenido),
-                        )
-                    }
+            val result = catalogoRepository.getCatalogo()
+            val catalogo = result.getOrNull()
+
+            if (result.isSuccess && catalogo != null) {
+                _uiState.update {
+                    it.copy(
+                        catalogo = catalogo,
+                        resultados = filtrar(texto = it.query, filtroId = it.selectedFilterId, catalogo = catalogo),
+                        isLoading = false,
+                        errorMessageRes = null,
+                    )
                 }
-                .collect { catalogo ->
-                    _uiState.update {
-                        it.copy(
-                            catalogo = catalogo,
-                            resultados = filtrar(texto = it.query, filtroId = it.selectedFilterId, catalogo = catalogo),
-                            isLoading = false,
-                            errorMessageRes = null,
-                        )
-                    }
+            } else {
+                Log.d("SelectItemViewModel", "cargarCatalogo: ${result.exceptionOrNull()?.message}")
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        errorMessageRes = mensajeDeError(error = result.exceptionOrNull(), generico = R.string.error_cargar_contenido),
+                    )
                 }
+            }
         }
     }
 

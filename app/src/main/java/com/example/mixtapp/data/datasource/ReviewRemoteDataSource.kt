@@ -12,6 +12,8 @@ interface ReviewRemoteDataSource {
     // Las resenas de un album, una cancion o un artista. El tipo lo necesita el backend, donde los
     // ids de las tres tablas se repiten
     suspend fun getReviewsDeItem(tipo: String, itemId: String, currentUserId: String = ""): List<ReviewDto>
+    // Todas las resenas una sola vez, sin likes: para las estrellas del catalogo al elegir que calificar
+    suspend fun getAllReviews(): List<ReviewDto>
     suspend fun createReview(review: CreateReviewDto): Unit
     suspend fun updateReview(id: String, review: CreateReviewDto): Unit
     suspend fun deleteReview(id: String): Unit

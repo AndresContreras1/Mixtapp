@@ -27,6 +27,10 @@ class ReviewRetrofitDataSourceImpl @Inject constructor(
         return listOf(service.getReviewById(id).toReviewDto()).conMiUsuario(currentUserId).first()
     }
 
+    override suspend fun getAllReviews(): List<ReviewDto> {
+        return service.getReviews().map { it.toReviewDto() }
+    }
+
     override suspend fun getReviewsDeItem(tipo: String, itemId: String, currentUserId: String): List<ReviewDto> {
         // to-do: el backend no tiene resenas de canciones ni de artistas
         if (tipo != TIPO_ALBUM) return emptyList()

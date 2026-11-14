@@ -20,6 +20,14 @@ class ReviewFirestoreDataSourceImpl @Inject constructor(
     private val db: FirebaseFirestore
 ) : ReviewRemoteDataSource {
 
+    override suspend fun getAllReviews(): List<ReviewDto> {
+        val respuesta = db.collection("reviews").get().await()
+
+        return respuesta.documents.mapNotNull { doc ->
+            doc.toObject(ReviewDto::class.java)?.copy(id = doc.id)
+        }
+    }
+
     override suspend fun getReviewById(id: String, currentUserId: String): ReviewDto? {
         val reviewRef = db.collection("reviews").document(id)
         val respuesta = reviewRef.get().await()

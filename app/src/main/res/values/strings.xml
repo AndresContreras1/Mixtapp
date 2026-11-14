@@ -181,6 +181,7 @@
     <string name="cargando_mapa">Cargando las reseñas…</string>
     <string name="cerrar_resena_del_mapa">Cerrar la reseña</string>
     <string name="resumen_titulo">Tu año en Mixtapp</string>
+    <string name="error_datos_resumen">Algunos números pueden estar incompletos: no se pudieron cargar tus me gusta o tus seguidores</string>
     <string name="resumen_subtitulo">Lo que dijiste de la música, en números. Descúbrelo tarjeta por tarjeta</string>
     <string name="resumen_siguiente">Siguiente</string>
     <string name="resumen_ver_de_nuevo">Ver de nuevo</string>

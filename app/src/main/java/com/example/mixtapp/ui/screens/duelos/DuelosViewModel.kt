@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
 import com.example.mixtapp.data.injection.IoDispatcher
 import com.example.mixtapp.data.model.DueloUi
-import com.example.mixtapp.data.model.ItemConResenasUi
+import com.example.mixtapp.data.model.ItemUi
 import com.example.mixtapp.data.model.ItemResumenUi
 import com.example.mixtapp.data.model.toItemResumenUi
 import com.example.mixtapp.data.repository.CatalogoRepository
@@ -44,31 +44,36 @@ class DuelosViewModel @Inject constructor(
     // Todos los celulares calculan el mismo numero de dia: con el sale el mismo duelo y el mismo id
     private val dia: Int = ((System.currentTimeMillis() - DESFASE_COLOMBIA) / MILIS_POR_DIA).toInt()
 
-    // Los cuatro flujos son en vivo y los ids de hoy no dependen de la ruta: se escuchan una sola
-    // vez al crear el ViewModel. Cada uno va en su propio launch porque collect no termina
+    // Los ids de hoy no dependen de la ruta: todo se pide una sola vez al crear el ViewModel. El
+    // catalogo se lee una vez y los votos de cada duelo se escuchan en vivo, cada uno en su propio
+    // launch porque collect no termina
     init {
-        escucharCatalogo()
+        cargarCatalogo()
         dueloTabs.forEach { tab -> escucharDuelo(tipo = tab.tipo) }
     }
 
-    // Con el catalogo se arma el par de hoy de cada tipo, aunque nadie haya votado todavia
-    private fun escucharCatalogo() {
+    // Con el catalogo se arma el par de hoy de cada tipo, aunque nadie haya votado todavia. No
+    // cambia mientras se vota, asi que basta leerlo una vez
+    private fun cargarCatalogo() {
+        _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
+
         viewModelScope.launch(ioDispatcher) {
-            catalogoRepository.getCatalogoLive()
-                .catch { e ->
-                    Log.d("DuelosViewModel", "escucharCatalogo: ${e.message}")
-                    _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            errorMessageRes = mensajeDeError(error = e, generico = R.string.error_cargar_contenido),
-                        )
-                    }
+            val result = catalogoRepository.getItemsDelCatalogo()
+            val items = result.getOrNull()
+
+            if (result.isSuccess && items != null) {
+                _uiState.update {
+                    armarDuelos(estado = it.copy(items = items, isLoading = false, errorMessageRes = null))
                 }
-                .collect { catalogo ->
-                    _uiState.update {
-                        armarDuelos(estado = it.copy(catalogo = catalogo, isLoading = false, errorMessageRes = null))
-                    }
+            } else {
+                Log.d("DuelosViewModel", "cargarCatalogo: ${result.exceptionOrNull()?.message}")
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        errorMessageRes = mensajeDeError(error = result.exceptionOrNull(), generico = R.string.error_cargar_contenido),
+                    )
                 }
+            }
         }
     }
 
@@ -79,12 +84,12 @@ class DuelosViewModel @Inject constructor(
                 .catch { e ->
                     Log.d("DuelosViewModel", "escucharDuelo: ${e.message}")
                     _uiState.update {
-                        it.copy(errorVotosRes = mensajeDeError(error = e, generico = R.string.error_cargar_votos))
+                        it.copy(erroresDeVotos = it.erroresDeVotos + (tipo to mensajeDeError(error = e, generico = R.string.error_cargar_votos)))
                     }
                 }
                 .collect { enVivo ->
                     _uiState.update {
-                        armarDuelos(estado = it.copy(enVivo = it.enVivo + (tipo to enVivo), errorVotosRes = null))
+                        armarDuelos(estado = it.copy(enVivo = it.enVivo + (tipo to enVivo), erroresDeVotos = it.erroresDeVotos - tipo))
                     }
                 }
         }
@@ -119,8 +124,12 @@ class DuelosViewModel @Inject constructor(
 
         _uiState.update { it.copy(enviando = true, errorVotoRes = null) }
 
+        // Si cambio el voto sin escribir otra opinion, se queda la que ya tenia
+        val miOpinionAnterior = duelo.opiniones.find { it.esMio }?.opinion ?: ""
+        val opinion = estado.opinion.trim().ifEmpty { miOpinionAnterior }
+
         viewModelScope.launch(ioDispatcher) {
-            val result = dueloRepository.votar(duelo = duelo, opcion = opcion, opinion = estado.opinion.trim())
+            val result = dueloRepository.votar(duelo = duelo, opcion = opcion, opinion = opinion)
 
             if (result.isSuccess) {
                 _uiState.update { it.copy(enviando = false, opcionElegida = null, opinion = "") }
@@ -157,7 +166,7 @@ class DuelosViewModel @Inject constructor(
         val par = if (itemA != null && itemB != null && genero != null) {
             ParDelDia(genero = genero, itemA = itemA, itemB = itemB)
         } else {
-            parDelDia(catalogo = estado.catalogo, tipo = tipo)
+            parDelDia(items = estado.items, tipo = tipo)
         } ?: return null
 
         return DueloUi(
@@ -177,8 +186,8 @@ class DuelosViewModel @Inject constructor(
     // El par de hoy: cada tipo toma un genero distinto que va rotando con los dias, y dentro del
     // genero dos items distintos que tambien rotan. Solo cuentan los generos con dos items o mas.
     // Se ordena por id para que todos los celulares lleguen al mismo par
-    private fun parDelDia(catalogo: List<ItemConResenasUi>, tipo: String): ParDelDia? {
-        val delTipo = catalogo.map { it.item }.filter { it.tipo == tipo }
+    private fun parDelDia(items: List<ItemUi>, tipo: String): ParDelDia? {
+        val delTipo = items.filter { it.tipo == tipo }
         val porGenero = delTipo.groupBy { it.genero }.filter { (_, items) -> items.size >= 2 }
         val generos = porGenero.keys.sorted()
         if (generos.isEmpty()) return null
