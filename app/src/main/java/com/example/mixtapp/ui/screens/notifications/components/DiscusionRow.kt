@@ -28,6 +28,7 @@ import com.example.mixtapp.data.model.ReviewUi
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.CommentsButton
 import com.example.mixtapp.ui.utils.ProfileAsyncImage
+import com.example.mixtapp.ui.utils.TiempoTranscurrido
 
 // Una resena nueva de alguien que sigo, pintada como una notificacion: su foto y su nombre (tocarlos
 // abre su perfil), sobre que abrio la discusion, cuanto hace y cuantos comentarios lleva. Tocar la
@@ -78,12 +79,7 @@ fun DiscusionRow(
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            Text(
-                // Hace menos de un minuto el mapeo deja el texto vacio
-                text = review.timeAgo.ifEmpty { stringResource(R.string.ahora) },
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                style = MaterialTheme.typography.labelSmall,
-            )
+            TiempoTranscurrido(timeAgo = review.timeAgo)
         }
 
         Spacer(modifier = Modifier.width(10.dp))

@@ -1,7 +1,6 @@
 package com.example.mixtapp.ui.screens.search.components
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,9 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,6 +30,7 @@ import com.example.mixtapp.data.model.TIPO_CANCION
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.ItemAsyncImage
 import com.example.mixtapp.ui.utils.StarRating
+import com.example.mixtapp.ui.utils.TarjetaTranslucida
 
 // Un album, una cancion o un artista en una lista: la imagen, sus lineas, que tipo es y el
 // promedio de estrellas. La usan Buscar y Elegir que calificar; cada pantalla le pone su testTag
@@ -45,14 +42,9 @@ fun ResultadoItemRow(
 ) {
     val item = itemConResenas.item
 
-    Card(
+    TarjetaTranslucida(
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.7f)
-        ),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
     ) {
         Row(
             modifier = Modifier.padding(10.dp),

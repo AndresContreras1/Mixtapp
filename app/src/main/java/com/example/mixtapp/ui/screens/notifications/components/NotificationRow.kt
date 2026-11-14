@@ -38,6 +38,7 @@ import com.example.mixtapp.data.model.NotificationUi
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.ItemAsyncImage
 import com.example.mixtapp.ui.utils.ProfileAsyncImage
+import com.example.mixtapp.ui.utils.TiempoTranscurrido
 
 // Una notificacion: la foto de quien la genero, el texto con su nombre en negrita, cuanto hace,
 // la miniatura de lo resenado y un punto mientras no este leida. Las no leidas resaltan mas
@@ -86,12 +87,7 @@ fun NotificationRow(
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            Text(
-                // Hace menos de un minuto el mapeo deja el texto vacio
-                text = notification.timeAgo.ifEmpty { stringResource(R.string.ahora) },
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                style = MaterialTheme.typography.labelSmall,
-            )
+            TiempoTranscurrido(timeAgo = notification.timeAgo)
         }
 
         // Un seguidor nuevo no trae miniatura

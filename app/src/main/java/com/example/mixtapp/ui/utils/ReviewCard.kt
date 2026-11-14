@@ -1,6 +1,5 @@
 package com.example.mixtapp.ui.utils
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,9 +9,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -46,16 +42,11 @@ fun ReviewCard(
     onEditClick: ((ReviewUi) -> Unit)?,
     onDeleteClick: ((String) -> Unit)?,
 ) {
-    Card(
+    TarjetaTranslucida(
+        onClick = null,
         modifier = modifier
             .fillMaxWidth()
             .testTag("review_${review.id}"),
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.8f)
-        ),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             // Quien la escribio: tocarlo abre su perfil
@@ -83,12 +74,7 @@ fun ReviewCard(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
-                    Text(
-                        // Hace menos de un minuto el mapeo deja el texto vacio
-                        text = review.timeAgo.ifEmpty { stringResource(R.string.ahora) },
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        style = MaterialTheme.typography.labelSmall,
-                    )
+                    TiempoTranscurrido(timeAgo = review.timeAgo)
                 }
 
                 StarRating(rating = review.rating, starSize = 14.dp, onRatingChange = null)

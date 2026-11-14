@@ -14,8 +14,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.QueueMusic
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -36,6 +34,7 @@ import com.example.mixtapp.data.model.MixtapeUi
 import com.example.mixtapp.data.model.toItemResumenUi
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.ItemAsyncImage
+import com.example.mixtapp.ui.utils.TarjetaTranslucida
 
 // Con cuatro items o mas la portada es un mosaico de cuatro
 private const val PORTADAS_DEL_MOSAICO = 4
@@ -49,15 +48,11 @@ fun MixtapeCard(
     modifier: Modifier = Modifier,
     etiqueta: String? = null,
 ) {
-    Card(
+    TarjetaTranslucida(
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
             .testTag("mixtape_${mixtape.id}"),
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.8f)
-        ),
     ) {
         Row(
             modifier = Modifier
