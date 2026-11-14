@@ -28,11 +28,12 @@ import com.example.mixtapp.R
 import com.example.mixtapp.ui.theme.MixtappTheme
 
 // Una opcion de la pantalla como tarjeta ovalada: el icono, el texto y la flecha. La usan los datos
-// curiosos y "estoy escuchando esto" en el detalle, y el resumen del ano en el perfil. Los iconos
-// son decorativos: el texto ya dice que hace
+// curiosos, "estoy escuchando esto" y los enlaces (sin icono) en el detalle, y el resumen del ano en
+// el perfil. Los iconos son decorativos: el texto ya dice que hace
 @Composable
 fun OpcionOvalada(
-    icono: ImageVector,
+    // null en los enlaces, que solo llevan el texto
+    icono: ImageVector?,
     texto: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -52,14 +53,16 @@ fun OpcionOvalada(
                 .padding(horizontal = 20.dp, vertical = 14.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Icon(
-                imageVector = icono,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(22.dp),
-            )
+            if (icono != null) {
+                Icon(
+                    imageVector = icono,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(22.dp),
+                )
 
-            Spacer(modifier = Modifier.width(12.dp))
+                Spacer(modifier = Modifier.width(12.dp))
+            }
 
             Text(
                 text = texto,
