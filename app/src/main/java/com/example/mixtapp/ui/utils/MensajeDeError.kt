@@ -6,6 +6,7 @@ import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
 import com.example.mixtapp.data.repository.CorreoNoRegistradoException
 import com.example.mixtapp.data.repository.CorreoYaRegistradoException
 import com.example.mixtapp.data.repository.CredencialesInvalidasException
+import com.example.mixtapp.data.repository.DatosDeRegistroInvalidosException
 import com.example.mixtapp.data.repository.CuotaExcedidaException
 import com.example.mixtapp.data.repository.DemasiadosIntentosException
 import com.example.mixtapp.data.repository.ErrorDelServidorException
@@ -33,6 +34,7 @@ fun mensajeDeError(
     is CredencialesInvalidasException -> R.string.error_credenciales
     is CorreoNoRegistradoException -> R.string.error_correo_no_registrado
     is CorreoYaRegistradoException -> R.string.error_correo_ya_registrado
+    is DatosDeRegistroInvalidosException -> R.string.error_datos_registro_invalidos
     is DemasiadosIntentosException -> R.string.error_demasiados_intentos
     is SeguirseASiMismoException -> R.string.error_seguirse_a_si_mismo
     is ReaccionarALoMioException -> R.string.error_reaccionar_a_lo_mio

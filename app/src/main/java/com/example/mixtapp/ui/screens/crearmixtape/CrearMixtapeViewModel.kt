@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
 import com.example.mixtapp.data.injection.IoDispatcher
+import com.example.mixtapp.data.model.MAX_DESCRIPCION_MIXTAPE
+import com.example.mixtapp.data.model.MAX_NOMBRE_MIXTAPE
 import com.example.mixtapp.data.repository.MixtapeRepository
 import com.example.mixtapp.ui.utils.mensajeDeError
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,10 +17,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
-// Los mismos limites que las reglas de Firestore
-const val MAX_NOMBRE_MIXTAPE = 40
-const val MAX_DESCRIPCION_MIXTAPE = 150
 
 @HiltViewModel
 class CrearMixtapeViewModel @Inject constructor(

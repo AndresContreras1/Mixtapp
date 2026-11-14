@@ -11,6 +11,7 @@ import com.example.mixtapp.data.dtos.toReviewUi
 import com.example.mixtapp.data.model.ItemResumenUi
 import com.example.mixtapp.data.model.ReviewUi
 import com.example.mixtapp.data.model.UsuarioUi
+import com.example.mixtapp.data.model.usuarioDelCorreo
 import com.google.firebase.firestore.FirebaseFirestoreException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -174,8 +175,8 @@ class UsuarioRepository @Inject constructor(
     }
 
     // Primero se crea la cuenta en Authentication y despues, con su uid, se guardan los demas datos.
-    // Tambien completa el perfil de una cuenta creada antes del sprint 10, que no tiene documento
-    // (desde Editar perfil, que tambien manda el Instagram)
+    // Tambien crea el documento de una cuenta que no lo tiene, desde guardarPerfil de Editar perfil,
+    // que tambien manda el Instagram
     suspend fun registrarUsuario(username: String, nombre: String, bio: String, instagram: String = ""): Result<Unit> {
         return try {
             val usuarioId = authRemoteDataSource.currentUser?.uid
@@ -231,8 +232,6 @@ class UsuarioRepository @Inject constructor(
         }
     }
 
-    // Al cambiar la foto tambien se actualiza el documento, para que se vea en mi perfil publico.
-    // Ese cambio es el que escucha la Cloud Function que pone la foto nueva en mis resenas
     // Editar perfil: si mi cuenta todavia no tiene documento (por ejemplo, si fallo al registrarme) se
     // crea; si no, se modifica. Lo decide el repositorio, como crear o modificar una resena
     suspend fun guardarPerfil(nombre: String, username: String, bio: String, instagram: String): Result<Unit> {
@@ -305,19 +304,19 @@ class UsuarioRepository @Inject constructor(
     fun getMisSeguidosLive(): Flow<List<UsuarioUi>> =
         getSeguidosLive(userId = authRemoteDataSource.currentUser?.uid ?: "")
 
-    // Una cuenta de Authentication puede quedar sin documento en usuarios: el registro entra aunque
-    // falle Firestore y, en modo debug, la sesion sigue en el celular aunque el emulador se reinicie
-    // vacio. Sin el documento no se puede seguir ni guardar el token, asi que se crea igual que en el
+    // Una cuenta de Authentication puede quedar sin documento en usuarios: si Firestore falla al
+    // registrarse, la cuenta queda creada sin sus datos y, en modo debug, la sesion sigue en el
+    // celular aunque el emulador se reinicie vacio. Sin el documento no se puede seguir ni guardar el token, asi que se crea igual que en el
     // registro, con la parte del correo antes de la arroba como usuario
     private suspend fun crearMiDocumentoSiFalta(usuarioId: String) {
         if (usuarioRemoteDataSource.getUsuarioById(usuarioId) != null) return
 
-        val usuarioDelCorreo = authRemoteDataSource.currentUser?.email?.substringBefore("@") ?: ""
+        val usuario = usuarioDelCorreo(authRemoteDataSource.currentUser?.email ?: "")
         val nombre = authRemoteDataSource.currentUser?.displayName
 
         val registrarUsuarioDto = RegistrarUsuarioDto(
-            username = usuarioDelCorreo,
-            nombre = if (nombre.isNullOrEmpty()) usuarioDelCorreo else nombre,
+            username = usuario,
+            nombre = if (nombre.isNullOrEmpty()) usuario else nombre,
             fotoUrl = authRemoteDataSource.currentUser?.photoUrl?.toString(),
             FCMToken = tokenDelCelular(),
         )

@@ -8,6 +8,7 @@ import com.example.mixtapp.data.injection.IoDispatcher
 import com.example.mixtapp.data.model.DueloUi
 import com.example.mixtapp.data.model.ItemUi
 import com.example.mixtapp.data.model.ItemResumenUi
+import com.example.mixtapp.data.model.MAX_OPINION
 import com.example.mixtapp.data.model.toItemResumenUi
 import com.example.mixtapp.data.repository.CatalogoRepository
 import com.example.mixtapp.data.repository.DueloRepository
@@ -27,8 +28,6 @@ import javax.inject.Inject
 private const val MILIS_POR_DIA = 24 * 60 * 60 * 1000L
 // Colombia va 5 horas detras de la hora universal: el duelo cambia a la medianoche de Colombia
 private const val DESFASE_COLOMBIA = 5 * 60 * 60 * 1000L
-// Lo mas largo que puede ser una opinion
-const val MAX_OPINION = 140
 
 @HiltViewModel
 class DuelosViewModel @Inject constructor(

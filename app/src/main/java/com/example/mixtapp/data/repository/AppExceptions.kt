@@ -12,6 +12,8 @@ class CorreoNoRegistradoException : Exception("No existe una cuenta con ese corr
 
 class CorreoYaRegistradoException : Exception("Ese correo ya tiene una cuenta")
 
+class DatosDeRegistroInvalidosException : Exception("El correo o la contrasena no sirven para crear la cuenta")
+
 class SinConexionException : Exception("No hay conexion con la red")
 
 class DemasiadosIntentosException : Exception("Demasiados intentos seguidos")

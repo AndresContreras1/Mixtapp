@@ -60,7 +60,8 @@
     <string name="error_credenciales">Correo o contraseña incorrectos</string>
     <string name="error_correo_no_registrado">No existe una cuenta con ese correo</string>
     <string name="error_inicio_sesion">No se pudo iniciar sesión. Inténtalo de nuevo</string>
-    <string name="error_registro">No se pudo crear la cuenta. Intenta con otro correo</string>
+    <string name="error_registro">Error al registrar el usuario</string>
+    <string name="error_registro_datos">Tu cuenta quedó creada, pero no se guardaron tus datos. Inicia sesión y complétalos en Editar perfil</string>
     <string name="error_datos_registro_invalidos">El correo o la contraseña no son válidos</string>
     <string name="error_correo_ya_registrado">Ese correo ya está registrado</string>
     <string name="error_sin_conexion">No hay conexión. Revisa tu internet</string>

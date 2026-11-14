@@ -1,6 +1,7 @@
 package com.example.mixtapp.data.dtos
 
 import com.example.mixtapp.data.model.UsuarioUi
+import com.example.mixtapp.data.model.usuarioDelCorreo
 
 // Igual a la tabla usuarios del backend
 data class UsuarioPerfilRetrofitDto(
@@ -17,7 +18,7 @@ data class UsuarioPerfilRetrofitDto(
         return UsuarioUi(
             id = id,
             nombre = nombre,
-            username = email.substringBefore("@"),
+            username = usuarioDelCorreo(email),
             bio = "",
             fotoUrl = fotoUrl ?: "",
         )
