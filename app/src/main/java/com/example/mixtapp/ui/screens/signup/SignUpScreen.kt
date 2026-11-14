@@ -17,13 +17,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.mixtapp.ui.screens.signup.components.SignUpFooter
+import com.example.mixtapp.R
 import com.example.mixtapp.ui.screens.signup.components.SignUpForm
 import com.example.mixtapp.ui.screens.signup.components.SignUpHeader
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppBackground
+import com.example.mixtapp.ui.utils.AuthFooter
 import com.example.mixtapp.ui.utils.ErrorMessage
 
 @Composable
@@ -142,7 +144,13 @@ fun SignUpScreenContent(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            SignUpFooter(onLoginClick = onLoginClick)
+            // Quien ya tiene cuenta vuelve al login
+            AuthFooter(
+                pregunta = stringResource(R.string.already_have_account),
+                accion = stringResource(R.string.log_in),
+                onClick = onLoginClick,
+                modifier = Modifier.testTag("btnIrALogin"),
+            )
         }
     }
 }

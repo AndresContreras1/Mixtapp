@@ -6,8 +6,8 @@ import com.example.mixtapp.data.model.ItemResumenUi
 import com.example.mixtapp.data.model.ItemUi
 import com.example.mixtapp.data.model.ReviewUi
 import com.example.mixtapp.ui.screens.home.model.FILTRO_PARA_TI
-import com.example.mixtapp.ui.utils.OpcionUi
 import com.example.mixtapp.ui.screens.home.model.homeFilters
+import com.example.mixtapp.ui.utils.OpcionUi
 
 data class HomeState(
     val filters: List<OpcionUi> = homeFilters,

@@ -28,15 +28,15 @@ import com.example.mixtapp.data.model.ReviewUi
 import com.example.mixtapp.ui.screens.home.components.HomeHeader
 import com.example.mixtapp.ui.screens.home.components.HomeItemRow
 import com.example.mixtapp.ui.screens.home.components.TrendingCard
-import com.example.mixtapp.ui.utils.FilaDeOpciones
-import com.example.mixtapp.ui.utils.OpcionUi
 import com.example.mixtapp.ui.screens.home.model.homeFilters
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppBackground
 import com.example.mixtapp.ui.utils.EmptyMessage
 import com.example.mixtapp.ui.utils.ErrorBox
 import com.example.mixtapp.ui.utils.ErrorMessage
+import com.example.mixtapp.ui.utils.FilaDeOpciones
 import com.example.mixtapp.ui.utils.LoadingBox
+import com.example.mixtapp.ui.utils.OpcionUi
 import com.example.mixtapp.ui.utils.ReviewCard
 import com.example.mixtapp.ui.utils.SectionTitle
 

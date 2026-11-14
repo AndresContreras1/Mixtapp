@@ -4,9 +4,9 @@ import androidx.annotation.StringRes
 import com.example.mixtapp.data.model.ItemUi
 import com.example.mixtapp.data.model.NotificationUi
 import com.example.mixtapp.data.model.ReviewUi
-import com.example.mixtapp.ui.utils.OpcionUi
 import com.example.mixtapp.ui.screens.notifications.model.TAB_MIAS
 import com.example.mixtapp.ui.screens.notifications.model.notificationTabs
+import com.example.mixtapp.ui.utils.OpcionUi
 
 data class NotificationsState(
     // Mis notificaciones, ya separadas por el ViewModel en Hoy y Antes

@@ -43,7 +43,6 @@ import com.example.mixtapp.ui.screens.profile.components.SavedItemsRow
 import com.example.mixtapp.ui.screens.profile.model.PESTANA_GUARDADOS
 import com.example.mixtapp.ui.screens.profile.model.PESTANA_MIXTAPES
 import com.example.mixtapp.ui.screens.profile.model.PESTANA_PERFIL
-import com.example.mixtapp.ui.utils.OpcionUi
 import com.example.mixtapp.ui.screens.profile.model.profileTabs
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppBackground
@@ -54,6 +53,7 @@ import com.example.mixtapp.ui.utils.ErrorMessage
 import com.example.mixtapp.ui.utils.FavoriteSection
 import com.example.mixtapp.ui.utils.LoadingBox
 import com.example.mixtapp.ui.utils.OpcionOvalada
+import com.example.mixtapp.ui.utils.OpcionUi
 import com.example.mixtapp.ui.utils.ProfileHeader
 import com.example.mixtapp.ui.utils.ReviewCard
 import com.example.mixtapp.ui.utils.ScreenTitle

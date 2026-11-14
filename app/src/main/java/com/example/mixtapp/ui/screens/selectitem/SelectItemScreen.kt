@@ -24,15 +24,15 @@ import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalPreviewProvider
 import com.example.mixtapp.data.model.ItemConResenasUi
 import com.example.mixtapp.ui.screens.search.components.ResultadoItemRow
-import com.example.mixtapp.ui.utils.FilaDeOpciones
-import com.example.mixtapp.ui.utils.OpcionUi
 import com.example.mixtapp.ui.screens.selectitem.model.selectItemFilters
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppBackground
 import com.example.mixtapp.ui.utils.AppTextField
 import com.example.mixtapp.ui.utils.EmptyMessage
 import com.example.mixtapp.ui.utils.ErrorBox
+import com.example.mixtapp.ui.utils.FilaDeOpciones
 import com.example.mixtapp.ui.utils.LoadingBox
+import com.example.mixtapp.ui.utils.OpcionUi
 import com.example.mixtapp.ui.utils.ScreenTitle
 
 // El boton + de la barra abre esta pantalla para elegir que calificar antes de escribir la resena

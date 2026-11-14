@@ -35,15 +35,15 @@ import com.example.mixtapp.ui.screens.duelos.components.BarraDeVotos
 import com.example.mixtapp.ui.screens.duelos.components.DueloItemCard
 import com.example.mixtapp.ui.screens.duelos.components.OpinionRow
 import com.example.mixtapp.ui.screens.duelos.components.VotoForm
-import com.example.mixtapp.ui.utils.FilaDeOpciones
-import com.example.mixtapp.ui.utils.OpcionUi
 import com.example.mixtapp.ui.screens.duelos.model.dueloTabs
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppBackground
 import com.example.mixtapp.ui.utils.EmptyMessage
 import com.example.mixtapp.ui.utils.ErrorBox
 import com.example.mixtapp.ui.utils.ErrorMessage
+import com.example.mixtapp.ui.utils.FilaDeOpciones
 import com.example.mixtapp.ui.utils.LoadingBox
+import com.example.mixtapp.ui.utils.OpcionUi
 import com.example.mixtapp.ui.utils.ScreenTitle
 import com.example.mixtapp.ui.utils.SectionTitle
 

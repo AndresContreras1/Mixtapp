@@ -5,8 +5,8 @@ import com.example.mixtapp.data.model.ItemResumenUi
 import com.example.mixtapp.data.model.MixtapeUi
 import com.example.mixtapp.data.model.ReviewUi
 import com.example.mixtapp.ui.screens.profile.model.PESTANA_PERFIL
-import com.example.mixtapp.ui.utils.OpcionUi
 import com.example.mixtapp.ui.screens.profile.model.profileTabs
+import com.example.mixtapp.ui.utils.OpcionUi
 
 data class ProfileState(
     // Se pone en true al empezar a escuchar mi perfil y en false cuando llega o falla

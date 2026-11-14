@@ -18,13 +18,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.mixtapp.ui.screens.login.components.LoginFooter
+import com.example.mixtapp.R
 import com.example.mixtapp.ui.screens.login.components.LoginForm
 import com.example.mixtapp.ui.screens.login.components.LoginHeader
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppBackground
+import com.example.mixtapp.ui.utils.AuthFooter
 import com.example.mixtapp.ui.utils.ErrorMessage
 
 @Composable
@@ -113,7 +115,13 @@ fun LoginScreenContent(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            LoginFooter(onSignUpClick = onSignUpClick)
+            // Quien todavia no tiene cuenta va al registro
+            AuthFooter(
+                pregunta = stringResource(R.string.no_tienes_cuenta),
+                accion = stringResource(R.string.create_account),
+                onClick = onSignUpClick,
+                modifier = Modifier.testTag("btnIrARegistro"),
+            )
         }
     }
 }

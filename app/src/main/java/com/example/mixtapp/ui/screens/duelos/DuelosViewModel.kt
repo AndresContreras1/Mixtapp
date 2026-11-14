@@ -6,8 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
 import com.example.mixtapp.data.injection.IoDispatcher
 import com.example.mixtapp.data.model.DueloUi
-import com.example.mixtapp.data.model.ItemUi
 import com.example.mixtapp.data.model.ItemResumenUi
+import com.example.mixtapp.data.model.ItemUi
 import com.example.mixtapp.data.model.MAX_OPINION
 import com.example.mixtapp.data.model.toItemResumenUi
 import com.example.mixtapp.data.repository.CatalogoRepository
@@ -15,6 +15,7 @@ import com.example.mixtapp.data.repository.DueloRepository
 import com.example.mixtapp.ui.screens.duelos.model.dueloTabs
 import com.example.mixtapp.ui.utils.mensajeDeError
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,7 +24,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 private const val MILIS_POR_DIA = 24 * 60 * 60 * 1000L
 // Colombia va 5 horas detras de la hora universal: el duelo cambia a la medianoche de Colombia

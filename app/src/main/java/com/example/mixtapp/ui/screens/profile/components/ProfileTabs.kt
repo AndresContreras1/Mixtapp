@@ -9,10 +9,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.ui.screens.profile.model.PESTANA_PERFIL
-import com.example.mixtapp.ui.utils.OpcionUi
 import com.example.mixtapp.ui.screens.profile.model.profileTabs
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.FilaDeOpciones
+import com.example.mixtapp.ui.utils.OpcionUi
 
 // Las pestanas de mi perfil en la fila de filtros ovalados y, a la derecha, la pequena de Cambiar
 // foto, que abre la galeria sin cambiar la pestana elegida. Las pestanas se deslizan si no caben en

@@ -26,8 +26,6 @@ import com.example.mixtapp.data.model.ReviewUi
 import com.example.mixtapp.ui.screens.notifications.components.DiscusionRow
 import com.example.mixtapp.ui.screens.notifications.components.LanzamientoRow
 import com.example.mixtapp.ui.screens.notifications.components.NotificationRow
-import com.example.mixtapp.ui.utils.FilaDeOpciones
-import com.example.mixtapp.ui.utils.OpcionUi
 import com.example.mixtapp.ui.screens.notifications.model.TAB_DISCUSIONES
 import com.example.mixtapp.ui.screens.notifications.model.TAB_LANZAMIENTOS
 import com.example.mixtapp.ui.screens.notifications.model.TAB_MIAS
@@ -37,7 +35,9 @@ import com.example.mixtapp.ui.utils.AppBackground
 import com.example.mixtapp.ui.utils.EmptyMessage
 import com.example.mixtapp.ui.utils.ErrorBox
 import com.example.mixtapp.ui.utils.ErrorMessage
+import com.example.mixtapp.ui.utils.FilaDeOpciones
 import com.example.mixtapp.ui.utils.LoadingBox
+import com.example.mixtapp.ui.utils.OpcionUi
 import com.example.mixtapp.ui.utils.ScreenTitle
 import com.example.mixtapp.ui.utils.SectionTitle
 

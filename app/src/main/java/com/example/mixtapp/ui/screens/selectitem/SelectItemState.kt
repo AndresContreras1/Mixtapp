@@ -3,8 +3,8 @@ package com.example.mixtapp.ui.screens.selectitem
 import androidx.annotation.StringRes
 import com.example.mixtapp.data.model.ItemConResenasUi
 import com.example.mixtapp.ui.screens.selectitem.model.FILTRO_TODOS
-import com.example.mixtapp.ui.utils.OpcionUi
 import com.example.mixtapp.ui.screens.selectitem.model.selectItemFilters
+import com.example.mixtapp.ui.utils.OpcionUi
 
 data class SelectItemState(
     val query: String = "",

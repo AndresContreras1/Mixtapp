@@ -5,8 +5,8 @@ import com.example.mixtapp.data.model.DueloEnVivoUi
 import com.example.mixtapp.data.model.DueloUi
 import com.example.mixtapp.data.model.ItemUi
 import com.example.mixtapp.data.model.TIPO_ALBUM
-import com.example.mixtapp.ui.utils.OpcionUi
 import com.example.mixtapp.ui.screens.duelos.model.dueloTabs
+import com.example.mixtapp.ui.utils.OpcionUi
 
 data class DuelosState(
     val tabs: List<OpcionUi> = dueloTabs,
