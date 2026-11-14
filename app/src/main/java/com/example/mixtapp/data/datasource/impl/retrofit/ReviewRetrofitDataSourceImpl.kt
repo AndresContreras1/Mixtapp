@@ -24,7 +24,7 @@ class ReviewRetrofitDataSourceImpl @Inject constructor(
     // La resena trae al usuario y al album en el include, en una sola consulta, y se convierte al
     // mismo DTO de Firestore
     override suspend fun getReviewById(id: String, currentUserId: String): ReviewDto {
-        return listOf(service.getReviewById(id).toReviewDto()).conMiUsuario(currentUserId).first()
+        return service.getReviewById(id).toReviewDto().conMiUsuario(currentUserId)
     }
 
     override suspend fun getAllReviews(): List<ReviewDto> {
