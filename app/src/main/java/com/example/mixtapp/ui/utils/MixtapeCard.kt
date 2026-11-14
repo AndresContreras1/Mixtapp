@@ -1,4 +1,4 @@
-package com.example.mixtapp.ui.screens.mixtapes.components
+package com.example.mixtapp.ui.utils
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -33,8 +33,6 @@ import com.example.mixtapp.data.model.ItemResumenUi
 import com.example.mixtapp.data.model.MixtapeUi
 import com.example.mixtapp.data.model.toItemResumenUi
 import com.example.mixtapp.ui.theme.MixtappTheme
-import com.example.mixtapp.ui.utils.ItemAsyncImage
-import com.example.mixtapp.ui.utils.TarjetaTranslucida
 
 // Con cuatro items o mas la portada es un mosaico de cuatro
 private const val PORTADAS_DEL_MOSAICO = 4

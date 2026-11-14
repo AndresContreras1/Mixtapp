@@ -22,11 +22,11 @@ import com.example.mixtapp.data.local.LocalPreviewProvider
 import com.example.mixtapp.data.model.HistoriaUi
 import com.example.mixtapp.data.model.ItemUi
 import com.example.mixtapp.ui.screens.datoscuriosos.components.DatoCuriosoCard
-import com.example.mixtapp.ui.screens.detail.components.ItemHeader
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppBackground
 import com.example.mixtapp.ui.utils.EmptyMessage
 import com.example.mixtapp.ui.utils.ErrorBox
+import com.example.mixtapp.ui.utils.ItemHeader
 import com.example.mixtapp.ui.utils.LoadingBox
 import com.example.mixtapp.ui.utils.SectionTitle
 

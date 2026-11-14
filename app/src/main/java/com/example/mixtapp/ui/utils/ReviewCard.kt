@@ -84,39 +84,14 @@ fun ReviewCard(
             if (onItemClick != null) {
                 Spacer(modifier = Modifier.height(12.dp))
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
+                PortadaConTitulo(
+                    imagenUrl = review.item.imagenUrl,
+                    titulo = review.item.titulo,
+                    subtitulo = review.item.subtitulo,
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable { onItemClick(review.item) },
-                ) {
-                    ItemAsyncImage(
-                        imagenUrl = review.item.imagenUrl,
-                        titulo = review.item.titulo,
-                        esquinas = 12.dp,
-                        modifier = Modifier.size(56.dp),
-                    )
-
-                    Spacer(modifier = Modifier.width(12.dp))
-
-                    Column {
-                        Text(
-                            text = review.item.titulo,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            style = MaterialTheme.typography.titleSmall,
-                            fontWeight = FontWeight.Bold,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
-                        Text(
-                            text = review.item.subtitulo,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            style = MaterialTheme.typography.bodySmall,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
-                    }
-                }
+                )
             }
 
             if (review.content.isNotEmpty()) {

@@ -1,4 +1,4 @@
-package com.example.mixtapp.ui.screens.detail.components
+package com.example.mixtapp.ui.utils
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,9 +19,6 @@ import androidx.compose.ui.unit.dp
 import com.example.mixtapp.data.local.LocalPreviewProvider
 import com.example.mixtapp.data.model.ItemUi
 import com.example.mixtapp.ui.theme.MixtappTheme
-import com.example.mixtapp.ui.utils.AppChip
-import com.example.mixtapp.ui.utils.BackButton
-import com.example.mixtapp.ui.utils.ItemAsyncImage
 
 // El encabezado de un item: la flecha, la imagen grande, el anio y los generos en chips y el
 // titulo. Lo usan el detalle y los datos curiosos, asi las dos pantallas se ven iguales arriba

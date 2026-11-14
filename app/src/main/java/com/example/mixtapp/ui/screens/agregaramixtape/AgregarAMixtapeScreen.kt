@@ -25,7 +25,6 @@ import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalPreviewProvider
 import com.example.mixtapp.data.model.ItemUi
 import com.example.mixtapp.data.model.MixtapeUi
-import com.example.mixtapp.ui.screens.mixtapes.components.MixtapeCard
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppBackground
 import com.example.mixtapp.ui.utils.AppButton
@@ -33,6 +32,7 @@ import com.example.mixtapp.ui.utils.EmptyMessage
 import com.example.mixtapp.ui.utils.ErrorBox
 import com.example.mixtapp.ui.utils.ErrorMessage
 import com.example.mixtapp.ui.utils.LoadingBox
+import com.example.mixtapp.ui.utils.MixtapeCard
 import com.example.mixtapp.ui.utils.ScreenTitle
 
 @Composable

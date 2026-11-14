@@ -37,7 +37,6 @@ import com.example.mixtapp.data.model.MixtapeUi
 import com.example.mixtapp.data.model.ReviewUi
 import com.example.mixtapp.ui.screens.followlist.LISTA_SEGUIDORES
 import com.example.mixtapp.ui.screens.followlist.LISTA_SEGUIDOS
-import com.example.mixtapp.ui.screens.mixtapes.components.MixtapeCard
 import com.example.mixtapp.ui.screens.profile.components.GUARDADOS_POR_FILA
 import com.example.mixtapp.ui.screens.profile.components.LogoutButton
 import com.example.mixtapp.ui.screens.profile.components.ProfileTabs
@@ -54,6 +53,7 @@ import com.example.mixtapp.ui.utils.ErrorBox
 import com.example.mixtapp.ui.utils.ErrorMessage
 import com.example.mixtapp.ui.utils.FavoriteSection
 import com.example.mixtapp.ui.utils.LoadingBox
+import com.example.mixtapp.ui.utils.MixtapeCard
 import com.example.mixtapp.ui.utils.OpcionOvalada
 import com.example.mixtapp.ui.utils.OpcionUi
 import com.example.mixtapp.ui.utils.ProfileHeader
