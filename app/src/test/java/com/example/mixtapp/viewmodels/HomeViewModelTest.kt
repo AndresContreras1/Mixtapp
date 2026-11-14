@@ -75,7 +75,7 @@ class HomeViewModelTest {
         estrellas = 0,
         ratingCount = 0,
         recommendRate = 0,
-        userRating = 0,
+        yaCalificado = false,
         reviews = emptyList(),
     )
 

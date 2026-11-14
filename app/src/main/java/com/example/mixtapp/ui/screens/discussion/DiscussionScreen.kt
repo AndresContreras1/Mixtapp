@@ -57,6 +57,7 @@ fun DiscussionScreen(
         discussion = state.discussion,
         nuevoComentario = state.nuevoComentario,
         replyingToCommentId = state.replyingToCommentId,
+        respondiendoA = state.respondiendoA,
         publicando = state.publicando,
         errorMessageRes = state.errorMessageRes,
         errorAccionRes = state.errorAccionRes,
@@ -79,6 +80,7 @@ fun DiscussionScreenContent(
     discussion: DiscussionUi?,
     nuevoComentario: String,
     replyingToCommentId: String?,
+    respondiendoA: String?,
     publicando: Boolean,
     @StringRes errorMessageRes: Int?,
     @StringRes errorAccionRes: Int?,
@@ -100,9 +102,6 @@ fun DiscussionScreenContent(
             isLoading -> LoadingBox()
             discussion == null -> ErrorBox(messageRes = errorMessageRes ?: R.string.discusion_no_encontrada)
             else -> {
-                // El nombre de quien escribio el comentario al que se responde
-                val respondiendoA = discussion.comments.find { it.id == replyingToCommentId }?.author
-
                 // El campo para comentar queda fijo abajo y sube con el teclado
                 Column(
                     modifier = Modifier
@@ -194,6 +193,7 @@ fun DiscussionScreenPreview() {
             discussion = LocalPreviewProvider.discussion,
             nuevoComentario = "",
             replyingToCommentId = null,
+            respondiendoA = null,
             publicando = false,
             errorMessageRes = null,
             errorAccionRes = null,

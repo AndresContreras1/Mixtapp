@@ -7,8 +7,10 @@ import com.example.mixtapp.data.model.DiscussionUi
 data class DiscussionState(
     val discussion: DiscussionUi? = null,
     val nuevoComentario: String = "",
-    // El comentario al que se responde; null si se comenta la resena
+    // El comentario al que se responde y el nombre de quien lo escribio, para "Respondiendo a";
+    // null si se comenta la resena
     val replyingToCommentId: String? = null,
+    val respondiendoA: String? = null,
     // Mientras se guarda el comentario no se manda otro
     val publicando: Boolean = false,
     // Arranca cargando porque lo primero que hace la pantalla es pedir la discusion

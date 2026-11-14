@@ -233,23 +233,28 @@ class UsuarioRepository @Inject constructor(
 
     // Al cambiar la foto tambien se actualiza el documento, para que se vea en mi perfil publico.
     // Ese cambio es el que escucha la Cloud Function que pone la foto nueva en mis resenas
-    suspend fun actualizarFotoDePerfil(fotoUrl: String): Result<Unit> {
+    // Editar perfil: si mi cuenta todavia no tiene documento (por ejemplo, si fallo al registrarme) se
+    // crea; si no, se modifica. Lo decide el repositorio, como crear o modificar una resena
+    suspend fun guardarPerfil(nombre: String, username: String, bio: String, instagram: String): Result<Unit> {
         return try {
             val usuarioId = authRemoteDataSource.currentUser?.uid
                 ?: return Result.failure(SinSesionException())
 
-            usuarioRemoteDataSource.actualizarFotoDePerfil(usuarioId, fotoUrl)
-            Result.success(Unit)
+            val tieneDocumento = usuarioRemoteDataSource.getUsuarioById(usuarioId) != null
+
+            if (tieneDocumento) {
+                actualizarPerfil(nombre = nombre, username = username, bio = bio, instagram = instagram)
+            } else {
+                registrarUsuario(username = username, nombre = nombre, bio = bio, instagram = instagram)
+            }
         } catch (e: HttpException) {
-            Log.d("UsuarioRepository", "actualizarFotoDePerfil: ${e.message}")
+            Log.d("UsuarioRepository", "guardarPerfil: ${e.message}")
             Result.failure(errorDelBackend(e))
         } catch (e: FirebaseFirestoreException) {
-            Log.d("UsuarioRepository", "actualizarFotoDePerfil: ${e.message}")
-            // Sin documento todavia: la foto se copia cuando complete su perfil en Editar perfil
-            if (e.code == FirebaseFirestoreException.Code.NOT_FOUND) Result.success(Unit)
-            else Result.failure(errorDeFirestore(e))
+            Log.d("UsuarioRepository", "guardarPerfil: ${e.message}")
+            Result.failure(errorDeFirestore(e))
         } catch (e: Exception) {
-            Log.d("UsuarioRepository", "actualizarFotoDePerfil: ${e.message}")
+            Log.d("UsuarioRepository", "guardarPerfil: ${e.message}")
             Result.failure(ErrorInesperadoException())
         }
     }

@@ -80,7 +80,7 @@ class CatalogoRepositoryTest {
         Truth.assertThat(itemConResenas?.rating).isEqualTo(4.0)
         Truth.assertThat(itemConResenas?.ratingCount).isEqualTo(2)
         Truth.assertThat(itemConResenas?.recommendRate).isEqualTo(50)
-        Truth.assertThat(itemConResenas?.userRating).isEqualTo(5)
+        Truth.assertThat(itemConResenas?.yaCalificado).isTrue()
         Truth.assertThat(itemConResenas?.item?.subtitulo).isEqualTo("Linkin Park")
     }
 

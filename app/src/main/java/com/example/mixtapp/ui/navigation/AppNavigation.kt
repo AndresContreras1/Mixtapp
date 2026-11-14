@@ -490,8 +490,18 @@ fun AppNavigation(
 
             NotificationsScreen(
                 notificationsViewModel = notificationsViewModel,
-                // Un like, un comentario o una discusion abren la resena; un seguidor, su perfil;
-                // un lanzamiento, su detalle
+                // Un like (a la resena o a un comentario), un comentario o una respuesta abren la
+                // discusion; un seguidor nuevo o una reaccion a lo que escucho, el perfil de quien
+                // la hizo
+                onNotificationClick = { notificacion ->
+                    val reviewId = notificacion.reviewId
+                    if (!reviewId.isNullOrEmpty()) {
+                        navController.abrirDiscusion(reviewId = reviewId)
+                    } else {
+                        navController.abrirPerfil(userId = notificacion.actorId)
+                    }
+                },
+                // Una discusion abre la resena; un lanzamiento, su detalle
                 onReviewClick = { reviewId ->
                     navController.abrirDiscusion(reviewId = reviewId)
                 },

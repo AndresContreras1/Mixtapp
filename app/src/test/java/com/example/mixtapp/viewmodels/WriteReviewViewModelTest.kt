@@ -41,7 +41,7 @@ class WriteReviewViewModelTest {
 
         // El album de ejemplo, sin resenas: el formulario arranca vacio
         coEvery { catalogoRepository.getItemConResenas(TIPO_ALBUM, "album_from_zero") } returns
-            Result.success(LocalPreviewProvider.itemConResenas.copy(reviews = emptyList(), userRating = 0))
+            Result.success(LocalPreviewProvider.itemConResenas.copy(reviews = emptyList(), yaCalificado = false))
     }
 
     @After

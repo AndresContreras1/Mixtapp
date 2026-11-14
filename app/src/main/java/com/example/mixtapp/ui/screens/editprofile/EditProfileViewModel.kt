@@ -121,11 +121,8 @@ class EditProfileViewModel @Inject constructor(
         viewModelScope.launch(ioDispatcher) {
             _uiState.update { it.copy(guardando = true, errorMessageRes = null) }
 
-            val result = if (estado.sinDocumento) {
-                usuarioRepository.registrarUsuario(username = username, nombre = nombre, bio = estado.bio.trim(), instagram = instagram)
-            } else {
-                usuarioRepository.actualizarPerfil(nombre = nombre, username = username, bio = estado.bio.trim(), instagram = instagram)
-            }
+            // El repositorio crea mi documento si todavia no existe, o lo modifica
+            val result = usuarioRepository.guardarPerfil(nombre = nombre, username = username, bio = estado.bio.trim(), instagram = instagram)
 
             if (result.isSuccess) {
                 _uiState.update {

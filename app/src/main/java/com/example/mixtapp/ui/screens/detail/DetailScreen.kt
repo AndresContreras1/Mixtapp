@@ -139,7 +139,7 @@ fun DetailScreenContent(
                         Column(modifier = Modifier.padding(top = 16.dp)) {
                             ItemActions(
                                 // Solo hay una resena por item: si ya existe, se edita
-                                yaCalificado = itemConResenas.reviews.any { it.isMine },
+                                yaCalificado = itemConResenas.yaCalificado,
                                 likesText = item.likesText,
                                 isLiked = item.isLiked,
                                 isSaved = item.isSaved,

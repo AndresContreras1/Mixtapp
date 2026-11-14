@@ -44,6 +44,8 @@ import com.example.mixtapp.ui.utils.SectionTitle
 @Composable
 fun NotificationsScreen(
     notificationsViewModel: NotificationsViewModel,
+    // A donde lleva cada notificacion lo decide AppNavigation
+    onNotificationClick: (NotificationUi) -> Unit,
     onReviewClick: (String) -> Unit,
     onUserClick: (String) -> Unit,
     onItemClick: (tipo: String, itemId: String) -> Unit,
@@ -68,16 +70,9 @@ fun NotificationsScreen(
         errorAccionRes = state.errorAccionRes,
         onTabSelected = { notificationsViewModel.selectTab(id = it) },
         onNotificationClick = { notificacion ->
+            // Se marca como leida y se abre lo que corresponda
             notificationsViewModel.abrirNotificacion(notificacion = notificacion)
-
-            // Un like (a la resena o a un comentario), un comentario o una respuesta abren la
-            // discusion; un seguidor nuevo, su perfil
-            val reviewId = notificacion.reviewId
-            if (!reviewId.isNullOrEmpty()) {
-                onReviewClick(reviewId)
-            } else {
-                onUserClick(notificacion.actorId)
-            }
+            onNotificationClick(notificacion)
         },
         onReviewClick = onReviewClick,
         onUserClick = onUserClick,

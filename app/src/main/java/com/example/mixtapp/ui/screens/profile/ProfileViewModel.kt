@@ -215,7 +215,7 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    // La foto se sube a Storage y despues se copia en mi documento, para que otros la vean
+    // El repositorio sube la foto a Storage y la copia en mi documento, para que otros la vean
     fun subirFotoDePerfil(uri: Uri) {
         Log.d("ProfileViewModel", uri.toString())
 
@@ -225,17 +225,8 @@ class ProfileViewModel @Inject constructor(
             val result = storageRepository.uploadProfileImage(uri = uri)
 
             if (result.isSuccess) {
-                val url = result.getOrNull() ?: ""
-
-                val guardada = usuarioRepository.actualizarFotoDePerfil(fotoUrl = url)
-
                 _uiState.update {
-                    it.copy(
-                        subiendoImagen = false,
-                        profileImageUrl = url,
-                        // La foto ya quedo en Storage; si el documento no se actualiza, se avisa
-                        errorImagenRes = if (guardada.isSuccess) null else R.string.error_guardar_perfil,
-                    )
+                    it.copy(subiendoImagen = false, profileImageUrl = result.getOrNull() ?: "", errorImagenRes = null)
                 }
             } else {
                 Log.d("ProfileViewModel", result.exceptionOrNull()?.message.toString())

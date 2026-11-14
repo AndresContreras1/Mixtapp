@@ -62,8 +62,8 @@ data class ItemConResenasUi(
     val estrellas: Int,
     val ratingCount: Int,
     val recommendRate: Int,
-    // Mi calificacion; 0 si no lo he calificado
-    val userRating: Int,
+    // Si ya escribi mi resena: solo hay una por item, asi que el boton cambia a editarla
+    val yaCalificado: Boolean,
     val reviews: List<ReviewUi>,
 ) {
     // Para ordenar las filas de populares: cuenta igual un like que una resena

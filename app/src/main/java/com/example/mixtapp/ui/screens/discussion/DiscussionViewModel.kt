@@ -98,7 +98,7 @@ class DiscussionViewModel @Inject constructor(
 
             if (result.isSuccess) {
                 _uiState.update {
-                    it.copy(nuevoComentario = "", replyingToCommentId = null, publicando = false, errorAccionRes = null)
+                    it.copy(nuevoComentario = "", replyingToCommentId = null, respondiendoA = null, publicando = false, errorAccionRes = null)
                 }
             } else {
                 _uiState.update {
@@ -166,12 +166,15 @@ class DiscussionViewModel @Inject constructor(
 
     // El siguiente comentario que se publique sera la respuesta a este
     fun responderComentario(commentId: String) {
-        _uiState.update { it.copy(replyingToCommentId = commentId) }
+        _uiState.update { estado ->
+            val autor = estado.discussion?.comments?.find { it.id == commentId }?.author
+            estado.copy(replyingToCommentId = commentId, respondiendoA = autor)
+        }
     }
 
     // La X de "Respondiendo a": el siguiente comentario vuelve a ser para la resena
     fun cancelarRespuesta() {
-        _uiState.update { it.copy(replyingToCommentId = null) }
+        _uiState.update { it.copy(replyingToCommentId = null, respondiendoA = null) }
     }
 
 }
