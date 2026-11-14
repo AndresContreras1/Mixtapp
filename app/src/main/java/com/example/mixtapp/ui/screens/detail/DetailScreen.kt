@@ -108,7 +108,7 @@ fun DetailScreenContent(
         when {
             isLoading -> LoadingBox()
             // Sin item no hay nada que mostrar: el error ocupa la pantalla
-            itemConResenas == null -> ErrorBox(messageRes = errorMessageRes ?: R.string.album_no_encontrado)
+            itemConResenas == null -> ErrorBox(messageRes = errorMessageRes ?: R.string.item_no_encontrado)
             else -> {
                 val item = itemConResenas.item
 
@@ -201,7 +201,7 @@ fun DetailScreenContent(
                     if (itemConResenas.reviews.isEmpty()) {
                         item {
                             EmptyMessage(
-                                messageRes = R.string.sin_resenas_album,
+                                messageRes = R.string.sin_resenas_item,
                                 modifier = Modifier.fillMaxWidth(),
                             )
                         }

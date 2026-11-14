@@ -56,7 +56,7 @@ class DetailViewModel @Inject constructor(
                             errorMessageRes = mensajeDeError(
                                 error = e,
                                 generico = R.string.error_cargar_contenido,
-                                noEncontrado = R.string.album_no_encontrado,
+                                noEncontrado = R.string.item_no_encontrado,
                             ),
                         )
                     }
@@ -85,7 +85,7 @@ class DetailViewModel @Inject constructor(
                         errorAccionRes = mensajeDeError(
                             error = result.exceptionOrNull(),
                             generico = R.string.error_me_gusta,
-                            noEncontrado = R.string.album_no_encontrado,
+                            noEncontrado = R.string.item_no_encontrado,
                         )
                     )
                 }
@@ -133,7 +133,7 @@ class DetailViewModel @Inject constructor(
                         errorAccionRes = mensajeDeError(
                             error = result.exceptionOrNull(),
                             generico = R.string.error_guardar_item,
-                            noEncontrado = R.string.album_no_encontrado,
+                            noEncontrado = R.string.item_no_encontrado,
                         )
                     )
                 }
@@ -155,7 +155,7 @@ class DetailViewModel @Inject constructor(
                         errorAccionRes = mensajeDeError(
                             error = result.exceptionOrNull(),
                             generico = R.string.error_me_gusta,
-                            noEncontrado = R.string.album_no_encontrado,
+                            noEncontrado = R.string.item_no_encontrado,
                         )
                     )
                 }
@@ -182,7 +182,7 @@ class DetailViewModel @Inject constructor(
                         errorAccionRes = mensajeDeError(
                             error = result.exceptionOrNull(),
                             generico = R.string.error_eliminar_resena,
-                            noEncontrado = R.string.album_no_encontrado,
+                            noEncontrado = R.string.item_no_encontrado,
                         )
                     )
                 }

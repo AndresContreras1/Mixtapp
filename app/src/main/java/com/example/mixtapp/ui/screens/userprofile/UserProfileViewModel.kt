@@ -126,7 +126,7 @@ class UserProfileViewModel @Inject constructor(
                 _uiState.update { it.copy(errorLikeRes = null) }
             } else {
                 _uiState.update {
-                    it.copy(errorLikeRes = mensajeDeError(error = result.exceptionOrNull(), generico = R.string.error_actualizar_like))
+                    it.copy(errorLikeRes = mensajeDeError(error = result.exceptionOrNull(), generico = R.string.error_me_gusta))
                 }
             }
         }

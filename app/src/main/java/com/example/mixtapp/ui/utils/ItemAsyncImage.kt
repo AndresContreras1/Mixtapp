@@ -32,7 +32,7 @@ fun ItemAsyncImage(
             .data(imagenUrl)
             .crossfade(true)
             .build(),
-        contentDescription = stringResource(R.string.album_cover, titulo),
+        contentDescription = stringResource(R.string.portada_de, titulo),
         error = painterResource(id = R.drawable.ic_broken_image),
         placeholder = painterResource(id = R.drawable.loading_img),
         contentScale = ContentScale.Crop,

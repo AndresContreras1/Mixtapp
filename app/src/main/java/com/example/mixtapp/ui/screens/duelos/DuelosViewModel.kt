@@ -94,7 +94,7 @@ class DuelosViewModel @Inject constructor(
         }
     }
 
-    fun selectTipo(tipo: String) {
+    fun elegirTipo(tipo: String) {
         _uiState.update {
             it.copy(tipoElegido = tipo, opcionElegida = null, opinion = "", errorVotoRes = null)
         }

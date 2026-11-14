@@ -69,7 +69,7 @@ fun DuelosScreen(
         errorMessageRes = state.errorMessageRes,
         errorVotosRes = state.erroresDeVotos[state.tipoElegido],
         errorVotoRes = state.errorVotoRes,
-        onTabSelected = { duelosViewModel.selectTipo(tipo = it) },
+        onTabSelected = { duelosViewModel.elegirTipo(tipo = it) },
         onOpcionClick = { duelosViewModel.elegirOpcion(opcion = it) },
         onOpinionChange = { duelosViewModel.updateOpinion(texto = it) },
         onVotarClick = { duelosViewModel.votar() },

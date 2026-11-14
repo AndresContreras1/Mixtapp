@@ -185,7 +185,7 @@ fun HomeScreenContent(
                 if (albumes.isNotEmpty()) {
                     item {
                         HomeItemRow(
-                            titulo = stringResource(R.string.popular_albums),
+                            titulo = stringResource(R.string.albumes_populares),
                             items = albumes,
                             onItemClick = { onItemClick(it.tipo, it.id) },
                         )

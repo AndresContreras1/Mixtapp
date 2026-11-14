@@ -272,7 +272,7 @@ fun AppNavigation(
 
             ProfileScreen(
                 profileViewModel = profileViewModel,
-                onSettingsClick = { navController.navigate(Screen.EditProfile.route) },
+                onEditProfileClick = { navController.navigate(Screen.EditProfile.route) },
                 logoutButtonPressed = {
                     navController.navegarLimpiandoLaPila(Screen.Login.route)
                 },

@@ -115,7 +115,7 @@ fun WriteReviewScreenContent(
 
         when {
             isLoading -> LoadingBox()
-            item == null -> ErrorBox(messageRes = errorMessageRes ?: R.string.album_no_encontrado)
+            item == null -> ErrorBox(messageRes = errorMessageRes ?: R.string.item_no_encontrado)
             // Los botones quedan fijos abajo y suben con el teclado; el formulario se desplaza
             else -> Column(
                 modifier = Modifier

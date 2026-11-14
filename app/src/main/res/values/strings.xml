@@ -32,9 +32,9 @@
     <string name="for_you">Para ti</string>
     <string name="descubre">Descubre</string>
     <string name="trending">Tendencias</string>
-    <string name="friends">Seguidos</string>
+    <string name="seguidos">Seguidos</string>
     <string name="now_trending">En tendencia</string>
-    <string name="popular_albums">Álbumes populares</string>
+    <string name="albumes_populares">Álbumes populares</string>
     <string name="sin_actividad_seguidos">Aún no hay reseñas de personas a quienes sigues</string>
     <string name="resenas_de_seguidos">Reseñas de quienes sigues</string>
 
@@ -53,7 +53,7 @@
     <string name="error_contrasena_corta">La contraseña debe tener al menos 6 caracteres</string>
     <string name="error_contrasenas_no_coinciden">Las contraseñas no coinciden</string>
     <string name="discusion_no_encontrada">No se encontró la discusión</string>
-    <string name="album_no_encontrado">No se encontró lo que buscas</string>
+    <string name="item_no_encontrado">No se encontró lo que buscas</string>
     <string name="contenido_no_encontrado">No se encontró el contenido</string>
     <string name="perfil_no_encontrado">No se encontró el perfil</string>
     <string name="reply">Responder</string>
@@ -141,9 +141,9 @@
     <string name="error_guardar_perfil">No se pudo guardar tu perfil. Inténtalo de nuevo</string>
     <string name="error_username_espacios">El nombre de usuario no puede tener espacios</string>
 
-    <!-- Select album -->
-    <string name="elegir_album_titulo">¿Qué vas a calificar?</string>
-    <string name="elegir_album_descripcion">Elige un álbum, una canción o un artista para escribir tu reseña</string>
+    <!-- Elegir que calificar -->
+    <string name="elegir_item_titulo">¿Qué vas a calificar?</string>
+    <string name="elegir_item_descripcion">Elige un álbum, una canción o un artista para escribir tu reseña</string>
 
     <!-- Search -->
     <string name="browse_by">Explorar por</string>
@@ -151,9 +151,9 @@
     <string name="search_placeholder">Busca canciones, álbumes, artistas o amigos</string>
     <string name="sin_resultados">No se encontró nada</string>
 
-    <!-- Song review -->
+    <!-- Detalle de un item: sus resenas y sus numeros -->
     <string name="reviews">Reseñas</string>
-    <string name="sin_resenas_album">Todavía nadie califica esto. ¡Escribe la primera reseña!</string>
+    <string name="sin_resenas_item">Todavía nadie califica esto. ¡Escribe la primera reseña!</string>
     <string name="ratings_label">calificaciones</string>
     <string name="calificacion_label">calificación</string>
     <string name="recommend_label">recomiendan</string>
@@ -166,21 +166,27 @@
     <string name="logo_app">app</string>
 
     <!-- Accesibilidad -->
-    <string name="album_cover">Carátula de %1$s</string>
+    <string name="portada_de">Carátula de %1$s</string>
     <string name="mostrar_contrasena">Mostrar contraseña</string>
     <string name="aceptar_terminos">Aceptar los términos</string>
     <string name="terminos_aceptados">Términos aceptados</string>
     <string name="ocultar_contrasena">Ocultar contraseña</string>
+
+    <!-- Barra de abajo -->
     <string name="nav_home">Inicio</string>
     <string name="nav_profile">Perfil</string>
     <string name="nav_duelos">Duelos</string>
     <string name="nav_mapa">Mapa</string>
+
+    <!-- Mapa: las resenas de las ultimas 24 horas -->
     <string name="mapa_titulo">Reseñas de las últimas 24 horas</string>
     <string name="mapa_cantidad_resenas">%1$d reseñas · toca un marcador para verla</string>
     <string name="mapa_una_resena">1 reseña · toca el marcador para verla</string>
     <string name="mapa_sin_resenas">Nadie ha publicado una reseña con ubicación en las últimas 24 horas</string>
     <string name="cargando_mapa">Cargando las reseñas…</string>
     <string name="cerrar_resena_del_mapa">Cerrar la reseña</string>
+
+    <!-- Tu año en Mixtapp -->
     <string name="resumen_titulo">Tu año en Mixtapp</string>
     <string name="error_datos_resumen">Algunos números pueden estar incompletos: no se pudieron cargar tus me gusta o tus seguidores</string>
     <string name="resumen_subtitulo">Lo que dijiste de la música, en números. Descúbrelo tarjeta por tarjeta</string>
@@ -200,6 +206,8 @@
     <string name="resumen_social_titulo">Tu música en comunidad</string>
     <string name="resumen_me_gusta">%1$d me gusta</string>
     <string name="resumen_social_detalle">%1$d seguidores · sigues a %2$d</string>
+
+    <!-- Sonando ahora y sus reacciones -->
     <string name="sonando_ahora">Sonando ahora</string>
     <string name="estoy_escuchando_esto">Estoy escuchando esto</string>
     <string name="sonando_publicado">Listo: tus seguidores lo ven en Sonando ahora</string>
@@ -208,6 +216,9 @@
     <string name="error_sonando">No se pudo actualizar lo que estás escuchando</string>
     <string name="error_reaccionar">No se pudo enviar tu 🔥</string>
     <string name="notificacion_reaccion_sonando">%1$s le dio 🔥 a lo que escuchas: %2$s</string>
+    <string name="notificacion_reaccion_sonando_sin_item">%1$s le dio 🔥 a lo que escuchas</string>
+
+    <!-- Duelo del dia -->
     <string name="duelos_title">Duelo del día</string>
     <string name="duelo_tab_albumes">Álbumes</string>
     <string name="duelo_tab_canciones">Canciones</string>
@@ -231,6 +242,8 @@
     <string name="error_elige_uno">Toca uno de los dos para votar</string>
     <string name="error_votar">No se pudo guardar tu voto. Inténtalo de nuevo</string>
     <string name="error_cargar_votos">No se pudieron cargar los votos de hoy</string>
+
+    <!-- Me gusta, seguidores y seguidos -->
     <string name="quitar_like">Quitar me gusta</string>
     <string name="cantidad_seguidores">%1$d seguidores</string>
     <string name="cantidad_seguidos">%1$d seguidos</string>
@@ -238,7 +251,6 @@
     <string name="titulo_seguidos">Seguidos</string>
     <string name="seguir_usuario">Seguir</string>
     <string name="dejar_de_seguir">Dejar de seguir</string>
-    <string name="error_actualizar_like">No se pudo actualizar el me gusta. Inténtalo de nuevo.</string>
     <string name="error_actualizar_seguimiento">No se pudo actualizar el seguimiento. Inténtalo de nuevo.</string>
 
     <!-- Buscar: tarjetas de orden y de genero -->

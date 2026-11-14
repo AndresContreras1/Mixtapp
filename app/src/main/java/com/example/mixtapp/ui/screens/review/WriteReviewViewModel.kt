@@ -71,7 +71,7 @@ class WriteReviewViewModel @Inject constructor(
                         errorMessageRes = mensajeDeError(
                             error = result.exceptionOrNull(),
                             generico = R.string.error_cargar_contenido,
-                            noEncontrado = R.string.album_no_encontrado,
+                            noEncontrado = R.string.item_no_encontrado,
                         )
                     )
                 }
@@ -143,7 +143,7 @@ class WriteReviewViewModel @Inject constructor(
                         errorMessageRes = mensajeDeError(
                             error = result.exceptionOrNull(),
                             generico = R.string.error_publicar_resena,
-                            noEncontrado = R.string.album_no_encontrado,
+                            noEncontrado = R.string.item_no_encontrado,
                         )
                     )
                 }

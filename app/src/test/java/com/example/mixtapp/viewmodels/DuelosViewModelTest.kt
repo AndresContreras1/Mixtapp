@@ -185,14 +185,14 @@ class DuelosViewModelTest {
     }
 
     @Test
-    fun selectTipo_otraPestana_limpiaElFormulario() = runTest {
+    fun elegirTipo_otraPestana_limpiaElFormulario() = runTest {
         //Arrange
         val viewModel = crearViewModel()
         advanceUntilIdle()
         viewModel.elegirOpcion(OPCION_A)
         viewModel.updateOpinion("Algo")
         //Act
-        viewModel.selectTipo(TIPO_CANCION)
+        viewModel.elegirTipo(TIPO_CANCION)
         //Assert
         val state = viewModel.uiState.value
         assertThat(state.tipoElegido).isEqualTo(TIPO_CANCION)

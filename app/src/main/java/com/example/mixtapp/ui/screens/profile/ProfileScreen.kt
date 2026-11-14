@@ -64,7 +64,7 @@ import com.example.mixtapp.ui.utils.SectionTitle
 @Composable
 fun ProfileScreen(
     profileViewModel: ProfileViewModel,
-    onSettingsClick: () -> Unit,
+    onEditProfileClick: () -> Unit,
     logoutButtonPressed: () -> Unit,
     onItemClick: (String, String) -> Unit,
     onCommentsClick: (String) -> Unit,
@@ -141,7 +141,7 @@ fun ProfileScreen(
                 mixtapes = state.mixtapes,
                 cargandoMixtapes = state.cargandoMixtapes,
                 errorMixtapesRes = state.errorMixtapesRes,
-                onSettingsClick = onSettingsClick,
+                onEditProfileClick = onEditProfileClick,
                 // Mis contadores abren mi lista de seguidores o de seguidos con mi uid
                 onSeguidoresClick = { onFollowListClick(state.miId, LISTA_SEGUIDORES) },
                 onSeguidosClick = { onFollowListClick(state.miId, LISTA_SEGUIDOS) },
@@ -191,7 +191,7 @@ fun ProfileScreenContent(
     mixtapes: List<MixtapeUi>,
     cargandoMixtapes: Boolean,
     @StringRes errorMixtapesRes: Int?,
-    onSettingsClick: () -> Unit,
+    onEditProfileClick: () -> Unit,
     onSeguidoresClick: () -> Unit,
     onSeguidosClick: () -> Unit,
     onImagePicked: (Uri) -> Unit,
@@ -223,7 +223,7 @@ fun ProfileScreenContent(
                     onBackClick = null,
                 )
 
-                IconButton(onClick = onSettingsClick) {
+                IconButton(onClick = onEditProfileClick) {
                     Icon(
                         imageVector = Icons.Filled.Settings,
                         contentDescription = stringResource(R.string.ajustes),
@@ -435,7 +435,7 @@ fun ProfileScreenPreview() {
                 mixtapes = emptyList(),
                 cargandoMixtapes = false,
                 errorMixtapesRes = null,
-                onSettingsClick = {},
+                onEditProfileClick = {},
                 onSeguidoresClick = {},
                 onSeguidosClick = {},
                 onImagePicked = {},

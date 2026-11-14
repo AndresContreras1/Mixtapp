@@ -9,7 +9,7 @@ const val FILTRO_PARA_TI = "paraTi"
 // Musica nueva para mi: de mis generos, pero sin mi like ni mi resena todavia
 const val FILTRO_DESCUBRE = "descubre"
 
-// Lo que esta en la lista de Deezer de mis generos, por su puesto
+// Lo que esta en el Top Colombia de Deezer, por su puesto
 const val FILTRO_TENDENCIAS = "tendencias"
 
 // Lo que resenaron los usuarios que sigo
@@ -20,5 +20,5 @@ val homeFilters = listOf(
     OpcionUi(id = FILTRO_PARA_TI, label = R.string.for_you),
     OpcionUi(id = FILTRO_DESCUBRE, label = R.string.descubre),
     OpcionUi(id = FILTRO_TENDENCIAS, label = R.string.trending),
-    OpcionUi(id = FILTRO_SEGUIDOS, label = R.string.friends)
+    OpcionUi(id = FILTRO_SEGUIDOS, label = R.string.seguidos)
 )

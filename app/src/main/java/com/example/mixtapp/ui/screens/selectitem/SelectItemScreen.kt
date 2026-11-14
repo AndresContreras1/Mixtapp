@@ -88,10 +88,10 @@ fun SelectItemScreenContent(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 item {
-                    ScreenTitle(title = stringResource(R.string.elegir_album_titulo), onBackClick = onBackClick)
+                    ScreenTitle(title = stringResource(R.string.elegir_item_titulo), onBackClick = onBackClick)
 
                     Text(
-                        text = stringResource(R.string.elegir_album_descripcion),
+                        text = stringResource(R.string.elegir_item_descripcion),
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         style = MaterialTheme.typography.bodyMedium,
                     )

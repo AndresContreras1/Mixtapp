@@ -73,7 +73,7 @@ fun DatosCuriososScreenContent(
 
         when {
             isLoading -> LoadingBox()
-            item == null -> ErrorBox(messageRes = errorMessageRes ?: R.string.album_no_encontrado)
+            item == null -> ErrorBox(messageRes = errorMessageRes ?: R.string.item_no_encontrado)
             else -> LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),

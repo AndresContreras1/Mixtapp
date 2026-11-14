@@ -41,8 +41,8 @@ class NotificationsViewModel @Inject constructor(
     }
 
     // La app no crea notificaciones: las crean las Cloud Functions cuando alguien da like a mi resena
-    // o a mi comentario, comenta, responde o empieza a seguirme. Cada una nueva, o la marca de leida,
-    // llega sola por el listener
+    // o a mi comentario, comenta, responde, empieza a seguirme o le da 🔥 a lo que escucho. Cada una
+    // nueva, o la marca de leida, llega sola por el listener
     private fun escucharNotificaciones() {
         _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
 
