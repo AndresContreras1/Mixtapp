@@ -3,6 +3,7 @@ package com.example.mixtapp.repository
 import com.example.mixtapp.borrarCuentaDePrueba
 import com.example.mixtapp.cargarDatosDePrueba
 import com.example.mixtapp.conectarEmulador
+import com.example.mixtapp.crearCuentaDePrueba
 import com.example.mixtapp.data.datasource.AuthRemoteDataSource
 import com.example.mixtapp.data.datasource.MessagingRemoteDataSource
 import com.example.mixtapp.data.datasource.impl.firestore.UsuarioFirestoreDataSourceImpl
@@ -50,7 +51,7 @@ class UsuarioRepositoryIntegrationTest {
 
         // Crear la cuenta tambien inicia la sesion. Todavia no tiene documento en usuarios
         correo = "prueba${System.currentTimeMillis()}@example.com"
-        auth.createUserWithEmailAndPassword(correo, "123456").await()
+        crearCuentaDePrueba(auth, correo)
     }
 
     @After

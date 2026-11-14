@@ -9,6 +9,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextInput
+import com.example.mixtapp.CONTRASENA_DE_PRUEBA
 import com.example.mixtapp.MainActivity
 import com.example.mixtapp.cargarDatosDePrueba
 import com.example.mixtapp.conectarEmulador
@@ -19,13 +20,13 @@ import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import javax.inject.Inject
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import javax.inject.Inject
 
 // Caso de uso 2: un usuario ya registrado inicia sesion, va al perfil de otro usuario, lo sigue y
 // despues encuentra su resena en Siguiendo. Al empezar no sigue a nadie
@@ -57,7 +58,7 @@ class SeguirUsuarioE2E {
         runBlocking {
             limpiarBase(Firebase.firestore)
             cargarDatosDePrueba(Firebase.firestore)
-            authRepository.signUp(correo, "123456")
+            authRepository.signUp(correo, CONTRASENA_DE_PRUEBA)
             usuarioRepository.registrarUsuario(username = "registrado", nombre = "Usuario Registrado", bio = "")
             authRepository.signOut()
         }
@@ -65,7 +66,7 @@ class SeguirUsuarioE2E {
 
     @After
     fun tearDown() = runTest {
-        borrarCuentaYLimpiarBase()
+        borrarCuentaYLimpiarBase(correo = correo)
     }
 
     @Test
@@ -73,7 +74,7 @@ class SeguirUsuarioE2E {
         // Inicia sesion
         composeRule.esperarTag("loginScreen")
         composeRule.onNodeWithTag("txtEmail").performTextInput(correo)
-        composeRule.onNodeWithTag("txtPassword").performTextInput("123456")
+        composeRule.onNodeWithTag("txtPassword").performTextInput(CONTRASENA_DE_PRUEBA)
         composeRule.onNodeWithTag("btnLogin").performClick()
         composeRule.esperarTag("homeScreen")
 
