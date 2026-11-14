@@ -72,8 +72,9 @@ fun TarjetaDeResenaDelMapa(
             onAuthorClick = onAuthorClick,
             onLikeClick = onLikeClick,
             onCommentsClick = onCommentsClick,
-            mostrarItem = true,
             onItemClick = onItemClick,
+            onEditClick = null,
+            onDeleteClick = null,
         )
     }
 }

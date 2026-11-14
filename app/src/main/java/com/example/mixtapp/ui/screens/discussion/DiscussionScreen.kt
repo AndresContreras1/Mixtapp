@@ -131,8 +131,9 @@ fun DiscussionScreenContent(
                                 onAuthorClick = onAuthorClick,
                                 onLikeClick = onReviewLikeClick,
                                 onCommentsClick = {},
-                                mostrarItem = true,
                                 onItemClick = { item -> onItemClick(item.tipo, item.id) },
+                                onEditClick = null,
+                                onDeleteClick = null,
                             )
                         }
 
@@ -140,6 +141,8 @@ fun DiscussionScreenContent(
                             SectionTitle(
                                 title = stringResource(R.string.comentarios_total, discussion.comments.size),
                                 modifier = Modifier.padding(top = 24.dp, bottom = 4.dp),
+                                actionText = null,
+                                onActionClick = null,
                             )
                         }
 

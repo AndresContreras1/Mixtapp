@@ -28,7 +28,7 @@ fun FavoriteSection(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
-        SectionTitle(title = stringResource(R.string.favoritos))
+        SectionTitle(title = stringResource(R.string.favoritos), actionText = null, onActionClick = null)
 
         Spacer(modifier = Modifier.height(8.dp))
 

@@ -55,7 +55,7 @@ fun ItemHeader(
         LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             items(datos) { dato ->
                 // Solo muestran el dato: no filtran nada
-                AppChip(text = dato, isSelected = false, onClick = {})
+                AppChip(text = dato, isSelected = false, onClick = null)
             }
         }
 

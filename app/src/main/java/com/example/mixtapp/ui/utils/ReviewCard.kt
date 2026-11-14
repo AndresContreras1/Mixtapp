@@ -40,12 +40,11 @@ fun ReviewCard(
     onLikeClick: (String) -> Unit,
     onCommentsClick: (String) -> Unit,
     modifier: Modifier = Modifier,
-    // En el detalle de un item no se repite el item; en las demas listas si
-    mostrarItem: Boolean = true,
-    onItemClick: (ItemResumenUi) -> Unit = {},
+    // Tocar lo que califico abre su detalle; null en el detalle de un item, que no lo repite
+    onItemClick: ((ItemResumenUi) -> Unit)?,
     // Solo para mis resenas en mi perfil y en Mis resenas: null en las demas
-    onEditClick: ((ReviewUi) -> Unit)? = null,
-    onDeleteClick: ((String) -> Unit)? = null,
+    onEditClick: ((ReviewUi) -> Unit)?,
+    onDeleteClick: ((String) -> Unit)?,
 ) {
     Card(
         modifier = modifier
@@ -92,11 +91,11 @@ fun ReviewCard(
                     )
                 }
 
-                StarRating(rating = review.rating, starSize = 14.dp)
+                StarRating(rating = review.rating, starSize = 14.dp, onRatingChange = null)
             }
 
             // Lo que califico: tocarlo abre su detalle
-            if (mostrarItem) {
+            if (onItemClick != null) {
                 Spacer(modifier = Modifier.height(12.dp))
 
                 Row(
@@ -182,6 +181,9 @@ fun ReviewCardPreview() {
             onAuthorClick = {},
             onLikeClick = {},
             onCommentsClick = {},
+            onItemClick = {},
+            onEditClick = null,
+            onDeleteClick = null,
         )
     }
 }
@@ -195,6 +197,7 @@ fun ReviewCardMiaPreview() {
             onAuthorClick = {},
             onLikeClick = {},
             onCommentsClick = {},
+            onItemClick = {},
             onEditClick = {},
             onDeleteClick = {},
         )

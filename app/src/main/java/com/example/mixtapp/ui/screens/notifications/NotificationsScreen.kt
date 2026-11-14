@@ -222,7 +222,11 @@ fun NotificationsScreenContent(
 
                             if (hoy.isNotEmpty()) {
                                 item(key = "seccion_hoy") {
-                                    SectionTitle(title = stringResource(R.string.notificaciones_hoy))
+                                    SectionTitle(
+                                        title = stringResource(R.string.notificaciones_hoy),
+                                        actionText = null,
+                                        onActionClick = null,
+                                    )
                                 }
 
                                 items(hoy, key = { it.id }) { notificacion ->
@@ -235,7 +239,11 @@ fun NotificationsScreenContent(
 
                             if (antes.isNotEmpty()) {
                                 item(key = "seccion_antes") {
-                                    SectionTitle(title = stringResource(R.string.notificaciones_antes))
+                                    SectionTitle(
+                                        title = stringResource(R.string.notificaciones_antes),
+                                        actionText = null,
+                                        onActionClick = null,
+                                    )
                                 }
 
                                 items(antes, key = { it.id }) { notificacion ->

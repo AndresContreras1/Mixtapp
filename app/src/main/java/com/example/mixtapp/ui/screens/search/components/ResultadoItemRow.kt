@@ -110,7 +110,7 @@ fun ResultadoItemRow(
 
                     Spacer(modifier = Modifier.width(8.dp))
 
-                    StarRating(rating = itemConResenas.estrellas, starSize = 14.dp)
+                    StarRating(rating = itemConResenas.estrellas, starSize = 14.dp, onRatingChange = null)
                 }
             }
         }

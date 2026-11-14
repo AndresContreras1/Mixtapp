@@ -7,9 +7,8 @@ import com.example.mixtapp.data.datasource.UsuarioRemoteDataSource
 import com.example.mixtapp.data.dtos.CreateDueloDto
 import com.example.mixtapp.data.dtos.CreateReviewUsuarioDto
 import com.example.mixtapp.data.dtos.CreateVotoDto
+import com.example.mixtapp.data.dtos.toDueloEnVivoUi
 import com.example.mixtapp.data.dtos.toItemDelDueloDto
-import com.example.mixtapp.data.dtos.toItemResumenUi
-import com.example.mixtapp.data.dtos.toVotoUi
 import com.example.mixtapp.data.model.DueloEnVivoUi
 import com.example.mixtapp.data.model.DueloUi
 import com.example.mixtapp.data.model.OPCION_A
@@ -39,16 +38,8 @@ class DueloRepository @Inject constructor(
             dueloRemoteDataSource.listenDuelo(dueloId),
             dueloRemoteDataSource.listenVotos(dueloId),
         ) { duelo, votos ->
-            // Un duelo en el que nadie ha votado no existe todavia: no es un error, va en 0
-            DueloEnVivoUi(
-                genero = duelo?.genero,
-                votosA = duelo?.votosA ?: 0,
-                votosB = duelo?.votosB ?: 0,
-                itemA = duelo?.itemA?.toItemResumenUi(tipo = tipo),
-                itemB = duelo?.itemB?.toItemResumenUi(tipo = tipo),
-                opiniones = votos.map { it.toVotoUi(usuarioActualId = usuarioId) },
-                miOpcion = votos.find { it.id == usuarioId }?.opcion,
-            )
+            // Un duelo en el que nadie ha votado no existe todavia: el mapeo lo deja en 0
+            duelo.toDueloEnVivoUi(votos = votos, tipo = tipo, usuarioActualId = usuarioId)
         }
             .catch { e ->
                 Log.d("DueloRepository", "getDueloLive: ${e.message}")

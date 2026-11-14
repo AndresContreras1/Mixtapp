@@ -93,7 +93,7 @@ private fun StatItem(
             fontWeight = FontWeight.Bold,
         )
         if (estrellas != null) {
-            StarRating(rating = estrellas, starSize = 11.dp)
+            StarRating(rating = estrellas, starSize = 11.dp, onRatingChange = null)
         }
         if (label != null) {
             Text(

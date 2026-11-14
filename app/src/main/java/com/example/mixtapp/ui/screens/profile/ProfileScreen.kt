@@ -211,7 +211,8 @@ fun ProfileScreenContent(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 ScreenTitle(
                     title = stringResource(R.string.nav_profile),
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    onBackClick = null,
                 )
 
                 IconButton(onClick = onSettingsClick) {
@@ -286,6 +287,7 @@ fun ProfileScreenContent(
                         modifier = Modifier
                             .fillMaxWidth()
                             .testTag("btnIrACrearMixtape"),
+                        cargando = false,
                     )
                 }
 
@@ -352,7 +354,6 @@ fun ProfileScreenContent(
                             onAuthorClick = {},
                             onLikeClick = onLikeClick,
                             onCommentsClick = onCommentsClick,
-                            mostrarItem = true,
                             onItemClick = onItemClick,
                             onEditClick = onEditClick,
                             onDeleteClick = onDeleteClick,

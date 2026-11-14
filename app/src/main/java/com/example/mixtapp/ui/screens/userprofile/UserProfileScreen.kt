@@ -179,7 +179,11 @@ fun UserProfileScreenContent(
 
         item {
             Column {
-                SectionTitle(title = stringResource(R.string.reviews))
+                SectionTitle(
+                    title = stringResource(R.string.reviews),
+                    actionText = null,
+                    onActionClick = null,
+                )
 
                 // Un like que fallo
                 ErrorMessage(messageRes = errorLikeRes)
@@ -204,8 +208,9 @@ fun UserProfileScreenContent(
                     onAuthorClick = {},
                     onLikeClick = onLikeClick,
                     onCommentsClick = onCommentsClick,
-                    mostrarItem = true,
                     onItemClick = onItemClick,
+                    onEditClick = null,
+                    onDeleteClick = null,
                 )
             }
         }

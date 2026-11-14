@@ -44,7 +44,7 @@ fun ProfileHeader(
     onSeguidoresClick: () -> Unit,
     onSeguidosClick: () -> Unit,
     modifier: Modifier = Modifier,
-    accion: @Composable () -> Unit = {},
+    accion: @Composable () -> Unit,
 ) {
     // LocalUriHandler abre el link en el navegador o en la app de Instagram si la tiene
     val uriHandler = LocalUriHandler.current
@@ -171,6 +171,7 @@ fun ProfileHeaderPreview() {
             instagramUrl = usuario.instagramUrl,
             onSeguidoresClick = {},
             onSeguidosClick = {},
+            accion = {},
         )
     }
 }

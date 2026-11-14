@@ -3,8 +3,9 @@ package com.example.mixtapp.data.dtos
 import com.example.mixtapp.data.model.ItemUi
 import com.example.mixtapp.data.model.TIPO_CANCION
 
-// Igual al documento de la coleccion canciones de Firestore y a la tabla canciones del backend.
-// album es el nombre del album como texto; albumId solo existe en Firestore
+// Los campos del documento de la coleccion canciones de Firestore. La tabla canciones del backend
+// no tiene albumId ni likes, que se quedan con el valor del constructor vacio. album es el nombre
+// del album como texto
 data class CancionDto(
     val id: String,
     val titulo: String,
@@ -16,7 +17,8 @@ data class CancionDto(
     // AAAA-MM-DD, la del album
     val fechaLanzamiento: String?,
     val genero: String,
-    val subgenero: String,
+    // null si no tiene subgenero
+    val subgenero: String?,
     // Puesto en la lista de Deezer de su genero; null si no esta en la lista
     val tendencia: Int?,
     // Puesto en el Top Colombia de Deezer; null si no esta en esa lista
@@ -28,7 +30,7 @@ data class CancionDto(
     var liked: Boolean = false,
 ) {
     // Firestore necesita un constructor vacio para convertir el documento en el DTO
-    constructor() : this("", "", "", "", "", "", 0, null, "", "", null, null, 0, null, null)
+    constructor() : this("", "", "", "", "", "", 0, null, "", null, null, null, 0, null, null)
 }
 
 // La cancion se muestra en tres lineas: titulo, album y artista. El video se busca en YouTube con
@@ -45,7 +47,7 @@ fun CancionDto.toItemUi(): ItemUi {
         fechaLanzamiento = fechaLanzamiento ?: "",
         artista = artista,
         genero = genero,
-        subgenero = subgenero,
+        subgenero = subgenero ?: "",
         tendencia = tendencia,
         tendenciaColombia = tendenciaColombia,
         likes = likesCount,

@@ -40,7 +40,9 @@ fun EnlacesDelItem(
     ) {
         // Las canciones tienen video; los albumes y los artistas solo se escuchan o se siguen
         SectionTitle(
-            title = stringResource(if (item.youtubeUrl.isNotEmpty()) R.string.video_original else R.string.escuchalo)
+            title = stringResource(if (item.youtubeUrl.isNotEmpty()) R.string.video_original else R.string.escuchalo),
+            actionText = null,
+            onActionClick = null,
         )
 
         if (item.youtubeUrl.isNotEmpty()) {

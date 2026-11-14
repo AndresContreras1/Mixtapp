@@ -86,6 +86,8 @@ fun DatosCuriososScreenContent(
                     SectionTitle(
                         title = stringResource(R.string.datos_curiosos),
                         modifier = Modifier.padding(top = 28.dp, bottom = 12.dp),
+                        actionText = null,
+                        onActionClick = null,
                     )
                 }
 

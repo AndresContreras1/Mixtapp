@@ -142,6 +142,7 @@ fun AgregarAMixtapeScreenContent(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .testTag("btnNuevaMixtape"),
+                            cargando = false,
                         )
                     }
                 }

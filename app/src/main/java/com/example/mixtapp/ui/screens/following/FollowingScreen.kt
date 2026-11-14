@@ -136,6 +136,8 @@ fun FollowingScreenContent(
                                 SectionTitle(
                                     title = stringResource(R.string.sonando_ahora),
                                     modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
+                                    actionText = null,
+                                    onActionClick = null,
                                 )
                                 ErrorMessage(
                                     messageRes = errorSonandoRes,
@@ -199,9 +201,10 @@ fun FollowingScreenContent(
                             onAuthorClick = onAuthorClick,
                             onLikeClick = onLikeClick,
                             onCommentsClick = onCommentsClick,
-                            mostrarItem = true,
                             onItemClick = onItemClick,
                             modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 16.dp),
+                            onEditClick = null,
+                            onDeleteClick = null,
                         )
                     }
                 }

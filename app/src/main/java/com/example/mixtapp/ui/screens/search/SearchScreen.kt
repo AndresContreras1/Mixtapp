@@ -99,7 +99,7 @@ fun SearchScreenContent(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 item {
-                    ScreenTitle(title = stringResource(R.string.search_title))
+                    ScreenTitle(title = stringResource(R.string.search_title), onBackClick = null)
                 }
 
                 item {
@@ -133,7 +133,12 @@ fun SearchScreenContent(
 
                         if (usuarios.isNotEmpty()) {
                             item {
-                                SectionTitle(title = stringResource(R.string.personas), modifier = Modifier.padding(top = 12.dp))
+                                SectionTitle(
+                                    title = stringResource(R.string.personas),
+                                    modifier = Modifier.padding(top = 12.dp),
+                                    actionText = null,
+                                    onActionClick = null,
+                                )
                             }
 
                             items(usuarios) { usuario ->
@@ -169,7 +174,12 @@ fun SearchScreenContent(
                     // Sin texto ni tarjeta: las tarjetas de Explorar por y de Generos, dos por fila
                     else -> {
                         item {
-                            SectionTitle(title = stringResource(R.string.browse_by), modifier = Modifier.padding(top = 8.dp))
+                            SectionTitle(
+                                title = stringResource(R.string.browse_by),
+                                modifier = Modifier.padding(top = 8.dp),
+                                actionText = null,
+                                onActionClick = null,
+                            )
                         }
 
                         items(ordenes.chunked(2)) { fila ->
@@ -177,7 +187,12 @@ fun SearchScreenContent(
                         }
 
                         item {
-                            SectionTitle(title = stringResource(R.string.generos), modifier = Modifier.padding(top = 8.dp))
+                            SectionTitle(
+                                title = stringResource(R.string.generos),
+                                modifier = Modifier.padding(top = 8.dp),
+                                actionText = null,
+                                onActionClick = null,
+                            )
                         }
 
                         items(generos.chunked(2)) { fila ->

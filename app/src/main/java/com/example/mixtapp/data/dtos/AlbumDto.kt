@@ -3,9 +3,9 @@ package com.example.mixtapp.data.dtos
 import com.example.mixtapp.data.model.ItemUi
 import com.example.mixtapp.data.model.TIPO_ALBUM
 
-// Los mismos campos sirven para la tabla albumes del backend y la coleccion albumes de Firestore.
-// El backend no tiene subgenero, fecha de salida, tendencias ni likes: Gson usa el constructor vacio
-// y esos campos se quedan con su valor de ahi
+// Los mismos campos sirven para la coleccion albumes de Firestore y la tabla albumes del backend.
+// La tabla no tiene subgenero, tendencia del genero ni likes: Gson usa el constructor vacio y esos
+// campos se quedan con su valor de ahi
 data class AlbumDto(
     val id: String,
     val titulo: String,
@@ -15,7 +15,8 @@ data class AlbumDto(
     // AAAA-MM-DD
     val fechaLanzamiento: String?,
     val genero: String,
-    val subgenero: String,
+    // null si no tiene subgenero o si llega del backend
+    val subgenero: String?,
     // Puesto en la lista de Deezer de su genero; null si no esta en la lista
     val tendencia: Int?,
     // Puesto en el Top Colombia de Deezer; null si no esta en esa lista
@@ -28,7 +29,7 @@ data class AlbumDto(
     var liked: Boolean = false,
 ) {
     // Firestore necesita un constructor vacio para convertir el documento en el DTO
-    constructor() : this("", "", "", "", 0, null, "", "", null, null, 0, null, null)
+    constructor() : this("", "", "", "", 0, null, "", null, null, null, 0, null, null)
 }
 
 fun AlbumDto.toItemUi(): ItemUi {
@@ -43,7 +44,7 @@ fun AlbumDto.toItemUi(): ItemUi {
         fechaLanzamiento = fechaLanzamiento ?: "",
         artista = artista,
         genero = genero,
-        subgenero = subgenero,
+        subgenero = subgenero ?: "",
         tendencia = tendencia,
         tendenciaColombia = tendenciaColombia,
         likes = likesCount,

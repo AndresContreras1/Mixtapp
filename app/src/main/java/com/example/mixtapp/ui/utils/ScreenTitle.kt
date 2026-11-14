@@ -27,7 +27,7 @@ fun ScreenTitle(
     title: String,
     modifier: Modifier = Modifier,
     // null en las pantallas de la barra, que no tienen a donde volver
-    onBackClick: (() -> Unit)? = null,
+    onBackClick: (() -> Unit)?,
 ) {
     Row(
         modifier = modifier
@@ -51,13 +51,14 @@ fun ScreenTitle(
     }
 }
 
-// El titulo de una seccion, con la accion opcional a la derecha ("Ver todas")
+// El titulo de una seccion, con su accion a la derecha ("Ver todas") si la tiene
 @Composable
 fun SectionTitle(
     title: String,
     modifier: Modifier = Modifier,
-    actionText: String? = null,
-    onActionClick: () -> Unit = {},
+    // null en los dos si la seccion no tiene accion
+    actionText: String?,
+    onActionClick: (() -> Unit)?,
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -72,7 +73,7 @@ fun SectionTitle(
             modifier = Modifier.weight(1f),
         )
 
-        if (actionText != null) {
+        if (actionText != null && onActionClick != null) {
             TextButton(onClick = onActionClick) {
                 Text(
                     text = actionText,
@@ -96,6 +97,10 @@ fun ScreenTitlePreview() {
 @Preview(showBackground = true)
 fun SectionTitlePreview() {
     MixtappTheme(darkTheme = true) {
-        SectionTitle(title = stringResource(R.string.canciones_populares), actionText = stringResource(R.string.ver_todas))
+        SectionTitle(
+            title = stringResource(R.string.canciones_populares),
+            actionText = stringResource(R.string.ver_todas),
+            onActionClick = {},
+        )
     }
 }

@@ -193,6 +193,8 @@ fun DetailScreenContent(
                         SectionTitle(
                             title = stringResource(R.string.reviews),
                             modifier = Modifier.padding(top = 28.dp, bottom = 12.dp),
+                            actionText = null,
+                            onActionClick = null,
                         )
                     }
 
@@ -213,7 +215,7 @@ fun DetailScreenContent(
                             onAuthorClick = onAuthorClick,
                             onLikeClick = onReviewLikeClick,
                             onCommentsClick = onCommentsClick,
-                            mostrarItem = false,
+                            onItemClick = null,
                             // Editar o eliminar solo aparecen en mi resena
                             onEditClick = { onRateClick() },
                             onDeleteClick = onDeleteMyReviewClick,

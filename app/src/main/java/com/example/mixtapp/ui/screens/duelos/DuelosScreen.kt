@@ -109,7 +109,8 @@ fun DuelosScreenContent(
         Column(modifier = Modifier.fillMaxSize()) {
             ScreenTitle(
                 title = stringResource(R.string.duelos_title),
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                onBackClick = null,
             )
 
             // Las pestanas quedan fijas para pasar de un duelo a otro
@@ -172,7 +173,11 @@ fun DuelosScreenContent(
                     }
 
                     item {
-                        SectionTitle(title = stringResource(R.string.opiniones_count, duelo.opiniones.size))
+                        SectionTitle(
+                            title = stringResource(R.string.opiniones_count, duelo.opiniones.size),
+                            actionText = null,
+                            onActionClick = null,
+                        )
                     }
 
                     if (duelo.opiniones.isEmpty()) {

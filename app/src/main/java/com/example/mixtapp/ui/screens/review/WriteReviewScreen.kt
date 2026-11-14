@@ -59,7 +59,8 @@ fun WriteReviewScreen(
 
     // La resena nueva guarda donde se publico para el mapa: el permiso se pide al abrir la pantalla.
     // Si se niega, se publica igual, sin ubicacion
-    PedirPermisoDeUbicacion()
+    // La ubicacion se lee al guardar la resena: al conceder el permiso no hay nada mas que hacer
+    PedirPermisoDeUbicacion(onConcedido = {})
 
     // Se vuelve atras solo cuando la base confirma que la resena quedo guardada
     LaunchedEffect(state.navigate) {

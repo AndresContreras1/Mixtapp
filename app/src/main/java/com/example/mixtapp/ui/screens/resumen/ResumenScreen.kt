@@ -115,6 +115,7 @@ fun ResumenScreenContent(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .testTag("btnSiguienteResumen"),
+                            cargando = false,
                         )
                     }
                 }

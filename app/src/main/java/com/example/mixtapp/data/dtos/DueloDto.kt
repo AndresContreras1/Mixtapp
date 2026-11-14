@@ -1,5 +1,6 @@
 package com.example.mixtapp.data.dtos
 
+import com.example.mixtapp.data.model.DueloEnVivoUi
 import com.example.mixtapp.data.model.ItemResumenUi
 import com.example.mixtapp.data.model.VotoUi
 import java.time.Instant
@@ -84,6 +85,21 @@ fun ItemResumenUi.toItemDelDueloDto(): ItemDelDueloDto {
         titulo = titulo,
         subtitulo = subtitulo,
         imagenUrl = imagenUrl,
+    )
+}
+
+// El duelo con sus votos para la pantalla. El documento es null mientras nadie haya votado (o si
+// los votos llegan antes que el): no es un error, los contadores van en 0 y los votos se muestran.
+// Mi opcion es la de mi voto, que tiene mi uid como id
+fun DueloDto?.toDueloEnVivoUi(votos: List<VotoDto>, tipo: String, usuarioActualId: String): DueloEnVivoUi {
+    return DueloEnVivoUi(
+        genero = this?.genero,
+        votosA = this?.votosA ?: 0,
+        votosB = this?.votosB ?: 0,
+        itemA = this?.itemA?.toItemResumenUi(tipo = tipo),
+        itemB = this?.itemB?.toItemResumenUi(tipo = tipo),
+        opiniones = votos.map { it.toVotoUi(usuarioActualId = usuarioActualId) },
+        miOpcion = votos.find { it.id == usuarioActualId }?.opcion,
     )
 }
 

@@ -146,7 +146,11 @@ fun HomeScreenContent(
                 if (enTendencia != null) {
                     item {
                         Column {
-                            SectionTitle(title = stringResource(R.string.now_trending))
+                            SectionTitle(
+                                title = stringResource(R.string.now_trending),
+                                actionText = null,
+                                onActionClick = null,
+                            )
 
                             Spacer(modifier = Modifier.height(8.dp))
 
@@ -199,7 +203,11 @@ fun HomeScreenContent(
 
                 item {
                     Column {
-                        SectionTitle(title = stringResource(R.string.resenas_de_seguidos))
+                        SectionTitle(
+                            title = stringResource(R.string.resenas_de_seguidos),
+                            actionText = null,
+                            onActionClick = null,
+                        )
 
                         // El error del like se ve junto a las tarjetas donde se toco
                         ErrorMessage(messageRes = errorAccionRes)
@@ -216,8 +224,9 @@ fun HomeScreenContent(
                         onAuthorClick = onAuthorClick,
                         onLikeClick = onLikeClick,
                         onCommentsClick = onCommentsClick,
-                        mostrarItem = true,
                         onItemClick = { item -> onItemClick(item.tipo, item.id) },
+                        onEditClick = null,
+                        onDeleteClick = null,
                     )
                 }
             }

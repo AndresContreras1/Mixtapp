@@ -120,7 +120,6 @@ fun MyReviewsScreenContent(
                                 onAuthorClick = {},
                                 onLikeClick = onLikeClick,
                                 onCommentsClick = onCommentsClick,
-                                mostrarItem = true,
                                 onItemClick = onItemClick,
                                 onEditClick = onEditClick,
                                 onDeleteClick = onDeleteClick,

@@ -29,7 +29,7 @@ fun HomeItemRow(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
-        SectionTitle(title = titulo)
+        SectionTitle(title = titulo, actionText = null, onActionClick = null)
 
         Spacer(modifier = Modifier.height(8.dp))
 

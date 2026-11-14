@@ -1,5 +1,6 @@
 package com.example.mixtapp.dtos
 
+import com.example.mixtapp.data.dtos.AlbumDto
 import com.example.mixtapp.data.dtos.ArtistaDto
 import com.example.mixtapp.data.dtos.CancionDto
 import com.example.mixtapp.data.dtos.busquedaEnYoutube
@@ -111,6 +112,17 @@ class FormatosTest {
         assertThat(artista.artista).isEqualTo("Metallica")
         assertThat(artista.instagramUrl).isEqualTo("https://www.instagram.com/metallica/")
         assertThat(artista.youtubeUrl).isEmpty()
+    }
+
+    @Test
+    fun toItemUi_albumDelBackendSinSubgenero_quedaVacio() {
+        //Arrange: la tabla albumes no tiene subgenero, Gson lo deja en null
+        val dto = AlbumDto().copy(titulo = "Meteora", artista = "Linkin Park", genero = "Rock")
+        //Act
+        val album = dto.toItemUi()
+        //Assert
+        assertThat(album.subgenero).isEmpty()
+        assertThat(album.genero).isEqualTo("Rock")
     }
 
     @Test
