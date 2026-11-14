@@ -1,10 +1,11 @@
 package com.example.mixtapp.viewmodels
 
-import com.example.mixtapp.data.datasource.LocationProvider
 import com.example.mixtapp.data.local.LocalPreviewProvider
 import com.example.mixtapp.data.model.Coordenadas
 import com.example.mixtapp.data.model.ResenaEnMapaUi
 import com.example.mixtapp.data.repository.ReviewRepository
+import com.example.mixtapp.data.repository.UbicacionNoDisponibleException
+import com.example.mixtapp.data.repository.UbicacionRepository
 import com.example.mixtapp.ui.screens.mapa.CENTRO_POR_DEFECTO
 import com.example.mixtapp.ui.screens.mapa.MapaViewModel
 import com.google.common.truth.Truth.assertThat
@@ -29,7 +30,7 @@ class MapaViewModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var reviewRepository: ReviewRepository
-    private lateinit var locationProvider: LocationProvider
+    private lateinit var ubicacionRepository: UbicacionRepository
     private lateinit var viewModel: MapaViewModel
 
     private val medellin = Coordenadas(latitud = 6.24, longitud = -75.58)
@@ -42,9 +43,9 @@ class MapaViewModelTest {
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         reviewRepository = mockk()
-        locationProvider = mockk()
+        ubicacionRepository = mockk()
         coEvery { reviewRepository.getResenasEnElMapaLive(any()) } returns flowOf(resenas)
-        viewModel = MapaViewModel(reviewRepository, locationProvider, testDispatcher)
+        viewModel = MapaViewModel(reviewRepository, ubicacionRepository, testDispatcher)
     }
 
     @After
@@ -87,7 +88,7 @@ class MapaViewModelTest {
     @Test
     fun centrarEnMiUbicacion_conUbicacion_centraDondeEstoy() = runTest {
         //Arrange
-        coEvery { locationProvider.getCurrentLocation() } returns medellin
+        coEvery { ubicacionRepository.getUbicacionActual() } returns Result.success(medellin)
         //Act
         viewModel.centrarEnMiUbicacion()
         advanceUntilIdle()
@@ -97,8 +98,8 @@ class MapaViewModelTest {
 
     @Test
     fun centrarEnMiUbicacion_sinUbicacion_quedaBogota() = runTest {
-        //Arrange: sin permiso o sin GPS el provider responde null
-        coEvery { locationProvider.getCurrentLocation() } returns null
+        //Arrange: sin permiso o sin GPS el repositorio responde con error
+        coEvery { ubicacionRepository.getUbicacionActual() } returns Result.failure(UbicacionNoDisponibleException())
         //Act
         viewModel.centrarEnMiUbicacion()
         advanceUntilIdle()

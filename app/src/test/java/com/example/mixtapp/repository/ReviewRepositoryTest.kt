@@ -2,8 +2,14 @@ package com.example.mixtapp.repository
 
 import com.example.mixtapp.data.datasource.AuthRemoteDataSource
 import com.example.mixtapp.data.datasource.ReviewRemoteDataSource
+import com.example.mixtapp.data.datasource.UbicacionDataSource
 import com.example.mixtapp.data.datasource.UsuarioRemoteDataSource
 import com.example.mixtapp.data.dtos.ComentarioDto
+import com.example.mixtapp.data.dtos.CreateReviewDto
+import com.example.mixtapp.data.dtos.CreateReviewItemDto
+import com.example.mixtapp.data.dtos.CreateReviewUsuarioDto
+import com.example.mixtapp.data.dtos.UbicacionDto
+import com.example.mixtapp.data.local.LocalPreviewProvider
 import com.example.mixtapp.data.dtos.ReviewDto
 import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
 import com.example.mixtapp.data.repository.ReviewRepository
@@ -24,13 +30,79 @@ class ReviewRepositoryTest {
     private val reviewDataSource = mockk<ReviewRemoteDataSource>()
     private val usuarioDataSource = mockk<UsuarioRemoteDataSource>()
     private val authDataSource = mockk<AuthRemoteDataSource>()
+    private val ubicacionDataSource = mockk<UbicacionDataSource>()
 
-    private val repository = ReviewRepository(reviewDataSource, usuarioDataSource, authDataSource)
+    private val repository = ReviewRepository(reviewDataSource, usuarioDataSource, authDataSource, ubicacionDataSource)
 
-    // Las tres pruebas son con la sesion iniciada
+    // La resena que se publica: el album de ejemplo con 5 estrellas, a una hora fija
+    private val item = LocalPreviewProvider.itemConResenas.item
+    private val ahora = Instant.parse("2026-11-14T15:00:00Z")
+
+    // Lo que el repositorio deberia mandar al data source; cada prueba cambia lo que le toca
+    private fun resenaEsperada(createdAt: String?, latitud: Double?, longitud: Double?) = CreateReviewDto(
+        usuarioId = "yo",
+        itemId = item.id,
+        tipo = item.tipo,
+        calificacion = 5,
+        comentario = "Muy bueno",
+        fechaEscucha = null,
+        likesCount = 0,
+        commentsCount = 0,
+        createdAt = createdAt,
+        updatedAt = ahora.toString(),
+        usuario = CreateReviewUsuarioDto(nombre = "yo", fotoUrl = null),
+        item = CreateReviewItemDto(titulo = item.titulo, subtitulo = item.subtitulo, imagenUrl = item.imagenUrl),
+        latitud = latitud,
+        longitud = longitud,
+    )
+
+    // Todas las pruebas son con la sesion iniciada; el usuario no tiene documento, asi que su nombre
+    // sale del correo
     @Before
     fun setUp() {
         coEvery { authDataSource.currentUser?.uid } returns "yo"
+        coEvery { authDataSource.currentUser?.photoUrl } returns null
+        coEvery { authDataSource.currentUser?.email } returns "yo@example.com"
+        coEvery { usuarioDataSource.getUsuarioById("yo", any()) } returns null
+    }
+
+    @Test
+    fun guardarResena_nueva_guardaDondeEstoy() = runTest {
+        //Arrange: el celular esta en Bogota. Si el DTO no llega con la ubicacion, el mock no coincide
+        // y el repositorio responde con error
+        coEvery { ubicacionDataSource.getUbicacionActual() } returns UbicacionDto(latitud = 4.65, longitud = -74.06)
+        coEvery {
+            reviewDataSource.createReview(resenaEsperada(createdAt = ahora.toString(), latitud = 4.65, longitud = -74.06))
+        } returns Unit
+        //Act
+        val result = repository.guardarResena(item, 5, "Muy bueno", "", null, ahora)
+        //Assert
+        Truth.assertThat(result.isSuccess).isTrue()
+    }
+
+    @Test
+    fun guardarResena_sinPermisoDeUbicacion_seGuardaSinUbicacion() = runTest {
+        //Arrange: sin permiso el data source retorna null
+        coEvery { ubicacionDataSource.getUbicacionActual() } returns null
+        coEvery {
+            reviewDataSource.createReview(resenaEsperada(createdAt = ahora.toString(), latitud = null, longitud = null))
+        } returns Unit
+        //Act
+        val result = repository.guardarResena(item, 5, "Muy bueno", "", null, ahora)
+        //Assert
+        Truth.assertThat(result.isSuccess).isTrue()
+    }
+
+    @Test
+    fun guardarResena_editar_noPideUbicacionNiCambiaLaFechaDeCreacion() = runTest {
+        //Arrange: la ubicacion no se moquea; si el repositorio la pidiera, la prueba fallaria
+        coEvery {
+            reviewDataSource.updateReview("r1", resenaEsperada(createdAt = null, latitud = null, longitud = null))
+        } returns Unit
+        //Act
+        val result = repository.guardarResena(item, 5, "Muy bueno", "", "r1", ahora)
+        //Assert
+        Truth.assertThat(result.isSuccess).isTrue()
     }
 
     @Test

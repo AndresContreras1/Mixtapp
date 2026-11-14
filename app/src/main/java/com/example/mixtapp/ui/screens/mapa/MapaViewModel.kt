@@ -4,9 +4,9 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
-import com.example.mixtapp.data.datasource.LocationProvider
 import com.example.mixtapp.data.injection.IoDispatcher
 import com.example.mixtapp.data.repository.ReviewRepository
+import com.example.mixtapp.data.repository.UbicacionRepository
 import com.example.mixtapp.ui.utils.mensajeDeError
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -22,7 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MapaViewModel @Inject constructor(
     private val reviewRepository: ReviewRepository,
-    private val locationProvider: LocationProvider,
+    private val ubicacionRepository: UbicacionRepository,
     // Las corrutinas se lanzan en este hilo; las pruebas pasan uno de prueba
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
@@ -54,12 +54,18 @@ class MapaViewModel @Inject constructor(
         }
     }
 
-    // La pantalla lo llama cuando ya hay permiso de ubicacion. Si no se pudo leer, queda Bogota
+    // La pantalla lo llama cuando ya hay permiso de ubicacion. Si no se pudo leer, el mapa sigue
+    // donde estaba (Bogota al abrirlo): no es un error que el usuario tenga que ver
     fun centrarEnMiUbicacion() {
         viewModelScope.launch(ioDispatcher) {
-            val ubicacion = locationProvider.getCurrentLocation() ?: return@launch
+            val result = ubicacionRepository.getUbicacionActual()
+            val ubicacion = result.getOrNull()
 
-            _uiState.update { it.copy(centro = ubicacion) }
+            if (result.isSuccess && ubicacion != null) {
+                _uiState.update { it.copy(centro = ubicacion) }
+            } else {
+                Log.d("MapaViewModel", "centrarEnMiUbicacion: ${result.exceptionOrNull()?.message}")
+            }
         }
     }
 

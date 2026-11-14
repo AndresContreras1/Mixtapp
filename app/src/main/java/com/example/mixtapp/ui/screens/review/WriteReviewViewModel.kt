@@ -3,10 +3,10 @@ package com.example.mixtapp.ui.screens.review
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
-import com.example.mixtapp.data.datasource.LocationProvider
 import com.example.mixtapp.data.injection.IoDispatcher
 import com.example.mixtapp.data.model.MAX_DATE_LENGTH
 import com.example.mixtapp.data.model.MAX_REVIEW_LENGTH
+import com.example.mixtapp.data.model.esFechaDeEscuchaValida
 import com.example.mixtapp.data.repository.CatalogoRepository
 import com.example.mixtapp.data.repository.ReviewRepository
 import com.example.mixtapp.ui.utils.mensajeDeError
@@ -18,15 +18,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
 class WriteReviewViewModel @Inject constructor(
     private val catalogoRepository: CatalogoRepository,
     private val reviewRepository: ReviewRepository,
-    // Donde estoy al publicar, para el marcador del mapa
-    private val locationProvider: LocationProvider,
     // Las corrutinas se lanzan en este hilo; las pruebas pasan uno de prueba
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
@@ -115,7 +112,7 @@ class WriteReviewViewModel @Inject constructor(
 
         val errorRes = when {
             texto.isEmpty() -> R.string.error_resena_vacia
-            !esFechaValida(fecha = fecha) -> R.string.error_fecha_invalida
+            !esFechaDeEscuchaValida(fecha = fecha) -> R.string.error_fecha_invalida
             else -> null
         }
 
@@ -128,17 +125,13 @@ class WriteReviewViewModel @Inject constructor(
         viewModelScope.launch(ioDispatcher) {
             _uiState.update { it.copy(publicando = true, errorMessageRes = null) }
 
-            // La ubicacion solo se pide al publicar una resena nueva: al modificarla queda la de
-            // cuando se publico. Sin permiso llega null y se guarda sin ubicacion
-            val ubicacion = if (estado.reviewId == null) locationProvider.getCurrentLocation() else null
-
+            // El repositorio guarda donde estoy si la resena es nueva, para el marcador del mapa
             val result = reviewRepository.guardarResena(
                 item = item,
                 rating = estado.rating,
                 texto = texto,
-                fecha = fecha,
+                fechaEscucha = fecha,
                 reviewId = estado.reviewId,
-                ubicacion = ubicacion,
             )
 
             if (result.isSuccess) {
@@ -157,19 +150,4 @@ class WriteReviewViewModel @Inject constructor(
             }
         }
     }
-
-    // La fecha es opcional; si se escribe, tiene que ser AAAA-MM-DD, existir en el calendario (no
-    // hay 31 de febrero) y no ser despues de hoy
-    private fun esFechaValida(fecha: String): Boolean {
-        if (fecha.isEmpty()) return true
-
-        val dia = try {
-            LocalDate.parse(fecha)
-        } catch (e: Exception) {
-            return false
-        }
-
-        return !dia.isAfter(LocalDate.now())
-    }
-
 }

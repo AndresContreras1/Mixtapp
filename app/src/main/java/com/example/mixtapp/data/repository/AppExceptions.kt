@@ -36,6 +36,10 @@ class ErrorDelServidorException : Exception("La base remota respondio con un err
 
 class SeguirseASiMismoException : Exception("Un usuario no se puede seguir a si mismo")
 
+class SinPermisoDeUbicacionException : Exception("No hay permiso para leer la ubicacion")
+
+class UbicacionNoDisponibleException : Exception("El celular no pudo leer la ubicacion")
+
 // Lo que no tiene un catch propio; el detalle de la excepcion original queda en el log
 class ErrorInesperadoException : Exception("Fallo inesperado")
 

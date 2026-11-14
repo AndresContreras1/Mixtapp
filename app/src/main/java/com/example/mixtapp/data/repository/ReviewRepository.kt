@@ -3,14 +3,15 @@ package com.example.mixtapp.data.repository
 import android.util.Log
 import com.example.mixtapp.data.datasource.AuthRemoteDataSource
 import com.example.mixtapp.data.datasource.ReviewRemoteDataSource
+import com.example.mixtapp.data.datasource.UbicacionDataSource
 import com.example.mixtapp.data.datasource.UsuarioRemoteDataSource
 import com.example.mixtapp.data.dtos.CreateComentarioDto
 import com.example.mixtapp.data.dtos.CreateReviewDto
 import com.example.mixtapp.data.dtos.CreateReviewItemDto
 import com.example.mixtapp.data.dtos.CreateReviewUsuarioDto
+import com.example.mixtapp.data.dtos.UbicacionDto
 import com.example.mixtapp.data.dtos.toDiscussionCommentUi
 import com.example.mixtapp.data.dtos.toReviewUi
-import com.example.mixtapp.data.model.Coordenadas
 import com.example.mixtapp.data.model.DiscussionCommentUi
 import com.example.mixtapp.data.model.DiscussionUi
 import com.example.mixtapp.data.model.ItemUi
@@ -29,13 +30,15 @@ import javax.inject.Inject
 private const val HORAS_DEL_MAPA = 24L
 
 // Organiza varios data sources: las resenas con sus comentarios, el usuario que se copia en cada
-// una y Authentication para saber quien es el usuario de la app.
+// una, Authentication para saber quien es el usuario de la app y la ubicacion del celular, que se
+// guarda en cada resena nueva para el mapa.
 // Recibe los contratos: para volver al backend de Express basta con cambiar los @Binds de
 // DataSourceModule a las implementaciones de Retrofit
 class ReviewRepository @Inject constructor(
     private val reviewRemoteDataSource: ReviewRemoteDataSource,
     private val usuarioRemoteDataSource: UsuarioRemoteDataSource,
-    private val authRemoteDataSource: AuthRemoteDataSource
+    private val authRemoteDataSource: AuthRemoteDataSource,
+    private val ubicacionDataSource: UbicacionDataSource,
 ) {
 
     // Da el like o lo quita: el data source decide segun si ya existe. El corazon y el contador
@@ -82,10 +85,10 @@ class ReviewRepository @Inject constructor(
         item: ItemUi,
         rating: Int,
         texto: String,
-        fecha: String,
+        fechaEscucha: String,
         reviewId: String?,
-        // Donde estoy al publicar; null si no hay permiso o no se pudo leer
-        ubicacion: Coordenadas? = null,
+        // La hora de la resena; las pruebas pasan una fija para comparar el DTO completo
+        ahora: Instant = Instant.now(),
     ): Result<Unit> {
         return try {
             val usuarioId = authRemoteDataSource.currentUser?.uid
@@ -93,7 +96,11 @@ class ReviewRepository @Inject constructor(
 
             // En formato ISO, como los comentarios: la resena nueva guarda las dos fechas y al
             // modificarla solo cambia updatedAt
-            val ahora = Instant.now().toString()
+            val fecha = ahora.toString()
+
+            // La ubicacion solo se pide al publicar una resena nueva: al modificarla queda la de
+            // cuando se publico. Sin permiso o sin GPS se guarda sin ubicacion
+            val ubicacion = if (reviewId == null) ubicacionDeLaResena() else null
 
             // La resena guarda una copia de lo que se muestra del usuario y del item, porque en
             // Firestore no hay joins. Solo se copia lo que se ve, no todo el usuario
@@ -103,11 +110,11 @@ class ReviewRepository @Inject constructor(
                 tipo = item.tipo,
                 calificacion = rating,
                 comentario = texto,
-                fechaEscucha = if (fecha.isEmpty()) null else fecha,
+                fechaEscucha = if (fechaEscucha.isEmpty()) null else fechaEscucha,
                 likesCount = 0,
                 commentsCount = 0,
-                createdAt = if (reviewId == null) ahora else null,
-                updatedAt = ahora,
+                createdAt = if (reviewId == null) fecha else null,
+                updatedAt = fecha,
                 usuario = CreateReviewUsuarioDto(
                     nombre = nombreDelUsuario(usuarioId = usuarioId),
                     fotoUrl = authRemoteDataSource.currentUser?.photoUrl?.toString(),
@@ -135,6 +142,17 @@ class ReviewRepository @Inject constructor(
         } catch (e: Exception) {
             Log.d("ReviewRepository", "guardarResena: ${e.message}")
             Result.failure(ErrorInesperadoException())
+        }
+    }
+
+    // Sin ubicacion la resena se publica igual, solo que no sale en el mapa: si quitaron el
+    // permiso mientras se pedia, se guarda sin ella
+    private suspend fun ubicacionDeLaResena(): UbicacionDto? {
+        return try {
+            ubicacionDataSource.getUbicacionActual()
+        } catch (e: SecurityException) {
+            Log.d("ReviewRepository", "ubicacionDeLaResena: ${e.message}")
+            null
         }
     }
 

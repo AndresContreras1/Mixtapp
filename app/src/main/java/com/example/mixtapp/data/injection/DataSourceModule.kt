@@ -9,7 +9,9 @@ import com.example.mixtapp.data.datasource.MixtapeRemoteDataSource
 import com.example.mixtapp.data.datasource.NotificacionRemoteDataSource
 import com.example.mixtapp.data.datasource.ReviewRemoteDataSource
 import com.example.mixtapp.data.datasource.SonandoRemoteDataSource
+import com.example.mixtapp.data.datasource.UbicacionDataSource
 import com.example.mixtapp.data.datasource.UsuarioRemoteDataSource
+import com.example.mixtapp.data.datasource.impl.android.UbicacionAndroidDataSourceImpl
 import com.example.mixtapp.data.datasource.impl.firestore.AlbumFirestoreDataSourceImpl
 import com.example.mixtapp.data.datasource.impl.firestore.ArtistaFirestoreDataSourceImpl
 import com.example.mixtapp.data.datasource.impl.firestore.CancionFirestoreDataSourceImpl
@@ -80,4 +82,10 @@ abstract class DataSourceModule {
     abstract fun bindMixtapeRemoteDataSource(
         impl: MixtapeFirestoreDataSourceImpl
     ): MixtapeRemoteDataSource
+
+    // La ubicacion no tiene version de Firestore ni de Retrofit: la lee Android
+    @Binds
+    abstract fun bindUbicacionDataSource(
+        impl: UbicacionAndroidDataSourceImpl
+    ): UbicacionDataSource
 }
