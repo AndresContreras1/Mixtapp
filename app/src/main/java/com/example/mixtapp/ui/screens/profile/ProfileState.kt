@@ -36,11 +36,14 @@ data class ProfileState(
     @StringRes val errorFavoritosRes: Int? = null,
     // Solo las mas recientes: todas estan en Mis resenas
     val resenasRecientes: List<ReviewUi> = emptyList(),
+    val cargandoResenas: Boolean = false,
     @StringRes val errorResenasRes: Int? = null,
     val guardados: List<ItemResumenUi> = emptyList(),
+    val cargandoGuardados: Boolean = false,
     @StringRes val errorGuardadosRes: Int? = null,
     // Las mixtapes que arme, la mas nueva primero
     val mixtapes: List<MixtapeUi> = emptyList(),
+    val cargandoMixtapes: Boolean = false,
     @StringRes val errorMixtapesRes: Int? = null,
     // El like o el borrado de una resena que no se pudo hacer
     @StringRes val errorAccionRes: Int? = null,

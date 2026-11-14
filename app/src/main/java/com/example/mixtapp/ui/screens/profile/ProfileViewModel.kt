@@ -120,14 +120,18 @@ class ProfileViewModel @Inject constructor(
     // Mis resenas en vivo, la ultima publicada o editada primero: al editar o borrar una, la
     // actividad cambia sin volver a pedirla
     private fun escucharMisResenas() {
+        _uiState.update { it.copy(cargandoResenas = true, errorResenasRes = null) }
+
         viewModelScope.launch(ioDispatcher) {
             reviewRepository.getMyReviewsLive()
                 .catch { e ->
                     Log.d("ProfileViewModel", "escucharMisResenas: ${e.message}")
-                    _uiState.update { it.copy(errorResenasRes = mensajeDeError(error = e, generico = R.string.error_cargar_contenido)) }
+                    _uiState.update {
+                        it.copy(cargandoResenas = false, errorResenasRes = mensajeDeError(error = e, generico = R.string.error_cargar_contenido))
+                    }
                 }
                 .collect { resenas ->
-                    _uiState.update { it.copy(resenasRecientes = resenas.take(RESENAS_RECIENTES), errorResenasRes = null) }
+                    _uiState.update { it.copy(resenasRecientes = resenas.take(RESENAS_RECIENTES), cargandoResenas = false, errorResenasRes = null) }
                 }
         }
     }
@@ -152,28 +156,36 @@ class ProfileViewModel @Inject constructor(
 
     // Lo que guarde con el boton de guardar del detalle
     private fun escucharMisGuardados() {
+        _uiState.update { it.copy(cargandoGuardados = true, errorGuardadosRes = null) }
+
         viewModelScope.launch(ioDispatcher) {
             usuarioRepository.getMisGuardadosLive()
                 .catch { e ->
                     Log.d("ProfileViewModel", "escucharMisGuardados: ${e.message}")
-                    _uiState.update { it.copy(errorGuardadosRes = mensajeDeError(error = e, generico = R.string.error_cargar_contenido)) }
+                    _uiState.update {
+                        it.copy(cargandoGuardados = false, errorGuardadosRes = mensajeDeError(error = e, generico = R.string.error_cargar_contenido))
+                    }
                 }
                 .collect { guardados ->
-                    _uiState.update { it.copy(guardados = guardados, errorGuardadosRes = null) }
+                    _uiState.update { it.copy(guardados = guardados, cargandoGuardados = false, errorGuardadosRes = null) }
                 }
         }
     }
 
     // Mis mixtapes en vivo: una nueva, o un item agregado desde el detalle, llegan solos
     private fun escucharMisMixtapes() {
+        _uiState.update { it.copy(cargandoMixtapes = true, errorMixtapesRes = null) }
+
         viewModelScope.launch(ioDispatcher) {
             mixtapeRepository.getMisMixtapesLive()
                 .catch { e ->
                     Log.d("ProfileViewModel", "escucharMisMixtapes: ${e.message}")
-                    _uiState.update { it.copy(errorMixtapesRes = mensajeDeError(error = e, generico = R.string.error_cargar_contenido)) }
+                    _uiState.update {
+                        it.copy(cargandoMixtapes = false, errorMixtapesRes = mensajeDeError(error = e, generico = R.string.error_cargar_contenido))
+                    }
                 }
                 .collect { mixtapes ->
-                    _uiState.update { it.copy(mixtapes = mixtapes, errorMixtapesRes = null) }
+                    _uiState.update { it.copy(mixtapes = mixtapes, cargandoMixtapes = false, errorMixtapesRes = null) }
                 }
         }
     }

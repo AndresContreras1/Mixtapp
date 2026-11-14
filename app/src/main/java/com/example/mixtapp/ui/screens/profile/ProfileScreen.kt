@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
@@ -130,11 +132,14 @@ fun ProfileScreen(
                 cargandoFavoritos = state.cargandoFavoritos,
                 errorFavoritosRes = state.errorFavoritosRes,
                 resenasRecientes = state.resenasRecientes,
+                cargandoResenas = state.cargandoResenas,
                 errorResenasRes = state.errorResenasRes,
                 errorAccionRes = state.errorAccionRes,
                 guardados = state.guardados,
+                cargandoGuardados = state.cargandoGuardados,
                 errorGuardadosRes = state.errorGuardadosRes,
                 mixtapes = state.mixtapes,
+                cargandoMixtapes = state.cargandoMixtapes,
                 errorMixtapesRes = state.errorMixtapesRes,
                 onSettingsClick = onSettingsClick,
                 // Mis contadores abren mi lista de seguidores o de seguidos con mi uid
@@ -177,11 +182,14 @@ fun ProfileScreenContent(
     cargandoFavoritos: Boolean,
     @StringRes errorFavoritosRes: Int?,
     resenasRecientes: List<ReviewUi>,
+    cargandoResenas: Boolean,
     @StringRes errorResenasRes: Int?,
     @StringRes errorAccionRes: Int?,
     guardados: List<ItemResumenUi>,
+    cargandoGuardados: Boolean,
     @StringRes errorGuardadosRes: Int?,
     mixtapes: List<MixtapeUi>,
+    cargandoMixtapes: Boolean,
     @StringRes errorMixtapesRes: Int?,
     onSettingsClick: () -> Unit,
     onSeguidoresClick: () -> Unit,
@@ -264,18 +272,15 @@ fun ProfileScreenContent(
         }
 
         when (selectedTabId) {
-            PESTANA_GUARDADOS -> {
-                when {
-                    errorGuardadosRes != null -> item {
-                        ErrorMessage(messageRes = errorGuardadosRes)
-                    }
-                    guardados.isEmpty() -> item {
-                        EmptyMessage(messageRes = R.string.sin_guardados, modifier = Modifier.fillMaxWidth())
-                    }
-                    // La cuadricula se arma con filas de tres: cada fila es un item de la lista
-                    else -> items(guardados.chunked(GUARDADOS_POR_FILA)) { fila ->
-                        SavedItemsRow(items = fila, onItemClick = onItemClick)
-                    }
+            PESTANA_GUARDADOS -> listaDelPerfil(
+                cargando = cargandoGuardados,
+                vacia = guardados.isEmpty(),
+                errorMessageRes = errorGuardadosRes,
+                vaciaRes = R.string.sin_guardados,
+            ) {
+                // La cuadricula se arma con filas de tres: cada fila es un item de la lista
+                items(guardados.chunked(GUARDADOS_POR_FILA)) { fila ->
+                    SavedItemsRow(items = fila, onItemClick = onItemClick)
                 }
             }
             PESTANA_MIXTAPES -> {
@@ -291,14 +296,13 @@ fun ProfileScreenContent(
                     )
                 }
 
-                when {
-                    errorMixtapesRes != null -> item {
-                        ErrorMessage(messageRes = errorMixtapesRes)
-                    }
-                    mixtapes.isEmpty() -> item {
-                        EmptyMessage(messageRes = R.string.sin_mixtapes, modifier = Modifier.fillMaxWidth())
-                    }
-                    else -> items(mixtapes, key = { it.id }) { mixtape ->
+                listaDelPerfil(
+                    cargando = cargandoMixtapes,
+                    vacia = mixtapes.isEmpty(),
+                    errorMessageRes = errorMixtapesRes,
+                    vaciaRes = R.string.sin_mixtapes,
+                ) {
+                    items(mixtapes, key = { it.id }) { mixtape ->
                         MixtapeCard(
                             mixtape = mixtape,
                             onClick = { onMixtapeClick(mixtape.id) },
@@ -340,14 +344,13 @@ fun ProfileScreenContent(
                     }
                 }
 
-                when {
-                    errorResenasRes != null -> item {
-                        ErrorMessage(messageRes = errorResenasRes)
-                    }
-                    resenasRecientes.isEmpty() -> item {
-                        EmptyMessage(messageRes = R.string.sin_mis_resenas, modifier = Modifier.fillMaxWidth())
-                    }
-                    else -> items(resenasRecientes) { review ->
+                listaDelPerfil(
+                    cargando = cargandoResenas,
+                    vacia = resenasRecientes.isEmpty(),
+                    errorMessageRes = errorResenasRes,
+                    vaciaRes = R.string.sin_mis_resenas,
+                ) {
+                    items(resenasRecientes) { review ->
                         ReviewCard(
                             review = review,
                             // Soy yo: tocar mi nombre no abre nada
@@ -370,6 +373,30 @@ fun ProfileScreenContent(
             }
         }
     }
+}
+
+// Una lista de mi perfil (mis guardados, mis mixtapes, mi actividad): la carga mientras llega, el
+// aviso del error arriba (si el listener falla despues de cargar, queda lo de antes), el mensaje si
+// esta vacia y sus elementos
+private fun LazyListScope.listaDelPerfil(
+    cargando: Boolean,
+    vacia: Boolean,
+    @StringRes errorMessageRes: Int?,
+    @StringRes vaciaRes: Int,
+    elementos: LazyListScope.() -> Unit,
+) {
+    if (cargando) {
+        item { LoadingBox(modifier = Modifier.height(120.dp)) }
+        return
+    }
+
+    if (errorMessageRes != null) {
+        item { ErrorMessage(messageRes = errorMessageRes) }
+    } else if (vacia) {
+        item { EmptyMessage(messageRes = vaciaRes, modifier = Modifier.fillMaxWidth()) }
+    }
+
+    elementos()
 }
 
 @Composable
@@ -399,11 +426,14 @@ fun ProfileScreenPreview() {
                 cargandoFavoritos = false,
                 errorFavoritosRes = null,
                 resenasRecientes = listOf(LocalPreviewProvider.miReview),
+                cargandoResenas = false,
                 errorResenasRes = null,
                 errorAccionRes = null,
                 guardados = LocalPreviewProvider.favoritos,
+                cargandoGuardados = false,
                 errorGuardadosRes = null,
                 mixtapes = emptyList(),
+                cargandoMixtapes = false,
                 errorMixtapesRes = null,
                 onSettingsClick = {},
                 onSeguidoresClick = {},
