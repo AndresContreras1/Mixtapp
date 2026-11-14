@@ -142,9 +142,9 @@ class ReviewRepositoryTest {
 
     @Test
     fun getResenasEnElMapaLive_conYSinUbicacion_soloLasQueTienenUbicacion() = runTest {
-        //Arrange: el data source ya trae solo las de las ultimas 24 horas
-        val ahora = Instant.parse("2026-11-13T12:00:00Z")
-        coEvery { reviewDataSource.listenReviewsDesde("2026-11-12T12:00:00Z") } returns flowOf(
+        //Arrange: el data source ya trae solo las de las ultimas 24 horas, con mis likes
+        val horaDelMapa = Instant.parse("2026-11-13T12:00:00Z")
+        coEvery { reviewDataSource.listenReviewsDesde("2026-11-12T12:00:00Z", "yo") } returns flowOf(
             listOf(
                 ReviewDto().copy(id = "vieja", createdAt = "2026-11-13T08:00:00Z", latitud = 4.6, longitud = -74.0),
                 ReviewDto().copy(id = "sin_ubicacion", createdAt = "2026-11-13T09:00:00Z"),
@@ -152,11 +152,44 @@ class ReviewRepositoryTest {
             )
         )
         //Act
-        val resenas = repository.getResenasEnElMapaLive(ahora = ahora).first()
+        val resenas = repository.getResenasEnElMapaLive(reloj = { horaDelMapa }).first()
         //Assert: la mas nueva primero, con sus coordenadas
         Truth.assertThat(resenas.map { it.review.id }).containsExactly("nueva", "vieja").inOrder()
         Truth.assertThat(resenas[0].latitud).isEqualTo(6.2)
         Truth.assertThat(resenas[0].longitud).isEqualTo(-75.5)
+    }
+
+    @Test
+    fun getResenasEnElMapaLive_pasaronLas24Horas_saleDelMapa() = runTest {
+        //Arrange: el listener empezo a las 12:00 del 13 y la siguiente emision llega al otro dia a
+        // las 10:00; para entonces la de las 08:00 del 13 ya tiene mas de 24 horas
+        var hora = Instant.parse("2026-11-13T12:00:00Z")
+        coEvery { reviewDataSource.listenReviewsDesde("2026-11-12T12:00:00Z", "yo") } returns flowOf(
+            listOf(
+                ReviewDto().copy(id = "vieja", createdAt = "2026-11-13T08:00:00Z", latitud = 4.6, longitud = -74.0),
+                ReviewDto().copy(id = "nueva", createdAt = "2026-11-14T09:00:00Z", latitud = 6.2, longitud = -75.5),
+            )
+        )
+        //Act
+        val flujo = repository.getResenasEnElMapaLive(reloj = { hora })
+        hora = Instant.parse("2026-11-14T10:00:00Z")
+        val resenas = flujo.first()
+        //Assert
+        Truth.assertThat(resenas.map { it.review.id }).containsExactly("nueva")
+    }
+
+    @Test
+    fun getResenasEnElMapaLive_resenaConMiLike_corazonLleno() = runTest {
+        //Arrange: el data source marca liked con mi like en la subcoleccion
+        coEvery { reviewDataSource.listenReviewsDesde(any(), "yo") } returns flowOf(
+            listOf(
+                ReviewDto().copy(id = "r1", createdAt = "2026-11-13T11:00:00Z", latitud = 4.6, longitud = -74.0, liked = true),
+            )
+        )
+        //Act
+        val resenas = repository.getResenasEnElMapaLive(reloj = { Instant.parse("2026-11-13T12:00:00Z") }).first()
+        //Assert
+        Truth.assertThat(resenas.single().review.isLiked).isTrue()
     }
 
     @Test

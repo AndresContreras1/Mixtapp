@@ -68,6 +68,7 @@ fun Mixtapp(modifier: Modifier = Modifier) {
     val currentRoute = navBackStackEntry.value?.destination?.route
 
     val mostrarBarra = NavigationLogic.shouldShowBottomBar(currentRoute)
+    val mostrarFab = NavigationLogic.shouldShowFab(currentRoute)
 
     Scaffold(
         modifier = modifier,
@@ -77,7 +78,7 @@ fun Mixtapp(modifier: Modifier = Modifier) {
             }
         },
         floatingActionButton = {
-            if (mostrarBarra) {
+            if (mostrarFab) {
                 // El + abre la lista del catalogo para elegir que calificar
                 WriteReviewFab(
                     onClick = { navController.navigate(Screen.SelectItem.route) }

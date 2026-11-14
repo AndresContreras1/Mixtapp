@@ -82,7 +82,7 @@ class ReviewRetrofitDataSourceImpl @Inject constructor(
     }
 
     // El backend no guarda la ubicacion de las resenas: el mapa llega vacio
-    override fun listenReviewsDesde(desde: String): Flow<List<ReviewDto>> = flow {
+    override fun listenReviewsDesde(desde: String, currentUserId: String): Flow<List<ReviewDto>> = flow {
         emit(emptyList<ReviewDto>())
     }
 }

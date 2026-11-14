@@ -175,6 +175,7 @@
     <string name="nav_mapa">Mapa</string>
     <string name="mapa_titulo">Reseñas de las últimas 24 horas</string>
     <string name="mapa_cantidad_resenas">%1$d reseñas · toca un marcador para verla</string>
+    <string name="mapa_una_resena">1 reseña · toca el marcador para verla</string>
     <string name="mapa_sin_resenas">Nadie ha publicado una reseña con ubicación en las últimas 24 horas</string>
     <string name="cargando_mapa">Cargando las reseñas…</string>
     <string name="cerrar_resena_del_mapa">Cerrar la reseña</string>

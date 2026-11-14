@@ -11,6 +11,7 @@ import com.example.mixtapp.data.dtos.CreateReviewItemDto
 import com.example.mixtapp.data.dtos.CreateReviewUsuarioDto
 import com.example.mixtapp.data.dtos.UbicacionDto
 import com.example.mixtapp.data.dtos.toDiscussionCommentUi
+import com.example.mixtapp.data.dtos.toResenaEnMapaUi
 import com.example.mixtapp.data.dtos.toReviewUi
 import com.example.mixtapp.data.model.DiscussionCommentUi
 import com.example.mixtapp.data.model.DiscussionUi
@@ -145,6 +146,10 @@ class ReviewRepository @Inject constructor(
         }
     }
 
+    // La fecha desde la que se muestran resenas en el mapa, en formato ISO como createdAt
+    private fun hace24Horas(ahora: Instant): String =
+        ahora.minusSeconds(HORAS_DEL_MAPA * 60 * 60).toString()
+
     // Sin ubicacion la resena se publica igual, solo que no sale en el mapa: si quitaron el
     // permiso mientras se pedia, se guarda sin ella
     private suspend fun ubicacionDeLaResena(): UbicacionDto? {
@@ -173,30 +178,23 @@ class ReviewRepository @Inject constructor(
     }
 
     // Las resenas de las ultimas 24 horas que tienen ubicacion, la mas nueva primero: cada una es
-    // un marcador del mapa. Una nueva llega sola por el listener
-    fun getResenasEnElMapaLive(ahora: Instant = Instant.now()): Flow<List<ResenaEnMapaUi>> {
+    // un marcador del mapa, con mi like. Una nueva llega sola por el listener. reloj da la hora
+    // actual; las pruebas pasan una fija
+    fun getResenasEnElMapaLive(reloj: () -> Instant = { Instant.now() }): Flow<List<ResenaEnMapaUi>> {
         val usuarioId = authRemoteDataSource.currentUser?.uid ?: ""
-        // En formato ISO, como createdAt
-        val desde = ahora.minusSeconds(HORAS_DEL_MAPA * 60 * 60).toString()
 
-        return reviewRemoteDataSource.listenReviewsDesde(desde = desde)
+        return reviewRemoteDataSource.listenReviewsDesde(desde = hace24Horas(reloj()), currentUserId = usuarioId)
             .map { reviews ->
+                // Con cada cambio se vuelve a mirar la hora: lo que ya paso de 24 horas sale del
+                // mapa y el "hace cuanto" de las tarjetas avanza
+                val ahora = reloj()
+                val limite = hace24Horas(ahora)
+
                 reviews
+                    .filter { (it.createdAt ?: "") >= limite }
                     .sortedByDescending { it.createdAt }
-                    .mapNotNull { review ->
-                        val latitud = review.latitud
-                        val longitud = review.longitud
-                        // Sin ubicacion no hay donde poner el marcador
-                        if (latitud == null || longitud == null) {
-                            null
-                        } else {
-                            ResenaEnMapaUi(
-                                review = review.toReviewUi(usuarioActualId = usuarioId, ahora = ahora),
-                                latitud = latitud,
-                                longitud = longitud,
-                            )
-                        }
-                    }
+                    // Sin ubicacion no hay donde poner el marcador
+                    .mapNotNull { it.toResenaEnMapaUi(usuarioActualId = usuarioId, ahora = ahora) }
             }
             .catch { e ->
                 Log.d("ReviewRepository", "getResenasEnElMapaLive: ${e.message}")

@@ -1,6 +1,7 @@
 package com.example.mixtapp.data.dtos
 
 import com.example.mixtapp.data.model.ItemResumenUi
+import com.example.mixtapp.data.model.ResenaEnMapaUi
 import com.example.mixtapp.data.model.ReviewUi
 import com.example.mixtapp.data.model.TIPO_ALBUM
 import java.time.Instant
@@ -41,6 +42,19 @@ data class ItemDeResenaDto(
     val imagenUrl: String,
 ) {
     constructor() : this("", "", "")
+}
+
+// Un marcador del mapa: la resena con donde se publico. null si no tiene ubicacion, porque no hay
+// donde ponerla
+fun ReviewDto.toResenaEnMapaUi(usuarioActualId: String, ahora: Instant = Instant.now()): ResenaEnMapaUi? {
+    val latitudDeLaResena = latitud ?: return null
+    val longitudDeLaResena = longitud ?: return null
+
+    return ResenaEnMapaUi(
+        review = toReviewUi(usuarioActualId = usuarioActualId, ahora = ahora),
+        latitud = latitudDeLaResena,
+        longitud = longitudDeLaResena,
+    )
 }
 
 // El repositorio pasa el id del usuario de la app para marcar su resena. ahora tiene un valor por

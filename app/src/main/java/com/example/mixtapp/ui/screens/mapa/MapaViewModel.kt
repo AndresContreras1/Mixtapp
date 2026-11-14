@@ -37,6 +37,8 @@ class MapaViewModel @Inject constructor(
     }
 
     private fun escucharResenas() {
+        _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
+
         viewModelScope.launch(ioDispatcher) {
             reviewRepository.getResenasEnElMapaLive()
                 .catch { e ->
