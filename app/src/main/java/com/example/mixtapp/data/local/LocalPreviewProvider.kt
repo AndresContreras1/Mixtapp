@@ -15,6 +15,7 @@ import com.example.mixtapp.data.model.NOTIFICACION_SEGUIDOR
 import com.example.mixtapp.data.model.NotificationUi
 import com.example.mixtapp.data.model.ReviewUi
 import com.example.mixtapp.data.model.SeccionUi
+import com.example.mixtapp.data.model.SonandoUi
 import com.example.mixtapp.data.model.TIPO_ALBUM
 import com.example.mixtapp.data.model.TIPO_ARTISTA
 import com.example.mixtapp.data.model.TIPO_CANCION
@@ -295,5 +296,29 @@ object LocalPreviewProvider {
     val mixtapeConItems = MixtapeConItemsUi(
         mixtape = mixtape,
         items = listOf(fromZero.toItemResumenUi(), karolG.toItemResumenUi()),
+    )
+
+    // Lo que suena: lo mio y lo de alguien que sigo, para los previews de Siguiendo
+    val sonando = listOf(
+        SonandoUi(
+            usuarioId = "yo",
+            nombre = "Andres",
+            fotoUrl = "",
+            item = fromZero.toItemResumenUi(),
+            timeAgo = "5 min",
+            reacciones = 0,
+            reaccionado = false,
+            esMio = true,
+        ),
+        SonandoUi(
+            usuarioId = "laura",
+            nombre = "Laura Gómez",
+            fotoUrl = "",
+            item = karolG.toItemResumenUi(),
+            timeAgo = "1 h",
+            reacciones = 3,
+            reaccionado = true,
+            esMio = false,
+        ),
     )
 }

@@ -27,7 +27,6 @@ import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalPreviewProvider
 import com.example.mixtapp.data.model.SonandoUi
-import com.example.mixtapp.data.model.toItemResumenUi
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.ItemAsyncImage
 import com.example.mixtapp.ui.utils.ProfileAsyncImage
@@ -160,28 +159,21 @@ fun SonandoCard(
 fun SonandoAhoraRowPreview() {
     MixtappTheme(darkTheme = true) {
         SonandoAhoraRow(
-            sonando = listOf(
-                SonandoUi(
-                    usuarioId = "yo",
-                    nombre = "Andres",
-                    fotoUrl = "",
-                    item = LocalPreviewProvider.fromZero.toItemResumenUi(),
-                    timeAgo = "5 min",
-                    reacciones = 0,
-                    reaccionado = false,
-                    esMio = true,
-                ),
-                SonandoUi(
-                    usuarioId = "laura",
-                    nombre = "Laura Gómez",
-                    fotoUrl = "",
-                    item = LocalPreviewProvider.karolG.toItemResumenUi(),
-                    timeAgo = "1 h",
-                    reacciones = 3,
-                    reaccionado = true,
-                    esMio = false,
-                ),
-            ),
+            sonando = LocalPreviewProvider.sonando,
+            onItemClick = {},
+            onUserClick = {},
+            onReaccionarClick = {},
+            onQuitarClick = {},
+        )
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun SonandoCardPreview() {
+    MixtappTheme(darkTheme = true) {
+        SonandoCard(
+            sonando = LocalPreviewProvider.sonando.last(),
             onItemClick = {},
             onUserClick = {},
             onReaccionarClick = {},
