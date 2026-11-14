@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -24,7 +26,6 @@ import com.example.mixtapp.data.model.ItemUi
 import com.example.mixtapp.data.model.NotificationUi
 import com.example.mixtapp.data.model.ReviewUi
 import com.example.mixtapp.ui.screens.notifications.components.DiscusionRow
-import com.example.mixtapp.ui.screens.notifications.components.LanzamientoRow
 import com.example.mixtapp.ui.screens.notifications.components.NotificationRow
 import com.example.mixtapp.ui.screens.notifications.model.TAB_DISCUSIONES
 import com.example.mixtapp.ui.screens.notifications.model.TAB_LANZAMIENTOS
@@ -36,6 +37,7 @@ import com.example.mixtapp.ui.utils.EmptyMessage
 import com.example.mixtapp.ui.utils.ErrorBox
 import com.example.mixtapp.ui.utils.ErrorMessage
 import com.example.mixtapp.ui.utils.FilaDeOpciones
+import com.example.mixtapp.ui.utils.ItemRow
 import com.example.mixtapp.ui.utils.LoadingBox
 import com.example.mixtapp.ui.utils.OpcionUi
 import com.example.mixtapp.ui.utils.ScreenTitle
@@ -182,10 +184,18 @@ fun NotificationsScreenContent(
                         }
 
                         items(lanzamientos) { item ->
-                            LanzamientoRow(
+                            // Los lanzamientos llevan su anio al lado de la etiqueta
+                            ItemRow(
                                 item = item,
                                 onClick = { onItemClick(item) },
-                            )
+                                modifier = Modifier.testTag("lanzamiento_${item.id}"),
+                            ) {
+                                Text(
+                                    text = item.anio,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    style = MaterialTheme.typography.labelSmall,
+                                )
+                            }
                         }
                     }
                 }

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Search
@@ -25,7 +26,6 @@ import com.example.mixtapp.data.local.LocalSearchCategoriesProvider
 import com.example.mixtapp.data.model.ItemConResenasUi
 import com.example.mixtapp.data.model.SearchCategoryUi
 import com.example.mixtapp.data.model.UsuarioUi
-import com.example.mixtapp.ui.screens.search.components.ResultadoItemRow
 import com.example.mixtapp.ui.screens.search.components.SearchCategoryCardsRow
 import com.example.mixtapp.ui.screens.search.components.SelectedCategoryHeader
 import com.example.mixtapp.ui.theme.MixtappTheme
@@ -34,9 +34,11 @@ import com.example.mixtapp.ui.utils.AppTextField
 import com.example.mixtapp.ui.utils.EmptyMessage
 import com.example.mixtapp.ui.utils.ErrorBox
 import com.example.mixtapp.ui.utils.ErrorMessage
+import com.example.mixtapp.ui.utils.ItemRow
 import com.example.mixtapp.ui.utils.LoadingBox
 import com.example.mixtapp.ui.utils.ScreenTitle
 import com.example.mixtapp.ui.utils.SectionTitle
+import com.example.mixtapp.ui.utils.StarRating
 import com.example.mixtapp.ui.utils.UserRow
 
 @Composable
@@ -123,13 +125,7 @@ fun SearchScreenContent(
                             }
                         }
 
-                        items(resultados) { itemConResenas ->
-                            ResultadoItemRow(
-                                itemConResenas = itemConResenas,
-                                onClick = { onItemClick(itemConResenas.item.tipo, itemConResenas.item.id) },
-                                modifier = Modifier.testTag("resultado_${itemConResenas.item.id}"),
-                            )
-                        }
+                        listaDeResultados(resultados = resultados, onItemClick = onItemClick)
 
                         if (usuarios.isNotEmpty()) {
                             item {
@@ -162,13 +158,7 @@ fun SearchScreenContent(
                             }
                         }
 
-                        items(resultados) { itemConResenas ->
-                            ResultadoItemRow(
-                                itemConResenas = itemConResenas,
-                                onClick = { onItemClick(itemConResenas.item.tipo, itemConResenas.item.id) },
-                                modifier = Modifier.testTag("resultado_${itemConResenas.item.id}"),
-                            )
-                        }
+                        listaDeResultados(resultados = resultados, onItemClick = onItemClick)
                     }
 
                     // Sin texto ni tarjeta: las tarjetas de Explorar por y de Generos, dos por fila
@@ -201,6 +191,23 @@ fun SearchScreenContent(
                     }
                 }
             }
+        }
+    }
+}
+
+// Los items que coinciden, con su promedio de estrellas: la misma lista con texto y con una tarjeta
+// elegida
+private fun LazyListScope.listaDeResultados(
+    resultados: List<ItemConResenasUi>,
+    onItemClick: (String, String) -> Unit,
+) {
+    items(resultados) { itemConResenas ->
+        ItemRow(
+            item = itemConResenas.item,
+            onClick = { onItemClick(itemConResenas.item.tipo, itemConResenas.item.id) },
+            modifier = Modifier.testTag("resultado_${itemConResenas.item.id}"),
+        ) {
+            StarRating(rating = itemConResenas.estrellas, starSize = 14.dp, onRatingChange = null)
         }
     }
 }

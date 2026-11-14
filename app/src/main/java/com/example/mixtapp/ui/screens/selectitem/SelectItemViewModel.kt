@@ -6,10 +6,12 @@ import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
 import com.example.mixtapp.data.injection.IoDispatcher
 import com.example.mixtapp.data.model.ItemConResenasUi
+import com.example.mixtapp.data.model.contieneTexto
 import com.example.mixtapp.data.repository.CatalogoRepository
 import com.example.mixtapp.ui.screens.selectitem.model.FILTRO_TODOS
 import com.example.mixtapp.ui.utils.mensajeDeError
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +19,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel
 class SelectItemViewModel @Inject constructor(
@@ -84,18 +85,12 @@ class SelectItemViewModel @Inject constructor(
         }
     }
 
-    // Los del tipo elegido cuyo titulo, subtitulo o detalle contienen el texto (sin importar las
-    // mayusculas), los mas populares primero
+    // Los del tipo elegido que contienen el texto, los mas populares primero
     private fun filtrar(texto: String, filtroId: String, catalogo: List<ItemConResenasUi>): List<ItemConResenasUi> {
         val buscado = texto.trim()
 
         return catalogo.filter { filtroId == FILTRO_TODOS || it.item.tipo == filtroId }
-            .filter {
-                buscado.isEmpty() ||
-                    it.item.titulo.contains(buscado, ignoreCase = true) ||
-                    it.item.subtitulo.contains(buscado, ignoreCase = true) ||
-                    it.item.detalle.contains(buscado, ignoreCase = true)
-            }
+            .filter { buscado.isEmpty() || it.item.contieneTexto(buscado) }
             .sortedByDescending { it.popularidad }
     }
 

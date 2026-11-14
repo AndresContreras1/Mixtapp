@@ -70,6 +70,13 @@ data class ItemConResenasUi(
     val popularidad: Int get() = item.likes + reviews.size
 }
 
+// Si el titulo, el subtitulo o el detalle contienen el texto, sin importar las mayusculas. Lo usan
+// Buscar y Elegir que calificar
+fun ItemUi.contieneTexto(texto: String): Boolean =
+    titulo.contains(texto, ignoreCase = true) ||
+        subtitulo.contains(texto, ignoreCase = true) ||
+        detalle.contains(texto, ignoreCase = true)
+
 fun ItemUi.toItemResumenUi(): ItemResumenUi {
     return ItemResumenUi(
         id = id,
