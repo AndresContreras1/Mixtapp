@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -129,146 +130,127 @@ fun NotificationsScreenContent(
             )
 
             when (selectedTabId) {
-                TAB_DISCUSIONES -> when {
-                    cargandoDiscusiones -> LoadingBox()
-                    // Sin discusiones cargadas solo se muestra el motivo del error
-                    discusiones.isEmpty() && errorDiscusionesRes != null -> ErrorBox(messageRes = errorDiscusionesRes)
-                    else -> LazyColumn(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp),
-                        verticalArrangement = Arrangement.spacedBy(10.dp),
-                    ) {
-                        // Si el listener falla despues de cargar, el aviso sale arriba y queda lo de antes
-                        item { ErrorMessage(messageRes = errorDiscusionesRes) }
-                        if (discusiones.isEmpty()) {
-                            item {
-                                EmptyMessage(
-                                    messageRes = R.string.sin_actividad_seguidos,
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                            }
-                        }
+                TAB_DISCUSIONES -> ListaDePestana(
+                    cargando = cargandoDiscusiones,
+                    vacia = discusiones.isEmpty(),
+                    errorMessageRes = errorDiscusionesRes,
+                    vaciaRes = R.string.sin_actividad_seguidos,
+                    modifier = Modifier.weight(1f),
+                ) {
+                    items(discusiones, key = { it.id }) { review ->
+                        DiscusionRow(
+                            review = review,
+                            onClick = { onReviewClick(review.id) },
+                            onAuthorClick = { onUserClick(review.authorId) },
+                        )
+                    }
+                }
 
-                        items(discusiones, key = { it.id }) { review ->
-                            DiscusionRow(
-                                review = review,
-                                onClick = { onReviewClick(review.id) },
-                                onAuthorClick = { onUserClick(review.authorId) },
+                // Vacia si todavia no me gusta ningun artista o si no tienen albumes ni canciones
+                TAB_LANZAMIENTOS -> ListaDePestana(
+                    cargando = cargandoLanzamientos,
+                    vacia = lanzamientos.isEmpty(),
+                    errorMessageRes = errorLanzamientosRes,
+                    vaciaRes = R.string.sin_lanzamientos,
+                    modifier = Modifier.weight(1f),
+                ) {
+                    items(lanzamientos) { item ->
+                        // Los lanzamientos llevan su anio al lado de la etiqueta
+                        ItemRow(
+                            item = item,
+                            onClick = { onItemClick(item) },
+                            modifier = Modifier.testTag("lanzamiento_${item.id}"),
+                        ) {
+                            Text(
+                                text = item.anio,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                style = MaterialTheme.typography.labelSmall,
                             )
                         }
                     }
                 }
 
-                TAB_LANZAMIENTOS -> when {
-                    cargandoLanzamientos -> LoadingBox()
-                    // Sin lanzamientos cargados solo se muestra el motivo del error
-                    lanzamientos.isEmpty() && errorLanzamientosRes != null -> ErrorBox(messageRes = errorLanzamientosRes)
-                    else -> LazyColumn(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp),
-                        verticalArrangement = Arrangement.spacedBy(10.dp),
-                    ) {
-                        item { ErrorMessage(messageRes = errorLanzamientosRes) }
-                        // Vacia si todavia no me gusta ningun artista o si no tienen albumes ni canciones
-                        if (lanzamientos.isEmpty()) {
-                            item {
-                                EmptyMessage(
-                                    messageRes = R.string.sin_lanzamientos,
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                            }
-                        }
+                // TAB_MIAS: las de hoy y las de antes, cada grupo con su titulo
+                else -> ListaDePestana(
+                    cargando = isLoading,
+                    vacia = hoy.isEmpty() && antes.isEmpty(),
+                    errorMessageRes = errorMessageRes,
+                    vaciaRes = R.string.sin_notificaciones,
+                    modifier = Modifier.weight(1f),
+                ) {
+                    // Fallo marcar una como leida: va aparte del error de la lista
+                    item { ErrorMessage(messageRes = errorAccionRes) }
 
-                        items(lanzamientos) { item ->
-                            // Los lanzamientos llevan su anio al lado de la etiqueta
-                            ItemRow(
-                                item = item,
-                                onClick = { onItemClick(item) },
-                                modifier = Modifier.testTag("lanzamiento_${item.id}"),
-                            ) {
-                                Text(
-                                    text = item.anio,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    style = MaterialTheme.typography.labelSmall,
-                                )
-                            }
-                        }
-                    }
-                }
-
-                // TAB_MIAS
-                else -> when {
-                    isLoading -> LoadingBox()
-                    // Sin notificaciones cargadas solo se muestra el motivo del error
-                    hoy.isEmpty() && antes.isEmpty() && errorMessageRes != null -> ErrorBox(messageRes = errorMessageRes)
-                    else -> {
-                        ErrorMessage(
-                            messageRes = errorMessageRes,
-                            modifier = Modifier.padding(horizontal = 20.dp)
-                        )
-                        ErrorMessage(
-                            messageRes = errorAccionRes,
-                            modifier = Modifier.padding(horizontal = 20.dp)
-                        )
-
-                        LazyColumn(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(1f),
-                            contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp),
-                            verticalArrangement = Arrangement.spacedBy(10.dp),
-                        ) {
-                            if (hoy.isEmpty() && antes.isEmpty()) {
-                                item {
-                                    EmptyMessage(
-                                        messageRes = R.string.sin_notificaciones,
-                                        modifier = Modifier.fillMaxWidth()
-                                    )
-                                }
-                            }
-
-                            if (hoy.isNotEmpty()) {
-                                item(key = "seccion_hoy") {
-                                    SectionTitle(
-                                        title = stringResource(R.string.notificaciones_hoy),
-                                        actionText = null,
-                                        onActionClick = null,
-                                    )
-                                }
-
-                                items(hoy, key = { it.id }) { notificacion ->
-                                    NotificationRow(
-                                        notification = notificacion,
-                                        onClick = { onNotificationClick(notificacion) },
-                                    )
-                                }
-                            }
-
-                            if (antes.isNotEmpty()) {
-                                item(key = "seccion_antes") {
-                                    SectionTitle(
-                                        title = stringResource(R.string.notificaciones_antes),
-                                        actionText = null,
-                                        onActionClick = null,
-                                    )
-                                }
-
-                                items(antes, key = { it.id }) { notificacion ->
-                                    NotificationRow(
-                                        notification = notificacion,
-                                        onClick = { onNotificationClick(notificacion) },
-                                    )
-                                }
-                            }
-                        }
-                    }
+                    grupoDeNotificaciones(
+                        tituloRes = R.string.notificaciones_hoy,
+                        notificaciones = hoy,
+                        onNotificationClick = onNotificationClick,
+                    )
+                    grupoDeNotificaciones(
+                        tituloRes = R.string.notificaciones_antes,
+                        notificaciones = antes,
+                        onNotificationClick = onNotificationClick,
+                    )
                 }
             }
         }
+    }
+}
+
+// La lista de una pestana: la carga, el error si no hay nada cargado, o la lista con el aviso del
+// error arriba (si el listener falla despues de cargar, queda lo de antes), el mensaje si esta vacia
+// y lo que muestra cada pestana
+@Composable
+private fun ListaDePestana(
+    cargando: Boolean,
+    vacia: Boolean,
+    @StringRes errorMessageRes: Int?,
+    @StringRes vaciaRes: Int,
+    modifier: Modifier = Modifier,
+    contenido: LazyListScope.() -> Unit,
+) {
+    when {
+        cargando -> LoadingBox()
+        vacia && errorMessageRes != null -> ErrorBox(messageRes = errorMessageRes)
+        else -> LazyColumn(
+            modifier = modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            item { ErrorMessage(messageRes = errorMessageRes) }
+
+            if (vacia) {
+                item {
+                    EmptyMessage(messageRes = vaciaRes, modifier = Modifier.fillMaxWidth())
+                }
+            }
+
+            contenido()
+        }
+    }
+}
+
+// Un grupo de mis notificaciones (hoy o antes) con su titulo; si no tiene ninguna no se muestra
+private fun LazyListScope.grupoDeNotificaciones(
+    @StringRes tituloRes: Int,
+    notificaciones: List<NotificationUi>,
+    onNotificationClick: (NotificationUi) -> Unit,
+) {
+    if (notificaciones.isEmpty()) return
+
+    item(key = "seccion_$tituloRes") {
+        SectionTitle(
+            title = stringResource(tituloRes),
+            actionText = null,
+            onActionClick = null,
+        )
+    }
+
+    items(notificaciones, key = { it.id }) { notificacion ->
+        NotificationRow(
+            notification = notificacion,
+            onClick = { onNotificationClick(notificacion) },
+        )
     }
 }
 
