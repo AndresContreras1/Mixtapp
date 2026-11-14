@@ -161,6 +161,29 @@ class CatalogoRepository @Inject constructor(
         }
     }
 
+    // Solo el item, una vez: para las pantallas que lo muestran en su cabecera (Agregar a mixtape,
+    // Datos curiosos) y no necesitan sus resenas
+    suspend fun getItem(tipo: String, itemId: String): Result<ItemUi> {
+        return try {
+            val usuarioActualId = authRemoteDataSource.currentUser?.uid ?: ""
+
+            // El data source retorna null si no existe: el repositorio es el que decide el error
+            val item = leerItem(tipo = tipo, itemId = itemId, usuarioActualId = usuarioActualId)
+                ?: return Result.failure(ContenidoNoEncontradoException())
+
+            Result.success(item)
+        } catch (e: HttpException) {
+            Log.d("CatalogoRepository", "getItem: ${e.message}")
+            Result.failure(errorDelBackend(e))
+        } catch (e: FirebaseFirestoreException) {
+            Log.d("CatalogoRepository", "getItem: ${e.message}")
+            Result.failure(errorDeFirestore(e))
+        } catch (e: Exception) {
+            Log.d("CatalogoRepository", "getItem: ${e.message}")
+            Result.failure(ErrorInesperadoException())
+        }
+    }
+
     // Escribir resena: el item y sus resenas una sola vez, para saber si ya lo califique
     suspend fun getItemConResenas(tipo: String, itemId: String): Result<ItemConResenasUi> {
         return try {
@@ -168,7 +191,7 @@ class CatalogoRepository @Inject constructor(
 
             // El item y sus resenas salen a la vez. Si el item no existe queda null
             val itemConResenas = coroutineScope {
-                val item = async { getItem(tipo = tipo, itemId = itemId, usuarioActualId = usuarioActualId) }
+                val item = async { leerItem(tipo = tipo, itemId = itemId, usuarioActualId = usuarioActualId) }
                 // Escribir resena solo busca la mia, sin likes
                 val reviews = async { reviewRemoteDataSource.getReviewsDeItem(tipo = tipo, itemId = itemId) }
                 val itemUi = item.await() ?: return@coroutineScope null
@@ -266,7 +289,7 @@ class CatalogoRepository @Inject constructor(
                 .map { album -> album?.toItemUi() }
         }
 
-    private suspend fun getItem(tipo: String, itemId: String, usuarioActualId: String): ItemUi? =
+    private suspend fun leerItem(tipo: String, itemId: String, usuarioActualId: String): ItemUi? =
         when (tipo) {
             TIPO_CANCION -> cancionRemoteDataSource.getCancionById(itemId, currentUserId = usuarioActualId)?.toItemUi()
             TIPO_ARTISTA -> artistaRemoteDataSource.getArtistaById(itemId, currentUserId = usuarioActualId)?.toItemUi()

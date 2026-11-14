@@ -36,6 +36,7 @@ class MixtapeDetailViewModel @Inject constructor(
     fun getMixtape(id: String) {
         if (escuchando) return
         escuchando = true
+        _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
 
         viewModelScope.launch(ioDispatcher) {
             mixtapeRepository.getMixtapeLive(id = id)
@@ -54,15 +55,15 @@ class MixtapeDetailViewModel @Inject constructor(
                         )
                     }
                 }
-                .collect { mixtape ->
-                    _uiState.update { it.copy(mixtape = mixtape, isLoading = false, errorMessageRes = null) }
+                .collect { mixtapeConItems ->
+                    _uiState.update { it.copy(mixtapeConItems = mixtapeConItems, isLoading = false, errorMessageRes = null) }
                 }
         }
     }
 
     // El item desaparece cuando llega la mixtape nueva por el listener: no se quita a mano
     fun quitarItem(itemId: String) {
-        val mixtapeId = _uiState.value.mixtape?.id ?: return
+        val mixtapeId = _uiState.value.mixtapeConItems?.mixtape?.id ?: return
 
         viewModelScope.launch(ioDispatcher) {
             val result = mixtapeRepository.quitarItem(mixtapeId = mixtapeId, itemId = itemId)
@@ -79,7 +80,7 @@ class MixtapeDetailViewModel @Inject constructor(
 
     // Si queda borrada, la pantalla vuelve atras con eliminada
     fun eliminarMixtape() {
-        val mixtapeId = _uiState.value.mixtape?.id ?: return
+        val mixtapeId = _uiState.value.mixtapeConItems?.mixtape?.id ?: return
 
         viewModelScope.launch(ioDispatcher) {
             val result = mixtapeRepository.eliminarMixtape(mixtapeId = mixtapeId)

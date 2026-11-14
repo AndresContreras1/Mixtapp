@@ -7,6 +7,8 @@ import com.example.mixtapp.data.model.HistoriaUi
 import com.example.mixtapp.data.model.ItemConResenasUi
 import com.example.mixtapp.data.model.ItemResumenUi
 import com.example.mixtapp.data.model.ItemUi
+import com.example.mixtapp.data.model.MixtapeConItemsUi
+import com.example.mixtapp.data.model.MixtapeUi
 import com.example.mixtapp.data.model.NOTIFICACION_COMENTARIO
 import com.example.mixtapp.data.model.NOTIFICACION_LIKE
 import com.example.mixtapp.data.model.NOTIFICACION_SEGUIDOR
@@ -275,5 +277,23 @@ object LocalPreviewProvider {
             isRead = true,
             isToday = false,
         ),
+    )
+
+    // Una mixtape mia con dos items, para los previews de las mixtapes
+    val mixtape = MixtapeUi(
+        id = "mixtape_1",
+        nombre = "Para entrenar",
+        descripcion = "Lo que suena en el gimnasio",
+        usuarioNombre = "Andres",
+        usuarioFotoUrl = "",
+        itemsCount = 2,
+        portadas = listOf(fromZero.imagenUrl, karolG.imagenUrl),
+        isMine = true,
+        tieneElItem = false,
+    )
+
+    val mixtapeConItems = MixtapeConItemsUi(
+        mixtape = mixtape,
+        items = listOf(fromZero.toItemResumenUi(), karolG.toItemResumenUi()),
     )
 }

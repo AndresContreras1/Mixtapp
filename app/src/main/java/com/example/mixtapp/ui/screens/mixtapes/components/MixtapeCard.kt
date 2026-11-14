@@ -65,7 +65,7 @@ fun MixtapeCard(
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            PortadaDeMixtape(items = mixtape.items)
+            PortadaDeMixtape(portadas = mixtape.portadas, nombre = mixtape.nombre)
 
             Spacer(modifier = Modifier.width(14.dp))
 
@@ -92,10 +92,10 @@ fun MixtapeCard(
                 Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
-                    text = if (mixtape.itemCount == 1) {
+                    text = if (mixtape.itemsCount == 1) {
                         stringResource(R.string.un_elemento_mixtape)
                     } else {
-                        stringResource(R.string.elementos_mixtape, mixtape.itemCount)
+                        stringResource(R.string.elementos_mixtape, mixtape.itemsCount)
                     },
                     color = MaterialTheme.colorScheme.primary,
                     style = MaterialTheme.typography.labelMedium,
@@ -115,11 +115,12 @@ fun MixtapeCard(
     }
 }
 
-// La portada: vacia lleva el icono; con menos de cuatro items, la del primero; con cuatro o mas,
-// un mosaico con las cuatro primeras
+// La portada: vacia lleva el icono; con menos de cuatro portadas, la del primer item; con cuatro,
+// un mosaico. Las portadas vienen guardadas en la mixtape
 @Composable
 private fun PortadaDeMixtape(
-    items: List<ItemResumenUi>,
+    portadas: List<String>,
+    nombre: String,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -130,26 +131,26 @@ private fun PortadaDeMixtape(
         contentAlignment = Alignment.Center,
     ) {
         when {
-            items.isEmpty() -> Icon(
+            portadas.isEmpty() -> Icon(
                 imageVector = Icons.AutoMirrored.Filled.QueueMusic,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onPrimaryContainer,
                 modifier = Modifier.size(36.dp),
             )
-            items.size < PORTADAS_DEL_MOSAICO -> ItemAsyncImage(
-                imagenUrl = items.first().imagenUrl,
-                titulo = items.first().titulo,
+            portadas.size < PORTADAS_DEL_MOSAICO -> ItemAsyncImage(
+                imagenUrl = portadas.first(),
+                titulo = nombre,
                 esquinas = 0.dp,
                 modifier = Modifier.fillMaxSize(),
             )
             // Dos filas de dos: cada portada ocupa la mitad con weight
             else -> Column(modifier = Modifier.fillMaxSize()) {
-                items.take(PORTADAS_DEL_MOSAICO).chunked(2).forEach { fila ->
+                portadas.take(PORTADAS_DEL_MOSAICO).chunked(2).forEach { fila ->
                     Row(modifier = Modifier.weight(1f)) {
-                        fila.forEach { item ->
+                        fila.forEach { portada ->
                             ItemAsyncImage(
-                                imagenUrl = item.imagenUrl,
-                                titulo = item.titulo,
+                                imagenUrl = portada,
+                                titulo = nombre,
                                 esquinas = 0.dp,
                                 modifier = Modifier
                                     .weight(1f)
@@ -168,17 +169,7 @@ private fun PortadaDeMixtape(
 fun MixtapeCardPreview() {
     MixtappTheme(darkTheme = true) {
         MixtapeCard(
-            mixtape = MixtapeUi(
-                id = "mixtape_1",
-                nombre = "Para entrenar",
-                descripcion = "Lo que suena en el gimnasio",
-                usuarioId = "yo",
-                usuarioNombre = "Andres",
-                usuarioFotoUrl = "",
-                items = listOf(LocalPreviewProvider.fromZero.toItemResumenUi(), LocalPreviewProvider.karolG.toItemResumenUi()),
-                isMine = true,
-                timeAgo = "2 d",
-            ),
+            mixtape = LocalPreviewProvider.mixtape,
             onClick = {},
         )
     }

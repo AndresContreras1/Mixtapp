@@ -13,7 +13,7 @@ import com.example.mixtapp.data.dtos.CreateSonandoDto
 import com.example.mixtapp.data.dtos.CreateVotoDto
 import com.example.mixtapp.data.dtos.HistoriaDto
 import com.example.mixtapp.data.dtos.ItemDelDueloDto
-import com.example.mixtapp.data.dtos.ItemMixtapeDto
+import com.example.mixtapp.data.dtos.CreateItemMixtapeDto
 import com.example.mixtapp.data.dtos.SeccionDto
 import com.example.mixtapp.data.dtos.UsuarioPerfilFirestoreDto
 import com.example.mixtapp.data.model.TIPO_ALBUM
@@ -201,9 +201,14 @@ suspend fun limpiarBase(db: FirebaseFirestore) {
         dueloDoc.reference.delete().await()
     }
 
-    // Las mixtapes no tienen subcolecciones
+    // Los items de cada mixtape van en su subcoleccion: se borran antes que la mixtape
     val mixtapes = db.collection("mixtapes").get().await()
-    for (mixtapeDoc in mixtapes) mixtapeDoc.reference.delete().await()
+    for (mixtapeDoc in mixtapes) {
+        val items = mixtapeDoc.reference.collection("items").get().await()
+        for (item in items) item.reference.delete().await()
+
+        mixtapeDoc.reference.delete().await()
+    }
 
     val sonando = db.collection("sonando").get().await()
     for (sonandoDoc in sonando) {
@@ -222,24 +227,23 @@ fun generateMixtape(i: Int, createdAt: String = "2025-01-0${i}T00:00:00Z"): Crea
         nombre = "Mixtape $i",
         descripcion = null,
         usuarioId = usuario.id,
-        usuarioNombre = usuario.nombre,
-        usuarioFotoUrl = usuario.fotoUrl,
-        items = emptyList(),
+        usuario = CreateReviewUsuarioDto(nombre = usuario.nombre, fotoUrl = usuario.fotoUrl),
+        itemsCount = 0,
+        portadas = emptyList(),
         createdAt = createdAt,
     )
 }
 
-// La copia del album i que se agrega a una mixtape
-fun generateItemMixtape(i: Int): ItemMixtapeDto {
+// La copia del album i que se agrega a una mixtape; su id es el id del album
+fun generateItemMixtape(i: Int): CreateItemMixtapeDto {
     val album = generateAlbum(i)
 
-    return ItemMixtapeDto(
-        id = album.id,
+    return CreateItemMixtapeDto(
         tipo = TIPO_ALBUM,
         titulo = album.titulo,
         subtitulo = album.artista,
         imagenUrl = album.portadaUrl,
-        genero = album.genero,
+        agregadoEn = "2025-01-0${i}T00:00:00Z",
     )
 }
 

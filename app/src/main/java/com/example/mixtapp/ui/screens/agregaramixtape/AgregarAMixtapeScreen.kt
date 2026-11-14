@@ -62,6 +62,7 @@ fun AgregarAMixtapeScreen(
         mixtapes = state.mixtapes,
         isLoading = state.isLoading,
         errorMessageRes = state.errorMessageRes,
+        errorItemRes = state.errorItemRes,
         errorAccionRes = state.errorAccionRes,
         onMixtapeClick = { agregarAMixtapeViewModel.agregarA(mixtapeId = it) },
         onCrearMixtapeClick = onCrearMixtapeClick,
@@ -70,12 +71,14 @@ fun AgregarAMixtapeScreen(
     )
 }
 
+// La version sin ViewModel, para el preview
 @Composable
 fun AgregarAMixtapeScreenContent(
     item: ItemUi?,
     mixtapes: List<MixtapeUi>,
     isLoading: Boolean,
     @StringRes errorMessageRes: Int?,
+    @StringRes errorItemRes: Int?,
     @StringRes errorAccionRes: Int?,
     onMixtapeClick: (String) -> Unit,
     onCrearMixtapeClick: () -> Unit,
@@ -113,6 +116,7 @@ fun AgregarAMixtapeScreenContent(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             style = MaterialTheme.typography.titleMedium,
                         )
+                        ErrorMessage(messageRes = errorItemRes)
                         ErrorMessage(messageRes = errorAccionRes)
                     }
 
@@ -122,14 +126,12 @@ fun AgregarAMixtapeScreenContent(
                         }
                     }
 
-                    // Las que ya tienen el item lo dicen al final; tocarlas no lo repite
+                    // Las que ya tienen el item lo dicen al final; el ViewModel no lo repite
                     items(mixtapes, key = { it.id }) { mixtape ->
-                        val yaEsta = mixtape.items.any { it.id == item?.id }
-
                         MixtapeCard(
                             mixtape = mixtape,
-                            onClick = { if (!yaEsta) onMixtapeClick(mixtape.id) },
-                            etiqueta = if (yaEsta) stringResource(R.string.ya_esta_en_mixtape) else null,
+                            onClick = { onMixtapeClick(mixtape.id) },
+                            etiqueta = if (mixtape.tieneElItem) stringResource(R.string.ya_esta_en_mixtape) else null,
                         )
                     }
 
@@ -154,9 +156,13 @@ fun AgregarAMixtapeScreenPreview() {
     MixtappTheme(darkTheme = true) {
         AgregarAMixtapeScreenContent(
             item = LocalPreviewProvider.fromZero,
-            mixtapes = emptyList(),
+            mixtapes = listOf(
+                LocalPreviewProvider.mixtape,
+                LocalPreviewProvider.mixtape.copy(id = "mixtape_2", nombre = "Para viajar", tieneElItem = true),
+            ),
             isLoading = false,
             errorMessageRes = null,
+            errorItemRes = null,
             errorAccionRes = null,
             onMixtapeClick = {},
             onCrearMixtapeClick = {},

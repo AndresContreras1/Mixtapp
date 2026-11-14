@@ -1,6 +1,7 @@
 package com.example.mixtapp.data.datasource.impl.retrofit
 
 import com.example.mixtapp.data.datasource.MixtapeRemoteDataSource
+import com.example.mixtapp.data.dtos.CreateItemMixtapeDto
 import com.example.mixtapp.data.dtos.CreateMixtapeDto
 import com.example.mixtapp.data.dtos.ItemMixtapeDto
 import com.example.mixtapp.data.dtos.MixtapeDto
@@ -12,7 +13,7 @@ import javax.inject.Inject
 class MixtapeRetrofitDataSourceImpl @Inject constructor() : MixtapeRemoteDataSource {
 
     // La lista llega vacia
-    override fun listenMixtapesDeUsuario(usuarioId: String): Flow<List<MixtapeDto>> = flow {
+    override fun listenMixtapesDeUsuario(usuarioId: String, itemId: String): Flow<List<MixtapeDto>> = flow {
         emit(emptyList<MixtapeDto>())
     }
 
@@ -21,14 +22,17 @@ class MixtapeRetrofitDataSourceImpl @Inject constructor() : MixtapeRemoteDataSou
         emit(null)
     }
 
+    override fun listenItemsDeMixtape(mixtapeId: String): Flow<List<ItemMixtapeDto>> = flow {
+        emit(emptyList<ItemMixtapeDto>())
+    }
+
     // to-do: el backend no tiene la tabla de mixtapes
     override suspend fun crearMixtape(mixtape: CreateMixtapeDto): String = ""
 
-    override suspend fun agregarItem(mixtapeId: String, item: ItemMixtapeDto) {
-    }
+    // Como si la mixtape no existiera: el repositorio responde que no se encontro
+    override suspend fun agregarItem(mixtapeId: String, itemId: String, item: CreateItemMixtapeDto): Boolean = false
 
-    override suspend fun quitarItem(mixtapeId: String, itemId: String) {
-    }
+    override suspend fun quitarItem(mixtapeId: String, itemId: String): Boolean = false
 
     override suspend fun eliminarMixtape(mixtapeId: String) {
     }
