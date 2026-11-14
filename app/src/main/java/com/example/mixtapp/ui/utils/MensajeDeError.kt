@@ -12,6 +12,7 @@ import com.example.mixtapp.data.repository.ErrorDelServidorException
 import com.example.mixtapp.data.repository.PermisoDenegadoException
 import com.example.mixtapp.data.repository.SeguirseASiMismoException
 import com.example.mixtapp.data.repository.SinConexionException
+import com.example.mixtapp.data.repository.ReaccionarALoMioException
 import com.example.mixtapp.data.repository.SinSesionException
 
 // El texto que ve el usuario segun la excepcion que entrega el repositorio: un mensaje por cada
@@ -34,5 +35,6 @@ fun mensajeDeError(
     is CorreoYaRegistradoException -> R.string.error_correo_ya_registrado
     is DemasiadosIntentosException -> R.string.error_demasiados_intentos
     is SeguirseASiMismoException -> R.string.error_seguirse_a_si_mismo
+    is ReaccionarALoMioException -> R.string.error_reaccionar_a_lo_mio
     else -> generico
 }

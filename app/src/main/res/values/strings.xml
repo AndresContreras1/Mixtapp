@@ -71,6 +71,7 @@
     <string name="error_cuota_excedida">Se agotó el espacio de almacenamiento. Inténtalo más tarde</string>
     <string name="error_permiso_denegado">No tienes permiso para hacer esto</string>
     <string name="error_seguirse_a_si_mismo">No puedes seguirte a ti mismo</string>
+    <string name="error_reaccionar_a_lo_mio">No puedes reaccionar a lo que tú escuchas</string>
     <string name="error_generico">Algo salió mal. Inténtalo de nuevo</string>
     <string name="error_cargar_contenido">No se pudo cargar el contenido. Inténtalo de nuevo</string>
     <string name="error_actualizar_lista">No se pudo actualizar la lista. Inténtalo de nuevo</string>

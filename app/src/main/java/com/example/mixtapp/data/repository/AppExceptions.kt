@@ -36,6 +36,8 @@ class ErrorDelServidorException : Exception("La base remota respondio con un err
 
 class SeguirseASiMismoException : Exception("Un usuario no se puede seguir a si mismo")
 
+class ReaccionarALoMioException : Exception("No se puede reaccionar a lo que uno mismo escucha")
+
 class SinPermisoDeUbicacionException : Exception("No hay permiso para leer la ubicacion")
 
 class UbicacionNoDisponibleException : Exception("El celular no pudo leer la ubicacion")

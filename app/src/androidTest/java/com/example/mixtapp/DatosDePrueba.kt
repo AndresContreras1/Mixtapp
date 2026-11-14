@@ -267,8 +267,6 @@ fun generateReaccion(i: Int): CreateReaccionDto {
     return CreateReaccionDto(
         usuarioId = usuario.id,
         itemId = generateAlbum(1).id,
-        nombre = usuario.nombre,
-        fotoUrl = usuario.fotoUrl,
         createdAt = "2025-01-0${i}T00:00:00Z",
     )
 }
