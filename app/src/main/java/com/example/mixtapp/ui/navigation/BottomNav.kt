@@ -29,7 +29,7 @@ fun BottomNav(
                 icon = {
                     Icon(
                         imageVector = if (isSelected) item.filledIcon else item.outlineIcon,
-                        // La ruta, como en clase: una prueba e2e encuentra la pestana por ella
+                        // La ruta, como en clase
                         contentDescription = item.route
                     )
                 },

@@ -77,7 +77,7 @@ Universidad Javeriana.
 | Modo debug contra el emulador de Firebase (Firebase CLI) | Funcionando |
 | Catálogo y datos falsos con Faker para el emulador o el Firebase real | Script en [mixtapp-functions](https://github.com/AndresContreras1/mixtapp-functions) |
 | Pruebas de integración de los data sources y los repositorios contra el emulador | 48 + 17 pruebas |
-| Pruebas con mocks (MockK) de los repositorios y de los ViewModels | 59 + 90 pruebas, más 42 de mapeos, reglas y datos locales |
+| Pruebas con mocks (MockK) de los repositorios y de los ViewModels | 59 + 100 pruebas, más 42 de mapeos, reglas y datos locales |
 | Pruebas de integración del ViewModel de registro contra el emulador | 2 pruebas |
 | Pruebas end to end de los dos casos de uso del sprint 13 | 2 pruebas |
 
@@ -444,6 +444,8 @@ Están en `app/src/test`, por capa. Corren en el computador, sin emulador: clic 
 | `viewmodels/MapaViewModelTest` | 8 | un marcador por reseña, la reseña nueva aparece sin volver a entrar, el flujo que falla, tocar un marcador muestra su reseña, tocarlo otra vez la cierra, el like sin conexión, el mapa se centra donde estoy y sin ubicación no se mueve |
 | `viewmodels/DetailViewModelTest` | 5 | el item que existe se muestra sin error, el que no existe da su mensaje, el like sin conexión (el error es del botón, el item se sigue viendo) y poner el item a sonar (aviso, o error sin conexión) |
 | `viewmodels/FollowingViewModelTest` | 8 | las reseñas de quienes sigo y lo que suena llegan sin carga; el error de los seguidos; el de lo que suena va aparte; el 🔥 que falla no borra la fila y el que funciona limpia el error; quitar lo que suena; el like sin conexión; filtrar por el nombre del autor |
+| `viewmodels/DiscussionViewModelTest` | 5 | la discusión que no existe, a quién se responde, la respuesta a una respuesta queda en el hilo del comentario principal, el comentario vacío y cancelar la respuesta |
+| `viewmodels/NotificationsViewModelTest` | 5 | Hoy y Antes, los lanzamientos que fallan solo marcan su pestaña, la ya leída no se vuelve a marcar, la que falla al marcarse y elegir pestaña |
 | `viewmodels/ProfileViewModelTest` | 5 | mis datos y mis listas sin carga; mis guardados que fallan solo marcan su lista; la cuenta sin documento muestra el usuario del correo y el aviso; la foto que no se puede subir y la que sí |
 | `repository/MixtapeRepositoryTest` | 12 | mis mixtapes de la más nueva a la más vieja con su resumen y en cuáles ya está un item; la mixtape con sus items en el orden en que se agregaron y su creador; la que no existe; crear sin sesión y crear retorna el id; agregar a una que ya no existe, bien y con el data source que falla; quitar un item bien y sin sesión; borrarla |
 | `viewmodels/CrearMixtapeViewModelTest` | 5 | sin nombre, nombre de 41 caracteres, descripción de 151, datos válidos (navega y quita los espacios) y el error sin conexión |
@@ -468,7 +470,7 @@ hace que `Log.d` responda 0 en el computador, donde no hay Android.
 <summary>Pruebas de integración</summary>
 
 Están en `app/src/androidTest`, contra el emulador de Firebase: necesitan el emulador de Android
-prendido y la Firebase CLI corriendo (`firebase emulators:start --only firestore,auth,functions --project mixtapp-720eb`).
+prendido y la Firebase CLI corriendo (`firebase emulators:start --only firestore,auth --project mixtapp-720eb`).
 
 | Clase | Pruebas | Qué revisa |
 |---|---|---|
@@ -495,8 +497,8 @@ iniciar sesión o al seguir a alguien.
 
 **Antes de correr `androidTest`:**
 
-1. Prender el emulador de Firebase en `mixtapp-functions`:
-   `firebase emulators:start --only firestore,auth,functions --project mixtapp-720eb`.
+1. Prender el emulador de Firebase en `mixtapp-functions`, solo con lo que usan las pruebas:
+   `firebase emulators:start --only firestore,auth --project mixtapp-720eb`.
 2. Borrar los datos de la app en el emulador de Android: `adb shell pm clear com.example.mixtapp`.
    Las e2e abren la app antes del `@Before`: si quedó una sesión guardada, el inicio empieza a leer
    Firestore antes de `conectarEmulador()`, la conexión al emulador falla y la prueba seguiría

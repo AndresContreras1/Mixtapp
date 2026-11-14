@@ -166,7 +166,7 @@
     <string name="logo_app">app</string>
 
     <!-- Accesibilidad -->
-    <string name="portada_de">Carátula de %1$s</string>
+    <string name="portada_de">Imagen de %1$s</string>
     <string name="mostrar_contrasena">Mostrar contraseña</string>
     <string name="aceptar_terminos">Aceptar los términos</string>
     <string name="terminos_aceptados">Términos aceptados</string>
