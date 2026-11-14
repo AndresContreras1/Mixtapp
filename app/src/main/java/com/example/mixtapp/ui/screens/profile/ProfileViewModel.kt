@@ -69,6 +69,7 @@ class ProfileViewModel @Inject constructor(
     fun escucharMiPerfil() {
         if (escuchandoPerfil) return
         escuchandoPerfil = true
+        _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
 
         viewModelScope.launch(ioDispatcher) {
             usuarioRepository.getMiPerfilLive()
@@ -133,14 +134,18 @@ class ProfileViewModel @Inject constructor(
 
     // Mis favoritos son mis likes: albumes, canciones y artistas mezclados, el mas nuevo primero
     private fun escucharMisFavoritos() {
+        _uiState.update { it.copy(cargandoFavoritos = true, errorFavoritosRes = null) }
+
         viewModelScope.launch(ioDispatcher) {
             usuarioRepository.getMisFavoritosLive()
                 .catch { e ->
                     Log.d("ProfileViewModel", "escucharMisFavoritos: ${e.message}")
-                    _uiState.update { it.copy(errorFavoritosRes = mensajeDeError(error = e, generico = R.string.error_cargar_contenido)) }
+                    _uiState.update {
+                        it.copy(cargandoFavoritos = false, errorFavoritosRes = mensajeDeError(error = e, generico = R.string.error_cargar_contenido))
+                    }
                 }
                 .collect { favoritos ->
-                    _uiState.update { it.copy(favoritos = favoritos, errorFavoritosRes = null) }
+                    _uiState.update { it.copy(favoritos = favoritos, cargandoFavoritos = false, errorFavoritosRes = null) }
                 }
         }
     }

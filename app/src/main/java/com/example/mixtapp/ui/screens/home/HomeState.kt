@@ -29,8 +29,8 @@ data class HomeState(
     val artistas: List<ItemUi> = emptyList(),
     // Las resenas de quienes sigo, la mas nueva primero
     val resenasDeSeguidos: List<ReviewUi> = emptyList(),
-    // Arranca cargando porque lo primero que hace el ViewModel es escuchar el catalogo
-    val isLoading: Boolean = true,
+    // Se pone en true al empezar a escuchar el catalogo y en false cuando llega o falla
+    val isLoading: Boolean = false,
     // El error del catalogo tapa la pantalla. Los de favoritos y seguidos van aparte para que un
     // flujo no borre el error del otro, y el del like se muestra sobre las resenas
     @StringRes val errorMessageRes: Int? = null,

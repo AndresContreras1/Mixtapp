@@ -79,9 +79,13 @@ fun UserProfileScreen(
                     ErrorBox(messageRes = state.errorMessageRes ?: R.string.perfil_no_encontrado)
                 }
             }
-            else -> UserProfileScreenContent(
+            // Si el listener falla despues de cargar, el aviso sale arriba y queda lo de antes
+            else -> Column(modifier = Modifier.fillMaxSize()) {
+                ErrorMessage(messageRes = state.errorMessageRes, modifier = Modifier.padding(horizontal = 20.dp))
+                UserProfileScreenContent(
                 usuario = usuario,
                 favoritos = state.favoritos,
+                cargandoFavoritos = state.cargandoFavoritos,
                 errorFavoritosRes = state.errorFavoritosRes,
                 reviews = state.reviews,
                 cargandoResenas = state.cargandoResenas,
@@ -95,7 +99,8 @@ fun UserProfileScreen(
                 onLikeClick = { userProfileViewModel.sendOrDeleteLike(reviewId = it) },
                 onCommentsClick = onCommentsClick,
                 onBackClick = onBackClick,
-            )
+                )
+            }
         }
     }
 }
@@ -104,6 +109,7 @@ fun UserProfileScreen(
 fun UserProfileScreenContent(
     usuario: UsuarioUi,
     favoritos: List<ItemResumenUi>,
+    cargandoFavoritos: Boolean,
     @StringRes errorFavoritosRes: Int?,
     reviews: List<ReviewUi>,
     cargandoResenas: Boolean,
@@ -164,6 +170,7 @@ fun UserProfileScreenContent(
         item {
             FavoriteSection(
                 favoritos = favoritos,
+                cargando = cargandoFavoritos,
                 errorMessageRes = errorFavoritosRes,
                 vaciaRes = R.string.sin_favoritos_usuario,
                 onItemClick = onItemClick
@@ -215,6 +222,7 @@ fun UserProfileScreenPreview() {
             UserProfileScreenContent(
                 usuario = LocalPreviewProvider.otroUsuario,
                 favoritos = LocalPreviewProvider.favoritos,
+                cargandoFavoritos = false,
                 errorFavoritosRes = null,
                 reviews = listOf(LocalPreviewProvider.review),
                 cargandoResenas = false,

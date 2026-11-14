@@ -16,10 +16,12 @@ import com.example.mixtapp.data.model.ItemResumenUi
 import com.example.mixtapp.ui.theme.MixtappTheme
 
 // Los favoritos de un perfil (sus likes: albumes, canciones y artistas mezclados) en una fila con
-// scroll. La usan mi perfil y el de otro usuario, cada uno con su texto de lista vacia
+// scroll. La usan mi perfil y el de otro usuario, cada uno con su texto de lista vacia. Mientras
+// llegan se ve la carga, para no decir que no hay favoritos antes de tiempo
 @Composable
 fun FavoriteSection(
     favoritos: List<ItemResumenUi>,
+    cargando: Boolean,
     @StringRes errorMessageRes: Int?,
     @StringRes vaciaRes: Int,
     onItemClick: (ItemResumenUi) -> Unit,
@@ -31,6 +33,7 @@ fun FavoriteSection(
         Spacer(modifier = Modifier.height(8.dp))
 
         when {
+            cargando -> LoadingBox(modifier = Modifier.height(120.dp))
             errorMessageRes != null -> ErrorMessage(messageRes = errorMessageRes)
             favoritos.isEmpty() -> EmptyMessage(messageRes = vaciaRes, modifier = Modifier.fillMaxWidth())
             else -> ItemResumenRow(items = favoritos, onItemClick = onItemClick)
@@ -44,6 +47,7 @@ fun FavoriteSectionPreview() {
     MixtappTheme(darkTheme = true) {
         FavoriteSection(
             favoritos = LocalPreviewProvider.favoritos,
+            cargando = false,
             errorMessageRes = null,
             vaciaRes = R.string.sin_favoritos,
             onItemClick = {},

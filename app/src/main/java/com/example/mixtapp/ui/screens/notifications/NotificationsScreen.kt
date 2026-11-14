@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -109,7 +110,7 @@ fun NotificationsScreenContent(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize().testTag("notificationsScreen")) {
         AppBackground()
 
         Column(modifier = Modifier.fillMaxSize()) {
@@ -141,6 +142,8 @@ fun NotificationsScreenContent(
                         contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp),
                         verticalArrangement = Arrangement.spacedBy(10.dp),
                     ) {
+                        // Si el listener falla despues de cargar, el aviso sale arriba y queda lo de antes
+                        item { ErrorMessage(messageRes = errorDiscusionesRes) }
                         if (discusiones.isEmpty()) {
                             item {
                                 EmptyMessage(
@@ -171,6 +174,7 @@ fun NotificationsScreenContent(
                         contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp),
                         verticalArrangement = Arrangement.spacedBy(10.dp),
                     ) {
+                        item { ErrorMessage(messageRes = errorLanzamientosRes) }
                         // Vacia si todavia no me gusta ningun artista o si no tienen albumes ni canciones
                         if (lanzamientos.isEmpty()) {
                             item {
@@ -196,6 +200,10 @@ fun NotificationsScreenContent(
                     // Sin notificaciones cargadas solo se muestra el motivo del error
                     hoy.isEmpty() && antes.isEmpty() && errorMessageRes != null -> ErrorBox(messageRes = errorMessageRes)
                     else -> {
+                        ErrorMessage(
+                            messageRes = errorMessageRes,
+                            modifier = Modifier.padding(horizontal = 20.dp)
+                        )
                         ErrorMessage(
                             messageRes = errorAccionRes,
                             modifier = Modifier.padding(horizontal = 20.dp)

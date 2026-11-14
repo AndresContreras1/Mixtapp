@@ -109,7 +109,7 @@ fun WriteReviewScreenContent(
     onPostClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize().testTag("writeReviewScreen")) {
         AppBackground()
 
         when {

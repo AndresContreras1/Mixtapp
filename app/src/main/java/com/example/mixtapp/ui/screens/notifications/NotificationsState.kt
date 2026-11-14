@@ -20,10 +20,10 @@ data class NotificationsState(
     // volver de la discusion, un perfil o un detalle
     val tabs: List<NotificationTabUi> = notificationTabs,
     val selectedTabId: String = TAB_MIAS,
-    // Arrancan cargando porque el ViewModel empieza a escuchar los tres flujos al crearse
-    val isLoading: Boolean = true,
-    val cargandoDiscusiones: Boolean = true,
-    val cargandoLanzamientos: Boolean = true,
+    // Cada pestana se pone en true al empezar a escuchar su flujo y en false cuando llega o falla
+    val isLoading: Boolean = false,
+    val cargandoDiscusiones: Boolean = false,
+    val cargandoLanzamientos: Boolean = false,
     // Cada pestana trae su propio error: si una falla, las otras se ven. Si la pestana no tiene
     // nada que mostrar, el error la ocupa toda
     @StringRes val errorMessageRes: Int? = null,

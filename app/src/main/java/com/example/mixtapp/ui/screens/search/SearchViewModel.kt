@@ -48,6 +48,8 @@ class SearchViewModel @Inject constructor(
 
     // Si alguien califica algo mientras busco, el promedio y el orden se actualizan solos
     private fun escucharCatalogo() {
+        _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
+
         viewModelScope.launch(ioDispatcher) {
             catalogoRepository.getCatalogoLive()
                 .catch { e ->

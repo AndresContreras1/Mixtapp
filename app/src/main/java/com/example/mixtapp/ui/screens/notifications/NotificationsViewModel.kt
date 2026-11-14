@@ -44,6 +44,8 @@ class NotificationsViewModel @Inject constructor(
     // o a mi comentario, comenta, responde o empieza a seguirme. Cada una nueva, o la marca de leida,
     // llega sola por el listener
     private fun escucharNotificaciones() {
+        _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
+
         viewModelScope.launch(ioDispatcher) {
             socialRepository.getNotificacionesLive()
                 .catch { e ->
@@ -72,6 +74,8 @@ class NotificationsViewModel @Inject constructor(
     // Las discusiones son las resenas de quienes sigo: salen del mismo flujo de Siguiendo, que ya
     // las trae de la ultima publicada o editada a la mas vieja. Una nueva llega sola
     private fun escucharDiscusiones() {
+        _uiState.update { it.copy(cargandoDiscusiones = true, errorDiscusionesRes = null) }
+
         viewModelScope.launch(ioDispatcher) {
             socialRepository.getFollowingLive()
                 .catch { e ->
@@ -98,6 +102,8 @@ class NotificationsViewModel @Inject constructor(
     // Lo nuevo de los artistas que me gustan: el repositorio ya los filtra y los ordena. Si doy like
     // o guardo algo de otro artista, sus lanzamientos aparecen sin salir
     private fun escucharLanzamientos() {
+        _uiState.update { it.copy(cargandoLanzamientos = true, errorLanzamientosRes = null) }
+
         viewModelScope.launch(ioDispatcher) {
             catalogoRepository.getLanzamientosLive()
                 .catch { e ->

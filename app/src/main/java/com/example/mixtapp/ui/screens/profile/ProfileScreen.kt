@@ -127,6 +127,7 @@ fun ProfileScreen(
                 tabs = state.tabs,
                 selectedTabId = state.selectedTabId,
                 favoritos = state.favoritos,
+                cargandoFavoritos = state.cargandoFavoritos,
                 errorFavoritosRes = state.errorFavoritosRes,
                 resenasRecientes = state.resenasRecientes,
                 errorResenasRes = state.errorResenasRes,
@@ -173,6 +174,7 @@ fun ProfileScreenContent(
     tabs: List<ProfileTabUi>,
     selectedTabId: String,
     favoritos: List<ItemResumenUi>,
+    cargandoFavoritos: Boolean,
     @StringRes errorFavoritosRes: Int?,
     resenasRecientes: List<ReviewUi>,
     @StringRes errorResenasRes: Int?,
@@ -316,6 +318,7 @@ fun ProfileScreenContent(
                 item {
                     FavoriteSection(
                         favoritos = favoritos,
+                        cargando = cargandoFavoritos,
                         errorMessageRes = errorFavoritosRes,
                         vaciaRes = R.string.sin_favoritos,
                         onItemClick = onItemClick
@@ -392,6 +395,7 @@ fun ProfileScreenPreview() {
                 tabs = profileTabs,
                 selectedTabId = PESTANA_PERFIL,
                 favoritos = LocalPreviewProvider.favoritos,
+                cargandoFavoritos = false,
                 errorFavoritosRes = null,
                 resenasRecientes = listOf(LocalPreviewProvider.miReview),
                 errorResenasRes = null,

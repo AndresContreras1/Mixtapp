@@ -102,7 +102,7 @@ fun DetailScreenContent(
     onCommentsClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize().testTag("detailScreen")) {
         AppBackground()
 
         when {
@@ -119,6 +119,8 @@ fun DetailScreenContent(
                     contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
                 ) {
                     item {
+                        // Si el listener falla despues de cargar, el aviso sale arriba y queda lo de antes
+                        ErrorMessage(messageRes = errorMessageRes)
                         ItemHeader(item = item, onBackClick = onBackClick)
                     }
 

@@ -59,6 +59,8 @@ class HomeViewModel @Inject constructor(
     // Cada vez que cambia un item, un like o una resena llega el catalogo de nuevo y se vuelve a
     // armar todo el inicio
     private fun escucharCatalogo() {
+        _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
+
         viewModelScope.launch(ioDispatcher) {
             catalogoRepository.getCatalogoLive()
                 .catch { e ->

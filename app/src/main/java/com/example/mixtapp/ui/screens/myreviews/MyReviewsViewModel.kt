@@ -36,6 +36,8 @@ class MyReviewsViewModel @Inject constructor(
 
     // Al volver de editar, borrar o recibir un like, la lista llega de nuevo sola
     private fun escucharMisResenas() {
+        _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
+
         viewModelScope.launch(ioDispatcher) {
             reviewRepository.getMyReviewsLive()
                 .catch { e ->

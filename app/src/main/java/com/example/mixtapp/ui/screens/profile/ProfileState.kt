@@ -9,8 +9,8 @@ import com.example.mixtapp.ui.screens.profile.model.ProfileTabUi
 import com.example.mixtapp.ui.screens.profile.model.profileTabs
 
 data class ProfileState(
-    // Arranca cargando hasta que llegan mis datos
-    val isLoading: Boolean = true,
+    // Se pone en true al empezar a escuchar mi perfil y en false cuando llega o falla
+    val isLoading: Boolean = false,
     // Mi uid de Authentication: con el se abren mis listas de seguidores y seguidos
     val miId: String = "",
     // Mis datos de Firestore; sin mi documento, el usuario sale del correo antes de la arroba
@@ -32,6 +32,7 @@ data class ProfileState(
     val selectedTabId: String = PESTANA_PERFIL,
     // Cada seccion llega por su propio flujo y trae su propio error: si una falla, las demas se ven
     val favoritos: List<ItemResumenUi> = emptyList(),
+    val cargandoFavoritos: Boolean = false,
     @StringRes val errorFavoritosRes: Int? = null,
     // Solo las mas recientes: todas estan en Mis resenas
     val resenasRecientes: List<ReviewUi> = emptyList(),

@@ -15,6 +15,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -92,7 +93,7 @@ fun DiscussionScreenContent(
     onPublicarComentarioClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize().testTag("discussionScreen")) {
         AppBackground()
 
         when {
@@ -113,6 +114,10 @@ fun DiscussionScreenContent(
                         onBackClick = onBackClick,
                         modifier = Modifier.padding(horizontal = 16.dp),
                     )
+
+                    // Si el listener falla despues de cargar (por ejemplo, borraron la resena), el
+                    // aviso sale arriba y queda lo de antes
+                    ErrorMessage(messageRes = errorMessageRes, modifier = Modifier.padding(horizontal = 24.dp))
 
                     LazyColumn(
                         modifier = Modifier

@@ -12,6 +12,7 @@ data class UserProfileState(
     val favoritos: List<ItemResumenUi> = emptyList(),
     val isLoading: Boolean = true,
     val cargandoResenas: Boolean = false,
+    val cargandoFavoritos: Boolean = false,
     @StringRes val errorMessageRes: Int? = null,
     // Cada seccion trae su propio error: si una falla, las demas se ven
     @StringRes val errorResenasRes: Int? = null,

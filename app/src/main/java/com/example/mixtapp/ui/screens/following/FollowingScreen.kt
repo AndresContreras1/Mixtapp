@@ -59,6 +59,7 @@ fun FollowingScreen(
         errorAccionRes = state.errorAccionRes,
         sonando = state.sonando,
         errorSonandoRes = state.errorSonandoRes,
+        errorAccionSonandoRes = state.errorAccionSonandoRes,
         onReaccionarClick = { followingViewModel.reaccionar(sonando = it) },
         onQuitarSonandoClick = { followingViewModel.quitarSonando() },
         onFriendQueryChange = { followingViewModel.updateFriendQuery(friendQuery = it) },
@@ -81,6 +82,7 @@ fun FollowingScreenContent(
     @StringRes errorAccionRes: Int?,
     sonando: List<SonandoUi>,
     @StringRes errorSonandoRes: Int?,
+    @StringRes errorAccionSonandoRes: Int?,
     onReaccionarClick: (SonandoUi) -> Unit,
     onQuitarSonandoClick: () -> Unit,
     onFriendQueryChange: (String) -> Unit,
@@ -113,6 +115,8 @@ fun FollowingScreenContent(
                     contentPadding = PaddingValues(bottom = 24.dp),
                 ) {
                     item {
+                        // Si el listener falla despues de cargar, el aviso sale arriba y queda lo de antes
+                        ErrorMessage(messageRes = errorMessageRes, modifier = Modifier.padding(horizontal = 20.dp))
                         Text(
                             text = stringResource(
                                 R.string.following_followers_count,
@@ -126,7 +130,7 @@ fun FollowingScreenContent(
                     }
 
                     // Lo que suena ahora: si nadie esta escuchando nada, la fila no sale
-                    if (sonando.isNotEmpty() || errorSonandoRes != null) {
+                    if (sonando.isNotEmpty() || errorSonandoRes != null || errorAccionSonandoRes != null) {
                         item {
                             Column(modifier = Modifier.padding(bottom = 16.dp)) {
                                 SectionTitle(
@@ -135,6 +139,10 @@ fun FollowingScreenContent(
                                 )
                                 ErrorMessage(
                                     messageRes = errorSonandoRes,
+                                    modifier = Modifier.padding(horizontal = 20.dp),
+                                )
+                                ErrorMessage(
+                                    messageRes = errorAccionSonandoRes,
                                     modifier = Modifier.padding(horizontal = 20.dp),
                                 )
                                 SonandoAhoraRow(
@@ -217,6 +225,7 @@ fun FollowingScreenPreview() {
             errorAccionRes = null,
             sonando = emptyList(),
             errorSonandoRes = null,
+            errorAccionSonandoRes = null,
             onReaccionarClick = {},
             onQuitarSonandoClick = {},
             onFriendQueryChange = {},
