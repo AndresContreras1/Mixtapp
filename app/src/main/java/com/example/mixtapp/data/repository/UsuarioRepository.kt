@@ -141,6 +141,7 @@ class UsuarioRepository @Inject constructor(
                 throw errorDelFlujo(e)
             }
 
+    // Mis favoritos para mi perfil: los mismos de cualquier usuario, con mi uid
     fun getMisFavoritosLive(): Flow<List<ItemResumenUi>> =
         getFavoritosLive(userId = authRemoteDataSource.currentUser?.uid ?: "")
 
@@ -292,6 +293,7 @@ class UsuarioRepository @Inject constructor(
                 throw errorDelFlujo(e)
             }
 
+    // A quienes sigue: si empieza a seguir a alguien desde otro celular, aparece sin salir
     fun getSeguidosLive(userId: String): Flow<List<UsuarioUi>> =
         usuarioRemoteDataSource.listenSeguidos(userId)
             .map { seguidos -> seguidos.map { it.toUsuarioUi() } }

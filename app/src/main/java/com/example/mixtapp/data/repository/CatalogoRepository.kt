@@ -311,6 +311,7 @@ class CatalogoRepository @Inject constructor(
         }
     }
 
+    // Las tarjetas de Explorar por y de Generos de Buscar: son fijas y salen del archivo local
     suspend fun getSearchCategories(): Result<List<SearchCategoryUi>> {
         return try {
             Result.success(busquedaLocalDataSource.getSearchCategories())

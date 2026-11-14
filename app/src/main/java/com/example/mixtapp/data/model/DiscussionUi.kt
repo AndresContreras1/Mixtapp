@@ -1,11 +1,14 @@
 package com.example.mixtapp.data.model
 
+// La discusion de una resena: la resena arriba y sus comentarios, cada respuesta debajo del
+// comentario al que responde
 data class DiscussionUi(
     val id: String,
     val review: ReviewUi,
     val comments: List<DiscussionCommentUi>,
 )
 
+// Un comentario o una respuesta de la discusion, listo para mostrarse
 data class DiscussionCommentUi(
     val id: String,
     val authorId: String,

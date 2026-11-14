@@ -161,6 +161,8 @@ class ReviewRepository @Inject constructor(
         }
     }
 
+    // Borra mi resena con sus likes y sus comentarios (el data source los borra en un batch); deja
+    // de verse en las listas por el listener
     suspend fun eliminarResena(reviewId: String): Result<Unit> {
         return try {
             reviewRemoteDataSource.deleteReview(reviewId)
