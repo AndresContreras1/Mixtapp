@@ -6,11 +6,11 @@ import com.example.mixtapp.data.model.ItemResumenUi
 import com.example.mixtapp.data.model.ItemUi
 import com.example.mixtapp.data.model.ReviewUi
 import com.example.mixtapp.ui.screens.home.model.FILTRO_PARA_TI
-import com.example.mixtapp.ui.screens.home.model.HomeFilterUi
+import com.example.mixtapp.ui.utils.OpcionUi
 import com.example.mixtapp.ui.screens.home.model.homeFilters
 
 data class HomeState(
-    val filters: List<HomeFilterUi> = homeFilters,
+    val filters: List<OpcionUi> = homeFilters,
     val selectedFilterId: String = FILTRO_PARA_TI,
     // Lo que llega en vivo: con esto el ViewModel arma lo que pinta la pantalla
     val catalogo: List<ItemConResenasUi> = emptyList(),

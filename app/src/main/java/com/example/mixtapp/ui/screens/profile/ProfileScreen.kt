@@ -43,7 +43,7 @@ import com.example.mixtapp.ui.screens.profile.components.SavedItemsRow
 import com.example.mixtapp.ui.screens.profile.model.PESTANA_GUARDADOS
 import com.example.mixtapp.ui.screens.profile.model.PESTANA_MIXTAPES
 import com.example.mixtapp.ui.screens.profile.model.PESTANA_PERFIL
-import com.example.mixtapp.ui.screens.profile.model.ProfileTabUi
+import com.example.mixtapp.ui.utils.OpcionUi
 import com.example.mixtapp.ui.screens.profile.model.profileTabs
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppBackground
@@ -171,7 +171,7 @@ fun ProfileScreenContent(
     subiendoImagen: Boolean,
     @StringRes errorImagenRes: Int?,
     @StringRes avisoRes: Int?,
-    tabs: List<ProfileTabUi>,
+    tabs: List<OpcionUi>,
     selectedTabId: String,
     favoritos: List<ItemResumenUi>,
     cargandoFavoritos: Boolean,

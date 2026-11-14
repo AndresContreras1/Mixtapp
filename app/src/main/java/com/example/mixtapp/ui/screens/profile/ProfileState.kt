@@ -5,7 +5,7 @@ import com.example.mixtapp.data.model.ItemResumenUi
 import com.example.mixtapp.data.model.MixtapeUi
 import com.example.mixtapp.data.model.ReviewUi
 import com.example.mixtapp.ui.screens.profile.model.PESTANA_PERFIL
-import com.example.mixtapp.ui.screens.profile.model.ProfileTabUi
+import com.example.mixtapp.ui.utils.OpcionUi
 import com.example.mixtapp.ui.screens.profile.model.profileTabs
 
 data class ProfileState(
@@ -28,7 +28,7 @@ data class ProfileState(
     val subiendoImagen: Boolean = false,
     @StringRes val errorImagenRes: Int? = null,
     // Las pestanas las provee el ViewModel; la elegida se conserva al volver a la pantalla
-    val tabs: List<ProfileTabUi> = profileTabs,
+    val tabs: List<OpcionUi> = profileTabs,
     val selectedTabId: String = PESTANA_PERFIL,
     // Cada seccion llega por su propio flujo y trae su propio error: si una falla, las demas se ven
     val favoritos: List<ItemResumenUi> = emptyList(),

@@ -48,7 +48,7 @@ class DuelosViewModel @Inject constructor(
     // launch porque collect no termina
     init {
         cargarCatalogo()
-        dueloTabs.forEach { tab -> escucharDuelo(tipo = tab.tipo) }
+        dueloTabs.forEach { tab -> escucharDuelo(tipo = tab.id) }
     }
 
     // Con el catalogo se arma el par de hoy de cada tipo, aunque nadie haya votado todavia. No
@@ -149,7 +149,7 @@ class DuelosViewModel @Inject constructor(
     // Se llama cada vez que cambia el catalogo o los votos de un duelo
     private fun armarDuelos(estado: DuelosState): DuelosState {
         val duelos = dueloTabs.mapNotNull { tab ->
-            armarDuelo(tipo = tab.tipo, estado = estado)?.let { duelo -> tab.tipo to duelo }
+            armarDuelo(tipo = tab.id, estado = estado)?.let { duelo -> tab.id to duelo }
         }.toMap()
 
         return estado.copy(duelos = duelos)
@@ -191,7 +191,7 @@ class DuelosViewModel @Inject constructor(
         val generos = porGenero.keys.sorted()
         if (generos.isEmpty()) return null
 
-        val posicionDelTipo = dueloTabs.indexOfFirst { it.tipo == tipo }
+        val posicionDelTipo = dueloTabs.indexOfFirst { it.id == tipo }
         val genero = generos[(dia + posicionDelTipo) % generos.size]
         val candidatos = porGenero[genero].orEmpty().sortedBy { it.id }
         val cuantos = candidatos.size

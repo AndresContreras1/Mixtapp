@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Search
@@ -25,11 +24,11 @@ import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalPreviewProvider
 import com.example.mixtapp.data.model.ItemConResenasUi
 import com.example.mixtapp.ui.screens.search.components.ResultadoItemRow
-import com.example.mixtapp.ui.screens.selectitem.model.SelectItemFilterUi
+import com.example.mixtapp.ui.utils.FilaDeOpciones
+import com.example.mixtapp.ui.utils.OpcionUi
 import com.example.mixtapp.ui.screens.selectitem.model.selectItemFilters
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppBackground
-import com.example.mixtapp.ui.utils.AppChip
 import com.example.mixtapp.ui.utils.AppTextField
 import com.example.mixtapp.ui.utils.EmptyMessage
 import com.example.mixtapp.ui.utils.ErrorBox
@@ -66,7 +65,7 @@ fun SelectItemScreenContent(
     isLoading: Boolean,
     @StringRes errorMessageRes: Int?,
     query: String,
-    filters: List<SelectItemFilterUi>,
+    filters: List<OpcionUi>,
     selectedFilterId: String,
     resultados: List<ItemConResenasUi>,
     onQueryChange: (String) -> Unit,
@@ -109,16 +108,12 @@ fun SelectItemScreenContent(
 
                 // Cuatro chips no caben en todos los celulares: la fila se desliza
                 item {
-                    LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                        items(filters) { filter ->
-                            AppChip(
-                                text = stringResource(filter.label),
-                                isSelected = filter.id == selectedFilterId,
-                                onClick = { onFilterSelected(filter.id) },
-                                modifier = Modifier.testTag("tipo_${filter.id}"),
-                            )
-                        }
-                    }
+                    FilaDeOpciones(
+                        opciones = filters,
+                        elegidaId = selectedFilterId,
+                        onOpcionClick = onFilterSelected,
+                        prefijoTestTag = "tipo",
+                    )
                 }
 
                 if (resultados.isEmpty()) {

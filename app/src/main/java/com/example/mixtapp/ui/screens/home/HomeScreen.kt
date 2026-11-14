@@ -25,11 +25,11 @@ import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalPreviewProvider
 import com.example.mixtapp.data.model.ItemUi
 import com.example.mixtapp.data.model.ReviewUi
-import com.example.mixtapp.ui.screens.home.components.HomeFilters
 import com.example.mixtapp.ui.screens.home.components.HomeHeader
 import com.example.mixtapp.ui.screens.home.components.HomeItemRow
 import com.example.mixtapp.ui.screens.home.components.TrendingCard
-import com.example.mixtapp.ui.screens.home.model.HomeFilterUi
+import com.example.mixtapp.ui.utils.FilaDeOpciones
+import com.example.mixtapp.ui.utils.OpcionUi
 import com.example.mixtapp.ui.screens.home.model.homeFilters
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppBackground
@@ -88,7 +88,7 @@ fun HomeScreen(
 fun HomeScreenContent(
     isLoading: Boolean,
     @StringRes errorMessageRes: Int?,
-    filters: List<HomeFilterUi>,
+    filters: List<OpcionUi>,
     selectedFilterId: String,
     enTendencia: ItemUi?,
     enTendenciaColombia: Boolean,
@@ -132,10 +132,11 @@ fun HomeScreenContent(
 
                 item {
                     Column {
-                        HomeFilters(
-                            filters = filters,
-                            selectedId = selectedFilterId,
-                            onFilterSelected = onFilterSelected,
+                        FilaDeOpciones(
+                            opciones = filters,
+                            elegidaId = selectedFilterId,
+                            onOpcionClick = onFilterSelected,
+                            prefijoTestTag = "filtro",
                         )
 
                         // Si fallan mis favoritos o mis seguidos, el catalogo se sigue viendo

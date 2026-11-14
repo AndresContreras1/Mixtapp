@@ -26,8 +26,8 @@ import com.example.mixtapp.data.model.ReviewUi
 import com.example.mixtapp.ui.screens.notifications.components.DiscusionRow
 import com.example.mixtapp.ui.screens.notifications.components.LanzamientoRow
 import com.example.mixtapp.ui.screens.notifications.components.NotificationRow
-import com.example.mixtapp.ui.screens.notifications.components.NotificationsTabs
-import com.example.mixtapp.ui.screens.notifications.model.NotificationTabUi
+import com.example.mixtapp.ui.utils.FilaDeOpciones
+import com.example.mixtapp.ui.utils.OpcionUi
 import com.example.mixtapp.ui.screens.notifications.model.TAB_DISCUSIONES
 import com.example.mixtapp.ui.screens.notifications.model.TAB_LANZAMIENTOS
 import com.example.mixtapp.ui.screens.notifications.model.TAB_MIAS
@@ -88,7 +88,7 @@ fun NotificationsScreenContent(
     antes: List<NotificationUi>,
     discusiones: List<ReviewUi>,
     lanzamientos: List<ItemUi>,
-    tabs: List<NotificationTabUi>,
+    tabs: List<OpcionUi>,
     selectedTabId: String,
     isLoading: Boolean,
     cargandoDiscusiones: Boolean,
@@ -118,10 +118,11 @@ fun NotificationsScreenContent(
 
             // Las pestanas tambien quedan fijas: cada una tiene su carga y su error, asi que si una
             // falla se puede pasar a las otras
-            NotificationsTabs(
-                tabs = tabs,
-                selectedTabId = selectedTabId,
-                onTabSelected = onTabSelected,
+            FilaDeOpciones(
+                opciones = tabs,
+                elegidaId = selectedTabId,
+                onOpcionClick = onTabSelected,
+                prefijoTestTag = "tab",
                 modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
             )
 

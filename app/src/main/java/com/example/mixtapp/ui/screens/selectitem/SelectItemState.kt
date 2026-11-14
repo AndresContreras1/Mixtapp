@@ -3,12 +3,12 @@ package com.example.mixtapp.ui.screens.selectitem
 import androidx.annotation.StringRes
 import com.example.mixtapp.data.model.ItemConResenasUi
 import com.example.mixtapp.ui.screens.selectitem.model.FILTRO_TODOS
-import com.example.mixtapp.ui.screens.selectitem.model.SelectItemFilterUi
+import com.example.mixtapp.ui.utils.OpcionUi
 import com.example.mixtapp.ui.screens.selectitem.model.selectItemFilters
 
 data class SelectItemState(
     val query: String = "",
-    val filters: List<SelectItemFilterUi> = selectItemFilters,
+    val filters: List<OpcionUi> = selectItemFilters,
     val selectedFilterId: String = FILTRO_TODOS,
     // Todo el catalogo con sus estrellas: el texto y el filtro trabajan sobre esta lista
     val catalogo: List<ItemConResenasUi> = emptyList(),

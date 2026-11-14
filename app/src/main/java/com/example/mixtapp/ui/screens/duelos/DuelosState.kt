@@ -5,11 +5,11 @@ import com.example.mixtapp.data.model.DueloEnVivoUi
 import com.example.mixtapp.data.model.DueloUi
 import com.example.mixtapp.data.model.ItemUi
 import com.example.mixtapp.data.model.TIPO_ALBUM
-import com.example.mixtapp.ui.screens.duelos.model.DueloTabUi
+import com.example.mixtapp.ui.utils.OpcionUi
 import com.example.mixtapp.ui.screens.duelos.model.dueloTabs
 
 data class DuelosState(
-    val tabs: List<DueloTabUi> = dueloTabs,
+    val tabs: List<OpcionUi> = dueloTabs,
     val tipoElegido: String = TIPO_ALBUM,
     // El catalogo (para armar el par de hoy) se lee una vez; los votos de cada duelo llegan en vivo
     val items: List<ItemUi> = emptyList(),
