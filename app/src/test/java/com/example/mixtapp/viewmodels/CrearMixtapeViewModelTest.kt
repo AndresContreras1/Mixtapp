@@ -1,6 +1,7 @@
 package com.example.mixtapp.viewmodels
 
 import com.example.mixtapp.R
+import com.example.mixtapp.data.model.MAX_DESCRIPCION_MIXTAPE
 import com.example.mixtapp.data.repository.MixtapeRepository
 import com.example.mixtapp.data.repository.SinConexionException
 import com.example.mixtapp.ui.screens.crearmixtape.CrearMixtapeViewModel
@@ -61,6 +62,20 @@ class CrearMixtapeViewModelTest {
         advanceUntilIdle()
         //Assert
         assertThat(viewModel.uiState.value.errorMessageRes).isEqualTo(R.string.error_nombre_mixtape_largo)
+    }
+
+    @Test
+    fun crearMixtape_descripcionDe151Caracteres_errorDescripcionLarga() = runTest {
+        //Arrange
+        viewModel.updateNombre("Para entrenar")
+        viewModel.updateDescripcion("a".repeat(MAX_DESCRIPCION_MIXTAPE + 1))
+        //Act
+        viewModel.crearMixtape()
+        advanceUntilIdle()
+        //Assert
+        val state = viewModel.uiState.value
+        assertThat(state.errorMessageRes).isEqualTo(R.string.error_descripcion_mixtape_larga)
+        assertThat(state.navigate).isFalse()
     }
 
     @Test

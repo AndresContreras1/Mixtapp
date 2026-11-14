@@ -137,6 +137,38 @@ class CatalogoRepositoryTest {
     }
 
     @Test
+    fun getItemLive_albumGuardadoConMiResena_guardadoYaCalificadoYSuPromedio() = runTest {
+        //Arrange: los tres listeners del detalle
+        coEvery { albumDataSource.listenAlbumById("album_1", "yo") } returns flowOf(fromZero)
+        coEvery { usuarioDataSource.listenGuardado("yo", "album_1") } returns flowOf(true)
+        coEvery { reviewDataSource.listenReviewsDeItem(TIPO_ALBUM, "album_1", "yo") } returns flowOf(
+            listOf(
+                ReviewDto().copy(id = "r1", calificacion = 4, usuarioId = "yo", itemId = "album_1"),
+                ReviewDto().copy(id = "r2", calificacion = 2, usuarioId = "otro", itemId = "album_1"),
+            )
+        )
+        //Act
+        val itemConResenas = repository.getItemLive(TIPO_ALBUM, "album_1").first()
+        //Assert
+        Truth.assertThat(itemConResenas.item.isSaved).isTrue()
+        Truth.assertThat(itemConResenas.yaCalificado).isTrue()
+        Truth.assertThat(itemConResenas.rating).isEqualTo(3.0)
+        Truth.assertThat(itemConResenas.reviews).hasSize(2)
+    }
+
+    @Test
+    fun getItemLive_albumQueNoExiste_contenidoNoEncontrado() = runTest {
+        //Arrange: el data source envia null cuando no existe
+        coEvery { albumDataSource.listenAlbumById("album_9", "yo") } returns flowOf(null)
+        coEvery { usuarioDataSource.listenGuardado("yo", "album_9") } returns flowOf(false)
+        coEvery { reviewDataSource.listenReviewsDeItem(TIPO_ALBUM, "album_9", "yo") } returns flowOf(emptyList())
+        //Act
+        val error = runCatching { repository.getItemLive(TIPO_ALBUM, "album_9").first() }.exceptionOrNull()
+        //Assert
+        Truth.assertThat(error).isInstanceOf(ContenidoNoEncontradoException::class.java)
+    }
+
+    @Test
     fun getCatalogoLive_resenasDeVariosAlbumes_cadaAlbumConLasSuyas() = runTest {
         //Arrange
         coEvery { albumDataSource.listenAlbumes() } returns flowOf(listOf(fromZero, fromZero.copy(id = "album_2")))

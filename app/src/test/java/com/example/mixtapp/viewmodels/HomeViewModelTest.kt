@@ -1,5 +1,6 @@
 package com.example.mixtapp.viewmodels
 
+import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalPreviewProvider
 import com.example.mixtapp.data.model.ItemConResenasUi
 import com.example.mixtapp.data.model.ItemResumenUi
@@ -7,6 +8,7 @@ import com.example.mixtapp.data.model.TIPO_ALBUM
 import com.example.mixtapp.data.model.TIPO_CANCION
 import com.example.mixtapp.data.repository.CatalogoRepository
 import com.example.mixtapp.data.repository.ReviewRepository
+import com.example.mixtapp.data.repository.SinConexionException
 import com.example.mixtapp.data.repository.UsuarioRepository
 import com.example.mixtapp.ui.screens.home.HomeViewModel
 import com.example.mixtapp.ui.screens.home.model.FILTRO_DESCUBRE
@@ -16,6 +18,7 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -92,6 +95,35 @@ class HomeViewModelTest {
         coEvery { catalogoRepository.getCatalogoLive() } returns flowOf(catalogo)
         coEvery { usuarioRepository.getMisFavoritosLive() } returns flowOf(favoritos)
         return HomeViewModel(catalogoRepository, usuarioRepository, reviewRepository, testDispatcher)
+    }
+
+    @Test
+    fun init_catalogoFalla_errorYSinCarga() = runTest {
+        //Arrange
+        coEvery { catalogoRepository.getCatalogoLive() } returns flow { throw SinConexionException() }
+        coEvery { usuarioRepository.getMisFavoritosLive() } returns flowOf(emptyList())
+        val viewModel = HomeViewModel(catalogoRepository, usuarioRepository, reviewRepository, testDispatcher)
+        //Act
+        advanceUntilIdle()
+        //Assert
+        val state = viewModel.uiState.value
+        assertThat(state.isLoading).isFalse()
+        assertThat(state.errorMessageRes).isEqualTo(R.string.error_sin_conexion)
+    }
+
+    @Test
+    fun init_misLikesFallan_elCatalogoSigueConSuAviso() = runTest {
+        //Arrange
+        coEvery { catalogoRepository.getCatalogoLive() } returns flowOf(metal + reggaeton)
+        coEvery { usuarioRepository.getMisFavoritosLive() } returns flow { throw SinConexionException() }
+        val viewModel = HomeViewModel(catalogoRepository, usuarioRepository, reviewRepository, testDispatcher)
+        //Act
+        advanceUntilIdle()
+        //Assert: el error de mis likes no tapa las filas
+        val state = viewModel.uiState.value
+        assertThat(state.errorFavoritosRes).isEqualTo(R.string.error_sin_conexion)
+        assertThat(state.errorMessageRes).isNull()
+        assertThat(state.canciones).isNotEmpty()
     }
 
     @Test
