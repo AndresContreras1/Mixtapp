@@ -14,8 +14,8 @@ data class MapaState(
     val seleccionadaId: String? = null,
     // Donde se centra el mapa: mi ubicacion si dio permiso, o Bogota
     val centro: Coordenadas = CENTRO_POR_DEFECTO,
-    // Arranca cargando porque lo primero que hace el ViewModel es escuchar las resenas
-    val isLoading: Boolean = true,
+    // Se pone en true al empezar a escuchar las resenas y en false cuando llegan o fallan
+    val isLoading: Boolean = false,
     // No se pudieron cargar: sale encima del mapa
     @StringRes val errorMessageRes: Int? = null,
     // Fallo un like en la tarjeta de la resena elegida

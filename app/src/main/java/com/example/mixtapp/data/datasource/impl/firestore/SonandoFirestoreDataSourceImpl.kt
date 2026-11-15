@@ -4,9 +4,11 @@ import com.example.mixtapp.data.datasource.SonandoRemoteDataSource
 import com.example.mixtapp.data.dtos.CreateReaccionDto
 import com.example.mixtapp.data.dtos.CreateSonandoDto
 import com.example.mixtapp.data.dtos.SonandoDto
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.WriteBatch
 import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.coroutineScope
@@ -16,20 +18,18 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-// Cuantos trae la fila: los mas recientes. El repositorio deja solo los de quienes sigo
-private const val MAX_SONANDO = 50
-
 class SonandoFirestoreDataSourceImpl @Inject constructor(
     private val db: FirebaseFirestore
 ) : SonandoRemoteDataSource {
 
-    // El listener escucha la coleccion sonando: cuando alguien pone otra cancion o le llega una
-    // reaccion, la lista completa llega por el flujo. Mi reaccion no esta en el documento, asi que
-    // se busca en la subcoleccion cada vez que llega
-    override fun listenSonando(currentUserId: String): Flow<List<SonandoDto>> = callbackFlow {
+    // El listener escucha lo que se puso a sonar desde esa fecha: cuando alguien pone otra cancion
+    // o le llega una reaccion, la lista llega por el flujo. actualizadoEn va en formato ISO, asi que
+    // comparar el texto compara las fechas, como en el mapa. Mi reaccion no esta en el documento,
+    // asi que se busca en la subcoleccion cada vez que llega
+    override fun listenSonando(desde: String, currentUserId: String): Flow<List<SonandoDto>> = callbackFlow {
         val listenerRegistration = db.collection("sonando")
+            .whereGreaterThanOrEqualTo("actualizadoEn", desde)
             .orderBy("actualizadoEn", Query.Direction.DESCENDING)
-            .limit(MAX_SONANDO.toLong())
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
                     close(error) // cierra el flujo con error
@@ -49,24 +49,35 @@ class SonandoFirestoreDataSourceImpl @Inject constructor(
     }.map { sonando -> conMisReacciones(sonando = sonando, currentUserId = currentUserId) }
 
     // Las reacciones a lo que sonaba antes se borran, para que no cuenten si vuelve a sonar lo
-    // mismo; despues se guarda lo nuevo con el contador en 0
+    // mismo, y se guarda lo nuevo con el contador en 0. Todo va en un batch: o se escribe todo o
+    // nada, asi el contador nunca queda distinto de las reacciones que hay
     override suspend fun ponerSonando(usuarioId: String, sonando: CreateSonandoDto) {
         val sonandoRef = db.collection("sonando").document(usuarioId)
+        val batch = db.batch()
 
-        val reacciones = sonandoRef.collection("reacciones").get().await()
-        for (reaccion in reacciones) reaccion.reference.delete().await()
+        borrarReacciones(sonandoRef = sonandoRef, batch = batch)
+        batch.set(sonandoRef, sonando)
 
-        sonandoRef.set(sonando).await()
+        batch.commit().await()
     }
 
-    // Borrar el documento no borra sus subcolecciones: primero se borran las reacciones
+    // Borrar el documento no borra sus subcolecciones: las reacciones se borran en el mismo batch
     override suspend fun quitarSonando(usuarioId: String) {
         val sonandoRef = db.collection("sonando").document(usuarioId)
+        val batch = db.batch()
 
+        borrarReacciones(sonandoRef = sonandoRef, batch = batch)
+        batch.delete(sonandoRef)
+
+        batch.commit().await()
+    }
+
+    // Lee las reacciones de lo que suena y agrega su borrado al batch. Son pocas: una por cada
+    // persona que reacciono, muy lejos del limite de 500 del batch
+    private suspend fun borrarReacciones(sonandoRef: DocumentReference, batch: WriteBatch) {
         val reacciones = sonandoRef.collection("reacciones").get().await()
-        for (reaccion in reacciones) reaccion.reference.delete().await()
 
-        sonandoRef.delete().await()
+        for (reaccion in reacciones) batch.delete(reaccion.reference)
     }
 
     // Igual que un like: la reaccion y el contador van en una transaccion, o se hacen las dos o

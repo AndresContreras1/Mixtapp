@@ -24,7 +24,11 @@ class ReviewRetrofitDataSourceImpl @Inject constructor(
     // La resena trae al usuario y al album en el include, en una sola consulta, y se convierte al
     // mismo DTO de Firestore
     override suspend fun getReviewById(id: String, currentUserId: String): ReviewDto {
-        return listOf(service.getReviewById(id).toReviewDto()).conMiUsuario(currentUserId).first()
+        return service.getReviewById(id).toReviewDto().conMiUsuario(currentUserId)
+    }
+
+    override suspend fun getAllReviews(): List<ReviewDto> {
+        return service.getReviews().map { it.toReviewDto() }
     }
 
     override suspend fun getReviewsDeItem(tipo: String, itemId: String, currentUserId: String): List<ReviewDto> {
@@ -82,7 +86,7 @@ class ReviewRetrofitDataSourceImpl @Inject constructor(
     }
 
     // El backend no guarda la ubicacion de las resenas: el mapa llega vacio
-    override fun listenReviewsDesde(desde: String): Flow<List<ReviewDto>> = flow {
+    override fun listenReviewsDesde(desde: String, currentUserId: String): Flow<List<ReviewDto>> = flow {
         emit(emptyList<ReviewDto>())
     }
 }

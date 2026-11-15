@@ -71,7 +71,7 @@ fun MyReviewsScreenContent(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize().testTag("myReviewsScreen")) {
         AppBackground()
 
         Column(modifier = Modifier.fillMaxSize()) {
@@ -87,6 +87,11 @@ fun MyReviewsScreenContent(
                 // Sin resenas cargadas solo se muestra el motivo del error
                 reviews.isEmpty() && errorMessageRes != null -> ErrorBox(messageRes = errorMessageRes)
                 else -> {
+                    // Si el listener falla despues de cargar, el aviso sale arriba y queda lo de antes
+                    ErrorMessage(
+                        messageRes = errorMessageRes,
+                        modifier = Modifier.padding(horizontal = 20.dp)
+                    )
                     ErrorMessage(
                         messageRes = errorAccionRes,
                         modifier = Modifier.padding(horizontal = 20.dp)
@@ -115,7 +120,6 @@ fun MyReviewsScreenContent(
                                 onAuthorClick = {},
                                 onLikeClick = onLikeClick,
                                 onCommentsClick = onCommentsClick,
-                                mostrarItem = true,
                                 onItemClick = onItemClick,
                                 onEditClick = onEditClick,
                                 onDeleteClick = onDeleteClick,

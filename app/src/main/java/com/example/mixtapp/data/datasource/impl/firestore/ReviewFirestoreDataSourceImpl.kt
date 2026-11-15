@@ -20,6 +20,14 @@ class ReviewFirestoreDataSourceImpl @Inject constructor(
     private val db: FirebaseFirestore
 ) : ReviewRemoteDataSource {
 
+    override suspend fun getAllReviews(): List<ReviewDto> {
+        val respuesta = db.collection("reviews").get().await()
+
+        return respuesta.documents.mapNotNull { doc ->
+            doc.toObject(ReviewDto::class.java)?.copy(id = doc.id)
+        }
+    }
+
     override suspend fun getReviewById(id: String, currentUserId: String): ReviewDto? {
         val reviewRef = db.collection("reviews").document(id)
         val respuesta = reviewRef.get().await()
@@ -125,8 +133,9 @@ class ReviewFirestoreDataSourceImpl @Inject constructor(
     }.map { reviews -> db.conMisLikes(reviews = reviews, currentUserId = currentUserId) }
 
     // Solo las resenas publicadas desde esa fecha. createdAt va en formato ISO, asi que comparar el
-    // texto compara las fechas, y un filtro de rango sobre un solo campo no necesita indice
-    override fun listenReviewsDesde(desde: String): Flow<List<ReviewDto>> = callbackFlow {
+    // texto compara las fechas, y un filtro de rango sobre un solo campo no necesita indice. Mi like
+    // de cada una se busca como en las demas listas
+    override fun listenReviewsDesde(desde: String, currentUserId: String): Flow<List<ReviewDto>> = callbackFlow {
         val listenerRegistration = db.collection("reviews")
             .whereGreaterThanOrEqualTo("createdAt", desde)
             .addSnapshotListener { snapshot, error ->
@@ -144,7 +153,7 @@ class ReviewFirestoreDataSourceImpl @Inject constructor(
 
         // Cuando se sale del mapa nadie escucha el flujo y se quita el listener
         awaitClose { listenerRegistration.remove() }
-    }
+    }.map { reviews -> db.conMisLikes(reviews = reviews, currentUserId = currentUserId) }
 
     // Escucha solo las resenas de este item. El listener no puede esperar otra consulta, asi que
     // mi like de cada resena se busca con exists() cada vez que llega la lista

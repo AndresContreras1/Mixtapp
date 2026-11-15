@@ -1,7 +1,6 @@
-package com.example.mixtapp.ui.screens.notifications.components
+package com.example.mixtapp.ui.utils
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,16 +11,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -30,28 +25,24 @@ import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalPreviewProvider
 import com.example.mixtapp.data.model.ItemUi
+import com.example.mixtapp.data.model.TIPO_ARTISTA
 import com.example.mixtapp.data.model.TIPO_CANCION
 import com.example.mixtapp.ui.theme.MixtappTheme
-import com.example.mixtapp.ui.utils.ItemAsyncImage
 
-// Un album o una cancion de un artista que me gusta: la portada, el titulo, el subtitulo (el
-// artista del album o el album de la cancion), que tipo es y el anio. Tocarlo abre su detalle
+// Un album, una cancion o un artista en una lista: la imagen, sus lineas, la etiqueta de que tipo
+// es y, al lado de la etiqueta, lo que cada lista necesite: el promedio de estrellas en Buscar y en
+// Elegir que calificar, el anio en los lanzamientos. Tocarlo abre su detalle; cada pantalla le pone
+// su testTag
 @Composable
-fun LanzamientoRow(
+fun ItemRow(
     item: ItemUi,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    alLado: @Composable () -> Unit,
 ) {
-    Card(
+    TarjetaTranslucida(
         onClick = onClick,
-        modifier = modifier
-            .fillMaxWidth()
-            .testTag("lanzamiento_${item.id}"),
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.7f)
-        ),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        modifier = modifier.fillMaxWidth(),
     ) {
         Row(
             modifier = Modifier.padding(10.dp),
@@ -82,6 +73,16 @@ fun LanzamientoRow(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
+                // Solo la cancion tiene detalle (su artista)
+                if (item.detalle.isNotEmpty()) {
+                    Text(
+                        text = item.detalle,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        style = MaterialTheme.typography.bodySmall,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(6.dp))
 
@@ -99,29 +100,30 @@ fun LanzamientoRow(
 
                     Spacer(modifier = Modifier.width(8.dp))
 
-                    Text(
-                        text = item.anio,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        style = MaterialTheme.typography.labelSmall,
-                    )
+                    alLado()
                 }
             }
         }
     }
 }
 
-// Los lanzamientos solo traen albumes y canciones: los artistas no tienen fecha de salida
+// Album, cancion o artista, para la etiqueta
 @StringRes
-private fun etiquetaDelTipo(tipo: String): Int =
-    if (tipo == TIPO_CANCION) R.string.tipo_cancion else R.string.tipo_album
+private fun etiquetaDelTipo(tipo: String): Int = when (tipo) {
+    TIPO_CANCION -> R.string.tipo_cancion
+    TIPO_ARTISTA -> R.string.tipo_artista
+    else -> R.string.tipo_album
+}
 
 @Composable
 @Preview(showBackground = true)
-fun LanzamientoRowPreview() {
+fun ItemRowPreview() {
     MixtappTheme(darkTheme = true) {
-        LanzamientoRow(
-            item = LocalPreviewProvider.karolG,
+        ItemRow(
+            item = LocalPreviewProvider.emptinessMachine,
             onClick = {},
-        )
+        ) {
+            StarRating(rating = 4, starSize = 14.dp, onRatingChange = null)
+        }
     }
 }

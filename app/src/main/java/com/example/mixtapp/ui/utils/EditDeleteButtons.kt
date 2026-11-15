@@ -14,7 +14,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.theme.MixtappTheme
 
-// Editar y eliminar mi resena: los usan el detalle del album y mis tarjetas del perfil
+// Editar y eliminar mi resena: los usan el detalle de un item, mi perfil y Mis resenas
 @Composable
 fun EditDeleteButtons(
     onEditClick: () -> Unit,

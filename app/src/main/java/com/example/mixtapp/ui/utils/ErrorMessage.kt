@@ -58,7 +58,7 @@ fun ErrorBox(
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .padding(horizontal = 32.dp)
-                .testTag("errorMessage"),
+                .testTag("errorBox"),
         )
     }
 }

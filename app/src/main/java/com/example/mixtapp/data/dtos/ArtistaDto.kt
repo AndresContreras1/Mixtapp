@@ -3,7 +3,8 @@ package com.example.mixtapp.data.dtos
 import com.example.mixtapp.data.model.ItemUi
 import com.example.mixtapp.data.model.TIPO_ARTISTA
 
-// Igual al documento de la coleccion artistas de Firestore y a la tabla artistas del backend
+// Los campos del documento de la coleccion artistas de Firestore. La tabla artistas del backend no
+// tiene likes, que se quedan con el valor del constructor vacio
 data class ArtistaDto(
     val id: String,
     val nombre: String,
@@ -11,7 +12,8 @@ data class ArtistaDto(
     val grupo: String?,
     val fotoUrl: String,
     val genero: String,
-    val subgenero: String,
+    // null si no tiene subgenero
+    val subgenero: String?,
     // El usuario de Instagram sin la @: el de su banda si es integrante. null si no tiene
     val instagram: String?,
     // Puesto en la lista de Deezer de su genero; null si no esta en la lista
@@ -25,7 +27,7 @@ data class ArtistaDto(
     var liked: Boolean = false,
 ) {
     // Firestore necesita un constructor vacio para convertir el documento en el DTO
-    constructor() : this("", "", null, "", "", "", null, null, null, 0, null, null)
+    constructor() : this("", "", null, "", "", null, null, null, null, 0, null, null)
 }
 
 // Debajo del nombre va su banda; si es solista, su genero. Los artistas no tienen anio ni fecha
@@ -41,7 +43,7 @@ fun ArtistaDto.toItemUi(): ItemUi {
         fechaLanzamiento = "",
         artista = grupo ?: nombre,
         genero = genero,
-        subgenero = subgenero,
+        subgenero = subgenero ?: "",
         tendencia = tendencia,
         tendenciaColombia = tendenciaColombia,
         likes = likesCount,

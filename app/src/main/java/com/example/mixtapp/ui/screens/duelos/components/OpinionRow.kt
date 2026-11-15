@@ -27,6 +27,7 @@ import com.example.mixtapp.data.model.OPCION_A
 import com.example.mixtapp.data.model.VotoUi
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.ProfileAsyncImage
+import com.example.mixtapp.ui.utils.TiempoTranscurrido
 
 // La opinion de quien voto: su foto y su nombre (tocarlos abre su perfil), por cual voto, cuanto
 // hace y lo que escribio. El color de "voto por" es el del lado de la barra
@@ -69,12 +70,7 @@ fun OpinionRow(
                         .clickable { onAuthorClick() },
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    // Hace menos de un minuto el mapeo deja el texto vacio
-                    text = voto.timeAgo.ifEmpty { stringResource(R.string.ahora) },
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    style = MaterialTheme.typography.labelSmall,
-                )
+                TiempoTranscurrido(timeAgo = voto.timeAgo)
             }
 
             Text(

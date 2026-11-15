@@ -1,9 +1,13 @@
 package com.example.mixtapp.repository
 
+import android.location.LocationManager
+import androidx.test.platform.app.InstrumentationRegistry
 import com.example.mixtapp.borrarCuentaDePrueba
 import com.example.mixtapp.cargarDatosDePrueba
 import com.example.mixtapp.conectarEmulador
+import com.example.mixtapp.crearCuentaDePrueba
 import com.example.mixtapp.data.datasource.AuthRemoteDataSource
+import com.example.mixtapp.data.datasource.impl.android.UbicacionAndroidDataSourceImpl
 import com.example.mixtapp.data.datasource.impl.firestore.ReviewFirestoreDataSourceImpl
 import com.example.mixtapp.data.datasource.impl.firestore.UsuarioFirestoreDataSourceImpl
 import com.example.mixtapp.data.dtos.toItemUi
@@ -39,10 +43,14 @@ class ReviewRepositoryIntegrationTest {
     fun setUp() = runTest {
         conectarEmulador()
 
+        // La ubicacion real del celular: sin el permiso concedido llega null y la resena se guarda
+        // sin ubicacion, que es lo que prueban estas resenas
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
         reviewRepository = ReviewRepository(
             ReviewFirestoreDataSourceImpl(db),
             UsuarioFirestoreDataSourceImpl(db),
             AuthRemoteDataSource(auth),
+            UbicacionAndroidDataSourceImpl(context, context.getSystemService(LocationManager::class.java)),
         )
         limpiarBase(db)
         cargarDatosDePrueba(db)
@@ -50,7 +58,7 @@ class ReviewRepositoryIntegrationTest {
         // Una cuenta nueva en el Authentication del emulador: crearla tambien inicia la sesion.
         // No tiene documento en usuarios
         correo = "prueba${System.currentTimeMillis()}@example.com"
-        auth.createUserWithEmailAndPassword(correo, "123456").await()
+        crearCuentaDePrueba(auth, correo)
     }
 
     @After

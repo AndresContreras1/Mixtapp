@@ -26,7 +26,8 @@ import com.example.mixtapp.ui.theme.MixtappTheme
 fun AppChip(
     text: String,
     isSelected: Boolean,
-    onClick: () -> Unit,
+    // null cuando el chip solo muestra un dato, como los generos del detalle, y no se puede tocar
+    onClick: (() -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -36,7 +37,7 @@ fun AppChip(
                 if (isSelected) MaterialTheme.colorScheme.primary
                 else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
             )
-            .clickable { onClick() }
+            .clickable(enabled = onClick != null) { onClick?.invoke() }
             .padding(horizontal = 18.dp, vertical = 10.dp),
         contentAlignment = Alignment.Center,
     ) {

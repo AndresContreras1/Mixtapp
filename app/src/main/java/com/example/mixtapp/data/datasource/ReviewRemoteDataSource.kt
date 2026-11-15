@@ -12,6 +12,8 @@ interface ReviewRemoteDataSource {
     // Las resenas de un album, una cancion o un artista. El tipo lo necesita el backend, donde los
     // ids de las tres tablas se repiten
     suspend fun getReviewsDeItem(tipo: String, itemId: String, currentUserId: String = ""): List<ReviewDto>
+    // Todas las resenas una sola vez, sin likes: para las estrellas del catalogo al elegir que calificar
+    suspend fun getAllReviews(): List<ReviewDto>
     suspend fun createReview(review: CreateReviewDto): Unit
     suspend fun updateReview(id: String, review: CreateReviewDto): Unit
     suspend fun deleteReview(id: String): Unit
@@ -30,6 +32,7 @@ interface ReviewRemoteDataSource {
     suspend fun sendOrDeleteLikeComentario(reviewId: String, comentarioId: String, userId: String): Unit
     // Los comentarios en vivo, con mis likes: es como un chat, cada comentario nuevo llega solo
     fun listenComentarios(reviewId: String, currentUserId: String = ""): Flow<List<ComentarioDto>>
-    // Las resenas publicadas desde esa fecha (texto ISO), para el mapa de las ultimas 24 horas
-    fun listenReviewsDesde(desde: String): Flow<List<ReviewDto>>
+    // Las resenas publicadas desde esa fecha (texto ISO), para el mapa de las ultimas 24 horas, con
+    // mis likes para que la tarjeta pinte el corazon
+    fun listenReviewsDesde(desde: String, currentUserId: String = ""): Flow<List<ReviewDto>>
 }

@@ -11,11 +11,11 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.test.platform.app.InstrumentationRegistry
 import com.example.mixtapp.R
+import com.example.mixtapp.borrarCuentaDePrueba
 import com.example.mixtapp.limpiarBase
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
-import kotlinx.coroutines.tasks.await
 
 // Lo que comparten los dos casos de uso. Estan aqui para no copiarlos en cada clase
 
@@ -49,9 +49,9 @@ fun ComposeTestRule.tocarVolver(listaTag: String? = null) {
     onNodeWithContentDescription(volver).performClick()
 }
 
-// Al terminar se borra la cuenta que creo la prueba, se cierra la sesion y se limpia la base
-suspend fun borrarCuentaYLimpiarBase() {
-    Firebase.auth.currentUser?.delete()?.await()
-    Firebase.auth.signOut()
+// Al terminar se borra la cuenta que creo la prueba (aunque haya fallado antes de entrar), se
+// cierra la sesion y se limpia la base
+suspend fun borrarCuentaYLimpiarBase(correo: String) {
+    borrarCuentaDePrueba(auth = Firebase.auth, correo = correo)
     limpiarBase(Firebase.firestore)
 }

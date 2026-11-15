@@ -54,33 +54,43 @@ android {
 }
 
 dependencies {
+    // Android, el ciclo de vida y los ViewModels de Compose
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.activity.compose)
+    // Compose con Material 3, las fuentes de Google y los iconos
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.ui.text.google.fonts)
-    implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.material.icons.extended)
+    // La navegacion entre pantallas
+    implementation(libs.androidx.navigation.compose)
+    // Hilt: la inyeccion de dependencias con KSP y hiltViewModel en la navegacion
     implementation(libs.dagger.hilt)
     ksp(libs.dagger.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
+    // Firebase: Authentication, Storage, Firestore y las notificaciones con Messaging
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
     implementation(libs.firebase.storage)
     implementation(libs.firebase.firestore)
-    //Messaging
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.messaging)
+    // await() para las tareas de Firebase dentro de las corrutinas
     implementation(libs.kotlinx.coroutines.play.services)
+    // Las imagenes desde una URL
     implementation(libs.coil.compose)
+    // Retrofit para el backend de Express, con Gson para el JSON
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.scalars)
     implementation(libs.retrofit.converter.gson)
+    // Mapa de OpenStreetMap: libre y sin servicios de Google
+    implementation(libs.osmdroid.android)
+    // Pruebas unitarias con JUnit
     testImplementation(libs.junit)
     // Pruebas con mocks del repositorio y de los ViewModels: MockK, runTest y Truth
     testImplementation(libs.mockk)
@@ -97,9 +107,7 @@ dependencies {
     // Pruebas e2e con Hilt: @HiltAndroidTest, HiltAndroidRule y el compilador para androidTest
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.dagger.hilt.compiler)
+    // Las herramientas de los previews y de las pruebas de Compose, solo en debug
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
-    // Mapa de OpenStreetMap: libre y sin servicios de Google
-    implementation(libs.osmdroid.android)
-
 }

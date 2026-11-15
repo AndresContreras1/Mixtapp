@@ -1,5 +1,9 @@
 package com.example.mixtapp.ui.navigation
 
+// Los nombres de los argumentos de las rutas, para no repetirlos como texto suelto
+const val ARG_TIPO = "tipo"
+const val ARG_ITEM_ID = "itemId"
+
 // Definicion de las rutas de la aplicacion
 sealed class Screen(val route: String) {
     data object Splash : Screen(route = "splash")

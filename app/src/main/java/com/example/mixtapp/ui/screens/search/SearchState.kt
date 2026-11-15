@@ -18,8 +18,8 @@ data class SearchState(
     val resultados: List<ItemConResenasUi> = emptyList(),
     // Las personas que coinciden con el texto, desde 2 letras
     val usuarios: List<UsuarioUi> = emptyList(),
-    // Arranca cargando porque lo primero que hace el ViewModel es escuchar el catalogo
-    val isLoading: Boolean = true,
+    // Se pone en true al empezar a escuchar el catalogo y en false cuando llega o falla
+    val isLoading: Boolean = false,
     // El error del catalogo tapa la pantalla; el de las categorias y el de las personas van aparte
     @StringRes val errorMessageRes: Int? = null,
     @StringRes val errorCategoriasRes: Int? = null,

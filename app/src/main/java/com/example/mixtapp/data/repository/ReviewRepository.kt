@@ -3,14 +3,16 @@ package com.example.mixtapp.data.repository
 import android.util.Log
 import com.example.mixtapp.data.datasource.AuthRemoteDataSource
 import com.example.mixtapp.data.datasource.ReviewRemoteDataSource
+import com.example.mixtapp.data.datasource.UbicacionDataSource
 import com.example.mixtapp.data.datasource.UsuarioRemoteDataSource
 import com.example.mixtapp.data.dtos.CreateComentarioDto
 import com.example.mixtapp.data.dtos.CreateReviewDto
 import com.example.mixtapp.data.dtos.CreateReviewItemDto
 import com.example.mixtapp.data.dtos.CreateReviewUsuarioDto
+import com.example.mixtapp.data.dtos.UbicacionDto
 import com.example.mixtapp.data.dtos.toDiscussionCommentUi
+import com.example.mixtapp.data.dtos.toResenaEnMapaUi
 import com.example.mixtapp.data.dtos.toReviewUi
-import com.example.mixtapp.data.model.Coordenadas
 import com.example.mixtapp.data.model.DiscussionCommentUi
 import com.example.mixtapp.data.model.DiscussionUi
 import com.example.mixtapp.data.model.ItemUi
@@ -29,13 +31,15 @@ import javax.inject.Inject
 private const val HORAS_DEL_MAPA = 24L
 
 // Organiza varios data sources: las resenas con sus comentarios, el usuario que se copia en cada
-// una y Authentication para saber quien es el usuario de la app.
+// una, Authentication para saber quien es el usuario de la app y la ubicacion del celular, que se
+// guarda en cada resena nueva para el mapa.
 // Recibe los contratos: para volver al backend de Express basta con cambiar los @Binds de
 // DataSourceModule a las implementaciones de Retrofit
 class ReviewRepository @Inject constructor(
     private val reviewRemoteDataSource: ReviewRemoteDataSource,
     private val usuarioRemoteDataSource: UsuarioRemoteDataSource,
-    private val authRemoteDataSource: AuthRemoteDataSource
+    private val authRemoteDataSource: AuthRemoteDataSource,
+    private val ubicacionDataSource: UbicacionDataSource,
 ) {
 
     // Da el like o lo quita: el data source decide segun si ya existe. El corazon y el contador
@@ -82,10 +86,10 @@ class ReviewRepository @Inject constructor(
         item: ItemUi,
         rating: Int,
         texto: String,
-        fecha: String,
+        fechaEscucha: String,
         reviewId: String?,
-        // Donde estoy al publicar; null si no hay permiso o no se pudo leer
-        ubicacion: Coordenadas? = null,
+        // La hora de la resena; las pruebas pasan una fija para comparar el DTO completo
+        ahora: Instant = Instant.now(),
     ): Result<Unit> {
         return try {
             val usuarioId = authRemoteDataSource.currentUser?.uid
@@ -93,7 +97,11 @@ class ReviewRepository @Inject constructor(
 
             // En formato ISO, como los comentarios: la resena nueva guarda las dos fechas y al
             // modificarla solo cambia updatedAt
-            val ahora = Instant.now().toString()
+            val fecha = ahora.toString()
+
+            // La ubicacion solo se pide al publicar una resena nueva: al modificarla queda la de
+            // cuando se publico. Sin permiso o sin GPS se guarda sin ubicacion
+            val ubicacion = if (reviewId == null) ubicacionDeLaResena() else null
 
             // La resena guarda una copia de lo que se muestra del usuario y del item, porque en
             // Firestore no hay joins. Solo se copia lo que se ve, no todo el usuario
@@ -103,11 +111,11 @@ class ReviewRepository @Inject constructor(
                 tipo = item.tipo,
                 calificacion = rating,
                 comentario = texto,
-                fechaEscucha = if (fecha.isEmpty()) null else fecha,
+                fechaEscucha = if (fechaEscucha.isEmpty()) null else fechaEscucha,
                 likesCount = 0,
                 commentsCount = 0,
-                createdAt = if (reviewId == null) ahora else null,
-                updatedAt = ahora,
+                createdAt = if (reviewId == null) fecha else null,
+                updatedAt = fecha,
                 usuario = CreateReviewUsuarioDto(
                     nombre = nombreDelUsuario(usuarioId = usuarioId),
                     fotoUrl = authRemoteDataSource.currentUser?.photoUrl?.toString(),
@@ -138,6 +146,23 @@ class ReviewRepository @Inject constructor(
         }
     }
 
+    // La fecha desde la que se muestran resenas en el mapa, en formato ISO como createdAt
+    private fun hace24Horas(ahora: Instant): String =
+        ahora.minusSeconds(HORAS_DEL_MAPA * 60 * 60).toString()
+
+    // Sin ubicacion la resena se publica igual, solo que no sale en el mapa: si quitaron el
+    // permiso mientras se pedia, se guarda sin ella
+    private suspend fun ubicacionDeLaResena(): UbicacionDto? {
+        return try {
+            ubicacionDataSource.getUbicacionActual()
+        } catch (e: SecurityException) {
+            Log.d("ReviewRepository", "ubicacionDeLaResena: ${e.message}")
+            null
+        }
+    }
+
+    // Borra mi resena con sus likes y sus comentarios (el data source los borra en un batch); deja
+    // de verse en las listas por el listener
     suspend fun eliminarResena(reviewId: String): Result<Unit> {
         return try {
             reviewRemoteDataSource.deleteReview(reviewId)
@@ -155,30 +180,23 @@ class ReviewRepository @Inject constructor(
     }
 
     // Las resenas de las ultimas 24 horas que tienen ubicacion, la mas nueva primero: cada una es
-    // un marcador del mapa. Una nueva llega sola por el listener
-    fun getResenasEnElMapaLive(ahora: Instant = Instant.now()): Flow<List<ResenaEnMapaUi>> {
+    // un marcador del mapa, con mi like. Una nueva llega sola por el listener. reloj da la hora
+    // actual; las pruebas pasan una fija
+    fun getResenasEnElMapaLive(reloj: () -> Instant = { Instant.now() }): Flow<List<ResenaEnMapaUi>> {
         val usuarioId = authRemoteDataSource.currentUser?.uid ?: ""
-        // En formato ISO, como createdAt
-        val desde = ahora.minusSeconds(HORAS_DEL_MAPA * 60 * 60).toString()
 
-        return reviewRemoteDataSource.listenReviewsDesde(desde = desde)
+        return reviewRemoteDataSource.listenReviewsDesde(desde = hace24Horas(reloj()), currentUserId = usuarioId)
             .map { reviews ->
+                // Con cada cambio se vuelve a mirar la hora: lo que ya paso de 24 horas sale del
+                // mapa y el "hace cuanto" de las tarjetas avanza
+                val ahora = reloj()
+                val limite = hace24Horas(ahora)
+
                 reviews
+                    .filter { (it.createdAt ?: "") >= limite }
                     .sortedByDescending { it.createdAt }
-                    .mapNotNull { review ->
-                        val latitud = review.latitud
-                        val longitud = review.longitud
-                        // Sin ubicacion no hay donde poner el marcador
-                        if (latitud == null || longitud == null) {
-                            null
-                        } else {
-                            ResenaEnMapaUi(
-                                review = review.toReviewUi(usuarioActualId = usuarioId, ahora = ahora),
-                                latitud = latitud,
-                                longitud = longitud,
-                            )
-                        }
-                    }
+                    // Sin ubicacion no hay donde poner el marcador
+                    .mapNotNull { it.toResenaEnMapaUi(usuarioActualId = usuarioId, ahora = ahora) }
             }
             .catch { e ->
                 Log.d("ReviewRepository", "getResenasEnElMapaLive: ${e.message}")

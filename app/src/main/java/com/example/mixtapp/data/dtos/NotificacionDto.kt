@@ -6,13 +6,13 @@ import java.time.Instant
 // Igual al documento que la Cloud Function guarda en usuarios/{uid}/notificaciones
 data class NotificacionDto(
     val id: String,
-    // like, comentario, respuesta o seguidor
+    // like, like_comentario, comentario, respuesta, seguidor o reaccion_sonando
     val tipo: String,
     // Copia de quien hizo la accion, del momento en que la hizo
     val actorId: String,
     val actorNombre: String,
     val actorFotoUrl: String?,
-    // La resena del like o del comentario; null en un seguidor nuevo
+    // La resena del like o del comentario; null en un seguidor nuevo y en una reaccion a lo que escucho
     val reviewId: String?,
     val itemTitulo: String,
     val imagenUrl: String?,

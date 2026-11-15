@@ -18,6 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
+import com.example.mixtapp.data.model.MAX_DESCRIPCION_MIXTAPE
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppBackground
 import com.example.mixtapp.ui.utils.AppButton
@@ -29,14 +30,15 @@ import com.example.mixtapp.ui.utils.ScreenTitle
 @Composable
 fun CrearMixtapeScreen(
     crearMixtapeViewModel: CrearMixtapeViewModel,
+    onCreada: () -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val state by crearMixtapeViewModel.uiState.collectAsState()
 
-    // Cuando la mixtape queda creada se vuelve a la pantalla anterior
+    // Cuando la base confirma que la mixtape quedo creada
     LaunchedEffect(state.navigate) {
-        if (state.navigate) onBackClick()
+        if (state.navigate) onCreada()
     }
 
     CrearMixtapeScreenContent(

@@ -112,7 +112,7 @@ class DetailViewModelTest {
         val state = viewModel.uiState.value
         assertThat(state.isLoading).isFalse()
         assertThat(state.itemConResenas).isNull()
-        assertThat(state.errorMessageRes).isEqualTo(R.string.album_no_encontrado)
+        assertThat(state.errorMessageRes).isEqualTo(R.string.item_no_encontrado)
     }
 
     @Test

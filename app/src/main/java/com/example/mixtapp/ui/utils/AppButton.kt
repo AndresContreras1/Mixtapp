@@ -25,7 +25,7 @@ fun AppButton(
     texto: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    cargando: Boolean = false,
+    cargando: Boolean,
 ) {
     Button(
         onClick = onClick,
@@ -64,6 +64,7 @@ fun AppButtonPreview() {
             texto = stringResource(R.string.ingresar),
             onClick = {},
             modifier = Modifier.fillMaxWidth(),
+            cargando = false,
         )
     }
 }

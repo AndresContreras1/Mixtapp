@@ -1,5 +1,6 @@
 package com.example.mixtapp.ui.screens.notifications.components
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -38,6 +39,7 @@ import com.example.mixtapp.data.model.NotificationUi
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.ItemAsyncImage
 import com.example.mixtapp.ui.utils.ProfileAsyncImage
+import com.example.mixtapp.ui.utils.TiempoTranscurrido
 
 // Una notificacion: la foto de quien la genero, el texto con su nombre en negrita, cuanto hace,
 // la miniatura de lo resenado y un punto mientras no este leida. Las no leidas resaltan mas
@@ -47,7 +49,11 @@ fun NotificationRow(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val texto = textoDeNotificacion(notification = notification)
+    val texto = stringResource(
+        textoDeNotificacion(tipo = notification.tipo, conTitulo = notification.itemTitle.isNotEmpty()),
+        notification.actorName,
+        notification.itemTitle,
+    )
 
     Row(
         modifier = modifier
@@ -86,12 +92,7 @@ fun NotificationRow(
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            Text(
-                // Hace menos de un minuto el mapeo deja el texto vacio
-                text = notification.timeAgo.ifEmpty { stringResource(R.string.ahora) },
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                style = MaterialTheme.typography.labelSmall,
-            )
+            TiempoTranscurrido(timeAgo = notification.timeAgo)
         }
 
         // Un seguidor nuevo no trae miniatura
@@ -119,33 +120,25 @@ fun NotificationRow(
     }
 }
 
-// El texto segun el tipo. Si la resena no tiene titulo se usa la variante sin "de ..." o "en ..."
-@Composable
-private fun textoDeNotificacion(notification: NotificationUi): String {
-    val nombre = notification.actorName
-    val titulo = notification.itemTitle
-
-    return when (notification.tipo) {
-        NOTIFICACION_LIKE -> if (titulo.isEmpty()) {
-            stringResource(R.string.notificacion_like_sin_item, nombre)
-        } else {
-            stringResource(R.string.notificacion_like, nombre, titulo)
-        }
-        NOTIFICACION_LIKE_COMENTARIO -> if (titulo.isEmpty()) {
-            stringResource(R.string.notificacion_like_comentario_sin_item, nombre)
-        } else {
-            stringResource(R.string.notificacion_like_comentario, nombre, titulo)
-        }
-        NOTIFICACION_COMENTARIO -> if (titulo.isEmpty()) {
-            stringResource(R.string.notificacion_comentario_sin_item, nombre)
-        } else {
-            stringResource(R.string.notificacion_comentario, nombre, titulo)
-        }
-        NOTIFICACION_RESPUESTA -> stringResource(R.string.notificacion_respuesta, nombre)
-        NOTIFICACION_REACCION_SONANDO -> stringResource(R.string.notificacion_reaccion_sonando, nombre, titulo)
-        // NOTIFICACION_SEGUIDOR
-        else -> stringResource(R.string.notificacion_seguidor, nombre)
+// El texto de cada tipo: siempre lleva el nombre de quien la hizo y, si tiene, el titulo del item.
+// Sin titulo se usa la variante sin "de ..." o "en ..."
+@StringRes
+private fun textoDeNotificacion(tipo: String, conTitulo: Boolean): Int = when (tipo) {
+    NOTIFICACION_LIKE -> if (conTitulo) R.string.notificacion_like else R.string.notificacion_like_sin_item
+    NOTIFICACION_LIKE_COMENTARIO -> if (conTitulo) {
+        R.string.notificacion_like_comentario
+    } else {
+        R.string.notificacion_like_comentario_sin_item
     }
+    NOTIFICACION_COMENTARIO -> if (conTitulo) R.string.notificacion_comentario else R.string.notificacion_comentario_sin_item
+    NOTIFICACION_RESPUESTA -> R.string.notificacion_respuesta
+    NOTIFICACION_REACCION_SONANDO -> if (conTitulo) {
+        R.string.notificacion_reaccion_sonando
+    } else {
+        R.string.notificacion_reaccion_sonando_sin_item
+    }
+    // NOTIFICACION_SEGUIDOR
+    else -> R.string.notificacion_seguidor
 }
 
 @Composable

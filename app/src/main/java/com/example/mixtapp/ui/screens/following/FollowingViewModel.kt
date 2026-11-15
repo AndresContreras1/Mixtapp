@@ -63,11 +63,11 @@ class FollowingViewModel @Inject constructor(
             val result = sonandoRepository.reaccionar(sonando = sonando)
 
             if (result.isSuccess) {
-                _uiState.update { it.copy(errorSonandoRes = null) }
+                _uiState.update { it.copy(errorAccionSonandoRes = null) }
             } else {
                 _uiState.update {
                     it.copy(
-                        errorSonandoRes = mensajeDeError(
+                        errorAccionSonandoRes = mensajeDeError(
                             error = result.exceptionOrNull(),
                             generico = R.string.error_reaccionar,
                         )
@@ -82,10 +82,12 @@ class FollowingViewModel @Inject constructor(
         viewModelScope.launch(ioDispatcher) {
             val result = sonandoRepository.quitarSonando()
 
-            if (result.isFailure) {
+            if (result.isSuccess) {
+                _uiState.update { it.copy(errorAccionSonandoRes = null) }
+            } else {
                 _uiState.update {
                     it.copy(
-                        errorSonandoRes = mensajeDeError(
+                        errorAccionSonandoRes = mensajeDeError(
                             error = result.exceptionOrNull(),
                             generico = R.string.error_sonando,
                         )
@@ -97,6 +99,8 @@ class FollowingViewModel @Inject constructor(
 
     // Una resena nueva, un like o seguir a alguien llegan solos, sin salir y volver
     private fun escucharSeguidos() {
+        _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
+
         viewModelScope.launch(ioDispatcher) {
             socialRepository.getFollowingLive()
                 .catch { e ->

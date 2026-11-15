@@ -9,7 +9,7 @@ import com.example.mixtapp.data.dtos.UsuarioPerfilFirestoreDto
 import com.example.mixtapp.data.dtos.toSonandoUi
 import com.example.mixtapp.data.local.LocalPreviewProvider
 import com.example.mixtapp.data.repository.ErrorInesperadoException
-import com.example.mixtapp.data.repository.SeguirseASiMismoException
+import com.example.mixtapp.data.repository.ReaccionarALoMioException
 import com.example.mixtapp.data.repository.SinSesionException
 import com.example.mixtapp.data.repository.SonandoRepository
 import com.google.common.truth.Truth.assertThat
@@ -46,6 +46,9 @@ class SonandoRepositoryTest {
         actualizadoEn = actualizadoEn,
     )
 
+    // Lo que suena se pide desde 12 horas antes de la hora fija
+    private val desde = "2026-11-13T00:00:00Z"
+
     // Casi todas las pruebas son con la sesion iniciada: la que no, cambia el mock
     @Before
     fun setUp() {
@@ -55,7 +58,7 @@ class SonandoRepositoryTest {
     @Test
     fun getSonandoLive_variosUsuarios_soloLoMioYLoDeQuienesSigo() = runTest {
         //Arrange: sigo a laura; luis no lo sigo
-        coEvery { sonandoDataSource.listenSonando("yo") } returns flowOf(
+        coEvery { sonandoDataSource.listenSonando(desde, "yo") } returns flowOf(
             listOf(
                 sonando("laura", "2026-11-13T11:00:00Z"),
                 sonando("luis", "2026-11-13T11:30:00Z"),
@@ -66,23 +69,27 @@ class SonandoRepositoryTest {
             listOf(UsuarioPerfilFirestoreDto().copy(id = "laura"))
         )
         //Act
-        val fila = repository.getSonandoLive(ahora = ahora).first()
+        val fila = repository.getSonandoLive(reloj = { ahora }).first()
         //Assert: lo mio primero
         assertThat(fila.map { it.usuarioId }).containsExactly("yo", "laura").inOrder()
         assertThat(fila[0].esMio).isTrue()
     }
 
     @Test
-    fun getSonandoLive_hace13Horas_yaNoSale() = runTest {
-        //Arrange
-        coEvery { sonandoDataSource.listenSonando("yo") } returns flowOf(
-            listOf(sonando("laura", "2026-11-12T23:00:00Z"))
+    fun getSonandoLive_pasaronLas12Horas_yaNoSale() = runTest {
+        //Arrange: la fila se abrio a las 12:00 y la siguiente emision llega a las 23:30; para
+        // entonces lo de las 11:00 ya tiene mas de 12 horas
+        var hora = ahora
+        coEvery { sonandoDataSource.listenSonando(desde, "yo") } returns flowOf(
+            listOf(sonando("laura", "2026-11-13T11:00:00Z"))
         )
         coEvery { usuarioDataSource.listenSeguidos("yo") } returns flowOf(
             listOf(UsuarioPerfilFirestoreDto().copy(id = "laura"))
         )
         //Act
-        val fila = repository.getSonandoLive(ahora = ahora).first()
+        val flujo = repository.getSonandoLive(reloj = { hora })
+        hora = Instant.parse("2026-11-13T23:30:00Z")
+        val fila = flujo.first()
         //Assert
         assertThat(fila).isEmpty()
     }
@@ -90,14 +97,14 @@ class SonandoRepositoryTest {
     @Test
     fun getSonandoLive_documento_mapeaItemReaccionesYHaceCuanto() = runTest {
         //Arrange
-        coEvery { sonandoDataSource.listenSonando("yo") } returns flowOf(
+        coEvery { sonandoDataSource.listenSonando(desde, "yo") } returns flowOf(
             listOf(sonando("laura", "2026-11-13T09:00:00Z", reacciones = 4))
         )
         coEvery { usuarioDataSource.listenSeguidos("yo") } returns flowOf(
             listOf(UsuarioPerfilFirestoreDto().copy(id = "laura"))
         )
         //Act
-        val laura = repository.getSonandoLive(ahora = ahora).first().first()
+        val laura = repository.getSonandoLive(reloj = { ahora }).first().first()
         //Assert
         assertThat(laura.nombre).isEqualTo("Nombre laura")
         assertThat(laura.item.titulo).isEqualTo("Album 1")
@@ -135,6 +142,37 @@ class SonandoRepositoryTest {
         //Act
         val result = repository.reaccionar(mio)
         //Assert
-        assertThat(result.exceptionOrNull()).isInstanceOf(SeguirseASiMismoException::class.java)
+        assertThat(result.exceptionOrNull()).isInstanceOf(ReaccionarALoMioException::class.java)
+    }
+
+    @Test
+    fun reaccionar_aLoDeOtro_success() = runTest {
+        //Arrange: la reaccion va al documento de laura
+        val deLaura = sonando("laura", "2026-11-13T11:00:00Z").toSonandoUi(usuarioActualId = "yo", ahora = ahora)
+        coEvery { sonandoDataSource.reaccionar("laura", any()) } returns Unit
+        //Act
+        val result = repository.reaccionar(deLaura)
+        //Assert
+        assertThat(result.isSuccess).isTrue()
+    }
+
+    @Test
+    fun quitarSonando_conSesion_success() = runTest {
+        //Arrange
+        coEvery { sonandoDataSource.quitarSonando("yo") } returns Unit
+        //Act
+        val result = repository.quitarSonando()
+        //Assert
+        assertThat(result.isSuccess).isTrue()
+    }
+
+    @Test
+    fun quitarSonando_sinSesion_sinSesionException() = runTest {
+        //Arrange
+        coEvery { authDataSource.currentUser } returns null
+        //Act
+        val result = repository.quitarSonando()
+        //Assert
+        assertThat(result.exceptionOrNull()).isInstanceOf(SinSesionException::class.java)
     }
 }

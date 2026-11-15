@@ -9,6 +9,9 @@ import com.example.mixtapp.data.datasource.CancionRemoteDataSource
 import com.example.mixtapp.data.datasource.HistoriaRemoteDataSource
 import com.example.mixtapp.data.datasource.ReviewRemoteDataSource
 import com.example.mixtapp.data.datasource.UsuarioRemoteDataSource
+import com.example.mixtapp.data.dtos.AlbumDto
+import com.example.mixtapp.data.dtos.ArtistaDto
+import com.example.mixtapp.data.dtos.CancionDto
 import com.example.mixtapp.data.dtos.toCopiaDeItemDto
 import com.example.mixtapp.data.dtos.toHistoriaUi
 import com.example.mixtapp.data.dtos.toItemUi
@@ -26,6 +29,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import retrofit2.HttpException
@@ -67,19 +71,61 @@ class CatalogoRepository @Inject constructor(
             // Con mi uid llega mi like de cada resena: las de quienes sigo se pintan con el corazon
             reviewRemoteDataSource.listenAllReviews(currentUserId = usuarioActualId),
         ) { albumes, canciones, artistas, reviews ->
-            val items = albumes.map { it.toItemUi() } +
-                canciones.map { it.toItemUi() } +
-                artistas.map { it.toItemUi() }
-            val reviewsUi = reviews.map { it.toReviewUi(usuarioActualId = usuarioActualId) }
-
-            items.map { item ->
-                conEstadisticas(item = item, reviews = reviewsUi.filter { review -> review.item.id == item.id })
-            }
+            conEstadisticasDelCatalogo(
+                items = juntarCatalogo(albumes = albumes, canciones = canciones, artistas = artistas),
+                reviews = reviews.map { it.toReviewUi(usuarioActualId = usuarioActualId) },
+            )
         }
             .catch { e ->
                 Log.d("CatalogoRepository", "getCatalogoLive: ${e.message}")
                 throw errorDelFlujo(e)
             }
+    }
+
+    // Elegir que calificar: el catalogo con las estrellas de cada item, una sola vez. Mientras se
+    // elige no hace falta ver cambiar las estrellas
+    suspend fun getCatalogo(): Result<List<ItemConResenasUi>> {
+        return try {
+            val usuarioActualId = authRemoteDataSource.currentUser?.uid ?: ""
+
+            val catalogo = coroutineScope {
+                val items = async { leerItemsDelCatalogo() }
+                val reviews = async { reviewRemoteDataSource.getAllReviews() }
+
+                conEstadisticasDelCatalogo(
+                    items = items.await(),
+                    reviews = reviews.await().map { it.toReviewUi(usuarioActualId = usuarioActualId) },
+                )
+            }
+
+            Result.success(catalogo)
+        } catch (e: HttpException) {
+            Log.d("CatalogoRepository", "getCatalogo: ${e.message}")
+            Result.failure(errorDelBackend(e))
+        } catch (e: FirebaseFirestoreException) {
+            Log.d("CatalogoRepository", "getCatalogo: ${e.message}")
+            Result.failure(errorDeFirestore(e))
+        } catch (e: Exception) {
+            Log.d("CatalogoRepository", "getCatalogo: ${e.message}")
+            Result.failure(ErrorInesperadoException())
+        }
+    }
+
+    // Todos los items del catalogo una sola vez, sin resenas: para lo que no los necesita ver cambiar
+    // (el par de los duelos y el genero y el artista del resumen)
+    suspend fun getItemsDelCatalogo(): Result<List<ItemUi>> {
+        return try {
+            Result.success(leerItemsDelCatalogo())
+        } catch (e: HttpException) {
+            Log.d("CatalogoRepository", "getItemsDelCatalogo: ${e.message}")
+            Result.failure(errorDelBackend(e))
+        } catch (e: FirebaseFirestoreException) {
+            Log.d("CatalogoRepository", "getItemsDelCatalogo: ${e.message}")
+            Result.failure(errorDeFirestore(e))
+        } catch (e: Exception) {
+            Log.d("CatalogoRepository", "getItemsDelCatalogo: ${e.message}")
+            Result.failure(ErrorInesperadoException())
+        }
     }
 
     // El detalle en vivo con tres listeners: el item (mi like cambia su likesCount), mi guardado y
@@ -110,22 +156,18 @@ class CatalogoRepository @Inject constructor(
     }
 
     // Lanzamientos de lo que me gusta: los albumes y las canciones de los artistas que estan en mis
-    // likes o mis guardados, del mas nuevo al mas viejo. Son cinco listeners: los tres del catalogo
-    // (para saber de quien es cada item que me gusta) y mis dos listas. Sin sesion llega vacia
+    // likes o mis guardados, del mas nuevo al mas viejo. El catalogo se lee una sola vez (no cambia
+    // mientras se usa la app) y mis dos listas en vivo. Sin sesion llega vacia
     fun getLanzamientosLive(): Flow<List<ItemUi>> {
         val usuarioActualId = authRemoteDataSource.currentUser?.uid ?: ""
         if (usuarioActualId.isEmpty()) return flowOf(emptyList())
 
         return combine(
-            albumRemoteDataSource.listenAlbumes(),
-            cancionRemoteDataSource.listenCanciones(),
-            artistaRemoteDataSource.listenArtistas(),
+            // Con flow { emit() } la lectura de una vez se combina con los dos listeners
+            flow { emit(leerItemsDelCatalogo()) },
             usuarioRemoteDataSource.listenLikes(usuarioActualId),
             usuarioRemoteDataSource.listenGuardados(usuarioActualId),
-        ) { albumes, canciones, artistas, likes, guardados ->
-            val items = albumes.map { it.toItemUi() } +
-                canciones.map { it.toItemUi() } +
-                artistas.map { it.toItemUi() }
+        ) { items, likes, guardados ->
             val idsQueMeGustan = (likes + guardados).map { it.id }.toSet()
             val artistasQueMeGustan = items.filter { it.id in idsQueMeGustan }.map { it.artista }.toSet()
 
@@ -161,6 +203,29 @@ class CatalogoRepository @Inject constructor(
         }
     }
 
+    // Solo el item, una vez: para las pantallas que lo muestran en su cabecera (Agregar a mixtape,
+    // Datos curiosos) y no necesitan sus resenas
+    suspend fun getItem(tipo: String, itemId: String): Result<ItemUi> {
+        return try {
+            val usuarioActualId = authRemoteDataSource.currentUser?.uid ?: ""
+
+            // El data source retorna null si no existe: el repositorio es el que decide el error
+            val item = leerItem(tipo = tipo, itemId = itemId, usuarioActualId = usuarioActualId)
+                ?: return Result.failure(ContenidoNoEncontradoException())
+
+            Result.success(item)
+        } catch (e: HttpException) {
+            Log.d("CatalogoRepository", "getItem: ${e.message}")
+            Result.failure(errorDelBackend(e))
+        } catch (e: FirebaseFirestoreException) {
+            Log.d("CatalogoRepository", "getItem: ${e.message}")
+            Result.failure(errorDeFirestore(e))
+        } catch (e: Exception) {
+            Log.d("CatalogoRepository", "getItem: ${e.message}")
+            Result.failure(ErrorInesperadoException())
+        }
+    }
+
     // Escribir resena: el item y sus resenas una sola vez, para saber si ya lo califique
     suspend fun getItemConResenas(tipo: String, itemId: String): Result<ItemConResenasUi> {
         return try {
@@ -168,7 +233,7 @@ class CatalogoRepository @Inject constructor(
 
             // El item y sus resenas salen a la vez. Si el item no existe queda null
             val itemConResenas = coroutineScope {
-                val item = async { getItem(tipo = tipo, itemId = itemId, usuarioActualId = usuarioActualId) }
+                val item = async { leerItem(tipo = tipo, itemId = itemId, usuarioActualId = usuarioActualId) }
                 // Escribir resena solo busca la mia, sin likes
                 val reviews = async { reviewRemoteDataSource.getReviewsDeItem(tipo = tipo, itemId = itemId) }
                 val itemUi = item.await() ?: return@coroutineScope null
@@ -246,6 +311,7 @@ class CatalogoRepository @Inject constructor(
         }
     }
 
+    // Las tarjetas de Explorar por y de Generos de Buscar: son fijas y salen del archivo local
     suspend fun getSearchCategories(): Result<List<SearchCategoryUi>> {
         return try {
             Result.success(busquedaLocalDataSource.getSearchCategories())
@@ -266,7 +332,28 @@ class CatalogoRepository @Inject constructor(
                 .map { album -> album?.toItemUi() }
         }
 
-    private suspend fun getItem(tipo: String, itemId: String, usuarioActualId: String): ItemUi? =
+    // Los albumes, las canciones y los artistas, pedidos a la vez
+    private suspend fun leerItemsDelCatalogo(): List<ItemUi> = coroutineScope {
+        val albumes = async { albumRemoteDataSource.getAlbumes() }
+        val canciones = async { cancionRemoteDataSource.getCanciones() }
+        val artistas = async { artistaRemoteDataSource.getArtistas() }
+
+        juntarCatalogo(albumes = albumes.await(), canciones = canciones.await(), artistas = artistas.await())
+    }
+
+    // Las tres colecciones del catalogo en una sola lista de items
+    private fun juntarCatalogo(albumes: List<AlbumDto>, canciones: List<CancionDto>, artistas: List<ArtistaDto>): List<ItemUi> =
+        albumes.map { it.toItemUi() } + canciones.map { it.toItemUi() } + artistas.map { it.toItemUi() }
+
+    // Cada item con las estadisticas de sus resenas. Las resenas se agrupan por item una sola vez,
+    // en vez de recorrerlas todas por cada item
+    private fun conEstadisticasDelCatalogo(items: List<ItemUi>, reviews: List<ReviewUi>): List<ItemConResenasUi> {
+        val porItem = reviews.groupBy { it.item.id }
+
+        return items.map { item -> conEstadisticas(item = item, reviews = porItem[item.id].orEmpty()) }
+    }
+
+    private suspend fun leerItem(tipo: String, itemId: String, usuarioActualId: String): ItemUi? =
         when (tipo) {
             TIPO_CANCION -> cancionRemoteDataSource.getCancionById(itemId, currentUserId = usuarioActualId)?.toItemUi()
             TIPO_ARTISTA -> artistaRemoteDataSource.getArtistaById(itemId, currentUserId = usuarioActualId)?.toItemUi()
@@ -294,7 +381,7 @@ class CatalogoRepository @Inject constructor(
             estrellas = promedio.roundToInt(),
             ratingCount = reviews.size,
             recommendRate = porcentaje,
-            userRating = miResena?.rating ?: 0,
+            yaCalificado = miResena != null,
             // Las fechas van en formato ISO, asi que ordenar el texto ordena las fechas
             reviews = reviews.sortedByDescending { it.updatedAt },
         )

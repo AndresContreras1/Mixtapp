@@ -1,6 +1,5 @@
 package com.example.mixtapp.ui.utils
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,9 +9,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,23 +36,17 @@ fun ReviewCard(
     onLikeClick: (String) -> Unit,
     onCommentsClick: (String) -> Unit,
     modifier: Modifier = Modifier,
-    // En el detalle de un item no se repite el item; en las demas listas si
-    mostrarItem: Boolean = true,
-    onItemClick: (ItemResumenUi) -> Unit = {},
+    // Tocar lo que califico abre su detalle; null en el detalle de un item, que no lo repite
+    onItemClick: ((ItemResumenUi) -> Unit)?,
     // Solo para mis resenas en mi perfil y en Mis resenas: null en las demas
-    onEditClick: ((ReviewUi) -> Unit)? = null,
-    onDeleteClick: ((String) -> Unit)? = null,
+    onEditClick: ((ReviewUi) -> Unit)?,
+    onDeleteClick: ((String) -> Unit)?,
 ) {
-    Card(
+    TarjetaTranslucida(
+        onClick = null,
         modifier = modifier
             .fillMaxWidth()
             .testTag("review_${review.id}"),
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.8f)
-        ),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             // Quien la escribio: tocarlo abre su perfil
@@ -84,54 +74,24 @@ fun ReviewCard(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
-                    Text(
-                        // Hace menos de un minuto el mapeo deja el texto vacio
-                        text = review.timeAgo.ifEmpty { stringResource(R.string.ahora) },
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        style = MaterialTheme.typography.labelSmall,
-                    )
+                    TiempoTranscurrido(timeAgo = review.timeAgo)
                 }
 
-                StarRating(rating = review.rating, starSize = 14.dp)
+                StarRating(rating = review.rating, starSize = 14.dp, onRatingChange = null)
             }
 
             // Lo que califico: tocarlo abre su detalle
-            if (mostrarItem) {
+            if (onItemClick != null) {
                 Spacer(modifier = Modifier.height(12.dp))
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
+                PortadaConTitulo(
+                    imagenUrl = review.item.imagenUrl,
+                    titulo = review.item.titulo,
+                    subtitulo = review.item.subtitulo,
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable { onItemClick(review.item) },
-                ) {
-                    ItemAsyncImage(
-                        imagenUrl = review.item.imagenUrl,
-                        titulo = review.item.titulo,
-                        esquinas = 12.dp,
-                        modifier = Modifier.size(56.dp),
-                    )
-
-                    Spacer(modifier = Modifier.width(12.dp))
-
-                    Column {
-                        Text(
-                            text = review.item.titulo,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            style = MaterialTheme.typography.titleSmall,
-                            fontWeight = FontWeight.Bold,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
-                        Text(
-                            text = review.item.subtitulo,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            style = MaterialTheme.typography.bodySmall,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
-                    }
-                }
+                )
             }
 
             if (review.content.isNotEmpty()) {
@@ -182,6 +142,9 @@ fun ReviewCardPreview() {
             onAuthorClick = {},
             onLikeClick = {},
             onCommentsClick = {},
+            onItemClick = {},
+            onEditClick = null,
+            onDeleteClick = null,
         )
     }
 }
@@ -195,6 +158,7 @@ fun ReviewCardMiaPreview() {
             onAuthorClick = {},
             onLikeClick = {},
             onCommentsClick = {},
+            onItemClick = {},
             onEditClick = {},
             onDeleteClick = {},
         )

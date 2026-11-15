@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Email
-import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -18,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppButton
+import com.example.mixtapp.ui.utils.AppPasswordField
 import com.example.mixtapp.ui.utils.AppTextField
 
 // El formulario del login: los campos ovalados de correo y contrasena (con el ojo para verla) y el
@@ -47,14 +47,11 @@ fun LoginForm(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        AppTextField(
+        AppPasswordField(
             value = contrasena,
             onValueChange = onContrasenaChange,
             placeholder = stringResource(R.string.enter_your_password),
             label = stringResource(R.string.contrasena),
-            leadingIcon = Icons.Outlined.Lock,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            esContrasena = true,
             contrasenaVisible = contrasenaVisible,
             onContrasenaVisibleChange = onContrasenaVisibleChange,
             modifier = Modifier.testTag("txtPassword"),

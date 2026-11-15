@@ -29,8 +29,10 @@ val bodyFontFamily = FontFamily(
     )
 )
 
+// Los estilos de Material 3 por defecto: se copian cambiando solo la familia de letra
 val baseline = Typography()
 
+// Los titulos con la letra del logo y el texto con la letra de lectura
 val Typography = Typography(
     displayLarge = baseline.displayLarge.copy(fontFamily = displayFontFamily),
     displayMedium = baseline.displayMedium.copy(fontFamily = displayFontFamily),

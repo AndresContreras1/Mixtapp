@@ -1,8 +1,8 @@
 package com.example.mixtapp.ui.screens.resumen
 
 import androidx.annotation.StringRes
-import com.example.mixtapp.data.model.ItemConResenasUi
 import com.example.mixtapp.data.model.ItemResumenUi
+import com.example.mixtapp.data.model.ItemUi
 import com.example.mixtapp.data.model.ReviewUi
 
 // Las tarjetas del resumen, en el orden en que se descubren. Las que no tienen datos (por ejemplo,
@@ -15,8 +15,10 @@ const val TARJETA_QUERIDA = "querida"
 const val TARJETA_SOCIAL = "social"
 
 data class ResumenState(
-    // Lo que llega en vivo: con esto el ViewModel calcula el resumen
-    val catalogo: List<ItemConResenasUi> = emptyList(),
+    // Con esto el ViewModel calcula el resumen: mis reseñas y mis me gusta en vivo, mis contadores
+    // en vivo y el catalogo leido una vez (para el genero y el artista de cada item)
+    val misResenas: List<ReviewUi> = emptyList(),
+    val items: List<ItemUi> = emptyList(),
     val favoritos: List<ItemResumenUi> = emptyList(),
     val seguidores: Int = 0,
     val seguidos: Int = 0,
@@ -32,7 +34,14 @@ data class ResumenState(
     // Las tarjetas que hay y cuantas ya se descubrieron
     val tarjetas: List<String> = emptyList(),
     val reveladas: Int = 1,
-    // Arranca cargando porque lo primero que hace el ViewModel es escuchar el catalogo
-    val isLoading: Boolean = true,
+    // Se pone en true al pedir los datos y en false cuando llegan mis reseñas o fallan
+    val isLoading: Boolean = false,
+    // No se pudieron cargar mis reseñas o el catalogo: ocupa la pantalla
     @StringRes val errorMessageRes: Int? = null,
-)
+    // No llegaron mis me gusta o mis seguidores: el resumen se ve, pero avisa que esos numeros
+    // pueden no estar completos
+    @StringRes val errorDatosRes: Int? = null,
+) {
+    // Mientras queden tarjetas por descubrir el boton dice Siguiente; al final, Ver de nuevo
+    val quedanPorVer: Boolean get() = reveladas < tarjetas.size
+}

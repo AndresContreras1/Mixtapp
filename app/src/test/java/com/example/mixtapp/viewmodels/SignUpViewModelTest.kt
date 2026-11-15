@@ -3,10 +3,13 @@ package com.example.mixtapp.viewmodels
 import com.example.mixtapp.R
 import com.example.mixtapp.data.repository.AuthRepository
 import com.example.mixtapp.data.repository.CorreoYaRegistradoException
+import com.example.mixtapp.data.repository.DatosDeRegistroInvalidosException
+import com.example.mixtapp.data.repository.ErrorInesperadoException
 import com.example.mixtapp.data.repository.UsuarioRepository
 import com.example.mixtapp.ui.screens.signup.SignUpViewModel
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -43,10 +46,15 @@ class SignUpViewModelTest {
     }
 
     // El formulario completo: sin un campo nunca se llega al registro
-    private fun llenarFormulario(contrasena: String = "123456", confirmar: String = contrasena) {
+    private fun llenarFormulario(
+        contrasena: String = "123456",
+        confirmar: String = contrasena,
+        usuario: String = "ana",
+        correo: String = "ana@example.com",
+    ) {
         viewModel.updateNombre("Ana Torres")
-        viewModel.updateUsuario("ana")
-        viewModel.updateEmail("ana@example.com")
+        viewModel.updateUsuario(usuario)
+        viewModel.updateEmail(correo)
         viewModel.updateContrasena(contrasena)
         viewModel.updateConfirmarContrasena(confirmar)
         viewModel.alternarTerminos()
@@ -92,6 +100,81 @@ class SignUpViewModelTest {
         val state = viewModel.uiState.value
         assertThat(state.navigate).isFalse()
         assertThat(state.errorMessageRes).isEqualTo(R.string.error_correo_ya_registrado)
+    }
+
+    @Test
+    fun signUp_fallaGuardarLosDatos_noNavegaYPideIniciarSesion() = runTest {
+        //Arrange: la cuenta se crea en Authentication pero Firestore falla; la sesion se cierra
+        llenarFormulario()
+        coEvery { authRepository.signUp(any(), any()) } returns Result.success(Unit)
+        coEvery { usuarioRepository.registrarUsuario(any(), any(), any()) } returns Result.failure(ErrorInesperadoException())
+        every { authRepository.signOut() } returns Unit
+        //Act
+        viewModel.signUpButtonPressed()
+        advanceUntilIdle()
+        //Assert
+        val state = viewModel.uiState.value
+        assertThat(state.navigate).isFalse()
+        assertThat(state.cargando).isFalse()
+        assertThat(state.errorMessageRes).isEqualTo(R.string.error_registro_datos)
+    }
+
+    @Test
+    fun signUp_correoConEspacios_seRegistraSinEspacios() = runTest {
+        //Arrange: el mock solo responde al correo sin los espacios del teclado
+        llenarFormulario(correo = "  ana@example.com ")
+        coEvery { authRepository.signUp("ana@example.com", "123456") } returns Result.success(Unit)
+        coEvery { usuarioRepository.registrarUsuario("ana", "Ana Torres", "") } returns Result.success(Unit)
+        //Act
+        viewModel.signUpButtonPressed()
+        advanceUntilIdle()
+        //Assert
+        assertThat(viewModel.uiState.value.navigate).isTrue()
+    }
+
+    @Test
+    fun signUp_usuarioConEspacios_errorUsuarioConEspacios() = runTest {
+        //Arrange: sin mocks, la validacion para el flujo antes de llamar al repositorio
+        llenarFormulario(usuario = "ana torres")
+        //Act
+        viewModel.signUpButtonPressed()
+        advanceUntilIdle()
+        //Assert
+        assertThat(viewModel.uiState.value.errorMessageRes).isEqualTo(R.string.error_username_espacios)
+    }
+
+    @Test
+    fun signUp_correoSinArroba_errorCorreoInvalido() = runTest {
+        //Arrange
+        llenarFormulario(correo = "ana.example.com")
+        //Act
+        viewModel.signUpButtonPressed()
+        advanceUntilIdle()
+        //Assert
+        assertThat(viewModel.uiState.value.errorMessageRes).isEqualTo(R.string.error_email_invalido)
+    }
+
+    @Test
+    fun signUp_contrasenasDistintas_errorNoCoinciden() = runTest {
+        //Arrange
+        llenarFormulario(contrasena = "123456", confirmar = "654321")
+        //Act
+        viewModel.signUpButtonPressed()
+        advanceUntilIdle()
+        //Assert
+        assertThat(viewModel.uiState.value.errorMessageRes).isEqualTo(R.string.error_contrasenas_no_coinciden)
+    }
+
+    @Test
+    fun signUp_authenticationRechazaLosDatos_errorDatosInvalidos() = runTest {
+        //Arrange
+        llenarFormulario()
+        coEvery { authRepository.signUp(any(), any()) } returns Result.failure(DatosDeRegistroInvalidosException())
+        //Act
+        viewModel.signUpButtonPressed()
+        advanceUntilIdle()
+        //Assert
+        assertThat(viewModel.uiState.value.errorMessageRes).isEqualTo(R.string.error_datos_registro_invalidos)
     }
 
     @Test

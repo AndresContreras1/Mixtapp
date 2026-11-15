@@ -29,7 +29,7 @@ fun StarRating(
     modifier: Modifier = Modifier,
     starSize: Dp = 18.dp,
     // null cuando la calificacion solo se muestra y no se puede tocar
-    onRatingChange: ((Int) -> Unit)? = null,
+    onRatingChange: ((Int) -> Unit)?,
 ) {
     Row(
         modifier = modifier,

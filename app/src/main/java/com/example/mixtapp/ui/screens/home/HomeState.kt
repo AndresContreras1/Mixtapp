@@ -6,11 +6,11 @@ import com.example.mixtapp.data.model.ItemResumenUi
 import com.example.mixtapp.data.model.ItemUi
 import com.example.mixtapp.data.model.ReviewUi
 import com.example.mixtapp.ui.screens.home.model.FILTRO_PARA_TI
-import com.example.mixtapp.ui.screens.home.model.HomeFilterUi
 import com.example.mixtapp.ui.screens.home.model.homeFilters
+import com.example.mixtapp.ui.utils.OpcionUi
 
 data class HomeState(
-    val filters: List<HomeFilterUi> = homeFilters,
+    val filters: List<OpcionUi> = homeFilters,
     val selectedFilterId: String = FILTRO_PARA_TI,
     // Lo que llega en vivo: con esto el ViewModel arma lo que pinta la pantalla
     val catalogo: List<ItemConResenasUi> = emptyList(),
@@ -29,8 +29,8 @@ data class HomeState(
     val artistas: List<ItemUi> = emptyList(),
     // Las resenas de quienes sigo, la mas nueva primero
     val resenasDeSeguidos: List<ReviewUi> = emptyList(),
-    // Arranca cargando porque lo primero que hace el ViewModel es escuchar el catalogo
-    val isLoading: Boolean = true,
+    // Se pone en true al empezar a escuchar el catalogo y en false cuando llega o falla
+    val isLoading: Boolean = false,
     // El error del catalogo tapa la pantalla. Los de favoritos y seguidos van aparte para que un
     // flujo no borre el error del otro, y el del like se muestra sobre las resenas
     @StringRes val errorMessageRes: Int? = null,

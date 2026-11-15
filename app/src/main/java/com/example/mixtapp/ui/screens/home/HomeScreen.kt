@@ -25,18 +25,18 @@ import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalPreviewProvider
 import com.example.mixtapp.data.model.ItemUi
 import com.example.mixtapp.data.model.ReviewUi
-import com.example.mixtapp.ui.screens.home.components.HomeFilters
 import com.example.mixtapp.ui.screens.home.components.HomeHeader
 import com.example.mixtapp.ui.screens.home.components.HomeItemRow
 import com.example.mixtapp.ui.screens.home.components.TrendingCard
-import com.example.mixtapp.ui.screens.home.model.HomeFilterUi
 import com.example.mixtapp.ui.screens.home.model.homeFilters
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppBackground
 import com.example.mixtapp.ui.utils.EmptyMessage
 import com.example.mixtapp.ui.utils.ErrorBox
 import com.example.mixtapp.ui.utils.ErrorMessage
+import com.example.mixtapp.ui.utils.FilaDeOpciones
 import com.example.mixtapp.ui.utils.LoadingBox
+import com.example.mixtapp.ui.utils.OpcionUi
 import com.example.mixtapp.ui.utils.ReviewCard
 import com.example.mixtapp.ui.utils.SectionTitle
 
@@ -88,7 +88,7 @@ fun HomeScreen(
 fun HomeScreenContent(
     isLoading: Boolean,
     @StringRes errorMessageRes: Int?,
-    filters: List<HomeFilterUi>,
+    filters: List<OpcionUi>,
     selectedFilterId: String,
     enTendencia: ItemUi?,
     enTendenciaColombia: Boolean,
@@ -132,10 +132,11 @@ fun HomeScreenContent(
 
                 item {
                     Column {
-                        HomeFilters(
-                            filters = filters,
-                            selectedId = selectedFilterId,
-                            onFilterSelected = onFilterSelected,
+                        FilaDeOpciones(
+                            opciones = filters,
+                            elegidaId = selectedFilterId,
+                            onOpcionClick = onFilterSelected,
+                            prefijoTestTag = "filtro",
                         )
 
                         // Si fallan mis favoritos o mis seguidos, el catalogo se sigue viendo
@@ -146,7 +147,11 @@ fun HomeScreenContent(
                 if (enTendencia != null) {
                     item {
                         Column {
-                            SectionTitle(title = stringResource(R.string.now_trending))
+                            SectionTitle(
+                                title = stringResource(R.string.now_trending),
+                                actionText = null,
+                                onActionClick = null,
+                            )
 
                             Spacer(modifier = Modifier.height(8.dp))
 
@@ -180,7 +185,7 @@ fun HomeScreenContent(
                 if (albumes.isNotEmpty()) {
                     item {
                         HomeItemRow(
-                            titulo = stringResource(R.string.popular_albums),
+                            titulo = stringResource(R.string.albumes_populares),
                             items = albumes,
                             onItemClick = { onItemClick(it.tipo, it.id) },
                         )
@@ -199,7 +204,11 @@ fun HomeScreenContent(
 
                 item {
                     Column {
-                        SectionTitle(title = stringResource(R.string.resenas_de_seguidos))
+                        SectionTitle(
+                            title = stringResource(R.string.resenas_de_seguidos),
+                            actionText = null,
+                            onActionClick = null,
+                        )
 
                         // El error del like se ve junto a las tarjetas donde se toco
                         ErrorMessage(messageRes = errorAccionRes)
@@ -216,8 +225,9 @@ fun HomeScreenContent(
                         onAuthorClick = onAuthorClick,
                         onLikeClick = onLikeClick,
                         onCommentsClick = onCommentsClick,
-                        mostrarItem = true,
                         onItemClick = { item -> onItemClick(item.tipo, item.id) },
+                        onEditClick = null,
+                        onDeleteClick = null,
                     )
                 }
             }

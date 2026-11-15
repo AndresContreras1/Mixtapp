@@ -2,6 +2,7 @@ package com.example.mixtapp.data.repository
 
 import com.example.mixtapp.data.datasource.AuthRemoteDataSource
 import com.example.mixtapp.data.datasource.UsuarioRemoteDataSource
+import com.example.mixtapp.data.model.usuarioDelCorreo
 
 // El nombre que se copia en lo que escribe el usuario de la app (una resena, un comentario, un
 // voto). Una cuenta sin documento en usuarios usa el usuario de su correo. Si Firestore falla por
@@ -14,6 +15,6 @@ suspend fun nombreDeLaSesion(
     val usuario = usuarioRemoteDataSource.getUsuarioById(usuarioId)
 
     return usuario?.toUsuarioUi()?.nombre
-        ?: authRemoteDataSource.currentUser?.email?.substringBefore("@")
+        ?: authRemoteDataSource.currentUser?.email?.let { usuarioDelCorreo(it) }
         ?: ""
 }

@@ -1,6 +1,5 @@
 package com.example.mixtapp.ui.screens.resumen
 
-import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -31,6 +30,7 @@ import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppBackground
 import com.example.mixtapp.ui.utils.AppButton
 import com.example.mixtapp.ui.utils.ErrorBox
+import com.example.mixtapp.ui.utils.ErrorMessage
 import com.example.mixtapp.ui.utils.LoadingBox
 import com.example.mixtapp.ui.utils.ScreenTitle
 
@@ -45,22 +45,18 @@ fun ResumenScreen(
 
     ResumenScreenContent(
         state = state,
-        isLoading = state.isLoading,
-        errorMessageRes = state.errorMessageRes,
-        onSiguienteClick = { resumenViewModel.mostrarSiguiente() },
-        onVerDeNuevoClick = { resumenViewModel.verDeNuevo() },
+        onBotonClick = { resumenViewModel.avanzar() },
         onBackClick = onBackClick,
         modifier = modifier,
     )
 }
 
+// La version sin ViewModel, para el preview. Recibe el estado completo porque cada tarjeta pinta
+// una parte distinta del resumen
 @Composable
 fun ResumenScreenContent(
     state: ResumenState,
-    isLoading: Boolean,
-    @StringRes errorMessageRes: Int?,
-    onSiguienteClick: () -> Unit,
-    onVerDeNuevoClick: () -> Unit,
+    onBotonClick: () -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -79,8 +75,8 @@ fun ResumenScreenContent(
             )
 
             when {
-                isLoading -> LoadingBox()
-                errorMessageRes != null -> ErrorBox(messageRes = errorMessageRes)
+                state.isLoading -> LoadingBox()
+                state.errorMessageRes != null -> ErrorBox(messageRes = state.errorMessageRes)
                 else -> LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -94,6 +90,7 @@ fun ResumenScreenContent(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             style = MaterialTheme.typography.titleMedium,
                         )
+                        ErrorMessage(messageRes = state.errorDatosRes)
                     }
 
                     // Cada tarjeta aparece con una animacion cuando se descubre
@@ -112,14 +109,13 @@ fun ResumenScreenContent(
                     }
 
                     item {
-                        val quedanPorVer = state.reveladas < state.tarjetas.size
-
                         AppButton(
-                            texto = stringResource(if (quedanPorVer) R.string.resumen_siguiente else R.string.resumen_ver_de_nuevo),
-                            onClick = if (quedanPorVer) onSiguienteClick else onVerDeNuevoClick,
+                            texto = stringResource(if (state.quedanPorVer) R.string.resumen_siguiente else R.string.resumen_ver_de_nuevo),
+                            onClick = onBotonClick,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .testTag("btnSiguienteResumen"),
+                            cargando = false,
                         )
                     }
                 }
@@ -201,10 +197,7 @@ fun ResumenScreenPreview() {
                 reveladas = 3,
                 isLoading = false,
             ),
-            isLoading = false,
-            errorMessageRes = null,
-            onSiguienteClick = {},
-            onVerDeNuevoClick = {},
+            onBotonClick = {},
             onBackClick = {},
         )
     }

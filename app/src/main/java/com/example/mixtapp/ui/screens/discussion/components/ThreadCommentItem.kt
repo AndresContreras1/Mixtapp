@@ -26,6 +26,7 @@ import com.example.mixtapp.data.model.DiscussionCommentUi
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.LikeButton
 import com.example.mixtapp.ui.utils.ProfileAsyncImage
+import com.example.mixtapp.ui.utils.TiempoTranscurrido
 
 // Un comentario de la discusion: la foto, el nombre, cuanto hace, el texto, el like y Responder.
 // Las respuestas van con sangria a la izquierda para que se vea el hilo
@@ -72,12 +73,7 @@ fun ThreadCommentItem(
 
                 Spacer(modifier = Modifier.width(8.dp))
 
-                Text(
-                    // Hace menos de un minuto el mapeo deja el texto vacio
-                    text = comment.timeAgo.ifEmpty { stringResource(R.string.ahora) },
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    style = MaterialTheme.typography.labelSmall,
-                )
+                TiempoTranscurrido(timeAgo = comment.timeAgo)
             }
 
             Text(

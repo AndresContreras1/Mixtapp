@@ -12,6 +12,8 @@ class CorreoNoRegistradoException : Exception("No existe una cuenta con ese corr
 
 class CorreoYaRegistradoException : Exception("Ese correo ya tiene una cuenta")
 
+class DatosDeRegistroInvalidosException : Exception("El correo o la contrasena no sirven para crear la cuenta")
+
 class SinConexionException : Exception("No hay conexion con la red")
 
 class DemasiadosIntentosException : Exception("Demasiados intentos seguidos")
@@ -35,6 +37,12 @@ class ErrorDeDatosLocalesException : Exception("Fallo la lectura de los datos lo
 class ErrorDelServidorException : Exception("La base remota respondio con un error")
 
 class SeguirseASiMismoException : Exception("Un usuario no se puede seguir a si mismo")
+
+class ReaccionarALoMioException : Exception("No se puede reaccionar a lo que uno mismo escucha")
+
+class SinPermisoDeUbicacionException : Exception("No hay permiso para leer la ubicacion")
+
+class UbicacionNoDisponibleException : Exception("El celular no pudo leer la ubicacion")
 
 // Lo que no tiene un catch propio; el detalle de la excepcion original queda en el log
 class ErrorInesperadoException : Exception("Fallo inesperado")

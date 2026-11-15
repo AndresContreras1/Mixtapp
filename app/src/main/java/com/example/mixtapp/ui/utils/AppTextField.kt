@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -28,8 +29,8 @@ import com.example.mixtapp.R
 import com.example.mixtapp.ui.theme.MixtappTheme
 
 // El campo de toda la app: ovalado, con el fondo translucido para que se vea el fondo con los
-// circulos detras, y el borde claro que lo resalta. Sirve para el login, el registro, la busqueda,
-// los comentarios y la fecha de escucha
+// circulos detras, y el borde claro que lo resalta. Sirve para el correo, la busqueda, los
+// comentarios y la fecha de escucha; la contrasena tiene su propio campo, AppPasswordField
 @Composable
 fun AppTextField(
     value: String,
@@ -41,15 +42,9 @@ fun AppTextField(
     // El icono es decorativo: la etiqueta o el placeholder ya dicen que va en el campo
     leadingIcon: ImageVector? = null,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-    esContrasena: Boolean = false,
-    contrasenaVisible: Boolean = false,
-    onContrasenaVisibleChange: () -> Unit = {},
     // Lo que va al final del campo, como el boton de publicar un comentario
     trailingContent: (@Composable () -> Unit)? = null,
 ) {
-    val transformacion =
-        if (esContrasena && !contrasenaVisible) PasswordVisualTransformation() else VisualTransformation.None
-
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
@@ -67,21 +62,48 @@ fun AppTextField(
         } else {
             null
         },
-        trailingIcon = when {
-            esContrasena -> {
-                {
-                    IconButton(onClick = onContrasenaVisibleChange) {
-                        PasswordVisibilityIcon(contrasenaVisible = contrasenaVisible)
-                    }
-                }
-            }
-            trailingContent != null -> trailingContent
-            else -> null
-        },
+        trailingIcon = trailingContent,
         singleLine = true,
         keyboardOptions = keyboardOptions,
-        visualTransformation = transformacion,
         // La mitad del alto en las esquinas: el campo queda ovalado
+        shape = RoundedCornerShape(percent = 50),
+        colors = coloresDelCampo(),
+    )
+}
+
+// El campo de la contrasena: la misma apariencia, con los puntos y el ojo para verla. El ojo avisa
+// con onContrasenaVisibleChange y el ViewModel decide si se ve (state hoisting)
+@Composable
+fun AppPasswordField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    placeholder: String,
+    label: String,
+    contrasenaVisible: Boolean,
+    onContrasenaVisibleChange: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        modifier = modifier.fillMaxWidth(),
+        label = { Text(text = label) },
+        placeholder = { Text(text = placeholder) },
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Outlined.Lock,
+                contentDescription = null,
+                modifier = Modifier.size(22.dp)
+            )
+        },
+        trailingIcon = {
+            IconButton(onClick = onContrasenaVisibleChange) {
+                PasswordVisibilityIcon(contrasenaVisible = contrasenaVisible)
+            }
+        },
+        singleLine = true,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+        visualTransformation = if (contrasenaVisible) VisualTransformation.None else PasswordVisualTransformation(),
         shape = RoundedCornerShape(percent = 50),
         colors = coloresDelCampo(),
     )
@@ -152,13 +174,13 @@ fun AppTextFieldPreview() {
                 label = stringResource(R.string.email),
                 leadingIcon = Icons.Outlined.Email,
             )
-            AppTextField(
+            AppPasswordField(
                 value = "123456",
                 onValueChange = {},
                 placeholder = stringResource(R.string.enter_your_password),
                 label = stringResource(R.string.contrasena),
-                leadingIcon = Icons.Outlined.Lock,
-                esContrasena = true,
+                contrasenaVisible = false,
+                onContrasenaVisibleChange = {},
             )
         }
     }

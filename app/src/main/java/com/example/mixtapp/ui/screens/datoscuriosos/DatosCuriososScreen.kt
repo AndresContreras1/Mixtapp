@@ -13,6 +13,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -21,11 +22,11 @@ import com.example.mixtapp.data.local.LocalPreviewProvider
 import com.example.mixtapp.data.model.HistoriaUi
 import com.example.mixtapp.data.model.ItemUi
 import com.example.mixtapp.ui.screens.datoscuriosos.components.DatoCuriosoCard
-import com.example.mixtapp.ui.screens.detail.components.ItemHeader
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppBackground
 import com.example.mixtapp.ui.utils.EmptyMessage
 import com.example.mixtapp.ui.utils.ErrorBox
+import com.example.mixtapp.ui.utils.ItemHeader
 import com.example.mixtapp.ui.utils.LoadingBox
 import com.example.mixtapp.ui.utils.SectionTitle
 
@@ -67,12 +68,12 @@ fun DatosCuriososScreenContent(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize().testTag("datosCuriososScreen")) {
         AppBackground()
 
         when {
             isLoading -> LoadingBox()
-            item == null -> ErrorBox(messageRes = errorMessageRes ?: R.string.album_no_encontrado)
+            item == null -> ErrorBox(messageRes = errorMessageRes ?: R.string.item_no_encontrado)
             else -> LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
@@ -85,6 +86,8 @@ fun DatosCuriososScreenContent(
                     SectionTitle(
                         title = stringResource(R.string.datos_curiosos),
                         modifier = Modifier.padding(top = 28.dp, bottom = 12.dp),
+                        actionText = null,
+                        onActionClick = null,
                     )
                 }
 

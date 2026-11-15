@@ -62,13 +62,20 @@ data class ItemConResenasUi(
     val estrellas: Int,
     val ratingCount: Int,
     val recommendRate: Int,
-    // Mi calificacion; 0 si no lo he calificado
-    val userRating: Int,
+    // Si ya escribi mi resena: solo hay una por item, asi que el boton cambia a editarla
+    val yaCalificado: Boolean,
     val reviews: List<ReviewUi>,
 ) {
     // Para ordenar las filas de populares: cuenta igual un like que una resena
     val popularidad: Int get() = item.likes + reviews.size
 }
+
+// Si el titulo, el subtitulo o el detalle contienen el texto, sin importar las mayusculas. Lo usan
+// Buscar y Elegir que calificar
+fun ItemUi.contieneTexto(texto: String): Boolean =
+    titulo.contains(texto, ignoreCase = true) ||
+        subtitulo.contains(texto, ignoreCase = true) ||
+        detalle.contains(texto, ignoreCase = true)
 
 fun ItemUi.toItemResumenUi(): ItemResumenUi {
     return ItemResumenUi(

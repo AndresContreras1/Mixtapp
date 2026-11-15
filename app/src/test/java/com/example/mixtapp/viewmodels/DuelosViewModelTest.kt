@@ -3,7 +3,7 @@ package com.example.mixtapp.viewmodels
 import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalPreviewProvider
 import com.example.mixtapp.data.model.DueloEnVivoUi
-import com.example.mixtapp.data.model.ItemConResenasUi
+import com.example.mixtapp.data.model.ItemUi
 import com.example.mixtapp.data.model.ItemResumenUi
 import com.example.mixtapp.data.model.OPCION_A
 import com.example.mixtapp.data.model.TIPO_ALBUM
@@ -64,7 +64,7 @@ class DuelosViewModelTest {
         Dispatchers.setMain(testDispatcher)
         catalogoRepository = mockk()
         dueloRepository = mockk()
-        coEvery { catalogoRepository.getCatalogoLive() } returns flowOf(catalogo)
+        coEvery { catalogoRepository.getItemsDelCatalogo() } returns Result.success(catalogo)
     }
 
     @After
@@ -72,15 +72,8 @@ class DuelosViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun item(id: String, tipo: String, genero: String) = ItemConResenasUi(
-        item = LocalPreviewProvider.fromZero.copy(id = id, tipo = tipo, genero = genero, titulo = id),
-        rating = 0.0,
-        estrellas = 0,
-        ratingCount = 0,
-        recommendRate = 0,
-        userRating = 0,
-        reviews = emptyList(),
-    )
+    private fun item(id: String, tipo: String, genero: String): ItemUi =
+        LocalPreviewProvider.fromZero.copy(id = id, tipo = tipo, genero = genero, titulo = id)
 
     private fun crearViewModel(enVivo: DueloEnVivoUi = sinVotos): DuelosViewModel {
         coEvery { dueloRepository.getDueloLive(any(), any()) } returns flowOf(enVivo)
@@ -95,7 +88,7 @@ class DuelosViewModelTest {
         advanceUntilIdle()
         //Assert
         val duelo = viewModel.uiState.value.duelos[TIPO_ALBUM]
-        val generoDe = catalogo.associate { it.item.id to it.item.genero }
+        val generoDe = catalogo.associate { it.id to it.genero }
         assertThat(duelo).isNotNull()
         assertThat(duelo?.itemA?.id).isNotEqualTo(duelo?.itemB?.id)
         assertThat(generoDe[duelo?.itemA?.id]).isEqualTo(duelo?.genero)
@@ -192,14 +185,14 @@ class DuelosViewModelTest {
     }
 
     @Test
-    fun selectTipo_otraPestana_limpiaElFormulario() = runTest {
+    fun elegirTipo_otraPestana_limpiaElFormulario() = runTest {
         //Arrange
         val viewModel = crearViewModel()
         advanceUntilIdle()
         viewModel.elegirOpcion(OPCION_A)
         viewModel.updateOpinion("Algo")
         //Act
-        viewModel.selectTipo(TIPO_CANCION)
+        viewModel.elegirTipo(TIPO_CANCION)
         //Assert
         val state = viewModel.uiState.value
         assertThat(state.tipoElegido).isEqualTo(TIPO_CANCION)

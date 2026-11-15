@@ -1,5 +1,6 @@
 package com.example.mixtapp.data.model
 
+// Siguiendo: mis contadores, los usuarios que sigo y lo que resenaron
 data class FollowingUi(
     val id: String,
     val followingCount: Int,

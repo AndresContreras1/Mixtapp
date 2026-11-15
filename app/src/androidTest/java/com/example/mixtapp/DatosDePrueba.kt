@@ -13,13 +13,14 @@ import com.example.mixtapp.data.dtos.CreateSonandoDto
 import com.example.mixtapp.data.dtos.CreateVotoDto
 import com.example.mixtapp.data.dtos.HistoriaDto
 import com.example.mixtapp.data.dtos.ItemDelDueloDto
-import com.example.mixtapp.data.dtos.ItemMixtapeDto
+import com.example.mixtapp.data.dtos.CreateItemMixtapeDto
 import com.example.mixtapp.data.dtos.SeccionDto
 import com.example.mixtapp.data.dtos.UsuarioPerfilFirestoreDto
 import com.example.mixtapp.data.model.TIPO_ALBUM
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.tasks.await
@@ -146,71 +147,79 @@ fun generateComentario(
     )
 }
 
-// Las pruebas de repositorio crean una cuenta en el Authentication del emulador. Si la prueba cerro
-// la sesion se vuelve a entrar con esa cuenta para poder borrarla: el emulador queda como estaba
+// La contrasena de todas las cuentas de prueba: cumple el minimo de 6 caracteres
+const val CONTRASENA_DE_PRUEBA = "123456"
+
+// Lo maximo que acepta un batch de Firestore
+private const val MAX_OPERACIONES_POR_BATCH = 500
+
+// Las pruebas crean su cuenta en el Authentication del emulador y la borran al terminar
+suspend fun crearCuentaDePrueba(auth: FirebaseAuth, correo: String) {
+    auth.createUserWithEmailAndPassword(correo, CONTRASENA_DE_PRUEBA).await()
+}
+
+// Si la prueba cerro la sesion se vuelve a entrar con esa cuenta para poder borrarla. Si la cuenta
+// no llego a crearse no hay nada que borrar: el emulador queda como estaba
 suspend fun borrarCuentaDePrueba(auth: FirebaseAuth, correo: String) {
-    val user = auth.currentUser ?: auth.signInWithEmailAndPassword(correo, "123456").await().user
+    val user = auth.currentUser ?: runCatching {
+        auth.signInWithEmailAndPassword(correo, CONTRASENA_DE_PRUEBA).await().user
+    }.getOrNull()
     user?.delete()?.await()
     auth.signOut()
 }
 
 // Antes y despues de cada prueba la base debe quedar igual, y lo ideal es que vacia. Borrar un
-// documento no borra sus subcolecciones: se recorren una por una
+// documento no borra sus subcolecciones: se recorren una por una y todo se borra junto en batches
 suspend fun limpiarBase(db: FirebaseFirestore) {
+    val porBorrar = mutableListOf<DocumentReference>()
+
     val usuarios = db.collection("usuarios").get().await()
     for (usuarioDoc in usuarios) {
         for (subcoleccion in listOf("followers", "following", "likes", "guardados", "notificaciones")) {
-            val documentos = usuarioDoc.reference.collection(subcoleccion).get().await()
-            for (documento in documentos) documento.reference.delete().await()
+            porBorrar += usuarioDoc.reference.collection(subcoleccion).get().await().map { it.reference }
         }
-
-        usuarioDoc.reference.delete().await()
+        porBorrar += usuarioDoc.reference
     }
 
     val reviews = db.collection("reviews").get().await()
     for (reviewDoc in reviews) {
-        val likes = reviewDoc.reference.collection("likes").get().await()
-        for (like in likes) like.reference.delete().await()
+        porBorrar += reviewDoc.reference.collection("likes").get().await().map { it.reference }
 
         val comentarios = reviewDoc.reference.collection("comments").get().await()
         for (comentario in comentarios) {
-            val likesComentario = comentario.reference.collection("likes").get().await()
-            for (like in likesComentario) like.reference.delete().await()
-
-            comentario.reference.delete().await()
+            porBorrar += comentario.reference.collection("likes").get().await().map { it.reference }
+            porBorrar += comentario.reference
         }
-
-        reviewDoc.reference.delete().await()
+        porBorrar += reviewDoc.reference
     }
 
     for (coleccion in listOf("albumes", "canciones", "artistas", "historias")) {
         val items = db.collection(coleccion).get().await()
         for (itemDoc in items) {
-            val likes = itemDoc.reference.collection("likes").get().await()
-            for (like in likes) like.reference.delete().await()
-
-            itemDoc.reference.delete().await()
+            porBorrar += itemDoc.reference.collection("likes").get().await().map { it.reference }
+            porBorrar += itemDoc.reference
         }
     }
 
-    val duelos = db.collection("duelos").get().await()
-    for (dueloDoc in duelos) {
-        val votos = dueloDoc.reference.collection("votos").get().await()
-        for (voto in votos) voto.reference.delete().await()
-
-        dueloDoc.reference.delete().await()
+    // Cada coleccion con su subcoleccion: los votos del duelo, los items de la mixtape y las
+    // reacciones de lo que suena
+    for ((coleccion, subcoleccion) in listOf("duelos" to "votos", "mixtapes" to "items", "sonando" to "reacciones")) {
+        val documentos = db.collection(coleccion).get().await()
+        for (documento in documentos) {
+            porBorrar += documento.reference.collection(subcoleccion).get().await().map { it.reference }
+            porBorrar += documento.reference
+        }
     }
 
-    // Las mixtapes no tienen subcolecciones
-    val mixtapes = db.collection("mixtapes").get().await()
-    for (mixtapeDoc in mixtapes) mixtapeDoc.reference.delete().await()
+    borrarEnBatches(db = db, referencias = porBorrar)
+}
 
-    val sonando = db.collection("sonando").get().await()
-    for (sonandoDoc in sonando) {
-        val reacciones = sonandoDoc.reference.collection("reacciones").get().await()
-        for (reaccion in reacciones) reaccion.reference.delete().await()
-
-        sonandoDoc.reference.delete().await()
+// Un batch acepta hasta 500 operaciones: los documentos se borran en grupos de ese tamano
+private suspend fun borrarEnBatches(db: FirebaseFirestore, referencias: List<DocumentReference>) {
+    for (grupo in referencias.chunked(MAX_OPERACIONES_POR_BATCH)) {
+        val batch = db.batch()
+        for (referencia in grupo) batch.delete(referencia)
+        batch.commit().await()
     }
 }
 
@@ -222,24 +231,23 @@ fun generateMixtape(i: Int, createdAt: String = "2025-01-0${i}T00:00:00Z"): Crea
         nombre = "Mixtape $i",
         descripcion = null,
         usuarioId = usuario.id,
-        usuarioNombre = usuario.nombre,
-        usuarioFotoUrl = usuario.fotoUrl,
-        items = emptyList(),
+        usuario = CreateReviewUsuarioDto(nombre = usuario.nombre, fotoUrl = usuario.fotoUrl),
+        itemsCount = 0,
+        portadas = emptyList(),
         createdAt = createdAt,
     )
 }
 
-// La copia del album i que se agrega a una mixtape
-fun generateItemMixtape(i: Int): ItemMixtapeDto {
+// La copia del album i que se agrega a una mixtape; su id es el id del album
+fun generateItemMixtape(i: Int): CreateItemMixtapeDto {
     val album = generateAlbum(i)
 
-    return ItemMixtapeDto(
-        id = album.id,
+    return CreateItemMixtapeDto(
         tipo = TIPO_ALBUM,
         titulo = album.titulo,
         subtitulo = album.artista,
         imagenUrl = album.portadaUrl,
-        genero = album.genero,
+        agregadoEn = "2025-01-0${i}T00:00:00Z",
     )
 }
 
@@ -267,8 +275,6 @@ fun generateReaccion(i: Int): CreateReaccionDto {
     return CreateReaccionDto(
         usuarioId = usuario.id,
         itemId = generateAlbum(1).id,
-        nombre = usuario.nombre,
-        fotoUrl = usuario.fotoUrl,
         createdAt = "2025-01-0${i}T00:00:00Z",
     )
 }

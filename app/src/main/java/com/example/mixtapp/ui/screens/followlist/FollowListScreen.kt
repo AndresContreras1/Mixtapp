@@ -25,6 +25,7 @@ import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppBackground
 import com.example.mixtapp.ui.utils.EmptyMessage
 import com.example.mixtapp.ui.utils.ErrorBox
+import com.example.mixtapp.ui.utils.ErrorMessage
 import com.example.mixtapp.ui.utils.LoadingBox
 import com.example.mixtapp.ui.utils.ScreenTitle
 import com.example.mixtapp.ui.utils.UserRow
@@ -69,11 +70,15 @@ fun FollowListScreen(
                 errorMessageRes != null && state.usuarios.isEmpty() -> {
                     ErrorBox(messageRes = errorMessageRes)
                 }
-                else -> FollowListScreenContent(
-                    usuarios = state.usuarios,
-                    vaciaRes = if (esSeguidores) R.string.sin_seguidores else R.string.sin_seguidos,
-                    onUserClick = onUserClick,
-                )
+                // Si el listener falla despues de cargar, el aviso sale arriba y queda lo de antes
+                else -> Column(modifier = Modifier.fillMaxSize()) {
+                    ErrorMessage(messageRes = errorMessageRes, modifier = Modifier.padding(horizontal = 20.dp))
+                    FollowListScreenContent(
+                        usuarios = state.usuarios,
+                        vaciaRes = if (esSeguidores) R.string.sin_seguidores else R.string.sin_seguidos,
+                        onUserClick = onUserClick,
+                    )
+                }
             }
         }
     }

@@ -1,7 +1,10 @@
 package com.example.mixtapp.viewmodels
 
+import com.example.mixtapp.CONTRASENA_DE_PRUEBA
 import com.example.mixtapp.R
+import com.example.mixtapp.borrarCuentaDePrueba
 import com.example.mixtapp.conectarEmulador
+import com.example.mixtapp.crearCuentaDePrueba
 import com.example.mixtapp.data.datasource.AuthRemoteDataSource
 import com.example.mixtapp.data.datasource.MessagingRemoteDataSource
 import com.example.mixtapp.data.datasource.impl.firestore.UsuarioFirestoreDataSourceImpl
@@ -54,19 +57,15 @@ class SignUpViewModelIntegrationTest {
     fun tearDown() = runTest {
         limpiarBase(db)
         // La cuenta de la prueba se borra aunque la prueba haya cerrado la sesion
-        val user = auth.currentUser ?: runCatching {
-            auth.signInWithEmailAndPassword(correo, "123456").await().user
-        }.getOrNull()
-        user?.delete()?.await()
-        auth.signOut()
+        borrarCuentaDePrueba(auth, correo)
     }
 
     private fun llenarFormulario() {
         viewModel.updateNombre("Ana Torres")
         viewModel.updateUsuario("ana")
         viewModel.updateEmail(correo)
-        viewModel.updateContrasena("123456")
-        viewModel.updateConfirmarContrasena("123456")
+        viewModel.updateContrasena(CONTRASENA_DE_PRUEBA)
+        viewModel.updateConfirmarContrasena(CONTRASENA_DE_PRUEBA)
         viewModel.alternarTerminos()
     }
 
@@ -87,7 +86,7 @@ class SignUpViewModelIntegrationTest {
     @Test
     fun signUp_correoYaRegistrado_muestraElError() = runTest {
         //Arrange: el correo ya tiene una cuenta en el emulador
-        auth.createUserWithEmailAndPassword(correo, "123456").await()
+        crearCuentaDePrueba(auth, correo)
         auth.signOut()
         llenarFormulario()
         //Act

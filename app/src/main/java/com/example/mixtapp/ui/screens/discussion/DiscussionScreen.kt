@@ -15,6 +15,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -56,6 +57,7 @@ fun DiscussionScreen(
         discussion = state.discussion,
         nuevoComentario = state.nuevoComentario,
         replyingToCommentId = state.replyingToCommentId,
+        respondiendoA = state.respondiendoA,
         publicando = state.publicando,
         errorMessageRes = state.errorMessageRes,
         errorAccionRes = state.errorAccionRes,
@@ -78,6 +80,7 @@ fun DiscussionScreenContent(
     discussion: DiscussionUi?,
     nuevoComentario: String,
     replyingToCommentId: String?,
+    respondiendoA: String?,
     publicando: Boolean,
     @StringRes errorMessageRes: Int?,
     @StringRes errorAccionRes: Int?,
@@ -92,16 +95,13 @@ fun DiscussionScreenContent(
     onPublicarComentarioClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize().testTag("discussionScreen")) {
         AppBackground()
 
         when {
             isLoading -> LoadingBox()
             discussion == null -> ErrorBox(messageRes = errorMessageRes ?: R.string.discusion_no_encontrada)
             else -> {
-                // El nombre de quien escribio el comentario al que se responde
-                val respondiendoA = discussion.comments.find { it.id == replyingToCommentId }?.author
-
                 // El campo para comentar queda fijo abajo y sube con el teclado
                 Column(
                     modifier = Modifier
@@ -113,6 +113,10 @@ fun DiscussionScreenContent(
                         onBackClick = onBackClick,
                         modifier = Modifier.padding(horizontal = 16.dp),
                     )
+
+                    // Si el listener falla despues de cargar (por ejemplo, borraron la resena), el
+                    // aviso sale arriba y queda lo de antes
+                    ErrorMessage(messageRes = errorMessageRes, modifier = Modifier.padding(horizontal = 24.dp))
 
                     LazyColumn(
                         modifier = Modifier
@@ -127,8 +131,9 @@ fun DiscussionScreenContent(
                                 onAuthorClick = onAuthorClick,
                                 onLikeClick = onReviewLikeClick,
                                 onCommentsClick = {},
-                                mostrarItem = true,
                                 onItemClick = { item -> onItemClick(item.tipo, item.id) },
+                                onEditClick = null,
+                                onDeleteClick = null,
                             )
                         }
 
@@ -136,6 +141,8 @@ fun DiscussionScreenContent(
                             SectionTitle(
                                 title = stringResource(R.string.comentarios_total, discussion.comments.size),
                                 modifier = Modifier.padding(top = 24.dp, bottom = 4.dp),
+                                actionText = null,
+                                onActionClick = null,
                             )
                         }
 
@@ -189,6 +196,7 @@ fun DiscussionScreenPreview() {
             discussion = LocalPreviewProvider.discussion,
             nuevoComentario = "",
             replyingToCommentId = null,
+            respondiendoA = null,
             publicando = false,
             errorMessageRes = null,
             errorAccionRes = null,

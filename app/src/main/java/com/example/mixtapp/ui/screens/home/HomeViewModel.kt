@@ -8,6 +8,7 @@ import com.example.mixtapp.data.injection.IoDispatcher
 import com.example.mixtapp.data.model.ItemConResenasUi
 import com.example.mixtapp.data.model.ItemResumenUi
 import com.example.mixtapp.data.model.ItemUi
+import com.example.mixtapp.data.model.itemsQueMeGustan
 import com.example.mixtapp.data.model.ReviewUi
 import com.example.mixtapp.data.model.TIPO_ALBUM
 import com.example.mixtapp.data.model.TIPO_ARTISTA
@@ -34,8 +35,6 @@ import kotlin.math.roundToInt
 // Cada fila del inicio y la lista de resenas de seguidos muestran hasta 10
 private const val ITEMS_POR_FILA = 10
 private const val RESENAS_DE_SEGUIDOS = 10
-// Desde esta calificacion mi resena cuenta como que el item me gusta
-private const val CALIFICACION_QUE_ME_GUSTA = 3
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -60,6 +59,8 @@ class HomeViewModel @Inject constructor(
     // Cada vez que cambia un item, un like o una resena llega el catalogo de nuevo y se vuelve a
     // armar todo el inicio
     private fun escucharCatalogo() {
+        _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
+
         viewModelScope.launch(ioDispatcher) {
             catalogoRepository.getCatalogoLive()
                 .catch { e ->
@@ -172,16 +173,17 @@ class HomeViewModel @Inject constructor(
         )
     }
 
-    // Lo que me gusta: lo que tiene mi like y lo que resene con 3 estrellas o mas. Una resena con
-    // mala nota no cuenta como que el genero me gusta
+    // Lo que me gusta (la regla esta en data/model): solo cuenta lo que tiene genero
     private fun loQueMeGusta(catalogo: List<ItemConResenasUi>, favoritos: List<ItemResumenUi>): List<ItemUi> {
-        val idsConMiLike = favoritos.map { it.id }.toSet()
-        val conMiLike = catalogo.filter { it.item.id in idsConMiLike }
-        val conMiResena = catalogo.filter { conResenas ->
-            conResenas.reviews.any { it.isMine && it.rating >= CALIFICACION_QUE_ME_GUSTA }
-        }
+        val misCalificaciones = catalogo.flatMap { conResenas ->
+            conResenas.reviews.filter { it.isMine }.map { conResenas.item.id to it.rating }
+        }.toMap()
 
-        return (conMiLike + conMiResena).map { it.item }.filter { it.genero.isNotEmpty() }
+        return itemsQueMeGustan(
+            items = catalogo.map { it.item },
+            idsConMiLike = favoritos.map { it.id }.toSet(),
+            misCalificaciones = misCalificaciones,
+        ).filter { it.genero.isNotEmpty() }
     }
 
     // Los albumes que estan en la lista de Deezer de alguno de mis generos; sin generos, los de

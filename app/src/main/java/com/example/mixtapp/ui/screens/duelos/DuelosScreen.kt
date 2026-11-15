@@ -33,17 +33,17 @@ import com.example.mixtapp.data.model.VotoUi
 import com.example.mixtapp.data.model.toItemResumenUi
 import com.example.mixtapp.ui.screens.duelos.components.BarraDeVotos
 import com.example.mixtapp.ui.screens.duelos.components.DueloItemCard
-import com.example.mixtapp.ui.screens.duelos.components.DuelosTabs
 import com.example.mixtapp.ui.screens.duelos.components.OpinionRow
 import com.example.mixtapp.ui.screens.duelos.components.VotoForm
-import com.example.mixtapp.ui.screens.duelos.model.DueloTabUi
 import com.example.mixtapp.ui.screens.duelos.model.dueloTabs
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppBackground
 import com.example.mixtapp.ui.utils.EmptyMessage
 import com.example.mixtapp.ui.utils.ErrorBox
 import com.example.mixtapp.ui.utils.ErrorMessage
+import com.example.mixtapp.ui.utils.FilaDeOpciones
 import com.example.mixtapp.ui.utils.LoadingBox
+import com.example.mixtapp.ui.utils.OpcionUi
 import com.example.mixtapp.ui.utils.ScreenTitle
 import com.example.mixtapp.ui.utils.SectionTitle
 
@@ -54,7 +54,7 @@ fun DuelosScreen(
     onUserClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    // El catalogo y los votos llegan en vivo desde el ViewModel: la pantalla solo pinta lo que ya
+    // El catalogo y los votos llegan desde el ViewModel: la pantalla solo pinta lo que ya
     // viene armado
     val state by duelosViewModel.uiState.collectAsState()
 
@@ -67,9 +67,9 @@ fun DuelosScreen(
         enviando = state.enviando,
         isLoading = state.isLoading,
         errorMessageRes = state.errorMessageRes,
-        errorVotosRes = state.errorVotosRes,
+        errorVotosRes = state.erroresDeVotos[state.tipoElegido],
         errorVotoRes = state.errorVotoRes,
-        onTabSelected = { duelosViewModel.selectTipo(tipo = it) },
+        onTabSelected = { duelosViewModel.elegirTipo(tipo = it) },
         onOpcionClick = { duelosViewModel.elegirOpcion(opcion = it) },
         onOpinionChange = { duelosViewModel.updateOpinion(texto = it) },
         onVotarClick = { duelosViewModel.votar() },
@@ -81,7 +81,7 @@ fun DuelosScreen(
 
 @Composable
 fun DuelosScreenContent(
-    tabs: List<DueloTabUi>,
+    tabs: List<OpcionUi>,
     tipoElegido: String,
     duelo: DueloUi?,
     opcionElegida: String?,
@@ -109,14 +109,16 @@ fun DuelosScreenContent(
         Column(modifier = Modifier.fillMaxSize()) {
             ScreenTitle(
                 title = stringResource(R.string.duelos_title),
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                onBackClick = null,
             )
 
             // Las pestanas quedan fijas para pasar de un duelo a otro
-            DuelosTabs(
-                tabs = tabs,
-                tipoElegido = tipoElegido,
-                onTabSelected = onTabSelected,
+            FilaDeOpciones(
+                opciones = tabs,
+                elegidaId = tipoElegido,
+                onOpcionClick = onTabSelected,
+                prefijoTestTag = "tabDuelo",
                 modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
             )
 
@@ -172,7 +174,11 @@ fun DuelosScreenContent(
                     }
 
                     item {
-                        SectionTitle(title = stringResource(R.string.opiniones_count, duelo.opiniones.size))
+                        SectionTitle(
+                            title = stringResource(R.string.opiniones_count, duelo.opiniones.size),
+                            actionText = null,
+                            onActionClick = null,
+                        )
                     }
 
                     if (duelo.opiniones.isEmpty()) {

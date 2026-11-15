@@ -11,10 +11,12 @@ import com.example.mixtapp.data.model.CATEGORIA_MEJOR_CALIFICADOS
 import com.example.mixtapp.data.model.ItemConResenasUi
 import com.example.mixtapp.data.model.SearchCategoryUi
 import com.example.mixtapp.data.model.TIPO_ARTISTA
+import com.example.mixtapp.data.model.contieneTexto
 import com.example.mixtapp.data.repository.CatalogoRepository
 import com.example.mixtapp.data.repository.UsuarioRepository
 import com.example.mixtapp.ui.utils.mensajeDeError
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,7 +25,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 // Con menos letras la busqueda de personas traeria a casi todos
 private const val LETRAS_PARA_BUSCAR_PERSONAS = 2
@@ -48,6 +49,8 @@ class SearchViewModel @Inject constructor(
 
     // Si alguien califica algo mientras busco, el promedio y el orden se actualizan solos
     private fun escucharCatalogo() {
+        _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
+
         viewModelScope.launch(ioDispatcher) {
             catalogoRepository.getCatalogoLive()
                 .catch { e ->
@@ -167,13 +170,9 @@ class SearchViewModel @Inject constructor(
         else -> emptyList()
     }
 
-    // Los items cuyo titulo, subtitulo o detalle contienen el texto, sin importar las mayusculas
+    // Los items que contienen el texto, los mas populares primero
     private fun conTexto(texto: String, catalogo: List<ItemConResenasUi>): List<ItemConResenasUi> =
-        catalogo.filter {
-            it.item.titulo.contains(texto, ignoreCase = true) ||
-                it.item.subtitulo.contains(texto, ignoreCase = true) ||
-                it.item.detalle.contains(texto, ignoreCase = true)
-        }.sortedByDescending { it.popularidad }
+        catalogo.filter { it.item.contieneTexto(texto) }.sortedByDescending { it.popularidad }
 
     private fun deCategoria(categoria: SearchCategoryUi, catalogo: List<ItemConResenasUi>): List<ItemConResenasUi> =
         when {

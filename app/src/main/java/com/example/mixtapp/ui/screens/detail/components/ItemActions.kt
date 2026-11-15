@@ -51,6 +51,7 @@ fun ItemActions(
             modifier = Modifier
                 .weight(1f)
                 .testTag("btnCalificar"),
+            cargando = false,
         )
 
         Spacer(modifier = Modifier.width(8.dp))

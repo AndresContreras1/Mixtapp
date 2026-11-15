@@ -4,9 +4,9 @@ import androidx.annotation.StringRes
 import com.example.mixtapp.data.model.ItemUi
 import com.example.mixtapp.data.model.NotificationUi
 import com.example.mixtapp.data.model.ReviewUi
-import com.example.mixtapp.ui.screens.notifications.model.NotificationTabUi
 import com.example.mixtapp.ui.screens.notifications.model.TAB_MIAS
 import com.example.mixtapp.ui.screens.notifications.model.notificationTabs
+import com.example.mixtapp.ui.utils.OpcionUi
 
 data class NotificationsState(
     // Mis notificaciones, ya separadas por el ViewModel en Hoy y Antes
@@ -18,12 +18,12 @@ data class NotificationsState(
     val lanzamientos: List<ItemUi> = emptyList(),
     // Las pestanas las provee el estado; el componente solo las pinta. La elegida se conserva al
     // volver de la discusion, un perfil o un detalle
-    val tabs: List<NotificationTabUi> = notificationTabs,
+    val tabs: List<OpcionUi> = notificationTabs,
     val selectedTabId: String = TAB_MIAS,
-    // Arrancan cargando porque el ViewModel empieza a escuchar los tres flujos al crearse
-    val isLoading: Boolean = true,
-    val cargandoDiscusiones: Boolean = true,
-    val cargandoLanzamientos: Boolean = true,
+    // Cada pestana se pone en true al empezar a escuchar su flujo y en false cuando llega o falla
+    val isLoading: Boolean = false,
+    val cargandoDiscusiones: Boolean = false,
+    val cargandoLanzamientos: Boolean = false,
     // Cada pestana trae su propio error: si una falla, las otras se ven. Si la pestana no tiene
     // nada que mostrar, el error la ocupa toda
     @StringRes val errorMessageRes: Int? = null,

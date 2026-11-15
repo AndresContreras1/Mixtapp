@@ -12,7 +12,7 @@ import javax.inject.Inject
 class SonandoRetrofitDataSourceImpl @Inject constructor() : SonandoRemoteDataSource {
 
     // La lista llega vacia
-    override fun listenSonando(currentUserId: String): Flow<List<SonandoDto>> = flow {
+    override fun listenSonando(desde: String, currentUserId: String): Flow<List<SonandoDto>> = flow {
         emit(emptyList<SonandoDto>())
     }
 

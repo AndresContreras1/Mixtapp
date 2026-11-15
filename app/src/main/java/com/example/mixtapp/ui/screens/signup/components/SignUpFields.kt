@@ -8,7 +8,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AlternateEmail
 import androidx.compose.material.icons.outlined.Email
-import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -19,6 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.theme.MixtappTheme
+import com.example.mixtapp.ui.utils.AppPasswordField
 import com.example.mixtapp.ui.utils.AppTextField
 
 // Los cinco campos ovalados del registro, con el mismo estilo del login. Cada contrasena tiene su
@@ -76,14 +76,11 @@ fun SignUpFields(
 
         Spacer(modifier = Modifier.height(14.dp))
 
-        AppTextField(
+        AppPasswordField(
             value = contrasena,
             onValueChange = onContrasenaChange,
             placeholder = stringResource(R.string.create_password),
             label = stringResource(R.string.contrasena),
-            leadingIcon = Icons.Outlined.Lock,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            esContrasena = true,
             contrasenaVisible = contrasenaVisible,
             onContrasenaVisibleChange = onContrasenaVisibleChange,
             modifier = Modifier.testTag("txtPasswordRegistro"),
@@ -91,14 +88,11 @@ fun SignUpFields(
 
         Spacer(modifier = Modifier.height(14.dp))
 
-        AppTextField(
+        AppPasswordField(
             value = confirmarContrasena,
             onValueChange = onConfirmarContrasenaChange,
             placeholder = stringResource(R.string.repeat_password),
             label = stringResource(R.string.confirm_password),
-            leadingIcon = Icons.Outlined.Lock,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            esContrasena = true,
             contrasenaVisible = confirmarVisible,
             onContrasenaVisibleChange = onConfirmarVisibleChange,
             modifier = Modifier.testTag("txtConfirmPassword"),

@@ -2,18 +2,12 @@ package com.example.mixtapp.ui.screens.mapa
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,15 +19,19 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
 import com.example.mixtapp.data.model.Coordenadas
 import com.example.mixtapp.data.model.ItemResumenUi
 import com.example.mixtapp.data.model.ResenaEnMapaUi
 import com.example.mixtapp.ui.screens.mapa.components.MapaOsm
-import com.example.mixtapp.ui.utils.ErrorMessage
+import com.example.mixtapp.ui.screens.mapa.components.TarjetaDeResenaDelMapa
+import com.example.mixtapp.ui.theme.MixtappTheme
+import com.example.mixtapp.ui.utils.AppBackground
+import com.example.mixtapp.ui.utils.ErrorBox
+import com.example.mixtapp.ui.utils.LoadingBox
 import com.example.mixtapp.ui.utils.PedirPermisoDeUbicacion
-import com.example.mixtapp.ui.utils.ReviewCard
 
 @Composable
 fun MapaScreen(
@@ -66,7 +64,8 @@ fun MapaScreen(
 }
 
 // El mapa ocupa toda la pantalla. Arriba va cuantas resenas hay en las ultimas 24 horas y, al
-// tocar un marcador, abajo sale la tarjeta de su resena
+// tocar un marcador, abajo sale la tarjeta de su resena. Mientras llegan las resenas se ve la carga
+// y si no cargaron, el error
 @Composable
 fun MapaScreenContent(
     resenas: List<ResenaEnMapaUi>,
@@ -88,79 +87,101 @@ fun MapaScreenContent(
             .fillMaxSize()
             .testTag("mapaScreen")
     ) {
-        MapaOsm(
-            resenas = resenas,
-            centro = centro,
-            onMarcadorClick = onMarcadorClick,
-            modifier = Modifier.fillMaxSize(),
-        )
+        AppBackground()
 
-        // El aviso de arriba: cuantas hay, que no hay ninguna o por que no cargaron
-        Column(
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .padding(16.dp)
-                .clip(RoundedCornerShape(20.dp))
-                .background(MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.92f))
-                .padding(horizontal = 16.dp, vertical = 10.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Text(
-                text = stringResource(R.string.mapa_titulo),
-                color = MaterialTheme.colorScheme.onSurface,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-            )
-            Text(
-                text = when {
-                    isLoading -> stringResource(R.string.cargando_mapa)
-                    resenas.isEmpty() -> stringResource(R.string.mapa_sin_resenas)
-                    else -> stringResource(R.string.mapa_cantidad_resenas, resenas.size)
-                },
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.testTag("mapaCantidad"),
-            )
-            ErrorMessage(messageRes = errorMessageRes)
-        }
-
-        if (seleccionada != null) {
-            Column(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .testTag("tarjetaMapa"),
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
-                ) {
-                    IconButton(
-                        onClick = onCerrarClick,
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(50))
-                            .background(MaterialTheme.colorScheme.surfaceContainer),
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Close,
-                            contentDescription = stringResource(R.string.cerrar_resena_del_mapa),
-                            tint = MaterialTheme.colorScheme.onSurface,
-                        )
-                    }
-                }
-
-                ErrorMessage(messageRes = errorAccionRes)
-
-                ReviewCard(
-                    review = seleccionada.review,
-                    onAuthorClick = onAuthorClick,
-                    onLikeClick = onLikeClick,
-                    onCommentsClick = onCommentsClick,
-                    mostrarItem = true,
-                    onItemClick = onItemClick,
+        when {
+            isLoading -> LoadingBox()
+            errorMessageRes != null -> ErrorBox(messageRes = errorMessageRes)
+            else -> {
+                MapaOsm(
+                    resenas = resenas,
+                    centro = centro,
+                    onMarcadorClick = onMarcadorClick,
+                    modifier = Modifier.fillMaxSize(),
                 )
+
+                AvisoDelMapa(
+                    cantidad = resenas.size,
+                    modifier = Modifier.align(Alignment.TopCenter),
+                )
+
+                if (seleccionada != null) {
+                    TarjetaDeResenaDelMapa(
+                        resena = seleccionada,
+                        errorAccionRes = errorAccionRes,
+                        onCerrarClick = onCerrarClick,
+                        onLikeClick = onLikeClick,
+                        onItemClick = onItemClick,
+                        onAuthorClick = onAuthorClick,
+                        onCommentsClick = onCommentsClick,
+                        modifier = Modifier.align(Alignment.BottomCenter),
+                    )
+                }
             }
         }
+    }
+}
+
+// El aviso de arriba del mapa: cuantas resenas hay o que no hay ninguna
+@Composable
+private fun AvisoDelMapa(
+    cantidad: Int,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+            .padding(16.dp)
+            .clip(RoundedCornerShape(20.dp))
+            .background(MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.92f))
+            .padding(horizontal = 16.dp, vertical = 10.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(
+            text = stringResource(R.string.mapa_titulo),
+            color = MaterialTheme.colorScheme.onSurface,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+        )
+        Text(
+            text = when (cantidad) {
+                0 -> stringResource(R.string.mapa_sin_resenas)
+                1 -> stringResource(R.string.mapa_una_resena)
+                else -> stringResource(R.string.mapa_cantidad_resenas, cantidad)
+            },
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.bodySmall,
+            modifier = Modifier.testTag("mapaCantidad"),
+        )
+    }
+}
+
+// El mapa de OpenStreetMap es una vista de Android y el preview no la dibuja: estos previews
+// muestran el aviso y los estados que no tienen mapa
+@Preview(showBackground = true)
+@Composable
+fun AvisoDelMapaPreview() {
+    MixtappTheme(darkTheme = true) {
+        AvisoDelMapa(cantidad = 3, modifier = Modifier.fillMaxWidth())
+    }
+}
+
+@Preview(showBackground = true, device = "spec:width=411dp,height=891dp")
+@Composable
+fun MapaScreenErrorPreview() {
+    MixtappTheme(darkTheme = true) {
+        MapaScreenContent(
+            resenas = emptyList(),
+            seleccionada = null,
+            centro = CENTRO_POR_DEFECTO,
+            isLoading = false,
+            errorMessageRes = R.string.error_sin_conexion,
+            errorAccionRes = null,
+            onMarcadorClick = {},
+            onCerrarClick = {},
+            onLikeClick = {},
+            onItemClick = {},
+            onAuthorClick = {},
+            onCommentsClick = {},
+        )
     }
 }

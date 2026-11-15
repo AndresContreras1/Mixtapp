@@ -21,7 +21,7 @@ private val PERMISOS_DE_UBICACION = arrayOf(
 // no esta concedido. Si se concede (o ya lo estaba) avisa con onConcedido; si se niega, la pantalla
 // sigue igual sin ubicacion. La usan el mapa y Escribir resena
 @Composable
-fun PedirPermisoDeUbicacion(onConcedido: () -> Unit = {}) {
+fun PedirPermisoDeUbicacion(onConcedido: () -> Unit) {
     val context = LocalContext.current
 
     val launcher = rememberLauncherForActivityResult(

@@ -24,16 +24,16 @@ import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalPreviewProvider
 import com.example.mixtapp.data.model.ItemConResenasUi
 import com.example.mixtapp.ui.screens.detail.components.DatosCuriososButton
-import com.example.mixtapp.ui.screens.detail.components.SonandoButton
 import com.example.mixtapp.ui.screens.detail.components.EnlacesDelItem
 import com.example.mixtapp.ui.screens.detail.components.ItemActions
-import com.example.mixtapp.ui.screens.detail.components.ItemHeader
 import com.example.mixtapp.ui.screens.detail.components.ItemStats
+import com.example.mixtapp.ui.screens.detail.components.SonandoButton
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppBackground
 import com.example.mixtapp.ui.utils.EmptyMessage
 import com.example.mixtapp.ui.utils.ErrorBox
 import com.example.mixtapp.ui.utils.ErrorMessage
+import com.example.mixtapp.ui.utils.ItemHeader
 import com.example.mixtapp.ui.utils.LoadingBox
 import com.example.mixtapp.ui.utils.ReviewCard
 import com.example.mixtapp.ui.utils.SectionTitle
@@ -102,13 +102,13 @@ fun DetailScreenContent(
     onCommentsClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize().testTag("detailScreen")) {
         AppBackground()
 
         when {
             isLoading -> LoadingBox()
             // Sin item no hay nada que mostrar: el error ocupa la pantalla
-            itemConResenas == null -> ErrorBox(messageRes = errorMessageRes ?: R.string.album_no_encontrado)
+            itemConResenas == null -> ErrorBox(messageRes = errorMessageRes ?: R.string.item_no_encontrado)
             else -> {
                 val item = itemConResenas.item
 
@@ -119,6 +119,8 @@ fun DetailScreenContent(
                     contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
                 ) {
                     item {
+                        // Si el listener falla despues de cargar, el aviso sale arriba y queda lo de antes
+                        ErrorMessage(messageRes = errorMessageRes)
                         ItemHeader(item = item, onBackClick = onBackClick)
                     }
 
@@ -137,7 +139,7 @@ fun DetailScreenContent(
                         Column(modifier = Modifier.padding(top = 16.dp)) {
                             ItemActions(
                                 // Solo hay una resena por item: si ya existe, se edita
-                                yaCalificado = itemConResenas.reviews.any { it.isMine },
+                                yaCalificado = itemConResenas.yaCalificado,
                                 likesText = item.likesText,
                                 isLiked = item.isLiked,
                                 isSaved = item.isSaved,
@@ -191,13 +193,15 @@ fun DetailScreenContent(
                         SectionTitle(
                             title = stringResource(R.string.reviews),
                             modifier = Modifier.padding(top = 28.dp, bottom = 12.dp),
+                            actionText = null,
+                            onActionClick = null,
                         )
                     }
 
                     if (itemConResenas.reviews.isEmpty()) {
                         item {
                             EmptyMessage(
-                                messageRes = R.string.sin_resenas_album,
+                                messageRes = R.string.sin_resenas_item,
                                 modifier = Modifier.fillMaxWidth(),
                             )
                         }
@@ -211,7 +215,7 @@ fun DetailScreenContent(
                             onAuthorClick = onAuthorClick,
                             onLikeClick = onReviewLikeClick,
                             onCommentsClick = onCommentsClick,
-                            mostrarItem = false,
+                            onItemClick = null,
                             // Editar o eliminar solo aparecen en mi resena
                             onEditClick = { onRateClick() },
                             onDeleteClick = onDeleteMyReviewClick,

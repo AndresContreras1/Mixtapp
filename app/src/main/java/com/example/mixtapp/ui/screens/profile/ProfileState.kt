@@ -5,12 +5,12 @@ import com.example.mixtapp.data.model.ItemResumenUi
 import com.example.mixtapp.data.model.MixtapeUi
 import com.example.mixtapp.data.model.ReviewUi
 import com.example.mixtapp.ui.screens.profile.model.PESTANA_PERFIL
-import com.example.mixtapp.ui.screens.profile.model.ProfileTabUi
 import com.example.mixtapp.ui.screens.profile.model.profileTabs
+import com.example.mixtapp.ui.utils.OpcionUi
 
 data class ProfileState(
-    // Arranca cargando hasta que llegan mis datos
-    val isLoading: Boolean = true,
+    // Se pone en true al empezar a escuchar mi perfil y en false cuando llega o falla
+    val isLoading: Boolean = false,
     // Mi uid de Authentication: con el se abren mis listas de seguidores y seguidos
     val miId: String = "",
     // Mis datos de Firestore; sin mi documento, el usuario sale del correo antes de la arroba
@@ -28,18 +28,22 @@ data class ProfileState(
     val subiendoImagen: Boolean = false,
     @StringRes val errorImagenRes: Int? = null,
     // Las pestanas las provee el ViewModel; la elegida se conserva al volver a la pantalla
-    val tabs: List<ProfileTabUi> = profileTabs,
+    val tabs: List<OpcionUi> = profileTabs,
     val selectedTabId: String = PESTANA_PERFIL,
     // Cada seccion llega por su propio flujo y trae su propio error: si una falla, las demas se ven
     val favoritos: List<ItemResumenUi> = emptyList(),
+    val cargandoFavoritos: Boolean = false,
     @StringRes val errorFavoritosRes: Int? = null,
     // Solo las mas recientes: todas estan en Mis resenas
     val resenasRecientes: List<ReviewUi> = emptyList(),
+    val cargandoResenas: Boolean = false,
     @StringRes val errorResenasRes: Int? = null,
     val guardados: List<ItemResumenUi> = emptyList(),
+    val cargandoGuardados: Boolean = false,
     @StringRes val errorGuardadosRes: Int? = null,
     // Las mixtapes que arme, la mas nueva primero
     val mixtapes: List<MixtapeUi> = emptyList(),
+    val cargandoMixtapes: Boolean = false,
     @StringRes val errorMixtapesRes: Int? = null,
     // El like o el borrado de una resena que no se pudo hacer
     @StringRes val errorAccionRes: Int? = null,

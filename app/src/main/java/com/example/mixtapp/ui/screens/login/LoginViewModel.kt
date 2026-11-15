@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
 import com.example.mixtapp.data.injection.IoDispatcher
 import com.example.mixtapp.data.model.MIN_PASSWORD_LENGTH
+import com.example.mixtapp.data.model.esCorreoValido
 import com.example.mixtapp.data.repository.AuthRepository
 import com.example.mixtapp.data.repository.UsuarioRepository
 import com.example.mixtapp.ui.utils.mensajeDeError
@@ -56,7 +57,7 @@ class LoginViewModel @Inject constructor(
             estado.email.isBlank() || estado.contrasena.isBlank() ->
                 R.string.error_campos_obligatorios
 
-            !estado.email.contains("@") ->
+            !esCorreoValido(estado.email.trim()) ->
                 R.string.error_email_invalido
 
             estado.contrasena.length < MIN_PASSWORD_LENGTH ->
@@ -71,7 +72,8 @@ class LoginViewModel @Inject constructor(
             return
         }
 
-        signIn(email = estado.email, contrasena = estado.contrasena)
+        // El correo va sin los espacios que deja el teclado al autocompletar
+        signIn(email = estado.email.trim(), contrasena = estado.contrasena)
     }
 
     // signIn es suspend, asi que se lanza la corrutina donde se necesita

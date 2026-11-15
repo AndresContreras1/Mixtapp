@@ -10,10 +10,14 @@ import com.google.common.truth.Truth
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+
+// Lo que suena en los datos de prueba es de enero de 2025: la lista se pide desde antes
+private const val DESDE_LOS_DATOS_DE_PRUEBA = "2025-01-01T00:00:00Z"
 
 // El data source de "sonando ahora" contra el emulador: poner y quitar lo que suena, la reaccion
 // 🔥 con su contador y la lista en vivo
@@ -41,7 +45,7 @@ class SonandoFirestoreDataSourceTest {
         //Act
         dataSource.ponerSonando(usuarioId = "usuario_1", sonando = generateSonando(1))
         //Assert: el id del documento es el uid
-        val lista = dataSource.listenSonando(currentUserId = "usuario_2").first { it.isNotEmpty() }
+        val lista = dataSource.listenSonando(desde = DESDE_LOS_DATOS_DE_PRUEBA, currentUserId = "usuario_2").first { it.isNotEmpty() }
         Truth.assertThat(lista.map { it.id }).containsExactly("usuario_1")
         Truth.assertThat(lista[0].titulo).isEqualTo("Album 1")
     }
@@ -52,7 +56,7 @@ class SonandoFirestoreDataSourceTest {
         dataSource.ponerSonando(usuarioId = "usuario_1", sonando = generateSonando(1))
         dataSource.ponerSonando(usuarioId = "usuario_2", sonando = generateSonando(2))
         //Act
-        val lista = dataSource.listenSonando(currentUserId = "usuario_3").first { it.size == 2 }
+        val lista = dataSource.listenSonando(desde = DESDE_LOS_DATOS_DE_PRUEBA, currentUserId = "usuario_3").first { it.size == 2 }
         //Assert
         Truth.assertThat(lista.map { it.id }).containsExactly("usuario_2", "usuario_1").inOrder()
     }
@@ -64,7 +68,7 @@ class SonandoFirestoreDataSourceTest {
         //Act
         dataSource.reaccionar(usuarioId = "usuario_1", reaccion = generateReaccion(2))
         //Assert
-        val lista = dataSource.listenSonando(currentUserId = "usuario_2").first { it.firstOrNull()?.reaccionesCount == 1 }
+        val lista = dataSource.listenSonando(desde = DESDE_LOS_DATOS_DE_PRUEBA, currentUserId = "usuario_2").first { it.firstOrNull()?.reaccionesCount == 1 }
         Truth.assertThat(lista[0].reaccionesCount).isEqualTo(1)
     }
 
@@ -75,7 +79,7 @@ class SonandoFirestoreDataSourceTest {
         //Act
         dataSource.reaccionar(usuarioId = "usuario_1", reaccion = generateReaccion(2))
         //Assert: con mi uid se marca que ya reaccione
-        val lista = dataSource.listenSonando(currentUserId = "usuario_2").first { it.firstOrNull()?.reaccionado == true }
+        val lista = dataSource.listenSonando(desde = DESDE_LOS_DATOS_DE_PRUEBA, currentUserId = "usuario_2").first { it.firstOrNull()?.reaccionado == true }
         Truth.assertThat(lista[0].reaccionado).isTrue()
     }
 
@@ -86,9 +90,32 @@ class SonandoFirestoreDataSourceTest {
         dataSource.reaccionar(usuarioId = "usuario_1", reaccion = generateReaccion(2))
         //Act
         dataSource.reaccionar(usuarioId = "usuario_1", reaccion = generateReaccion(2))
-        //Assert
-        val lista = dataSource.listenSonando(currentUserId = "usuario_2").first { it.firstOrNull()?.reaccionesCount == 0 }
+        //Assert: la marca se lee del servidor, asi que se espera a que ya no este
+        val lista = dataSource.listenSonando(desde = DESDE_LOS_DATOS_DE_PRUEBA, currentUserId = "usuario_2").first { it.firstOrNull()?.reaccionado == false }
         Truth.assertThat(lista[0].reaccionado).isFalse()
+    }
+
+    @Test
+    fun reaccionar_segundaVez_elContadorBaja() = runTest {
+        //Arrange
+        dataSource.ponerSonando(usuarioId = "usuario_1", sonando = generateSonando(1))
+        dataSource.reaccionar(usuarioId = "usuario_1", reaccion = generateReaccion(2))
+        //Act
+        dataSource.reaccionar(usuarioId = "usuario_1", reaccion = generateReaccion(2))
+        //Assert: se lee el documento del servidor, no el de la cache que ponerSonando dejo en 0
+        val documento = db.collection("sonando").document("usuario_1").get().await()
+        Truth.assertThat(documento.getLong("reaccionesCount")).isEqualTo(0)
+    }
+
+    @Test
+    fun listenSonando_loDeHaceMucho_noLlega() = runTest {
+        //Arrange: lo que suena es de enero de 2025
+        dataSource.ponerSonando(usuarioId = "usuario_1", sonando = generateSonando(1))
+        dataSource.ponerSonando(usuarioId = "usuario_2", sonando = generateSonando(2, actualizadoEn = "2026-11-14T10:00:00Z"))
+        //Act: se pide desde el 13 de noviembre de 2026
+        val lista = dataSource.listenSonando(desde = "2026-11-13T00:00:00Z", currentUserId = "usuario_3").first { it.isNotEmpty() }
+        //Assert
+        Truth.assertThat(lista.map { it.id }).containsExactly("usuario_2")
     }
 
     @Test
@@ -99,7 +126,7 @@ class SonandoFirestoreDataSourceTest {
         //Act: vuelve a poner el mismo album
         dataSource.ponerSonando(usuarioId = "usuario_1", sonando = generateSonando(1))
         //Assert: la reaccion vieja ya no cuenta
-        val lista = dataSource.listenSonando(currentUserId = "usuario_2").first { it.firstOrNull()?.reaccionesCount == 0 }
+        val lista = dataSource.listenSonando(desde = DESDE_LOS_DATOS_DE_PRUEBA, currentUserId = "usuario_2").first { it.firstOrNull()?.reaccionesCount == 0 }
         Truth.assertThat(lista[0].reaccionado).isFalse()
     }
 
@@ -111,7 +138,7 @@ class SonandoFirestoreDataSourceTest {
         //Act
         dataSource.quitarSonando(usuarioId = "usuario_1")
         //Assert
-        val lista = dataSource.listenSonando(currentUserId = "usuario_2").first { it.isEmpty() }
+        val lista = dataSource.listenSonando(desde = DESDE_LOS_DATOS_DE_PRUEBA, currentUserId = "usuario_2").first { it.isEmpty() }
         Truth.assertThat(lista).isEmpty()
     }
 }

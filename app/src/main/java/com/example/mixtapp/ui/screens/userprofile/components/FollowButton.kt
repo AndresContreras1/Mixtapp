@@ -52,7 +52,8 @@ fun FollowButton(
             modifier = modifier
                 .width(180.dp)
                 .height(44.dp)
-                .testTag("btnSeguir")
+                .testTag("btnSeguir"),
+            cargando = false,
         )
     }
 }

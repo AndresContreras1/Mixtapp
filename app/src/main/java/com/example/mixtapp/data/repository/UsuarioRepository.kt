@@ -11,6 +11,7 @@ import com.example.mixtapp.data.dtos.toReviewUi
 import com.example.mixtapp.data.model.ItemResumenUi
 import com.example.mixtapp.data.model.ReviewUi
 import com.example.mixtapp.data.model.UsuarioUi
+import com.example.mixtapp.data.model.usuarioDelCorreo
 import com.google.firebase.firestore.FirebaseFirestoreException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -140,6 +141,7 @@ class UsuarioRepository @Inject constructor(
                 throw errorDelFlujo(e)
             }
 
+    // Mis favoritos para mi perfil: los mismos de cualquier usuario, con mi uid
     fun getMisFavoritosLive(): Flow<List<ItemResumenUi>> =
         getFavoritosLive(userId = authRemoteDataSource.currentUser?.uid ?: "")
 
@@ -174,8 +176,8 @@ class UsuarioRepository @Inject constructor(
     }
 
     // Primero se crea la cuenta en Authentication y despues, con su uid, se guardan los demas datos.
-    // Tambien completa el perfil de una cuenta creada antes del sprint 10, que no tiene documento
-    // (desde Editar perfil, que tambien manda el Instagram)
+    // Tambien crea el documento de una cuenta que no lo tiene, desde guardarPerfil de Editar perfil,
+    // que tambien manda el Instagram
     suspend fun registrarUsuario(username: String, nombre: String, bio: String, instagram: String = ""): Result<Unit> {
         return try {
             val usuarioId = authRemoteDataSource.currentUser?.uid
@@ -231,25 +233,28 @@ class UsuarioRepository @Inject constructor(
         }
     }
 
-    // Al cambiar la foto tambien se actualiza el documento, para que se vea en mi perfil publico.
-    // Ese cambio es el que escucha la Cloud Function que pone la foto nueva en mis resenas
-    suspend fun actualizarFotoDePerfil(fotoUrl: String): Result<Unit> {
+    // Editar perfil: si mi cuenta todavia no tiene documento (por ejemplo, si fallo al registrarme) se
+    // crea; si no, se modifica. Lo decide el repositorio, como crear o modificar una resena
+    suspend fun guardarPerfil(nombre: String, username: String, bio: String, instagram: String): Result<Unit> {
         return try {
             val usuarioId = authRemoteDataSource.currentUser?.uid
                 ?: return Result.failure(SinSesionException())
 
-            usuarioRemoteDataSource.actualizarFotoDePerfil(usuarioId, fotoUrl)
-            Result.success(Unit)
+            val tieneDocumento = usuarioRemoteDataSource.getUsuarioById(usuarioId) != null
+
+            if (tieneDocumento) {
+                actualizarPerfil(nombre = nombre, username = username, bio = bio, instagram = instagram)
+            } else {
+                registrarUsuario(username = username, nombre = nombre, bio = bio, instagram = instagram)
+            }
         } catch (e: HttpException) {
-            Log.d("UsuarioRepository", "actualizarFotoDePerfil: ${e.message}")
+            Log.d("UsuarioRepository", "guardarPerfil: ${e.message}")
             Result.failure(errorDelBackend(e))
         } catch (e: FirebaseFirestoreException) {
-            Log.d("UsuarioRepository", "actualizarFotoDePerfil: ${e.message}")
-            // Sin documento todavia: la foto se copia cuando complete su perfil en Editar perfil
-            if (e.code == FirebaseFirestoreException.Code.NOT_FOUND) Result.success(Unit)
-            else Result.failure(errorDeFirestore(e))
+            Log.d("UsuarioRepository", "guardarPerfil: ${e.message}")
+            Result.failure(errorDeFirestore(e))
         } catch (e: Exception) {
-            Log.d("UsuarioRepository", "actualizarFotoDePerfil: ${e.message}")
+            Log.d("UsuarioRepository", "guardarPerfil: ${e.message}")
             Result.failure(ErrorInesperadoException())
         }
     }
@@ -288,6 +293,7 @@ class UsuarioRepository @Inject constructor(
                 throw errorDelFlujo(e)
             }
 
+    // A quienes sigue: si empieza a seguir a alguien desde otro celular, aparece sin salir
     fun getSeguidosLive(userId: String): Flow<List<UsuarioUi>> =
         usuarioRemoteDataSource.listenSeguidos(userId)
             .map { seguidos -> seguidos.map { it.toUsuarioUi() } }
@@ -300,19 +306,19 @@ class UsuarioRepository @Inject constructor(
     fun getMisSeguidosLive(): Flow<List<UsuarioUi>> =
         getSeguidosLive(userId = authRemoteDataSource.currentUser?.uid ?: "")
 
-    // Una cuenta de Authentication puede quedar sin documento en usuarios: el registro entra aunque
-    // falle Firestore y, en modo debug, la sesion sigue en el celular aunque el emulador se reinicie
-    // vacio. Sin el documento no se puede seguir ni guardar el token, asi que se crea igual que en el
+    // Una cuenta de Authentication puede quedar sin documento en usuarios: si Firestore falla al
+    // registrarse, la cuenta queda creada sin sus datos y, en modo debug, la sesion sigue en el
+    // celular aunque el emulador se reinicie vacio. Sin el documento no se puede seguir ni guardar el token, asi que se crea igual que en el
     // registro, con la parte del correo antes de la arroba como usuario
     private suspend fun crearMiDocumentoSiFalta(usuarioId: String) {
         if (usuarioRemoteDataSource.getUsuarioById(usuarioId) != null) return
 
-        val usuarioDelCorreo = authRemoteDataSource.currentUser?.email?.substringBefore("@") ?: ""
+        val usuario = usuarioDelCorreo(authRemoteDataSource.currentUser?.email ?: "")
         val nombre = authRemoteDataSource.currentUser?.displayName
 
         val registrarUsuarioDto = RegistrarUsuarioDto(
-            username = usuarioDelCorreo,
-            nombre = if (nombre.isNullOrEmpty()) usuarioDelCorreo else nombre,
+            username = usuario,
+            nombre = if (nombre.isNullOrEmpty()) usuario else nombre,
             fotoUrl = authRemoteDataSource.currentUser?.photoUrl?.toString(),
             FCMToken = tokenDelCelular(),
         )

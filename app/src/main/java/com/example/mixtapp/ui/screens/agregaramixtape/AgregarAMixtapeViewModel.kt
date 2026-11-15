@@ -30,17 +30,29 @@ class AgregarAMixtapeViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(AgregarAMixtapeState())
     val uiState: StateFlow<AgregarAMixtapeState> = _uiState.asStateFlow()
 
-    // Mis mixtapes no dependen de la ruta: se escuchan una sola vez al crear el ViewModel. Si creo
-    // una nueva desde aqui, aparece sola al volver
-    init {
-        escucharMisMixtapes()
+    // Mis mixtapes se escuchan mientras exista el ViewModel: si se volvieran a pedir cada vez que
+    // la pantalla se muestra, se acumularian listeners
+    private var escuchando = false
+
+    // El item llega por la ruta: la pantalla lo pide en su LaunchedEffect. Con su id, cada mixtape
+    // dice si ya lo tiene; si creo una nueva desde aqui, aparece sola al volver
+    fun getItem(tipo: String, itemId: String) {
+        if (escuchando) return
+        escuchando = true
+
+        escucharMisMixtapes(itemId = itemId)
+        leerItem(tipo = tipo, itemId = itemId)
     }
 
-    private fun escucharMisMixtapes() {
+    private fun escucharMisMixtapes(itemId: String) {
+        _uiState.update { it.copy(isLoading = true, errorMessageRes = null) }
+
         viewModelScope.launch(ioDispatcher) {
-            mixtapeRepository.getMisMixtapesLive()
+            mixtapeRepository.getMisMixtapesLive(itemId = itemId)
                 .catch { e ->
                     Log.d("AgregarAMixtapeViewModel", "escucharMisMixtapes: ${e.message}")
+                    // Si se cerro con error se puede volver a escuchar al entrar de nuevo
+                    escuchando = false
                     _uiState.update {
                         it.copy(
                             isLoading = false,
@@ -54,26 +66,30 @@ class AgregarAMixtapeViewModel @Inject constructor(
         }
     }
 
-    // El item llega por la ruta: la pantalla lo pide en su LaunchedEffect. Basta leerlo una vez
-    fun getItem(tipo: String, itemId: String) {
-        if (_uiState.value.item != null) return
-
+    // Solo el item, una vez: su titulo va arriba y su copia se guarda en la mixtape. Tiene su propio
+    // error, para que una lista que llega despues no lo borre
+    private fun leerItem(tipo: String, itemId: String) {
         viewModelScope.launch(ioDispatcher) {
-            val result = catalogoRepository.getItemConResenas(tipo = tipo, itemId = itemId)
+            val result = catalogoRepository.getItem(tipo = tipo, itemId = itemId)
 
             if (result.isSuccess) {
-                _uiState.update { it.copy(item = result.getOrNull()?.item) }
+                _uiState.update { it.copy(item = result.getOrNull(), errorItemRes = null) }
             } else {
                 _uiState.update {
-                    it.copy(errorMessageRes = mensajeDeError(error = result.exceptionOrNull(), generico = R.string.error_cargar_contenido))
+                    it.copy(errorItemRes = mensajeDeError(error = result.exceptionOrNull(), generico = R.string.error_cargar_contenido))
                 }
             }
         }
     }
 
-    // Agrega el item a la mixtape elegida y vuelve al detalle
+    // Agrega el item a la mixtape elegida y vuelve al detalle. Si ya esta en esa mixtape no se
+    // repite: la tarjeta lo dice con "Ya esta"
     fun agregarA(mixtapeId: String) {
-        val item = _uiState.value.item ?: return
+        val estado = _uiState.value
+        val item = estado.item ?: return
+        val mixtape = estado.mixtapes.find { it.id == mixtapeId } ?: return
+
+        if (mixtape.tieneElItem) return
 
         viewModelScope.launch(ioDispatcher) {
             val result = mixtapeRepository.agregarItem(mixtapeId = mixtapeId, item = item)
@@ -82,7 +98,13 @@ class AgregarAMixtapeViewModel @Inject constructor(
                 _uiState.update { it.copy(navigate = true, errorAccionRes = null) }
             } else {
                 _uiState.update {
-                    it.copy(errorAccionRes = mensajeDeError(error = result.exceptionOrNull(), generico = R.string.error_mixtape))
+                    it.copy(
+                        errorAccionRes = mensajeDeError(
+                            error = result.exceptionOrNull(),
+                            generico = R.string.error_mixtape,
+                            noEncontrado = R.string.mixtape_no_encontrada,
+                        )
+                    )
                 }
             }
         }

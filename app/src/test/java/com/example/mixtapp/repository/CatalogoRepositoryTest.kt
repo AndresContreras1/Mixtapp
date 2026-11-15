@@ -80,7 +80,7 @@ class CatalogoRepositoryTest {
         Truth.assertThat(itemConResenas?.rating).isEqualTo(4.0)
         Truth.assertThat(itemConResenas?.ratingCount).isEqualTo(2)
         Truth.assertThat(itemConResenas?.recommendRate).isEqualTo(50)
-        Truth.assertThat(itemConResenas?.userRating).isEqualTo(5)
+        Truth.assertThat(itemConResenas?.yaCalificado).isTrue()
         Truth.assertThat(itemConResenas?.item?.subtitulo).isEqualTo("Linkin Park")
     }
 
@@ -137,6 +137,38 @@ class CatalogoRepositoryTest {
     }
 
     @Test
+    fun getItemLive_albumGuardadoConMiResena_guardadoYaCalificadoYSuPromedio() = runTest {
+        //Arrange: los tres listeners del detalle
+        coEvery { albumDataSource.listenAlbumById("album_1", "yo") } returns flowOf(fromZero)
+        coEvery { usuarioDataSource.listenGuardado("yo", "album_1") } returns flowOf(true)
+        coEvery { reviewDataSource.listenReviewsDeItem(TIPO_ALBUM, "album_1", "yo") } returns flowOf(
+            listOf(
+                ReviewDto().copy(id = "r1", calificacion = 4, usuarioId = "yo", itemId = "album_1"),
+                ReviewDto().copy(id = "r2", calificacion = 2, usuarioId = "otro", itemId = "album_1"),
+            )
+        )
+        //Act
+        val itemConResenas = repository.getItemLive(TIPO_ALBUM, "album_1").first()
+        //Assert
+        Truth.assertThat(itemConResenas.item.isSaved).isTrue()
+        Truth.assertThat(itemConResenas.yaCalificado).isTrue()
+        Truth.assertThat(itemConResenas.rating).isEqualTo(3.0)
+        Truth.assertThat(itemConResenas.reviews).hasSize(2)
+    }
+
+    @Test
+    fun getItemLive_albumQueNoExiste_contenidoNoEncontrado() = runTest {
+        //Arrange: el data source envia null cuando no existe
+        coEvery { albumDataSource.listenAlbumById("album_9", "yo") } returns flowOf(null)
+        coEvery { usuarioDataSource.listenGuardado("yo", "album_9") } returns flowOf(false)
+        coEvery { reviewDataSource.listenReviewsDeItem(TIPO_ALBUM, "album_9", "yo") } returns flowOf(emptyList())
+        //Act
+        val error = runCatching { repository.getItemLive(TIPO_ALBUM, "album_9").first() }.exceptionOrNull()
+        //Assert
+        Truth.assertThat(error).isInstanceOf(ContenidoNoEncontradoException::class.java)
+    }
+
+    @Test
     fun getCatalogoLive_resenasDeVariosAlbumes_cadaAlbumConLasSuyas() = runTest {
         //Arrange
         coEvery { albumDataSource.listenAlbumes() } returns flowOf(listOf(fromZero, fromZero.copy(id = "album_2")))
@@ -186,19 +218,19 @@ class CatalogoRepositoryTest {
 
     @Test
     fun getLanzamientosLive_meGustaUnArtista_susAlbumesYCancionesDelMasNuevo() = runTest {
-        //Arrange: me gusta Mike Shinoda (de Linkin Park): salen los albumes y las canciones de la
-        // banda, del mas nuevo al mas viejo; Metallica no
-        coEvery { albumDataSource.listenAlbumes() } returns flowOf(
+        //Arrange: el catalogo se lee una vez y me gusta Mike Shinoda (de Linkin Park): salen los
+        // albumes y las canciones de la banda, del mas nuevo al mas viejo; Metallica no
+        coEvery { albumDataSource.getAlbumes() } returns (
             listOf(
                 fromZero.copy(fechaLanzamiento = "2024-11-15"),
                 AlbumDto().copy(id = "album_2", titulo = "Hybrid Theory", artista = "Linkin Park", fechaLanzamiento = "2000-10-24"),
                 AlbumDto().copy(id = "album_3", titulo = "Master of Puppets", artista = "Metallica", fechaLanzamiento = "1986-03-03"),
             )
         )
-        coEvery { cancionDataSource.listenCanciones() } returns flowOf(
+        coEvery { cancionDataSource.getCanciones() } returns (
             listOf(CancionDto().copy(id = "cancion_1", titulo = "Numb", artista = "Linkin Park", fechaLanzamiento = "2003-03-25"))
         )
-        coEvery { artistaDataSource.listenArtistas() } returns flowOf(
+        coEvery { artistaDataSource.getArtistas() } returns (
             listOf(ArtistaDto().copy(id = "artista_1", nombre = "Mike Shinoda", grupo = "Linkin Park"))
         )
         coEvery { usuarioDataSource.listenLikes("yo") } returns flowOf(listOf(ItemDeUsuarioDto().copy(id = "artista_1")))

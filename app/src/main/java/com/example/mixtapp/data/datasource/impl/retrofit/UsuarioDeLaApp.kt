@@ -8,11 +8,13 @@ const val USUARIO_DE_LA_APP_EN_EL_BACKEND = "1"
 
 // En el backend el usuario de la app es el 1: sus resenas vuelven con el uid de la sesion para que
 // el repositorio las reconozca como mias
-fun List<ReviewDto>.conMiUsuario(currentUserId: String): List<ReviewDto> =
-    map { review ->
-        if (currentUserId.isNotEmpty() && review.usuarioId == USUARIO_DE_LA_APP_EN_EL_BACKEND) {
-            review.copy(usuarioId = currentUserId)
-        } else {
-            review
-        }
+fun ReviewDto.conMiUsuario(currentUserId: String): ReviewDto =
+    if (currentUserId.isNotEmpty() && usuarioId == USUARIO_DE_LA_APP_EN_EL_BACKEND) {
+        copy(usuarioId = currentUserId)
+    } else {
+        this
     }
+
+// Lo mismo para una lista de resenas
+fun List<ReviewDto>.conMiUsuario(currentUserId: String): List<ReviewDto> =
+    map { review -> review.conMiUsuario(currentUserId) }

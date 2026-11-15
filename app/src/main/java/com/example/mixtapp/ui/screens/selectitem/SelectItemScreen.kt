@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Search
@@ -24,17 +23,18 @@ import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalPreviewProvider
 import com.example.mixtapp.data.model.ItemConResenasUi
-import com.example.mixtapp.ui.screens.search.components.ResultadoItemRow
-import com.example.mixtapp.ui.screens.selectitem.model.SelectItemFilterUi
 import com.example.mixtapp.ui.screens.selectitem.model.selectItemFilters
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppBackground
-import com.example.mixtapp.ui.utils.AppChip
 import com.example.mixtapp.ui.utils.AppTextField
 import com.example.mixtapp.ui.utils.EmptyMessage
 import com.example.mixtapp.ui.utils.ErrorBox
+import com.example.mixtapp.ui.utils.FilaDeOpciones
+import com.example.mixtapp.ui.utils.ItemRow
 import com.example.mixtapp.ui.utils.LoadingBox
+import com.example.mixtapp.ui.utils.OpcionUi
 import com.example.mixtapp.ui.utils.ScreenTitle
+import com.example.mixtapp.ui.utils.StarRating
 
 // El boton + de la barra abre esta pantalla para elegir que calificar antes de escribir la resena
 @Composable
@@ -66,7 +66,7 @@ fun SelectItemScreenContent(
     isLoading: Boolean,
     @StringRes errorMessageRes: Int?,
     query: String,
-    filters: List<SelectItemFilterUi>,
+    filters: List<OpcionUi>,
     selectedFilterId: String,
     resultados: List<ItemConResenasUi>,
     onQueryChange: (String) -> Unit,
@@ -88,10 +88,10 @@ fun SelectItemScreenContent(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 item {
-                    ScreenTitle(title = stringResource(R.string.elegir_album_titulo), onBackClick = onBackClick)
+                    ScreenTitle(title = stringResource(R.string.elegir_item_titulo), onBackClick = onBackClick)
 
                     Text(
-                        text = stringResource(R.string.elegir_album_descripcion),
+                        text = stringResource(R.string.elegir_item_descripcion),
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         style = MaterialTheme.typography.bodyMedium,
                     )
@@ -109,16 +109,12 @@ fun SelectItemScreenContent(
 
                 // Cuatro chips no caben en todos los celulares: la fila se desliza
                 item {
-                    LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                        items(filters) { filter ->
-                            AppChip(
-                                text = stringResource(filter.label),
-                                isSelected = filter.id == selectedFilterId,
-                                onClick = { onFilterSelected(filter.id) },
-                                modifier = Modifier.testTag("tipo_${filter.id}"),
-                            )
-                        }
-                    }
+                    FilaDeOpciones(
+                        opciones = filters,
+                        elegidaId = selectedFilterId,
+                        onOpcionClick = onFilterSelected,
+                        prefijoTestTag = "tipo",
+                    )
                 }
 
                 if (resultados.isEmpty()) {
@@ -128,11 +124,13 @@ fun SelectItemScreenContent(
                 }
 
                 items(resultados) { itemConResenas ->
-                    ResultadoItemRow(
-                        itemConResenas = itemConResenas,
+                    ItemRow(
+                        item = itemConResenas.item,
                         onClick = { onItemClick(itemConResenas.item.tipo, itemConResenas.item.id) },
                         modifier = Modifier.testTag("elegir_${itemConResenas.item.id}"),
-                    )
+                    ) {
+                        StarRating(rating = itemConResenas.estrellas, starSize = 14.dp, onRatingChange = null)
+                    }
                 }
             }
         }

@@ -12,9 +12,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -30,10 +27,11 @@ import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalPreviewProvider
 import com.example.mixtapp.data.model.SonandoUi
-import com.example.mixtapp.data.model.toItemResumenUi
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.ItemAsyncImage
 import com.example.mixtapp.ui.utils.ProfileAsyncImage
+import com.example.mixtapp.ui.utils.TarjetaTranslucida
+import com.example.mixtapp.ui.utils.TiempoTranscurrido
 
 // La fila "Sonando ahora" de Siguiendo: lo que escucho yo y lo que escuchan quienes sigo
 @Composable
@@ -73,14 +71,11 @@ fun SonandoCard(
     onQuitarClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Card(
+    TarjetaTranslucida(
+        onClick = null,
         modifier = modifier
             .width(160.dp)
             .testTag("sonando_${sonando.usuarioId}"),
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.8f)
-        ),
     ) {
         Column(modifier = Modifier.padding(10.dp)) {
             ItemAsyncImage(
@@ -131,12 +126,7 @@ fun SonandoCard(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
-                    Text(
-                        // Hace menos de un minuto el mapeo deja el texto vacio
-                        text = sonando.timeAgo.ifEmpty { stringResource(R.string.ahora) },
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        style = MaterialTheme.typography.labelSmall,
-                    )
+                    TiempoTranscurrido(timeAgo = sonando.timeAgo)
                 }
             }
 
@@ -169,28 +159,21 @@ fun SonandoCard(
 fun SonandoAhoraRowPreview() {
     MixtappTheme(darkTheme = true) {
         SonandoAhoraRow(
-            sonando = listOf(
-                SonandoUi(
-                    usuarioId = "yo",
-                    nombre = "Andres",
-                    fotoUrl = "",
-                    item = LocalPreviewProvider.fromZero.toItemResumenUi(),
-                    timeAgo = "5 min",
-                    reacciones = 0,
-                    reaccionado = false,
-                    esMio = true,
-                ),
-                SonandoUi(
-                    usuarioId = "laura",
-                    nombre = "Laura Gómez",
-                    fotoUrl = "",
-                    item = LocalPreviewProvider.karolG.toItemResumenUi(),
-                    timeAgo = "1 h",
-                    reacciones = 3,
-                    reaccionado = true,
-                    esMio = false,
-                ),
-            ),
+            sonando = LocalPreviewProvider.sonando,
+            onItemClick = {},
+            onUserClick = {},
+            onReaccionarClick = {},
+            onQuitarClick = {},
+        )
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun SonandoCardPreview() {
+    MixtappTheme(darkTheme = true) {
+        SonandoCard(
+            sonando = LocalPreviewProvider.sonando.last(),
             onItemClick = {},
             onUserClick = {},
             onReaccionarClick = {},

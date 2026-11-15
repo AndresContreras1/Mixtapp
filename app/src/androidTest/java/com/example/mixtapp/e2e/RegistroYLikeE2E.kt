@@ -11,6 +11,7 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
+import com.example.mixtapp.CONTRASENA_DE_PRUEBA
 import com.example.mixtapp.MainActivity
 import com.example.mixtapp.R
 import com.example.mixtapp.cargarDatosDePrueba
@@ -21,13 +22,13 @@ import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import javax.inject.Inject
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import javax.inject.Inject
 
 // Caso de uso 1: un usuario nuevo se registra (primero con una contrasena de 4 caracteres, que no
 // pasa), entra a la primera publicacion, le da like a la primera resena y despues se lo quita
@@ -61,7 +62,7 @@ class RegistroYLikeE2E {
 
     @After
     fun tearDown() = runTest {
-        borrarCuentaYLimpiarBase()
+        borrarCuentaYLimpiarBase(correo = correo)
     }
 
     // Abre la primera publicacion del inicio y baja hasta la primera resena
@@ -92,9 +93,9 @@ class RegistroYLikeE2E {
 
         // Corrige la contrasena: performTextClearance antes, porque performTextInput escribe al inicio
         composeRule.onNodeWithTag("txtPasswordRegistro").performScrollTo().performTextClearance()
-        composeRule.onNodeWithTag("txtPasswordRegistro").performTextInput("123456")
+        composeRule.onNodeWithTag("txtPasswordRegistro").performTextInput(CONTRASENA_DE_PRUEBA)
         composeRule.onNodeWithTag("txtConfirmPassword").performScrollTo().performTextClearance()
-        composeRule.onNodeWithTag("txtConfirmPassword").performTextInput("123456")
+        composeRule.onNodeWithTag("txtConfirmPassword").performTextInput(CONTRASENA_DE_PRUEBA)
         composeRule.onNodeWithTag("btnRegistrar").performScrollTo().performClick()
 
         composeRule.esperarTag("homeScreen")

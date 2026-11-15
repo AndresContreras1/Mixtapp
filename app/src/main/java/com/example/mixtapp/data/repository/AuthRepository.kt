@@ -2,6 +2,7 @@ package com.example.mixtapp.data.repository
 
 import android.util.Log
 import com.example.mixtapp.data.datasource.AuthRemoteDataSource
+import com.example.mixtapp.data.model.usuarioDelCorreo
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
@@ -20,8 +21,9 @@ class AuthRepository @Inject constructor(
 
     // Para una cuenta sin datos en Firestore, el usuario es la parte del correo antes de la arroba
     val usuarioDelCorreo: String
-        get() = authRemoteDataSource.currentUser?.email?.substringBefore("@") ?: ""
+        get() = usuarioDelCorreo(authRemoteDataSource.currentUser?.email ?: "")
 
+    // Cada error de Authentication pasa a una excepcion de la app, para que el ViewModel elija el texto
     suspend fun signIn(email: String, password: String): Result<Unit> {
         return try {
             authRemoteDataSource.signIn(email = email, password = password)
@@ -44,6 +46,7 @@ class AuthRepository @Inject constructor(
         }
     }
 
+    // Al registrarse, un correo mal escrito o una contrasena debil llegan como credenciales invalidas
     suspend fun signUp(email: String, password: String): Result<Unit> {
         return try {
             authRemoteDataSource.signUp(email = email, password = password)
@@ -53,7 +56,7 @@ class AuthRepository @Inject constructor(
             Result.failure(CorreoYaRegistradoException())
         } catch (e: FirebaseAuthInvalidCredentialsException) {
             Log.d("AuthRepository", "signUp: ${e.message}")
-            Result.failure(CredencialesInvalidasException())
+            Result.failure(DatosDeRegistroInvalidosException())
         } catch (e: FirebaseNetworkException) {
             Log.d("AuthRepository", "signUp: ${e.message}")
             Result.failure(SinConexionException())
@@ -66,6 +69,7 @@ class AuthRepository @Inject constructor(
         }
     }
 
+    // Cierra la sesion de Authentication; la navegacion vuelve al inicio de sesion
     fun signOut() {
         authRemoteDataSource.signOut()
     }

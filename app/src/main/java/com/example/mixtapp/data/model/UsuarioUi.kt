@@ -1,5 +1,7 @@
 package com.example.mixtapp.data.model
 
+// Un usuario para su perfil y para las listas: sus datos, sus contadores y si es mi perfil o si ya
+// lo sigo, que los decide el repositorio con mi uid
 data class UsuarioUi(
     val id: String,
     val seguidores: Int = 0,

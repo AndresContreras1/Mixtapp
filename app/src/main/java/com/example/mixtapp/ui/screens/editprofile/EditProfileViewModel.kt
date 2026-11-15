@@ -7,6 +7,8 @@ import com.example.mixtapp.data.injection.IoDispatcher
 import com.example.mixtapp.data.model.MAX_BIO_LENGTH
 import com.example.mixtapp.data.model.MAX_NOMBRE_LENGTH
 import com.example.mixtapp.data.model.MAX_USERNAME_LENGTH
+import com.example.mixtapp.data.model.esInstagramValido
+import com.example.mixtapp.data.model.esUsuarioValido
 import com.example.mixtapp.data.repository.AuthRepository
 import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
 import com.example.mixtapp.data.repository.UsuarioRepository
@@ -20,9 +22,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
-// El limite de Instagram para el nombre de usuario
-private const val MAX_INSTAGRAM_LENGTH = 30
 
 @HiltViewModel
 class EditProfileViewModel @Inject constructor(
@@ -104,11 +103,8 @@ class EditProfileViewModel @Inject constructor(
 
         val errorRes = when {
             nombre.isBlank() || username.isBlank() -> R.string.error_campos_obligatorios
-            username.contains(" ") -> R.string.error_username_espacios
-            // Instagram solo acepta letras sin tilde, numeros, puntos y guiones bajos
-            instagram.length > MAX_INSTAGRAM_LENGTH ||
-                    !instagram.all { it in 'a'..'z' || it in 'A'..'Z' || it in '0'..'9' || it == '.' || it == '_' } ->
-                R.string.error_instagram_invalido
+            !esUsuarioValido(username) -> R.string.error_username_espacios
+            !esInstagramValido(instagram) -> R.string.error_instagram_invalido
             else -> null
         }
 
@@ -121,11 +117,8 @@ class EditProfileViewModel @Inject constructor(
         viewModelScope.launch(ioDispatcher) {
             _uiState.update { it.copy(guardando = true, errorMessageRes = null) }
 
-            val result = if (estado.sinDocumento) {
-                usuarioRepository.registrarUsuario(username = username, nombre = nombre, bio = estado.bio.trim(), instagram = instagram)
-            } else {
-                usuarioRepository.actualizarPerfil(nombre = nombre, username = username, bio = estado.bio.trim(), instagram = instagram)
-            }
+            // El repositorio crea mi documento si todavia no existe, o lo modifica
+            val result = usuarioRepository.guardarPerfil(nombre = nombre, username = username, bio = estado.bio.trim(), instagram = instagram)
 
             if (result.isSuccess) {
                 _uiState.update {

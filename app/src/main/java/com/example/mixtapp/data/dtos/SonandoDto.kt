@@ -39,12 +39,11 @@ data class CreateSonandoDto(
 )
 
 // El documento sonando/{uid}/reacciones/{itemId}_{mi uid}: lleva el item en el id para que una
-// reaccion a lo que sonaba antes no cuente para lo que suena ahora
+// reaccion a lo que sonaba antes no cuente para lo que suena ahora. Solo guarda quien reacciono:
+// la app solo mira si existe y la notificacion busca el nombre en su documento
 data class CreateReaccionDto(
     val usuarioId: String,
     val itemId: String,
-    val nombre: String,
-    val fotoUrl: String?,
     val createdAt: String,
 )
 

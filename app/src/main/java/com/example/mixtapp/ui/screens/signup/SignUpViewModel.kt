@@ -8,8 +8,9 @@ import com.example.mixtapp.data.injection.IoDispatcher
 import com.example.mixtapp.data.model.MAX_NOMBRE_LENGTH
 import com.example.mixtapp.data.model.MAX_USERNAME_LENGTH
 import com.example.mixtapp.data.model.MIN_PASSWORD_LENGTH
+import com.example.mixtapp.data.model.esCorreoValido
+import com.example.mixtapp.data.model.esUsuarioValido
 import com.example.mixtapp.data.repository.AuthRepository
-import com.example.mixtapp.data.repository.CredencialesInvalidasException
 import com.example.mixtapp.data.repository.UsuarioRepository
 import com.example.mixtapp.ui.utils.mensajeDeError
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -93,10 +94,10 @@ class SignUpViewModel @Inject constructor(
                     estado.confirmarContrasena.isBlank() ->
                 R.string.error_campos_obligatorios
 
-            estado.usuario.trim().contains(" ") ->
+            !esUsuarioValido(estado.usuario.trim()) ->
                 R.string.error_username_espacios
 
-            !estado.email.contains("@") ->
+            !esCorreoValido(estado.email.trim()) ->
                 R.string.error_email_invalido
 
             estado.contrasena.length < MIN_PASSWORD_LENGTH ->
@@ -120,7 +121,8 @@ class SignUpViewModel @Inject constructor(
         signUp(
             nombre = estado.nombre.trim(),
             usuario = estado.usuario.trim(),
-            email = estado.email,
+            // El correo va sin los espacios que deja el teclado al autocompletar
+            email = estado.email.trim(),
             contrasena = estado.contrasena,
         )
     }
@@ -136,14 +138,19 @@ class SignUpViewModel @Inject constructor(
             if (result.isSuccess) {
                 val registro = usuarioRepository.registrarUsuario(username = usuario, nombre = nombre, bio = "")
 
-                // Si fallan los datos de Firestore la cuenta ya existe: el perfil avisa que hay que
-                // completarlos en Editar perfil, asi que se entra igual en vez de dejarlo atascado
-                if (!registro.isSuccess) {
+                if (registro.isSuccess) {
+                    _uiState.update {
+                        it.copy(cargando = false, errorMessageRes = null, navigate = true)
+                    }
+                } else {
+                    // La cuenta ya quedo en Authentication, pero sin sus datos: se cierra la sesion y
+                    // se pide iniciar sesion, que crea el documento con el usuario del correo
                     Log.d("SignUpViewModel", registro.exceptionOrNull()?.message.toString())
-                }
+                    authRepository.signOut()
 
-                _uiState.update {
-                    it.copy(cargando = false, errorMessageRes = null, navigate = true)
+                    _uiState.update {
+                        it.copy(cargando = false, errorMessageRes = R.string.error_registro_datos, navigate = false)
+                    }
                 }
             } else {
                 Log.d("SignUpViewModel", result.exceptionOrNull()?.message.toString())
@@ -151,11 +158,7 @@ class SignUpViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         cargando = false,
-                        errorMessageRes = if (result.exceptionOrNull() is CredencialesInvalidasException) {
-                            R.string.error_datos_registro_invalidos
-                        } else {
-                            mensajeDeError(error = result.exceptionOrNull(), generico = R.string.error_registro)
-                        },
+                        errorMessageRes = mensajeDeError(error = result.exceptionOrNull(), generico = R.string.error_registro),
                         navigate = false,
                     )
                 }

@@ -1,12 +1,11 @@
 package com.example.mixtapp.viewmodels
 
 import com.example.mixtapp.R
-import com.example.mixtapp.data.datasource.LocationProvider
 import com.example.mixtapp.data.local.LocalPreviewProvider
-import com.example.mixtapp.data.model.Coordenadas
 import com.example.mixtapp.data.model.TIPO_ALBUM
 import com.example.mixtapp.data.repository.CatalogoRepository
 import com.example.mixtapp.data.repository.ReviewRepository
+import com.example.mixtapp.data.repository.SinConexionException
 import com.example.mixtapp.ui.screens.review.WriteReviewViewModel
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
@@ -29,10 +28,8 @@ import org.junit.Test
 class WriteReviewViewModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
-    private val bogota = Coordenadas(latitud = 4.65, longitud = -74.06)
     private lateinit var catalogoRepository: CatalogoRepository
     private lateinit var reviewRepository: ReviewRepository
-    private lateinit var locationProvider: LocationProvider
     private lateinit var viewModel: WriteReviewViewModel
 
     @Before
@@ -40,15 +37,11 @@ class WriteReviewViewModelTest {
         Dispatchers.setMain(testDispatcher)
         catalogoRepository = mockk()
         reviewRepository = mockk()
-        locationProvider = mockk()
-        viewModel = WriteReviewViewModel(catalogoRepository, reviewRepository, locationProvider, testDispatcher)
-
-        // El celular esta en Bogota
-        coEvery { locationProvider.getCurrentLocation() } returns bogota
+        viewModel = WriteReviewViewModel(catalogoRepository, reviewRepository, testDispatcher)
 
         // El album de ejemplo, sin resenas: el formulario arranca vacio
         coEvery { catalogoRepository.getItemConResenas(TIPO_ALBUM, "album_from_zero") } returns
-            Result.success(LocalPreviewProvider.itemConResenas.copy(reviews = emptyList(), userRating = 0))
+            Result.success(LocalPreviewProvider.itemConResenas.copy(reviews = emptyList(), yaCalificado = false))
     }
 
     @After
@@ -56,7 +49,7 @@ class WriteReviewViewModelTest {
         Dispatchers.resetMain()
     }
 
-    // Las tres pruebas empiezan con el formulario del album de ejemplo abierto
+    // Todas las pruebas empiezan con el formulario del album de ejemplo abierto
     private fun TestScope.abrirFormulario() {
         viewModel.getItem(TIPO_ALBUM, "album_from_zero")
         advanceUntilIdle()
@@ -107,18 +100,21 @@ class WriteReviewViewModelTest {
     }
 
     @Test
-    fun publicarResena_nueva_guardaDondeEstoy() = runTest {
-        //Arrange: la resena nueva se publica con la ubicacion del celular
+    fun publicarResena_sinConexion_noNavegaYMuestraElError() = runTest {
+        //Arrange
         abrirFormulario()
         viewModel.updateRating(5)
         viewModel.updateReviewText("Muy bueno")
         coEvery {
-            reviewRepository.guardarResena(any(), any(), any(), any(), null, bogota)
-        } returns Result.success(Unit)
+            reviewRepository.guardarResena(any(), any(), any(), any(), any(), any())
+        } returns Result.failure(SinConexionException())
         //Act
         viewModel.publicarResena()
         advanceUntilIdle()
-        //Assert: solo navega si el repositorio recibio la ubicacion
-        assertThat(viewModel.uiState.value.navigate).isTrue()
+        //Assert
+        val state = viewModel.uiState.value
+        assertThat(state.navigate).isFalse()
+        assertThat(state.publicando).isFalse()
+        assertThat(state.errorMessageRes).isEqualTo(R.string.error_sin_conexion)
     }
 }

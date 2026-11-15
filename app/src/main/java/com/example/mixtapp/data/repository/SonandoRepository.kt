@@ -29,22 +29,25 @@ class SonandoRepository @Inject constructor(
     private val authRemoteDataSource: AuthRemoteDataSource
 ) {
 
-    // Dos listeners: lo que suena y a quienes sigo. Cuando llega cualquiera de los dos, combine
-    // arma la fila otra vez: lo mio primero y despues lo de quienes sigo, de las ultimas 12 horas
-    fun getSonandoLive(ahora: Instant = Instant.now()): Flow<List<SonandoUi>> {
+    // Dos listeners: lo que suena desde hace 12 horas y a quienes sigo. Cuando llega cualquiera de
+    // los dos, combine arma la fila otra vez: lo mio primero y despues lo de quienes sigo. reloj da
+    // la hora actual; las pruebas pasan una fija
+    fun getSonandoLive(reloj: () -> Instant = { Instant.now() }): Flow<List<SonandoUi>> {
         val usuarioId = authRemoteDataSource.currentUser?.uid ?: ""
-        // Las fechas van en formato ISO: comparar el texto compara las fechas
-        val desde = ahora.minusSeconds(HORAS_SONANDO * 60 * 60).toString()
 
         return combine(
-            sonandoRemoteDataSource.listenSonando(currentUserId = usuarioId),
+            sonandoRemoteDataSource.listenSonando(desde = hace12Horas(reloj()), currentUserId = usuarioId),
             usuarioRemoteDataSource.listenSeguidos(usuarioId),
         ) { sonando, seguidos ->
+            // Con cada cambio se vuelve a mirar la hora: lo que ya paso de 12 horas sale de la
+            // fila y el "hace cuanto" avanza
+            val ahora = reloj()
+            val limite = hace12Horas(ahora)
             val seguidosIds = seguidos.map { it.toUsuarioUi().id }.toSet()
 
             sonando
                 .filter { dto -> dto.id == usuarioId || dto.id in seguidosIds }
-                .filter { dto -> (dto.actualizadoEn ?: "") >= desde }
+                .filter { dto -> (dto.actualizadoEn ?: "") >= limite }
                 .map { dto -> dto.toSonandoUi(usuarioActualId = usuarioId, ahora = ahora) }
                 .sortedByDescending { it.esMio }
         }
@@ -53,6 +56,10 @@ class SonandoRepository @Inject constructor(
                 throw errorDelFlujo(e)
             }
     }
+
+    // La fecha desde la que se muestra lo que suena, en formato ISO como actualizadoEn
+    private fun hace12Horas(ahora: Instant): String =
+        ahora.minusSeconds(HORAS_SONANDO * 60 * 60).toString()
 
     // Se copia el item y mi nombre y mi foto, como en la resena. Reemplaza lo que estaba sonando
     suspend fun ponerSonando(item: ItemUi): Result<Unit> {
@@ -93,6 +100,7 @@ class SonandoRepository @Inject constructor(
         }
     }
 
+    // Deja de mostrar lo que estoy escuchando; sus reacciones se borran con el
     suspend fun quitarSonando(): Result<Unit> {
         return try {
             val usuarioId = authRemoteDataSource.currentUser?.uid
@@ -120,17 +128,11 @@ class SonandoRepository @Inject constructor(
                 ?: return Result.failure(SinSesionException())
 
             // A lo mio no se le reacciona
-            if (sonando.usuarioId == usuarioId) return Result.failure(SeguirseASiMismoException())
+            if (sonando.usuarioId == usuarioId) return Result.failure(ReaccionarALoMioException())
 
             val createReaccionDto = CreateReaccionDto(
                 usuarioId = usuarioId,
                 itemId = sonando.item.id,
-                nombre = nombreDeLaSesion(
-                    usuarioRemoteDataSource = usuarioRemoteDataSource,
-                    authRemoteDataSource = authRemoteDataSource,
-                    usuarioId = usuarioId,
-                ),
-                fotoUrl = authRemoteDataSource.currentUser?.photoUrl?.toString(),
                 createdAt = Instant.now().toString(),
             )
 
