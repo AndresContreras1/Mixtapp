@@ -18,8 +18,8 @@ import com.example.mixtapp.R
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.LogoText
 
-// La cabecera del registro: el logo, el titulo con la letra del logo y una linea que cuenta para
-// que sirve la cuenta
+// La cabecera del registro: el logo pequeno arriba y un solo titulo grande, "Crear cuenta", con una
+// linea que cuenta para que sirve. Asi no quedan dos titulos compitiendo
 @Composable
 fun SignUpHeader(
     modifier: Modifier = Modifier
@@ -29,18 +29,17 @@ fun SignUpHeader(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         LogoText(
-            fontSize = 40.sp,
+            fontSize = 22.sp,
             fontWeight = FontWeight.Black,
-            lineHeight = 44.sp
+            lineHeight = 26.sp
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(18.dp))
 
         Text(
             text = stringResource(R.string.create_account),
             color = MaterialTheme.colorScheme.onBackground,
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.displaySmall,
         )
 
         Spacer(modifier = Modifier.height(6.dp))

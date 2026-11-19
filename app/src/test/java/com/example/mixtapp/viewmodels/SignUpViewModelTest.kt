@@ -1,6 +1,7 @@
 package com.example.mixtapp.viewmodels
 
 import com.example.mixtapp.R
+import com.example.mixtapp.data.model.CampoDeLaCuenta
 import com.example.mixtapp.data.repository.AuthRepository
 import com.example.mixtapp.data.repository.CorreoYaRegistradoException
 import com.example.mixtapp.data.repository.DatosDeRegistroInvalidosException
@@ -86,6 +87,20 @@ class SignUpViewModelTest {
         val state = viewModel.uiState.value
         assertThat(state.navigate).isFalse()
         assertThat(state.errorMessageRes).isEqualTo(R.string.error_contrasena_corta)
+        assertThat(state.campoConError).isEqualTo(CampoDeLaCuenta.Contrasena)
+    }
+
+    @Test
+    fun updateContrasena_despuesDelError_quitaLaMarcaDelCampo() = runTest {
+        //Arrange
+        llenarFormulario(contrasena = "1234")
+        viewModel.signUpButtonPressed()
+        advanceUntilIdle()
+        //Act
+        viewModel.updateContrasena("123456")
+        //Assert
+        assertThat(viewModel.uiState.value.campoConError).isNull()
+        assertThat(viewModel.uiState.value.errorMessageRes).isNull()
     }
 
     @Test

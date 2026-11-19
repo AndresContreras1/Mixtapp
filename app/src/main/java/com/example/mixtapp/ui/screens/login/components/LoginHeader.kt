@@ -28,9 +28,9 @@ fun LoginHeader(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         LogoText(
-            fontSize = 64.sp,
+            fontSize = 52.sp,
             fontWeight = FontWeight.Black,
-            lineHeight = 68.sp
+            lineHeight = 56.sp
         )
 
         Spacer(modifier = Modifier.height(12.dp))

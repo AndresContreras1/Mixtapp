@@ -17,11 +17,13 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
+import com.example.mixtapp.data.model.CampoDeLaCuenta
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppPasswordField
 import com.example.mixtapp.ui.utils.AppTextField
 
-// Los cinco campos ovalados del registro, con el mismo estilo del login. Cada contrasena tiene su
+// Los cinco campos ovalados del registro, con el mismo estilo del login y la etiqueta siempre
+// arriba. El que tiene el error se marca en rojo. Cada contrasena tiene su
 // propio ojo, asi que cada una recibe su visibilidad. Los testTags son para las pruebas e2e
 @Composable
 fun SignUpFields(
@@ -39,6 +41,8 @@ fun SignUpFields(
     onContrasenaVisibleChange: () -> Unit,
     confirmarVisible: Boolean,
     onConfirmarVisibleChange: () -> Unit,
+    // El campo que marco el ViewModel con el error; null si no hay
+    campoConError: CampoDeLaCuenta?,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
@@ -49,9 +53,10 @@ fun SignUpFields(
             label = stringResource(R.string.nombre),
             leadingIcon = Icons.Outlined.Person,
             modifier = Modifier.testTag("txtNombre"),
+            esError = campoConError == CampoDeLaCuenta.Nombre,
         )
 
-        Spacer(modifier = Modifier.height(14.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         AppTextField(
             value = usuario,
@@ -60,9 +65,10 @@ fun SignUpFields(
             label = stringResource(R.string.username),
             leadingIcon = Icons.Outlined.AlternateEmail,
             modifier = Modifier.testTag("txtUsername"),
+            esError = campoConError == CampoDeLaCuenta.Usuario,
         )
 
-        Spacer(modifier = Modifier.height(14.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         AppTextField(
             value = email,
@@ -72,9 +78,10 @@ fun SignUpFields(
             leadingIcon = Icons.Outlined.Email,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             modifier = Modifier.testTag("txtEmailRegistro"),
+            esError = campoConError == CampoDeLaCuenta.Correo,
         )
 
-        Spacer(modifier = Modifier.height(14.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         AppPasswordField(
             value = contrasena,
@@ -84,9 +91,10 @@ fun SignUpFields(
             contrasenaVisible = contrasenaVisible,
             onContrasenaVisibleChange = onContrasenaVisibleChange,
             modifier = Modifier.testTag("txtPasswordRegistro"),
+            esError = campoConError == CampoDeLaCuenta.Contrasena,
         )
 
-        Spacer(modifier = Modifier.height(14.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         AppPasswordField(
             value = confirmarContrasena,
@@ -96,6 +104,7 @@ fun SignUpFields(
             contrasenaVisible = confirmarVisible,
             onContrasenaVisibleChange = onConfirmarVisibleChange,
             modifier = Modifier.testTag("txtConfirmPassword"),
+            esError = campoConError == CampoDeLaCuenta.Confirmar,
         )
     }
 }
@@ -119,6 +128,7 @@ fun SignUpFieldsPreview() {
             onContrasenaVisibleChange = {},
             confirmarVisible = false,
             onConfirmarVisibleChange = {},
+            campoConError = CampoDeLaCuenta.Confirmar,
         )
     }
 }

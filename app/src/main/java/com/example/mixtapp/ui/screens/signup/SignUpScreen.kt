@@ -21,6 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
+import com.example.mixtapp.data.model.CampoDeLaCuenta
 import com.example.mixtapp.ui.screens.signup.components.SignUpForm
 import com.example.mixtapp.ui.screens.signup.components.SignUpHeader
 import com.example.mixtapp.ui.theme.MixtappTheme
@@ -65,6 +66,7 @@ fun SignUpScreen(
         terminos = state.terminos,
         onTerminosClick = { signUpViewModel.alternarTerminos() },
         errorMessageRes = state.errorMessageRes,
+        campoConError = state.campoConError,
         cargando = state.cargando,
         onSignUpClick = { signUpViewModel.signUpButtonPressed() },
         onLoginClick = onLoginClick,
@@ -91,6 +93,7 @@ fun SignUpScreenContent(
     terminos: Boolean,
     onTerminosClick: () -> Unit,
     @StringRes errorMessageRes: Int?,
+    campoConError: CampoDeLaCuenta?,
     cargando: Boolean,
     onSignUpClick: () -> Unit,
     onLoginClick: () -> Unit,
@@ -134,6 +137,7 @@ fun SignUpScreenContent(
                 terminos = terminos,
                 onTerminosClick = onTerminosClick,
                 cargando = cargando,
+                campoConError = campoConError,
                 onSignUpClick = onSignUpClick,
             )
 
@@ -143,9 +147,9 @@ fun SignUpScreenContent(
                 modifier = Modifier.padding(top = 16.dp)
             )
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
-            // Quien ya tiene cuenta vuelve al login
+            // Quien ya tiene cuenta vuelve al login, justo debajo del boton
             AuthFooter(
                 pregunta = stringResource(R.string.already_have_account),
                 accion = stringResource(R.string.log_in),
@@ -178,6 +182,7 @@ fun SignUpScreenPreview() {
             terminos = false,
             onTerminosClick = {},
             errorMessageRes = null,
+            campoConError = null,
             cargando = false,
             onSignUpClick = {},
             onLoginClick = {}

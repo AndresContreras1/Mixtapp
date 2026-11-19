@@ -15,6 +15,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
+import com.example.mixtapp.data.model.CampoDeLaCuenta
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppButton
 import com.example.mixtapp.ui.utils.AppPasswordField
@@ -31,6 +32,8 @@ fun LoginForm(
     contrasenaVisible: Boolean,
     onContrasenaVisibleChange: () -> Unit,
     cargando: Boolean,
+    // El campo que marco el ViewModel con el error; null si no hay
+    campoConError: CampoDeLaCuenta?,
     onLoginClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -43,6 +46,7 @@ fun LoginForm(
             leadingIcon = Icons.Outlined.Email,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             modifier = Modifier.testTag("txtEmail"),
+            esError = campoConError == CampoDeLaCuenta.Correo,
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -55,6 +59,7 @@ fun LoginForm(
             contrasenaVisible = contrasenaVisible,
             onContrasenaVisibleChange = onContrasenaVisibleChange,
             modifier = Modifier.testTag("txtPassword"),
+            esError = campoConError == CampoDeLaCuenta.Contrasena,
         )
 
         Spacer(modifier = Modifier.height(28.dp))
@@ -82,6 +87,7 @@ fun LoginFormPreview() {
             contrasenaVisible = false,
             onContrasenaVisibleChange = {},
             cargando = false,
+            campoConError = null,
             onLoginClick = {},
         )
     }
