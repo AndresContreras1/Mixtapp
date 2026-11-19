@@ -151,6 +151,8 @@ fun UserProfileScreenContent(
                 instagramUrl = usuario.instagramUrl,
                 onSeguidoresClick = onSeguidoresClick,
                 onSeguidosClick = onSeguidosClick,
+                // La foto de otro solo se muestra
+                fotoEditable = null,
             ) {
                 // Desde una lista se puede llegar a mi propio perfil publico: ahi no se sigue a nadie
                 if (!usuario.esMiPerfil) {

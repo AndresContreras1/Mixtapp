@@ -16,10 +16,10 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -39,8 +39,10 @@ import com.example.mixtapp.ui.screens.followlist.LISTA_SEGUIDORES
 import com.example.mixtapp.ui.screens.followlist.LISTA_SEGUIDOS
 import com.example.mixtapp.ui.screens.profile.components.GUARDADOS_POR_FILA
 import com.example.mixtapp.ui.screens.profile.components.LogoutButton
+import com.example.mixtapp.ui.screens.profile.components.PickImageButton
 import com.example.mixtapp.ui.screens.profile.components.ProfileTabs
 import com.example.mixtapp.ui.screens.profile.components.SavedItemsRow
+import com.example.mixtapp.ui.screens.profile.components.TarjetaDeTuAnio
 import com.example.mixtapp.ui.screens.profile.model.PESTANA_GUARDADOS
 import com.example.mixtapp.ui.screens.profile.model.PESTANA_MIXTAPES
 import com.example.mixtapp.ui.screens.profile.model.PESTANA_PERFIL
@@ -56,7 +58,6 @@ import com.example.mixtapp.ui.utils.EspacioDelFab
 import com.example.mixtapp.ui.utils.FavoriteSection
 import com.example.mixtapp.ui.utils.LoadingBox
 import com.example.mixtapp.ui.utils.MixtapeCard
-import com.example.mixtapp.ui.utils.OpcionOvalada
 import com.example.mixtapp.ui.utils.OpcionUi
 import com.example.mixtapp.ui.utils.ProfileHeader
 import com.example.mixtapp.ui.utils.ReviewCard
@@ -241,7 +242,8 @@ fun ProfileScreenContent(
         modifier = modifier.fillMaxSize(),
         // Abajo queda espacio para que el boton + no tape el ultimo elemento
         contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = EspacioDelFab),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        // Los bloques (identidad, pestanas, contenido) van con aire entre ellos
+        verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
         item {
             ProfileHeader(
@@ -255,7 +257,20 @@ fun ProfileScreenContent(
                 instagramUrl = instagramUrl,
                 onSeguidoresClick = onSeguidoresClick,
                 onSeguidosClick = onSeguidosClick,
+                // Mi foto se cambia al tocarla
+                fotoEditable = {
+                    PickImageButton(
+                        fotoUrl = profileImageUrl,
+                        action = onImagePicked,
+                        cargando = subiendoImagen,
+                    )
+                },
             ) {
+                // La foto que no se pudo subir y los avisos de mis datos
+                ErrorMessage(
+                    messageRes = errorImagenRes,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
                 ErrorMessage(
                     messageRes = avisoRes,
                     modifier = Modifier.padding(top = 8.dp)
@@ -269,28 +284,31 @@ fun ProfileScreenContent(
                     tabs = tabs,
                     selectedTabId = selectedTabId,
                     onTabSelected = onTabSelected,
-                    subiendoImagen = subiendoImagen,
-                    onImagePicked = onImagePicked
-                )
-
-                // La foto que no se pudo subir, debajo de la pestana de Cambiar foto
-                ErrorMessage(
-                    messageRes = errorImagenRes,
-                    modifier = Modifier.padding(top = 8.dp)
                 )
             }
         }
 
         when (selectedTabId) {
-            PESTANA_GUARDADOS -> listaDelPerfil(
-                cargando = cargandoGuardados,
-                vacia = guardados.isEmpty(),
-                errorMessageRes = errorGuardadosRes,
-                vaciaRes = R.string.sin_guardados,
-            ) {
-                // La cuadricula se arma con filas de tres: cada fila es un item de la lista
-                items(guardados.chunked(GUARDADOS_POR_FILA)) { fila ->
-                    SavedItemsRow(items = fila, onItemClick = onItemClick)
+            PESTANA_GUARDADOS -> {
+                // Que es Guardados, para no confundirlo con Favoritos
+                item {
+                    Text(
+                        text = stringResource(R.string.guardados_descripcion),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+
+                listaDelPerfil(
+                    cargando = cargandoGuardados,
+                    vacia = guardados.isEmpty(),
+                    errorMessageRes = errorGuardadosRes,
+                    vaciaRes = R.string.sin_guardados,
+                ) {
+                    // La cuadricula se arma con filas de tres: cada fila es un item de la lista
+                    items(guardados.chunked(GUARDADOS_POR_FILA)) { fila ->
+                        SavedItemsRow(items = fila, onItemClick = onItemClick)
+                    }
                 }
             }
             PESTANA_MIXTAPES -> {
@@ -323,12 +341,7 @@ fun ProfileScreenContent(
             else -> {
                 // Mis numeros de la app en tarjetas que se van descubriendo
                 item {
-                    OpcionOvalada(
-                        icono = Icons.Outlined.AutoAwesome,
-                        texto = stringResource(R.string.resumen_titulo),
-                        onClick = onResumenClick,
-                        modifier = Modifier.testTag("btnResumen"),
-                    )
+                    TarjetaDeTuAnio(onClick = onResumenClick)
                 }
 
                 item {
