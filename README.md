@@ -301,9 +301,26 @@ La pantalla de notificaciones tiene tres pestañas, todas en vivo:
   aparecer. El ViewModel elige al azar uno de los álbumes que están en la lista de Deezer de mis
   géneros y guarda su id en el estado, para que un like o una reseña nueva no lo cambien. Si ninguno
   está en una lista, queda el más popular. En la pestaña Tendencias la tarjeta es el #1 de Colombia.
+  En Descubre y Seguidos no hay tarjeta: el ViewModel la deja en `null`. Después de la tarjeta van
+  las reseñas de quienes sigo, en una fila, y si no hay ninguna, el botón **Descubrir personas**.
   - **Seguidos** muestra lo que reseñaron los usuarios que sigo.
 - **Los links de YouTube, Spotify e Instagram salen del mapeo**, con el artista y el título (las
-  canciones buscan su video oficial). No se guardan en la base y se abren con `LocalUriHandler`.
+  canciones buscan su video oficial). No se guardan en la base y se abren con `LocalUriHandler`. En
+  el detalle van con el logo de cada app (`ic_youtube` e `ic_spotify`).
+- **El fragmento de 30 segundos suena dentro de la app**, en el detalle y en la tarjeta en
+  tendencia. Va por capas, como la ubicación:
+  - `VistaPreviaRetrofitDataSourceImpl` busca la canción en la API pública de Deezer
+    (`DeezerRetrofitService`, sin llave, con su propio Retrofit en `AppModule`) y retorna el enlace
+    del mp3 o `null`. El enlace trae un token que vence, por eso se pide al tocar play y no se guarda.
+  - `ReproductorAndroidDataSourceImpl` (en `impl/android`) lo hace sonar con el `MediaPlayer` de
+    Android dentro de un `callbackFlow`: emite `Cargando`, `Sonando` y `Terminada`, y `awaitClose`
+    libera el audio. El volumen sube y baja con un fade (`volumenDelFade` en `data/model`).
+  - `ReproductorRepository` arma la búsqueda (`busquedaDeVistaPrevia`) y decide el error
+    (`SinVistaPreviaException`, sin conexión). El ViewModel guarda qué item suena y cancelar su
+    corrutina detiene el audio; la pantalla lo detiene al salir con `DisposableEffect`.
+- **El detalle toma el color de la portada** con Palette (`PortadaConColor`), pero solo en un
+  degradado decorativo arriba: los textos y el resto del fondo no cambian. Abajo de las acciones el
+  detalle se agrupa en tres bloques: Escuchar y ver, Descubre más y Reseñas de la comunidad.
 - **Los datos curiosos van en su propia colección** (`historias`), con el mismo id del item: el
   inicio escucha todo el catálogo y así no descarga ese texto. La pantalla de datos curiosos los lee
   una sola vez, porque no cambian mientras se usa la app.
