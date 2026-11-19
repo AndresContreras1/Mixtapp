@@ -398,8 +398,10 @@ La pantalla de notificaciones tiene tres pestañas, todas en vivo:
   resplandores difuminados en las esquinas y un grano fino. Cada sección tiene su tono (Inicio,
   Buscar, Duelos, Perfil, lo social, el item, Tu año y la cuenta) y los resplandores se desvanecen
   antes del centro, así no pasan detrás del contenido.
-- **Un solo campo de texto** (`AppTextField`): un `OutlinedTextField` ovalado con el fondo
-  translúcido. Lo usan el correo, Buscar, la fecha de
+- **Un solo campo de texto** (`AppTextField`): un `OutlinedTextField` ovalado de 56 dp con el fondo
+  translúcido, la etiqueta siempre arriba, el borde visible sin foco, rosado con foco y rojo con
+  error. En el registro y el login el ViewModel dice qué campo falló (`campoConError` con
+  `CampoDeLaCuenta`) y ese campo se marca. Lo usan el correo, Buscar, la fecha de
   escucha y los comentarios; la contraseña tiene su propio campo con el ojo (`AppPasswordField`).
 - **Una sola tipografía de Google Fonts, Outfit,** del normal al Black. La jerarquía sale del tamaño
   y del grosor de cada estilo de `Type.kt`: display para las cifras grandes, headline para los
