@@ -318,6 +318,16 @@ La pantalla de notificaciones tiene tres pestañas, todas en vivo:
   - `ReproductorRepository` arma la búsqueda (`busquedaDeVistaPrevia`) y decide el error
     (`SinVistaPreviaException`, sin conexión). El ViewModel guarda qué item suena y cancelar su
     corrutina detiene el audio; la pantalla lo detiene al salir con `DisposableEffect`.
+- **Duelos sin votos no muestran 50 y 50:** `DueloUi.sinVotos` cambia la barra por "Sé el primero
+  en votar" y oculta los porcentajes. Votar queda apagado hasta elegir uno (`puedeVotar` en
+  `ReglasDeDuelo`); la tarjeta elegida lleva borde, check y elevación, y la barra se anima cuando
+  llega un voto.
+- **Tu año se ve como una historia:** una tarjeta a la vez con los segmentos de progreso, un
+  degradado distinto por tarjeta y, al final, Compartir (un `Intent.ACTION_SEND` con el texto). Con
+  pocos datos (`hayPocosDatos` en `ReglasDelResumen`) no afirma el género ni el artista.
+- **Las fechas se leen igual en toda la app** (`fechaConMes` en `data/model/Fechas.kt`): "3 h", "2 d"
+  y, desde una semana, "21 oct" (con el año si es de otro). Los lanzamientos muestran su fecha de
+  salida y en Buscar se pueden ordenar de lo más nuevo a lo más viejo o al revés.
 - **El detalle toma el color de la portada** con Palette (`PortadaConColor`), pero solo en un
   degradado decorativo arriba: los textos y el resto del fondo no cambian. Abajo de las acciones el
   detalle se agrupa en tres bloques: Escuchar y ver, Descubre más y Reseñas de la comunidad.
