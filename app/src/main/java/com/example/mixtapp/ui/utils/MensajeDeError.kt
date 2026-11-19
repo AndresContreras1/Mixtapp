@@ -15,6 +15,7 @@ import com.example.mixtapp.data.repository.SeguirseASiMismoException
 import com.example.mixtapp.data.repository.SinConexionException
 import com.example.mixtapp.data.repository.ReaccionarALoMioException
 import com.example.mixtapp.data.repository.SinSesionException
+import com.example.mixtapp.data.repository.SinVistaPreviaException
 
 // El texto que ve el usuario segun la excepcion que entrega el repositorio: un mensaje por cada
 // error que el usuario puede provocar y el general de la pantalla para el resto. noEncontrado deja
@@ -38,5 +39,6 @@ fun mensajeDeError(
     is DemasiadosIntentosException -> R.string.error_demasiados_intentos
     is SeguirseASiMismoException -> R.string.error_seguirse_a_si_mismo
     is ReaccionarALoMioException -> R.string.error_reaccionar_a_lo_mio
+    is SinVistaPreviaException -> R.string.error_sin_vista_previa
     else -> generico
 }

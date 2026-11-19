@@ -1,10 +1,13 @@
 package com.example.mixtapp.model
 
 import com.example.mixtapp.data.model.MAX_INSTAGRAM_LENGTH
+import com.example.mixtapp.data.model.OPCION_A
 import com.example.mixtapp.data.model.esCorreoValido
 import com.example.mixtapp.data.model.esFechaDeEscuchaValida
 import com.example.mixtapp.data.model.esInstagramValido
 import com.example.mixtapp.data.model.esUsuarioValido
+import com.example.mixtapp.data.model.hayPocosDatos
+import com.example.mixtapp.data.model.puedeVotar
 import com.example.mixtapp.data.model.usuarioDelCorreo
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
@@ -86,5 +89,37 @@ class ReglasTest {
         val valida = esFechaDeEscuchaValida("2026-11-14", hoy = hoy)
         //Assert
         assertThat(valida).isTrue()
+    }
+
+    @Test
+    fun puedeVotar_sinElegirNiHaberVotado_false() {
+        //Act
+        val puede = puedeVotar(opcionElegida = null, miOpcion = null)
+        //Assert
+        assertThat(puede).isFalse()
+    }
+
+    @Test
+    fun puedeVotar_yaVote_trueParaCambiarLaOpinion() {
+        //Act
+        val puede = puedeVotar(opcionElegida = null, miOpcion = OPCION_A)
+        //Assert
+        assertThat(puede).isTrue()
+    }
+
+    @Test
+    fun hayPocosDatos_unaResenaYUnMeGusta_true() {
+        //Act
+        val pocos = hayPocosDatos(resenas = 1, meGusta = 1)
+        //Assert
+        assertThat(pocos).isTrue()
+    }
+
+    @Test
+    fun hayPocosDatos_tresResenas_false() {
+        //Act
+        val pocos = hayPocosDatos(resenas = 3, meGusta = 0)
+        //Assert
+        assertThat(pocos).isFalse()
     }
 }

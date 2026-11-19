@@ -1,6 +1,5 @@
 package com.example.mixtapp.ui.utils
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -24,7 +23,8 @@ import com.example.mixtapp.data.local.LocalPreviewProvider
 import com.example.mixtapp.data.model.UsuarioUi
 import com.example.mixtapp.ui.theme.MixtappTheme
 
-// Un usuario en una lista (seguidores, seguidos o resultados de Buscar): tocarlo abre su perfil
+// Un usuario en una lista (seguidores, seguidos o resultados de Buscar): tocarlo abre su perfil. Tiene
+// la misma superficie de TarjetaTranslucida, sin borde
 @Composable
 fun UserRow(
     usuario: UsuarioUi,
@@ -36,9 +36,8 @@ fun UserRow(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.7f)
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.6f)
         ),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
     ) {
         Row(
             modifier = Modifier.padding(12.dp),

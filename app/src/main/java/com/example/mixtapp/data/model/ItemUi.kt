@@ -62,6 +62,8 @@ data class ItemConResenasUi(
     val estrellas: Int,
     val ratingCount: Int,
     val recommendRate: Int,
+    // Cuantas resenas lo recomiendan: con el total se lee "1 de 1 lo recomiendan"
+    val recomiendan: Int,
     // Si ya escribi mi resena: solo hay una por item, asi que el boton cambia a editarla
     val yaCalificado: Boolean,
     val reviews: List<ReviewUi>,
@@ -69,6 +71,9 @@ data class ItemConResenasUi(
     // Para ordenar las filas de populares: cuenta igual un like que una resena
     val popularidad: Int get() = item.likes + reviews.size
 }
+
+// La fecha de salida para mostrar ("3 mar 1986"); vacia en los artistas
+val ItemUi.fechaDeSalida: String get() = if (fechaLanzamiento.isEmpty()) anio else fechaConMes(fechaIso = fechaLanzamiento, anioActual = null)
 
 // Si el titulo, el subtitulo o el detalle contienen el texto, sin importar las mayusculas. Lo usan
 // Buscar y Elegir que calificar

@@ -22,12 +22,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
+import com.example.mixtapp.data.model.CampoDeLaCuenta
 import com.example.mixtapp.ui.screens.login.components.LoginForm
 import com.example.mixtapp.ui.screens.login.components.LoginHeader
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppBackground
 import com.example.mixtapp.ui.utils.AuthFooter
 import com.example.mixtapp.ui.utils.ErrorMessage
+import com.example.mixtapp.ui.utils.TonoDeFondo
 
 @Composable
 fun LoginScreen(
@@ -53,6 +55,7 @@ fun LoginScreen(
         contrasenaVisible = state.contrasenaVisible,
         onContrasenaVisibleChange = { loginViewModel.mostrarEsconderContrasena() },
         errorMessageRes = state.errorMessageRes,
+        campoConError = state.campoConError,
         cargando = state.cargando,
         onLoginClick = { loginViewModel.loginButtonPressed() },
         onSignUpClick = onSignUpClick,
@@ -69,6 +72,7 @@ fun LoginScreenContent(
     contrasenaVisible: Boolean,
     onContrasenaVisibleChange: () -> Unit,
     @StringRes errorMessageRes: Int?,
+    campoConError: CampoDeLaCuenta?,
     cargando: Boolean,
     onLoginClick: () -> Unit,
     onSignUpClick: () -> Unit,
@@ -79,7 +83,7 @@ fun LoginScreenContent(
             .fillMaxSize()
             .testTag("loginScreen")
     ) {
-        AppBackground()
+        AppBackground(tono = TonoDeFondo.Cuenta)
 
         // Con el teclado abierto el formulario no cabe: la columna se desplaza. Si cabe, queda
         // centrada en la pantalla
@@ -104,6 +108,7 @@ fun LoginScreenContent(
                 contrasenaVisible = contrasenaVisible,
                 onContrasenaVisibleChange = onContrasenaVisibleChange,
                 cargando = cargando,
+                campoConError = campoConError,
                 onLoginClick = onLoginClick,
             )
 
@@ -113,9 +118,9 @@ fun LoginScreenContent(
                 modifier = Modifier.padding(top = 16.dp)
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
-            // Quien todavia no tiene cuenta va al registro
+            // Quien todavia no tiene cuenta va al registro, justo debajo del boton
             AuthFooter(
                 pregunta = stringResource(R.string.no_tienes_cuenta),
                 accion = stringResource(R.string.create_account),
@@ -138,6 +143,7 @@ fun LoginScreenPreview() {
             contrasenaVisible = false,
             onContrasenaVisibleChange = {},
             errorMessageRes = null,
+            campoConError = null,
             cargando = false,
             onLoginClick = {},
             onSignUpClick = {}

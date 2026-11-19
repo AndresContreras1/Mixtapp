@@ -1,6 +1,7 @@
 package com.example.mixtapp.ui.screens.login
 
 import androidx.annotation.StringRes
+import com.example.mixtapp.data.model.CampoDeLaCuenta
 
 data class LoginState(
     val email: String = "",
@@ -9,6 +10,8 @@ data class LoginState(
     // Se guarda el id del string, no el texto: el ViewModel no tiene acceso a los recursos.
     // null significa que no hay error que mostrar
     @StringRes val errorMessageRes: Int? = null,
+    // El campo del error, para marcarlo en rojo; null si el error no es de un campo (Firebase)
+    val campoConError: CampoDeLaCuenta? = null,
     // La navegacion solo entra a Home cuando el ViewModel lo autoriza
     val navigate: Boolean = false,
     val cargando: Boolean = false,

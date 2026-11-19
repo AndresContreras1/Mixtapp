@@ -166,7 +166,13 @@ fun AppNavigation(
                     navController.abrirDiscusion(reviewId = reviewId)
                 },
                 onFollowingClick = { navController.navigate(Screen.Following.route) },
-                onNotificationsClick = { navController.navigate(Screen.Notifications.route) }
+                onNotificationsClick = { navController.navigate(Screen.Notifications.route) },
+                // Como la pestana de la barra: Buscar queda encima del inicio y atras vuelve a el
+                onDescubrirPersonasClick = {
+                    navController.navigate(Screen.Search.route) {
+                        popUpTo(Screen.Home.route)
+                    }
+                }
             )
         }
 

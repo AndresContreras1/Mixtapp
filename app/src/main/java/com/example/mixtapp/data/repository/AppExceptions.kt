@@ -44,6 +44,8 @@ class SinPermisoDeUbicacionException : Exception("No hay permiso para leer la ub
 
 class UbicacionNoDisponibleException : Exception("El celular no pudo leer la ubicacion")
 
+class SinVistaPreviaException : Exception("Deezer no tiene un fragmento de esto")
+
 // Lo que no tiene un catch propio; el detalle de la excepcion original queda en el log
 class ErrorInesperadoException : Exception("Fallo inesperado")
 

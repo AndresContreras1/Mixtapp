@@ -1,6 +1,7 @@
 package com.example.mixtapp.ui.screens.home
 
 import androidx.annotation.StringRes
+import com.example.mixtapp.data.model.EstadoDeReproduccion
 import com.example.mixtapp.data.model.ItemConResenasUi
 import com.example.mixtapp.data.model.ItemResumenUi
 import com.example.mixtapp.data.model.ItemUi
@@ -23,6 +24,11 @@ data class HomeState(
     val albumEnTendenciaId: String? = null,
     // En la pestana Tendencias la tarjeta es el puesto 1 de Colombia y dice su puesto en esa lista
     val enTendenciaColombia: Boolean = false,
+    // El fragmento de 30 segundos: el id del item que suena o carga (null si no suena nada), en que va
+    // y el error si no se pudo reproducir
+    val vistaPreviaId: String? = null,
+    val vistaPreviaEstado: EstadoDeReproduccion? = null,
+    @StringRes val errorVistaPreviaRes: Int? = null,
     // Las tres filas del filtro elegido, hasta 10 items cada una
     val canciones: List<ItemUi> = emptyList(),
     val albumes: List<ItemUi> = emptyList(),

@@ -301,9 +301,36 @@ La pantalla de notificaciones tiene tres pestañas, todas en vivo:
   aparecer. El ViewModel elige al azar uno de los álbumes que están en la lista de Deezer de mis
   géneros y guarda su id en el estado, para que un like o una reseña nueva no lo cambien. Si ninguno
   está en una lista, queda el más popular. En la pestaña Tendencias la tarjeta es el #1 de Colombia.
+  En Descubre y Seguidos no hay tarjeta: el ViewModel la deja en `null`. Después de la tarjeta van
+  las reseñas de quienes sigo, en una fila, y si no hay ninguna, el botón **Descubrir personas**.
   - **Seguidos** muestra lo que reseñaron los usuarios que sigo.
 - **Los links de YouTube, Spotify e Instagram salen del mapeo**, con el artista y el título (las
-  canciones buscan su video oficial). No se guardan en la base y se abren con `LocalUriHandler`.
+  canciones buscan su video oficial). No se guardan en la base y se abren con `LocalUriHandler`. En
+  el detalle van con el logo de cada app (`ic_youtube` e `ic_spotify`).
+- **El fragmento de 30 segundos suena dentro de la app**, en el detalle y en la tarjeta en
+  tendencia. Va por capas, como la ubicación:
+  - `VistaPreviaRetrofitDataSourceImpl` busca la canción en la API pública de Deezer
+    (`DeezerRetrofitService`, sin llave, con su propio Retrofit en `AppModule`) y retorna el enlace
+    del mp3 o `null`. El enlace trae un token que vence, por eso se pide al tocar play y no se guarda.
+  - `ReproductorAndroidDataSourceImpl` (en `impl/android`) lo hace sonar con el `MediaPlayer` de
+    Android dentro de un `callbackFlow`: emite `Cargando`, `Sonando` y `Terminada`, y `awaitClose`
+    libera el audio. El volumen sube y baja con un fade (`volumenDelFade` en `data/model`).
+  - `ReproductorRepository` arma la búsqueda (`busquedaDeVistaPrevia`) y decide el error
+    (`SinVistaPreviaException`, sin conexión). El ViewModel guarda qué item suena y cancelar su
+    corrutina detiene el audio; la pantalla lo detiene al salir con `DisposableEffect`.
+- **Duelos sin votos no muestran 50 y 50:** `DueloUi.sinVotos` cambia la barra por "Sé el primero
+  en votar" y oculta los porcentajes. Votar queda apagado hasta elegir uno (`puedeVotar` en
+  `ReglasDeDuelo`); la tarjeta elegida lleva borde, check y elevación, y la barra se anima cuando
+  llega un voto.
+- **Tu año se ve como una historia:** una tarjeta a la vez con los segmentos de progreso, un
+  degradado distinto por tarjeta y, al final, Compartir (un `Intent.ACTION_SEND` con el texto). Con
+  pocos datos (`hayPocosDatos` en `ReglasDelResumen`) no afirma el género ni el artista.
+- **Las fechas se leen igual en toda la app** (`fechaConMes` en `data/model/Fechas.kt`): "3 h", "2 d"
+  y, desde una semana, "21 oct" (con el año si es de otro). Los lanzamientos muestran su fecha de
+  salida y en Buscar se pueden ordenar de lo más nuevo a lo más viejo o al revés.
+- **El detalle toma el color de la portada** con Palette (`PortadaConColor`), pero solo en un
+  degradado decorativo arriba: los textos y el resto del fondo no cambian. Abajo de las acciones el
+  detalle se agrupa en tres bloques: Escuchar y ver, Descubre más y Reseñas de la comunidad.
 - **Los datos curiosos van en su propia colección** (`historias`), con el mismo id del item: el
   inicio escucha todo el catálogo y así no descarga ese texto. La pantalla de datos curiosos los lee
   una sola vez, porque no cambian mientras se usa la app.
@@ -360,15 +387,26 @@ La pantalla de notificaciones tiene tres pestañas, todas en vivo:
   entrega `CoroutineModule`), así las pruebas pueden pasar uno de prueba.
 - **El color sale del `MaterialTheme`.** `Color.kt` tiene las cuatro escalas de la paleta (Crimson,
   Mauve, Plum y Gris, del 50 al 600) y `Theme.kt` elige el tono de cada rol: para cambiar el tema
-  basta con cambiar un tono en uno de los dos archivos. El modo oscuro usa los tonos pastel sobre el
-  fondo de vino casi negro y el modo claro, los fondos pastel. No hay colores quemados fuera de
+  basta con cambiar un tono en uno de los dos archivos. El modo oscuro usa el rosado chicle solo para
+  lo importante (botones, estrellas, filtros elegidos, pestaña activa) sobre un fondo ciruela casi
+  negro (`Noche`), con acentos magenta, violeta y coral en los resplandores del fondo, y el modo
+  claro, los fondos pastel. Las barras de arriba (`BarraSuperior`) y de abajo van en el tono más
+  oscuro (`surfaceContainerLowest`) para que no se pierdan en el fondo. No hay colores quemados fuera de
   `Color.kt`, salvo el fondo de la ventana en `themes.xml` y los drawables XML (icono y marcadores de
   imagen), que se pintan sin Compose y repiten a mano los colores de la paleta.
-- **Un solo campo de texto** (`AppTextField`): un `OutlinedTextField` ovalado con el fondo
-  translúcido, para que se vea el fondo con los círculos. Lo usan el correo, Buscar, la fecha de
+- **Un fondo por sección** (`AppBackground` con `TonoDeFondo`): el color de fondo con dos
+  resplandores difuminados en las esquinas y un grano fino. Cada sección tiene su tono (Inicio,
+  Buscar, Duelos, Perfil, lo social, el item, Tu año y la cuenta) y los resplandores se desvanecen
+  antes del centro, así no pasan detrás del contenido.
+- **Un solo campo de texto** (`AppTextField`): un `OutlinedTextField` ovalado de 56 dp con el fondo
+  translúcido, la etiqueta siempre arriba, el borde visible sin foco, rosado con foco y rojo con
+  error. En el registro y el login el ViewModel dice qué campo falló (`campoConError` con
+  `CampoDeLaCuenta`) y ese campo se marca. Lo usan el correo, Buscar, la fecha de
   escucha y los comentarios; la contraseña tiene su propio campo con el ojo (`AppPasswordField`).
-- **Tipografía de Google Fonts:** Playfair Display para los títulos e Inter para el texto. El
-  certificado está en `res/values/font_certs.xml`. Sin internet, Android usa la fuente por defecto.
+- **Una sola tipografía de Google Fonts, Outfit,** del normal al Black. La jerarquía sale del tamaño
+  y del grosor de cada estilo de `Type.kt`: display para las cifras grandes, headline para los
+  títulos en negrita, title para secciones y tarjetas, body para leer y label para botones y
+  metadatos. El certificado está en `res/values/font_certs.xml`. Sin internet, Android usa la fuente por defecto.
 - **Hilt se compila con KSP.** El proyecto está en AGP 9.0.0, que trae Kotlin integrado (por eso no
   se aplica `kotlin.android`) y deja `kapt` solo como transición. El plugin de KSP ya estaba en el
   build de clase. `firebase-storage` reemplaza a `firebase-storage-ktx`: desde el BoM 32.5 son el

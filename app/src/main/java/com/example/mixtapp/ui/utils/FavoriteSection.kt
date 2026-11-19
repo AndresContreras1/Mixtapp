@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -29,6 +31,13 @@ fun FavoriteSection(
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         SectionTitle(title = stringResource(R.string.favoritos), actionText = null, onActionClick = null)
+
+        // Que es Favoritos, para no confundirlo con Guardados
+        Text(
+            text = stringResource(R.string.favoritos_descripcion),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.bodySmall,
+        )
 
         Spacer(modifier = Modifier.height(8.dp))
 

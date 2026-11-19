@@ -16,10 +16,10 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -39,8 +39,10 @@ import com.example.mixtapp.ui.screens.followlist.LISTA_SEGUIDORES
 import com.example.mixtapp.ui.screens.followlist.LISTA_SEGUIDOS
 import com.example.mixtapp.ui.screens.profile.components.GUARDADOS_POR_FILA
 import com.example.mixtapp.ui.screens.profile.components.LogoutButton
+import com.example.mixtapp.ui.screens.profile.components.PickImageButton
 import com.example.mixtapp.ui.screens.profile.components.ProfileTabs
 import com.example.mixtapp.ui.screens.profile.components.SavedItemsRow
+import com.example.mixtapp.ui.screens.profile.components.TarjetaDeTuAnio
 import com.example.mixtapp.ui.screens.profile.model.PESTANA_GUARDADOS
 import com.example.mixtapp.ui.screens.profile.model.PESTANA_MIXTAPES
 import com.example.mixtapp.ui.screens.profile.model.PESTANA_PERFIL
@@ -48,18 +50,20 @@ import com.example.mixtapp.ui.screens.profile.model.profileTabs
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppBackground
 import com.example.mixtapp.ui.utils.AppButton
+import com.example.mixtapp.ui.utils.BarraSuperior
 import com.example.mixtapp.ui.utils.EmptyMessage
 import com.example.mixtapp.ui.utils.ErrorBox
 import com.example.mixtapp.ui.utils.ErrorMessage
+import com.example.mixtapp.ui.utils.EspacioDelFab
 import com.example.mixtapp.ui.utils.FavoriteSection
 import com.example.mixtapp.ui.utils.LoadingBox
 import com.example.mixtapp.ui.utils.MixtapeCard
-import com.example.mixtapp.ui.utils.OpcionOvalada
 import com.example.mixtapp.ui.utils.OpcionUi
 import com.example.mixtapp.ui.utils.ProfileHeader
 import com.example.mixtapp.ui.utils.ReviewCard
 import com.example.mixtapp.ui.utils.ScreenTitle
 import com.example.mixtapp.ui.utils.SectionTitle
+import com.example.mixtapp.ui.utils.TonoDeFondo
 
 @Composable
 fun ProfileScreen(
@@ -94,71 +98,97 @@ fun ProfileScreen(
     val errorMessageRes = state.errorMessageRes
 
     Box(modifier = modifier.fillMaxSize()) {
-        AppBackground()
+        AppBackground(tono = TonoDeFondo.Perfil)
 
-        when {
-            state.isLoading -> {
-                LoadingBox()
-            }
-            // Sin mis datos solo se muestra el motivo del error y la salida para cerrar sesion
-            errorMessageRes != null && state.usuario.isEmpty() -> {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    ErrorBox(messageRes = errorMessageRes, modifier = Modifier.weight(1f))
+        Column(modifier = Modifier.fillMaxSize()) {
+            // El titulo y Ajustes quedan fijos arriba, tambien mientras carga o si hay un error
+            BarraSuperior {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    ScreenTitle(
+                        title = stringResource(R.string.nav_profile),
+                        modifier = Modifier.weight(1f),
+                        onBackClick = null,
+                    )
 
-                    LogoutButton(onLogoutClick = onLogoutClick)
+                    IconButton(onClick = onEditProfileClick) {
+                        Icon(
+                            imageVector = Icons.Filled.Settings,
+                            contentDescription = stringResource(R.string.ajustes),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             }
-            else -> ProfileScreenContent(
-                usuario = state.usuario,
-                nombre = state.nombre,
-                bio = state.bio,
-                instagram = state.instagram,
-                instagramUrl = state.instagramUrl,
-                seguidores = state.seguidores,
-                seguidos = state.seguidos,
-                profileImageUrl = state.profileImageUrl,
-                subiendoImagen = state.subiendoImagen,
-                errorImagenRes = state.errorImagenRes,
-                // Si ya habia datos que mostrar, el error de mis datos sale como aviso
-                avisoRes = state.avisoPerfilRes ?: errorMessageRes,
-                tabs = state.tabs,
-                selectedTabId = state.selectedTabId,
-                favoritos = state.favoritos,
-                cargandoFavoritos = state.cargandoFavoritos,
-                errorFavoritosRes = state.errorFavoritosRes,
-                resenasRecientes = state.resenasRecientes,
-                cargandoResenas = state.cargandoResenas,
-                errorResenasRes = state.errorResenasRes,
-                errorAccionRes = state.errorAccionRes,
-                guardados = state.guardados,
-                cargandoGuardados = state.cargandoGuardados,
-                errorGuardadosRes = state.errorGuardadosRes,
-                mixtapes = state.mixtapes,
-                cargandoMixtapes = state.cargandoMixtapes,
-                errorMixtapesRes = state.errorMixtapesRes,
-                onEditProfileClick = onEditProfileClick,
-                // Mis contadores abren mi lista de seguidores o de seguidos con mi uid
-                onSeguidoresClick = { onFollowListClick(state.miId, LISTA_SEGUIDORES) },
-                onSeguidosClick = { onFollowListClick(state.miId, LISTA_SEGUIDOS) },
-                onImagePicked = { profileViewModel.subirFotoDePerfil(uri = it) },
-                onTabSelected = { profileViewModel.updateSelectedTab(tabId = it) },
-                onItemClick = { item -> onItemClick(item.tipo, item.id) },
-                onLikeClick = { profileViewModel.sendOrDeleteLike(reviewId = it) },
-                onCommentsClick = onCommentsClick,
-                // Editar abre Escribir resena con lo que califique
-                onEditClick = { review -> onEditReviewClick(review.item.tipo, review.item.id) },
-                onDeleteClick = { profileViewModel.eliminarResena(reviewId = it) },
-                onSeeAllReviewsClick = onSeeAllReviewsClick,
-                onResumenClick = onResumenClick,
-                onCrearMixtapeClick = onCrearMixtapeClick,
-                onMixtapeClick = onMixtapeClick,
-                onLogoutClick = onLogoutClick,
-            )
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            ) {
+                when {
+                    state.isLoading -> {
+                        LoadingBox()
+                    }
+                    // Sin mis datos solo se muestra el motivo del error y la salida para cerrar sesion
+                    errorMessageRes != null && state.usuario.isEmpty() -> {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            ErrorBox(messageRes = errorMessageRes, modifier = Modifier.weight(1f))
+
+                            LogoutButton(onLogoutClick = onLogoutClick)
+                        }
+                    }
+                    else -> ProfileScreenContent(
+                        usuario = state.usuario,
+                        nombre = state.nombre,
+                        bio = state.bio,
+                        instagram = state.instagram,
+                        instagramUrl = state.instagramUrl,
+                        seguidores = state.seguidores,
+                        seguidos = state.seguidos,
+                        profileImageUrl = state.profileImageUrl,
+                        subiendoImagen = state.subiendoImagen,
+                        errorImagenRes = state.errorImagenRes,
+                        // Si ya habia datos que mostrar, el error de mis datos sale como aviso
+                        avisoRes = state.avisoPerfilRes ?: errorMessageRes,
+                        tabs = state.tabs,
+                        selectedTabId = state.selectedTabId,
+                        favoritos = state.favoritos,
+                        cargandoFavoritos = state.cargandoFavoritos,
+                        errorFavoritosRes = state.errorFavoritosRes,
+                        resenasRecientes = state.resenasRecientes,
+                        cargandoResenas = state.cargandoResenas,
+                        errorResenasRes = state.errorResenasRes,
+                        errorAccionRes = state.errorAccionRes,
+                        guardados = state.guardados,
+                        cargandoGuardados = state.cargandoGuardados,
+                        errorGuardadosRes = state.errorGuardadosRes,
+                        mixtapes = state.mixtapes,
+                        cargandoMixtapes = state.cargandoMixtapes,
+                        errorMixtapesRes = state.errorMixtapesRes,
+                        // Mis contadores abren mi lista de seguidores o de seguidos con mi uid
+                        onSeguidoresClick = { onFollowListClick(state.miId, LISTA_SEGUIDORES) },
+                        onSeguidosClick = { onFollowListClick(state.miId, LISTA_SEGUIDOS) },
+                        onImagePicked = { profileViewModel.subirFotoDePerfil(uri = it) },
+                        onTabSelected = { profileViewModel.updateSelectedTab(tabId = it) },
+                        onItemClick = { item -> onItemClick(item.tipo, item.id) },
+                        onLikeClick = { profileViewModel.sendOrDeleteLike(reviewId = it) },
+                        onCommentsClick = onCommentsClick,
+                        // Editar abre Escribir resena con lo que califique
+                        onEditClick = { review -> onEditReviewClick(review.item.tipo, review.item.id) },
+                        onDeleteClick = { profileViewModel.eliminarResena(reviewId = it) },
+                        onSeeAllReviewsClick = onSeeAllReviewsClick,
+                        onResumenClick = onResumenClick,
+                        onCrearMixtapeClick = onCrearMixtapeClick,
+                        onMixtapeClick = onMixtapeClick,
+                        onLogoutClick = onLogoutClick,
+                    )
+                }
+            }
         }
     }
 }
@@ -191,7 +221,6 @@ fun ProfileScreenContent(
     mixtapes: List<MixtapeUi>,
     cargandoMixtapes: Boolean,
     @StringRes errorMixtapesRes: Int?,
-    onEditProfileClick: () -> Unit,
     onSeguidoresClick: () -> Unit,
     onSeguidosClick: () -> Unit,
     onImagePicked: (Uri) -> Unit,
@@ -212,27 +241,10 @@ fun ProfileScreenContent(
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         // Abajo queda espacio para que el boton + no tape el ultimo elemento
-        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 96.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = EspacioDelFab),
+        // Los bloques (identidad, pestanas, contenido) van con aire entre ellos
+        verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
-        item {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                ScreenTitle(
-                    title = stringResource(R.string.nav_profile),
-                    modifier = Modifier.weight(1f),
-                    onBackClick = null,
-                )
-
-                IconButton(onClick = onEditProfileClick) {
-                    Icon(
-                        imageVector = Icons.Filled.Settings,
-                        contentDescription = stringResource(R.string.ajustes),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-        }
-
         item {
             ProfileHeader(
                 nombre = nombre,
@@ -245,7 +257,20 @@ fun ProfileScreenContent(
                 instagramUrl = instagramUrl,
                 onSeguidoresClick = onSeguidoresClick,
                 onSeguidosClick = onSeguidosClick,
+                // Mi foto se cambia al tocarla
+                fotoEditable = {
+                    PickImageButton(
+                        fotoUrl = profileImageUrl,
+                        action = onImagePicked,
+                        cargando = subiendoImagen,
+                    )
+                },
             ) {
+                // La foto que no se pudo subir y los avisos de mis datos
+                ErrorMessage(
+                    messageRes = errorImagenRes,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
                 ErrorMessage(
                     messageRes = avisoRes,
                     modifier = Modifier.padding(top = 8.dp)
@@ -259,28 +284,31 @@ fun ProfileScreenContent(
                     tabs = tabs,
                     selectedTabId = selectedTabId,
                     onTabSelected = onTabSelected,
-                    subiendoImagen = subiendoImagen,
-                    onImagePicked = onImagePicked
-                )
-
-                // La foto que no se pudo subir, debajo de la pestana de Cambiar foto
-                ErrorMessage(
-                    messageRes = errorImagenRes,
-                    modifier = Modifier.padding(top = 8.dp)
                 )
             }
         }
 
         when (selectedTabId) {
-            PESTANA_GUARDADOS -> listaDelPerfil(
-                cargando = cargandoGuardados,
-                vacia = guardados.isEmpty(),
-                errorMessageRes = errorGuardadosRes,
-                vaciaRes = R.string.sin_guardados,
-            ) {
-                // La cuadricula se arma con filas de tres: cada fila es un item de la lista
-                items(guardados.chunked(GUARDADOS_POR_FILA)) { fila ->
-                    SavedItemsRow(items = fila, onItemClick = onItemClick)
+            PESTANA_GUARDADOS -> {
+                // Que es Guardados, para no confundirlo con Favoritos
+                item {
+                    Text(
+                        text = stringResource(R.string.guardados_descripcion),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+
+                listaDelPerfil(
+                    cargando = cargandoGuardados,
+                    vacia = guardados.isEmpty(),
+                    errorMessageRes = errorGuardadosRes,
+                    vaciaRes = R.string.sin_guardados,
+                ) {
+                    // La cuadricula se arma con filas de tres: cada fila es un item de la lista
+                    items(guardados.chunked(GUARDADOS_POR_FILA)) { fila ->
+                        SavedItemsRow(items = fila, onItemClick = onItemClick)
+                    }
                 }
             }
             PESTANA_MIXTAPES -> {
@@ -313,12 +341,7 @@ fun ProfileScreenContent(
             else -> {
                 // Mis numeros de la app en tarjetas que se van descubriendo
                 item {
-                    OpcionOvalada(
-                        icono = Icons.Outlined.AutoAwesome,
-                        texto = stringResource(R.string.resumen_titulo),
-                        onClick = onResumenClick,
-                        modifier = Modifier.testTag("btnResumen"),
-                    )
+                    TarjetaDeTuAnio(onClick = onResumenClick)
                 }
 
                 item {
@@ -406,7 +429,7 @@ fun ProfileScreenPreview() {
         val usuario = LocalPreviewProvider.usuario
 
         Box {
-            AppBackground()
+            AppBackground(tono = TonoDeFondo.Perfil)
 
             ProfileScreenContent(
                 usuario = usuario.username,
@@ -435,7 +458,6 @@ fun ProfileScreenPreview() {
                 mixtapes = emptyList(),
                 cargandoMixtapes = false,
                 errorMixtapesRes = null,
-                onEditProfileClick = {},
                 onSeguidoresClick = {},
                 onSeguidosClick = {},
                 onImagePicked = {},

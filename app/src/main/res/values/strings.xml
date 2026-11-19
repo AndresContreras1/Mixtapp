@@ -17,7 +17,7 @@
     <string name="username">Nombre de usuario</string>
     <string name="choose_username">Ingresa tu usuario</string>
     <string name="create_password">Crear contraseña</string>
-    <string name="confirm_password">Confirmar</string>
+    <string name="confirm_password">Confirmar contraseña</string>
     <string name="repeat_password">Repite tu contraseña</string>
     <string name="agree_terms">Acepto los términos y condiciones de Mixtapp</string>
     <string name="sign_up_btn">Registrarse</string>
@@ -35,7 +35,7 @@
     <string name="seguidos">Seguidos</string>
     <string name="now_trending">En tendencia</string>
     <string name="albumes_populares">Álbumes populares</string>
-    <string name="sin_actividad_seguidos">Aún no hay reseñas de personas a quienes sigues</string>
+    <string name="sin_actividad_seguidos">Todavía no hay reseñas de las personas que sigues</string>
     <string name="resenas_de_seguidos">Reseñas de quienes sigues</string>
 
     <!-- Profile Extra -->
@@ -195,12 +195,12 @@
     <string name="resumen_resenas_titulo">Reseñas que escribiste</string>
     <string name="resumen_sin_resenas">Todavía no has reseñado nada: califica tu primer disco</string>
     <string name="resumen_promedio">Tu calificación promedio: %1$s estrellas</string>
-    <string name="resumen_genero_titulo">Tu género</string>
-    <string name="resumen_genero_detalle">Es el que más te gusta y el que más reseñaste bien</string>
-    <string name="resumen_artista_titulo">Tu artista</string>
-    <string name="resumen_artista_detalle">Lo que más te gusta de la música</string>
+    <string name="resumen_genero_titulo">El género que más te gusta</string>
+    <string name="resumen_genero_detalle">Sale de tus me gusta y de lo que mejor calificaste</string>
+    <string name="resumen_artista_titulo">El artista que más te gusta</string>
+    <string name="resumen_artista_detalle">Es el que más aparece en lo que te gusta</string>
     <string name="resumen_mejor_titulo">Lo que mejor calificaste</string>
-    <string name="resumen_mejor_detalle">%1$d estrellas</string>
+    <string name="resumen_mejor_detalle">%1$s · le diste %2$d de 5</string>
     <string name="resumen_querida_titulo">Tu reseña favorita de la comunidad</string>
     <string name="resumen_querida_detalle">%1$d me gusta en tu reseña</string>
     <string name="resumen_social_titulo">Tu música en comunidad</string>
@@ -209,7 +209,7 @@
 
     <!-- Sonando ahora y sus reacciones -->
     <string name="sonando_ahora">Sonando ahora</string>
-    <string name="estoy_escuchando_esto">Estoy escuchando esto</string>
+    <string name="estoy_escuchando_esto">Contar a mis seguidores que lo escucho</string>
     <string name="sonando_publicado">Listo: tus seguidores lo ven en Sonando ahora</string>
     <string name="dejar_de_sonar">Ya no lo escucho</string>
     <string name="reaccion_fuego">🔥 %1$d</string>
@@ -358,4 +358,75 @@
     <string name="label_instagram">Instagram</string>
     <string name="instagram_placeholder">Tu usuario de Instagram, sin la @</string>
     <string name="error_instagram_invalido">El Instagram solo puede tener hasta 30 letras, números, puntos o guiones bajos</string>
+
+    <!-- el fragmento de 30 segundos que suena en la app -->
+    <string name="escuchar_fragmento">Escuchar 30 s</string>
+    <string name="cargando_fragmento">Cargando…</string>
+    <string name="detener_fragmento">Detener</string>
+    <string name="escuchar_fragmento_de">Escuchar un fragmento de %1$s</string>
+    <string name="error_vista_previa">No se pudo reproducir el fragmento. Inténtalo de nuevo</string>
+    <string name="error_sin_vista_previa">Deezer no tiene un fragmento de esto</string>
+
+    <!-- inicio: tendencia y reseñas de quienes sigo -->
+    <string name="tendencia_en">Tendencia en %1$s</string>
+    <string name="tendencia_en_colombia">Tendencia en Colombia</string>
+    <string name="descubrir_personas">Descubrir personas</string>
+
+    <!-- detalle: bloques, estadísticas y acciones -->
+    <string name="escuchar_y_ver">Escuchar y ver</string>
+    <string name="descubre_mas">Descubre más</string>
+    <string name="datos_curiosos_descripcion">Historias y datos reales detrás de la música</string>
+    <string name="resenas_de_la_comunidad">Reseñas de la comunidad</string>
+    <string name="youtube">YouTube</string>
+    <string name="spotify">Spotify</string>
+    <string name="recomiendan_de">%1$d de %2$d lo recomiendan</string>
+    <string name="sin_calificaciones_todavia">Todavía nadie lo califica</string>
+    <string name="promedio_label">promedio</string>
+    <string name="guardado">Guardado</string>
+    <string name="mixtape_accion">Mixtape</string>
+    <string name="calificacion_sobre_cinco">%1$d/5</string>
+
+    <!-- duelos: sin votos, la seleccion y mi voto -->
+    <string name="duelo_del_dia">Duelo del día</string>
+    <string name="duelo_pregunta">¿Cuál es el mejor de %1$s hoy?</string>
+    <string name="se_el_primero">Sé el primero en votar</string>
+    <string name="se_el_primero_detalle">Todavía nadie vota en este duelo: elige uno y abre la votación</string>
+    <string name="votaste_por">Votaste por %1$s</string>
+    <string name="elegido">Elegido</string>
+
+    <!-- listas: la calificacion de la comunidad y el orden de los lanzamientos -->
+    <string name="sin_resenas_corto">Sin reseñas</string>
+    <string name="una_resena">· %1$d reseña</string>
+    <string name="cantidad_resenas">· %1$d reseñas</string>
+    <string name="lanzamientos_recientes">Lanzamientos recientes</string>
+    <string name="lanzamientos_antiguos">Lanzamientos más antiguos</string>
+    <string name="orden_mas_recientes">Más recientes ▾</string>
+    <string name="orden_mas_antiguos">Más antiguos ▴</string>
+    <string name="volver_a_explorar">Volver a explorar</string>
+
+    <!-- perfil: contadores, bloques y seguir -->
+    <string name="seguidores_label">seguidores</string>
+    <string name="seguidos_label">seguidos</string>
+    <string name="favoritos_descripcion">Lo que te gusta: tus me gusta en canciones, álbumes y artistas</string>
+    <string name="guardados_descripcion">Para escuchar después: lo que guardaste desde el detalle</string>
+    <string name="resumen_tarjeta_detalle">Tus números del año, tarjeta por tarjeta, listos para compartir</string>
+    <string name="siguiendo_estado">Siguiendo</string>
+
+    <!-- notificaciones: que paso en cada una -->
+    <string name="evento_like">Le gustó tu reseña</string>
+    <string name="evento_like_comentario">Le gustó tu comentario</string>
+    <string name="evento_comentario">Nuevo comentario</string>
+    <string name="evento_respuesta">Respondieron tu comentario</string>
+    <string name="evento_reaccion">Reaccionaron a lo que escuchas</string>
+    <string name="evento_seguidor">Nuevo seguidor</string>
+    <string name="evento_discusion">Nueva discusión</string>
+    <string name="discusion_sobre">reseñó %1$s</string>
+    <string name="comentarios_count">%1$d comentarios</string>
+
+    <!-- Tu año como historia -->
+    <string name="resumen_titulo_anio">Tu %1$d en Mixtapp</string>
+    <string name="resumen_toca">Toca la tarjeta para seguir</string>
+    <string name="resumen_pocos_datos">Todavía es pronto para decirlo: sigue calificando y tu año se va armando</string>
+    <string name="resumen_compartir">Compartir mi año</string>
+    <string name="resumen_compartir_texto">Mi %1$d en Mixtapp: %2$d reseñas y %3$d me gusta. ¿Y el tuyo? Descárgala y armemos la mixtape</string>
 </resources>

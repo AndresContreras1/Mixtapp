@@ -1,6 +1,8 @@
 package com.example.mixtapp.ui.screens.duelos
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,8 +11,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.HowToVote
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,11 +25,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalPreviewProvider
 import com.example.mixtapp.data.model.DueloUi
@@ -37,15 +46,20 @@ import com.example.mixtapp.ui.screens.duelos.components.OpinionRow
 import com.example.mixtapp.ui.screens.duelos.components.VotoForm
 import com.example.mixtapp.ui.screens.duelos.model.dueloTabs
 import com.example.mixtapp.ui.theme.MixtappTheme
+import com.example.mixtapp.ui.theme.White
 import com.example.mixtapp.ui.utils.AppBackground
+import com.example.mixtapp.ui.utils.BarraSuperior
 import com.example.mixtapp.ui.utils.EmptyMessage
 import com.example.mixtapp.ui.utils.ErrorBox
 import com.example.mixtapp.ui.utils.ErrorMessage
+import com.example.mixtapp.ui.utils.EspacioDelFab
 import com.example.mixtapp.ui.utils.FilaDeOpciones
 import com.example.mixtapp.ui.utils.LoadingBox
 import com.example.mixtapp.ui.utils.OpcionUi
 import com.example.mixtapp.ui.utils.ScreenTitle
 import com.example.mixtapp.ui.utils.SectionTitle
+import com.example.mixtapp.ui.utils.TarjetaTranslucida
+import com.example.mixtapp.ui.utils.TonoDeFondo
 
 @Composable
 fun DuelosScreen(
@@ -65,6 +79,7 @@ fun DuelosScreen(
         opcionElegida = state.opcionElegida,
         opinion = state.opinion,
         enviando = state.enviando,
+        puedeVotar = state.puedeVotar,
         isLoading = state.isLoading,
         errorMessageRes = state.errorMessageRes,
         errorVotosRes = state.erroresDeVotos[state.tipoElegido],
@@ -87,6 +102,7 @@ fun DuelosScreenContent(
     opcionElegida: String?,
     opinion: String,
     enviando: Boolean,
+    puedeVotar: Boolean,
     isLoading: Boolean,
     @StringRes errorMessageRes: Int?,
     @StringRes errorVotosRes: Int?,
@@ -104,23 +120,24 @@ fun DuelosScreenContent(
             .fillMaxSize()
             .testTag("duelosScreen")
     ) {
-        AppBackground()
+        AppBackground(tono = TonoDeFondo.Duelos)
 
         Column(modifier = Modifier.fillMaxSize()) {
-            ScreenTitle(
-                title = stringResource(R.string.duelos_title),
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-                onBackClick = null,
-            )
+            // El titulo y las pestanas quedan fijos arriba para pasar de un duelo a otro
+            BarraSuperior {
+                ScreenTitle(
+                    title = stringResource(R.string.duelos_title),
+                    onBackClick = null,
+                )
 
-            // Las pestanas quedan fijas para pasar de un duelo a otro
-            FilaDeOpciones(
-                opciones = tabs,
-                elegidaId = tipoElegido,
-                onOpcionClick = onTabSelected,
-                prefijoTestTag = "tabDuelo",
-                modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
-            )
+                FilaDeOpciones(
+                    opciones = tabs,
+                    elegidaId = tipoElegido,
+                    onOpcionClick = onTabSelected,
+                    prefijoTestTag = "tabDuelo",
+                    modifier = Modifier.padding(bottom = 8.dp),
+                )
+            }
 
             when {
                 isLoading -> LoadingBox()
@@ -136,15 +153,22 @@ fun DuelosScreenContent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f),
-                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp),
+                    contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 16.dp, bottom = EspacioDelFab),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     item {
-                        Text(
-                            text = stringResource(R.string.duelo_del_dia_genero, duelo.genero),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            style = MaterialTheme.typography.titleMedium,
-                        )
+                        Column {
+                            Text(
+                                text = stringResource(R.string.duelo_del_dia).uppercase(),
+                                color = MaterialTheme.colorScheme.primary,
+                                style = MaterialTheme.typography.labelLarge,
+                            )
+                            Text(
+                                text = stringResource(R.string.duelo_pregunta, duelo.genero),
+                                color = MaterialTheme.colorScheme.onBackground,
+                                style = MaterialTheme.typography.headlineSmall,
+                            )
+                        }
                     }
 
                     item {
@@ -157,7 +181,11 @@ fun DuelosScreenContent(
                     }
 
                     item {
-                        BarraDeVotos(porcentajeA = duelo.porcentajeA, porcentajeB = duelo.porcentajeB)
+                        if (duelo.sinVotos) {
+                            SeElPrimeroEnVotar()
+                        } else {
+                            BarraDeVotos(porcentajeA = duelo.porcentajeA)
+                        }
                     }
 
                     item {
@@ -165,7 +193,12 @@ fun DuelosScreenContent(
                         ErrorMessage(messageRes = errorVotosRes)
                         VotoForm(
                             opinion = opinion,
-                            yaVote = duelo.miOpcion != null,
+                            miVoto = when (duelo.miOpcion) {
+                                OPCION_A -> duelo.itemA.titulo
+                                OPCION_B -> duelo.itemB.titulo
+                                else -> null
+                            },
+                            puedeVotar = puedeVotar,
                             enviando = enviando,
                             errorVotoRes = errorVotoRes,
                             onOpinionChange = onOpinionChange,
@@ -203,8 +236,9 @@ fun DuelosScreenContent(
     }
 }
 
-// Los dos items lado a lado con el VS en el medio. El borde marca el que elegi para votar o, si no
-// he elegido, el que ya vote
+// Los dos items lado a lado con el VS grande y blanco en un circulo encima del medio, para que se
+// sienta como un enfrentamiento. El borde marca el que elegi para votar o, si no he elegido, el que ya
+// vote
 @Composable
 private fun DueloCaraACara(
     duelo: DueloUi,
@@ -215,45 +249,94 @@ private fun DueloCaraACara(
 ) {
     val marcado = opcionElegida ?: duelo.miOpcion
 
-    Row(
+    Box(
         modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        contentAlignment = Alignment.Center,
     ) {
-        DueloItemCard(
-            item = duelo.itemA,
-            porcentaje = duelo.porcentajeA,
-            votos = duelo.votosA,
-            elegido = marcado == OPCION_A,
-            esMiVoto = duelo.miOpcion == OPCION_A,
-            vaGanando = duelo.ganador == OPCION_A,
-            onClick = { onOpcionClick(OPCION_A) },
-            onVerDetalle = { onItemClick(duelo.tipo, duelo.itemA.id) },
-            modifier = Modifier
-                .weight(1f)
-                .testTag("dueloA"),
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            DueloItemCard(
+                item = duelo.itemA,
+                porcentaje = duelo.porcentajeA,
+                votos = duelo.votosA,
+                sinVotos = duelo.sinVotos,
+                elegido = marcado == OPCION_A,
+                esMiVoto = duelo.miOpcion == OPCION_A,
+                vaGanando = duelo.ganador == OPCION_A,
+                onClick = { onOpcionClick(OPCION_A) },
+                onVerDetalle = { onItemClick(duelo.tipo, duelo.itemA.id) },
+                modifier = Modifier
+                    .weight(1f)
+                    .testTag("dueloA"),
+            )
 
-        Text(
-            text = stringResource(R.string.vs),
-            color = MaterialTheme.colorScheme.primary,
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold,
-        )
+            DueloItemCard(
+                item = duelo.itemB,
+                porcentaje = duelo.porcentajeB,
+                votos = duelo.votosB,
+                sinVotos = duelo.sinVotos,
+                elegido = marcado == OPCION_B,
+                esMiVoto = duelo.miOpcion == OPCION_B,
+                vaGanando = duelo.ganador == OPCION_B,
+                onClick = { onOpcionClick(OPCION_B) },
+                onVerDetalle = { onItemClick(duelo.tipo, duelo.itemB.id) },
+                modifier = Modifier
+                    .weight(1f)
+                    .testTag("dueloB"),
+            )
+        }
 
-        DueloItemCard(
-            item = duelo.itemB,
-            porcentaje = duelo.porcentajeB,
-            votos = duelo.votosB,
-            elegido = marcado == OPCION_B,
-            esMiVoto = duelo.miOpcion == OPCION_B,
-            vaGanando = duelo.ganador == OPCION_B,
-            onClick = { onOpcionClick(OPCION_B) },
-            onVerDetalle = { onItemClick(duelo.tipo, duelo.itemB.id) },
+        // El VS encima, entre las dos portadas
+        Box(
             modifier = Modifier
-                .weight(1f)
-                .testTag("dueloB"),
-        )
+                .size(64.dp)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.primary)
+                .border(3.dp, White, CircleShape),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                text = stringResource(R.string.vs),
+                color = White,
+                style = MaterialTheme.typography.headlineMedium,
+                fontSize = 30.sp,
+            )
+        }
+    }
+}
+
+// Sin votos no hay porcentajes ni barra: una invitacion a abrir la votacion
+@Composable
+private fun SeElPrimeroEnVotar(
+    modifier: Modifier = Modifier,
+) {
+    TarjetaTranslucida(onClick = null, modifier = modifier.fillMaxWidth().testTag("seElPrimero")) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.HowToVote,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(32.dp),
+            )
+            Column(modifier = Modifier.padding(start = 14.dp)) {
+                Text(
+                    text = stringResource(R.string.se_el_primero),
+                    color = MaterialTheme.colorScheme.onSurface,
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                Text(
+                    text = stringResource(R.string.se_el_primero_detalle),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
+        }
     }
 }
 
@@ -289,6 +372,7 @@ fun DuelosScreenPreview() {
             opcionElegida = null,
             opinion = "",
             enviando = false,
+            puedeVotar = true,
             isLoading = false,
             errorMessageRes = null,
             errorVotosRes = null,

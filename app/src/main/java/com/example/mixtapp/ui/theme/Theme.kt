@@ -6,13 +6,14 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 
-// Modo oscuro: el fondo clasico de vino casi negro, con los tonos pastel (100) en los botones,
-// los textos destacados y los circulos
+// Modo oscuro: el fondo ciruela casi negro con un toque violeta. El rosado chicle queda para lo
+// importante: los botones, las estrellas, los filtros elegidos y la pestana activa. Los textos
+// secundarios van en gris tenue y las barras en el tono mas oscuro
 private val DarkColorScheme = darkColorScheme(
-    primary = Crimson100,
+    primary = Chicle,
     onPrimary = Crimson600,
-    primaryContainer = Crimson400,
-    onPrimaryContainer = Crimson50,
+    primaryContainer = Magenta,
+    onPrimaryContainer = White,
     inversePrimary = Crimson400,
 
     secondary = Mauve100,
@@ -20,28 +21,28 @@ private val DarkColorScheme = darkColorScheme(
     secondaryContainer = Mauve400,
     onSecondaryContainer = Mauve50,
 
-    tertiary = Plum100,
+    tertiary = Plum200,
     onTertiary = Plum600,
     tertiaryContainer = Plum500,
     onTertiaryContainer = Plum50,
 
-    background = Mauve600,
+    background = Noche,
     onBackground = Grey50,
 
-    surface = Mauve600,
+    surface = Noche,
     onSurface = Grey50,
     surfaceVariant = Plum600,
-    onSurfaceVariant = Mauve100,
-    surfaceTint = Crimson100,
+    onSurfaceVariant = Grey200,
+    surfaceTint = Chicle,
     inverseSurface = Mauve50,
     inverseOnSurface = Mauve600,
 
     surfaceDim = Crimson600,
     surfaceBright = Plum500,
-    surfaceContainerLowest = Grey600,
+    surfaceContainerLowest = Mauve700,
     surfaceContainerLow = Crimson600,
     surfaceContainer = Plum600,
-    surfaceContainerHigh = Mauve500,
+    surfaceContainerHigh = Uva,
     surfaceContainerHighest = Plum500,
 
     error = Crimson200,

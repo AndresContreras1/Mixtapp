@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
 import com.example.mixtapp.data.injection.IoDispatcher
+import com.example.mixtapp.data.model.CampoDeLaCuenta
 import com.example.mixtapp.data.model.MIN_PASSWORD_LENGTH
 import com.example.mixtapp.data.model.esCorreoValido
 import com.example.mixtapp.data.repository.AuthRepository
@@ -33,12 +34,12 @@ class LoginViewModel @Inject constructor(
 
     // Al corregir el campo se limpia el error del intento anterior
     fun updateEmail(email: String) {
-        _uiState.update { it.copy(email = email, errorMessageRes = null) }
+        _uiState.update { it.copy(email = email, errorMessageRes = null, campoConError = null) }
     }
 
     // Igual que el correo: escribir de nuevo borra el error que ya no aplica
     fun updateContrasena(contrasena: String) {
-        _uiState.update { it.copy(contrasena = contrasena, errorMessageRes = null) }
+        _uiState.update { it.copy(contrasena = contrasena, errorMessageRes = null, campoConError = null) }
     }
 
     // El ojo del campo: alterna entre ver la contrasena y ocultarla con puntos
@@ -53,22 +54,23 @@ class LoginViewModel @Inject constructor(
 
         if (estado.cargando) return
 
-        val errorRes = when {
-            estado.email.isBlank() || estado.contrasena.isBlank() ->
-                R.string.error_campos_obligatorios
+        // El mensaje y el campo que lo tiene
+        val (errorRes, campo) = when {
+            estado.email.isBlank() -> R.string.error_campos_obligatorios to CampoDeLaCuenta.Correo
+            estado.contrasena.isBlank() -> R.string.error_campos_obligatorios to CampoDeLaCuenta.Contrasena
 
             !esCorreoValido(estado.email.trim()) ->
-                R.string.error_email_invalido
+                R.string.error_email_invalido to CampoDeLaCuenta.Correo
 
             estado.contrasena.length < MIN_PASSWORD_LENGTH ->
-                R.string.error_contrasena_corta
+                R.string.error_contrasena_corta to CampoDeLaCuenta.Contrasena
 
-            else -> null
+            else -> null to null
         }
 
         // Si el formulario no pasa las validaciones locales no se consulta a Firebase
         if (errorRes != null) {
-            _uiState.update { it.copy(errorMessageRes = errorRes, navigate = false) }
+            _uiState.update { it.copy(errorMessageRes = errorRes, campoConError = campo, navigate = false) }
             return
         }
 
@@ -79,7 +81,7 @@ class LoginViewModel @Inject constructor(
     // signIn es suspend, asi que se lanza la corrutina donde se necesita
     private fun signIn(email: String, contrasena: String) {
         viewModelScope.launch(ioDispatcher) {
-            _uiState.update { it.copy(cargando = true, errorMessageRes = null) }
+            _uiState.update { it.copy(cargando = true, errorMessageRes = null, campoConError = null) }
 
             val result = authRepository.signIn(email = email, password = contrasena)
 

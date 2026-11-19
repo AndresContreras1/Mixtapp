@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -73,6 +74,9 @@ fun Mixtapp(modifier: Modifier = Modifier) {
 
     Scaffold(
         modifier = modifier,
+        // Lo que queda fuera de las pantallas (la franja de la hora arriba) va en el tono de las
+        // barras, asi la barra de arriba de cada pestana llega hasta el borde
+        containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
         bottomBar = {
             if (mostrarBarra) {
                 BottomNav(navController = navController)

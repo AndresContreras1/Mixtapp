@@ -7,10 +7,13 @@ import com.example.mixtapp.data.datasource.DueloRemoteDataSource
 import com.example.mixtapp.data.datasource.HistoriaRemoteDataSource
 import com.example.mixtapp.data.datasource.MixtapeRemoteDataSource
 import com.example.mixtapp.data.datasource.NotificacionRemoteDataSource
+import com.example.mixtapp.data.datasource.ReproductorDataSource
 import com.example.mixtapp.data.datasource.ReviewRemoteDataSource
 import com.example.mixtapp.data.datasource.SonandoRemoteDataSource
 import com.example.mixtapp.data.datasource.UbicacionDataSource
 import com.example.mixtapp.data.datasource.UsuarioRemoteDataSource
+import com.example.mixtapp.data.datasource.VistaPreviaRemoteDataSource
+import com.example.mixtapp.data.datasource.impl.android.ReproductorAndroidDataSourceImpl
 import com.example.mixtapp.data.datasource.impl.android.UbicacionAndroidDataSourceImpl
 import com.example.mixtapp.data.datasource.impl.firestore.AlbumFirestoreDataSourceImpl
 import com.example.mixtapp.data.datasource.impl.firestore.ArtistaFirestoreDataSourceImpl
@@ -22,6 +25,7 @@ import com.example.mixtapp.data.datasource.impl.firestore.NotificacionFirestoreD
 import com.example.mixtapp.data.datasource.impl.firestore.ReviewFirestoreDataSourceImpl
 import com.example.mixtapp.data.datasource.impl.firestore.SonandoFirestoreDataSourceImpl
 import com.example.mixtapp.data.datasource.impl.firestore.UsuarioFirestoreDataSourceImpl
+import com.example.mixtapp.data.datasource.impl.retrofit.VistaPreviaRetrofitDataSourceImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -88,4 +92,16 @@ abstract class DataSourceModule {
     abstract fun bindUbicacionDataSource(
         impl: UbicacionAndroidDataSourceImpl
     ): UbicacionDataSource
+
+    // El fragmento de 30 segundos sale de Deezer, que no tiene version de Firestore
+    @Binds
+    abstract fun bindVistaPreviaRemoteDataSource(
+        impl: VistaPreviaRetrofitDataSourceImpl
+    ): VistaPreviaRemoteDataSource
+
+    // El audio lo hace sonar Android, igual que la ubicacion
+    @Binds
+    abstract fun bindReproductorDataSource(
+        impl: ReproductorAndroidDataSourceImpl
+    ): ReproductorDataSource
 }

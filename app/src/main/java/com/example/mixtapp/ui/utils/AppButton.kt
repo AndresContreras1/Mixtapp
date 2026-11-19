@@ -26,17 +26,21 @@ fun AppButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     cargando: Boolean,
+    // false mientras falte algo para la accion (en Duelos, elegir uno de los dos): el boton se ve
+    // apagado y no se puede tocar
+    habilitado: Boolean = true,
 ) {
     Button(
         onClick = onClick,
         modifier = modifier.height(56.dp),
-        enabled = !cargando,
+        enabled = !cargando && habilitado,
         shape = CircleShape,
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primary,
             contentColor = MaterialTheme.colorScheme.onPrimary,
-            disabledContainerColor = MaterialTheme.colorScheme.primary,
-            disabledContentColor = MaterialTheme.colorScheme.onPrimary
+            // Cargando se ve igual que activo; apagado, en el gris de las tarjetas
+            disabledContainerColor = if (habilitado) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainerHigh,
+            disabledContentColor = if (habilitado) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
         ),
         elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
     ) {

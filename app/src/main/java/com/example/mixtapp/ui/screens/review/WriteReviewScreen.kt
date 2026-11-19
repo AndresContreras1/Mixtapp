@@ -43,6 +43,7 @@ import com.example.mixtapp.ui.utils.LoadingBox
 import com.example.mixtapp.ui.utils.PedirPermisoDeUbicacion
 import com.example.mixtapp.ui.utils.ScreenTitle
 import com.example.mixtapp.ui.utils.StarRating
+import com.example.mixtapp.ui.utils.TonoDeFondo
 
 // Escribir o editar mi resena de un album, una cancion o un artista. Recibe el tipo y el id; el
 // ViewModel se encarga de buscar el item y mi resena si ya existe
@@ -111,7 +112,7 @@ fun WriteReviewScreenContent(
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier.fillMaxSize().testTag("writeReviewScreen")) {
-        AppBackground()
+        AppBackground(tono = TonoDeFondo.Item)
 
         when {
             isLoading -> LoadingBox()

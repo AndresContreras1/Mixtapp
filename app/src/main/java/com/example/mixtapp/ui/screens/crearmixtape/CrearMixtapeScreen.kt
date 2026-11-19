@@ -26,6 +26,7 @@ import com.example.mixtapp.ui.utils.AppTextArea
 import com.example.mixtapp.ui.utils.AppTextField
 import com.example.mixtapp.ui.utils.ErrorMessage
 import com.example.mixtapp.ui.utils.ScreenTitle
+import com.example.mixtapp.ui.utils.TonoDeFondo
 
 @Composable
 fun CrearMixtapeScreen(
@@ -71,7 +72,7 @@ fun CrearMixtapeScreenContent(
             .fillMaxSize()
             .testTag("crearMixtapeScreen")
     ) {
-        AppBackground()
+        AppBackground(tono = TonoDeFondo.Item)
 
         Column(
             modifier = Modifier

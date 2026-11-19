@@ -29,6 +29,7 @@ import com.example.mixtapp.ui.utils.ErrorMessage
 import com.example.mixtapp.ui.utils.LoadingBox
 import com.example.mixtapp.ui.utils.ReviewCard
 import com.example.mixtapp.ui.utils.ScreenTitle
+import com.example.mixtapp.ui.utils.TonoDeFondo
 
 @Composable
 fun MyReviewsScreen(
@@ -72,7 +73,7 @@ fun MyReviewsScreenContent(
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier.fillMaxSize().testTag("myReviewsScreen")) {
-        AppBackground()
+        AppBackground(tono = TonoDeFondo.Perfil)
 
         Column(modifier = Modifier.fillMaxSize()) {
             // El titulo queda fijo para poder volver aunque falle la carga

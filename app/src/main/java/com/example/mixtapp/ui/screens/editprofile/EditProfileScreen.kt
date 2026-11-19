@@ -31,6 +31,7 @@ import com.example.mixtapp.ui.utils.ErrorBox
 import com.example.mixtapp.ui.utils.ErrorMessage
 import com.example.mixtapp.ui.utils.LoadingBox
 import com.example.mixtapp.ui.utils.ScreenTitle
+import com.example.mixtapp.ui.utils.TonoDeFondo
 
 // Modificar mis datos de Firestore: nombre, nombre de usuario, biografia e Instagram
 @Composable
@@ -87,7 +88,7 @@ fun EditProfileScreenContent(
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier.fillMaxSize()) {
-        AppBackground()
+        AppBackground(tono = TonoDeFondo.Perfil)
 
         Column(
             modifier = Modifier

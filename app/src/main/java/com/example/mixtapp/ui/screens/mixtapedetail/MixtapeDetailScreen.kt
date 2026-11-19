@@ -41,6 +41,7 @@ import com.example.mixtapp.ui.utils.ErrorMessage
 import com.example.mixtapp.ui.utils.LoadingBox
 import com.example.mixtapp.ui.utils.ProfileAsyncImage
 import com.example.mixtapp.ui.utils.ScreenTitle
+import com.example.mixtapp.ui.utils.TonoDeFondo
 
 @Composable
 fun MixtapeDetailScreen(
@@ -93,7 +94,7 @@ fun MixtapeDetailScreenContent(
             .fillMaxSize()
             .testTag("mixtapeDetailScreen")
     ) {
-        AppBackground()
+        AppBackground(tono = TonoDeFondo.Item)
 
         when {
             isLoading -> LoadingBox()

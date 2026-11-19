@@ -28,6 +28,7 @@ import com.example.mixtapp.ui.utils.ErrorBox
 import com.example.mixtapp.ui.utils.ErrorMessage
 import com.example.mixtapp.ui.utils.LoadingBox
 import com.example.mixtapp.ui.utils.ScreenTitle
+import com.example.mixtapp.ui.utils.TonoDeFondo
 import com.example.mixtapp.ui.utils.UserRow
 
 // Recibe el id del usuario y que lista mostrar; el ViewModel se encarga de buscarla
@@ -53,7 +54,7 @@ fun FollowListScreen(
     val errorMessageRes = state.errorMessageRes
 
     Box(modifier = modifier.fillMaxSize()) {
-        AppBackground()
+        AppBackground(tono = TonoDeFondo.Social)
 
         // El titulo y la flecha quedan fijos arriba: tambien mientras carga o si hay un error
         Column(modifier = Modifier.fillMaxSize()) {
@@ -114,7 +115,7 @@ fun FollowListScreenContent(
 fun FollowListScreenPreview() {
     MixtappTheme(darkTheme = true) {
         Box {
-            AppBackground()
+            AppBackground(tono = TonoDeFondo.Social)
 
             FollowListScreenContent(
                 usuarios = LocalPreviewProvider.following.seguidos,

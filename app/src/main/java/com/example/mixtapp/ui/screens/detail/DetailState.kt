@@ -1,6 +1,7 @@
 package com.example.mixtapp.ui.screens.detail
 
 import androidx.annotation.StringRes
+import com.example.mixtapp.data.model.EstadoDeReproduccion
 import com.example.mixtapp.data.model.ItemConResenasUi
 
 // El item es nulable porque puede que el id no exista. Sirve igual para un album, una cancion o
@@ -17,4 +18,9 @@ data class DetailState(
     @StringRes val errorAccionRes: Int? = null,
     // El aviso de que el item quedo en "sonando ahora"
     @StringRes val avisoSonandoRes: Int? = null,
+    // El fragmento de 30 segundos: el id del item que suena o carga (null si no suena nada), en que va
+    // y el error si no se pudo reproducir
+    val vistaPreviaId: String? = null,
+    val vistaPreviaEstado: EstadoDeReproduccion? = null,
+    @StringRes val errorVistaPreviaRes: Int? = null,
 )
