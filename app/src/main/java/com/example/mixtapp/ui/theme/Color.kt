@@ -6,7 +6,7 @@ import androidx.compose.ui.graphics.Color
 // base son Crimson400, Mauve400, Plum500 y los dos grises de abajo. Theme.kt toma de aqui los
 // colores de cada rol: para cambiar el tema basta con cambiar el tono en uno de los dos archivos
 
-// Crimson: el rosado de los botones y el logo
+// Crimson: el rosado de lo importante: los botones, las estrellas, la pestana activa y el logo
 val Crimson50 = Color(0xFFFCE7EA)
 val Crimson100 = Color(0xFFF6B2BE)
 val Crimson200 = Color(0xFFF17892)
@@ -23,6 +23,8 @@ val Mauve300 = Color(0xFFBA5376)
 val Mauve400 = Color(0xFF853953)
 val Mauve500 = Color(0xFF542132)
 val Mauve600 = Color(0xFF260B15)
+// Mas oscuro que el fondo: las barras de arriba y de abajo, para que no se pierdan en el fondo
+val Mauve700 = Color(0xFF16060C)
 
 // Plum: los circulos del fondo y los detalles
 val Plum50 = Color(0xFFF8EEF5)

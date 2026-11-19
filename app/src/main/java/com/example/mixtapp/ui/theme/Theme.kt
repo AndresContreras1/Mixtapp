@@ -6,10 +6,11 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 
-// Modo oscuro: el fondo clasico de vino casi negro, con los tonos pastel (100) en los botones,
-// los textos destacados y los circulos
+// Modo oscuro: el fondo de vino casi negro. El rosado vivo (200) queda para lo importante: los
+// botones, las estrellas y la pestana activa. Los textos secundarios van en gris tenue y las barras
+// en el tono mas oscuro
 private val DarkColorScheme = darkColorScheme(
-    primary = Crimson100,
+    primary = Crimson200,
     onPrimary = Crimson600,
     primaryContainer = Crimson400,
     onPrimaryContainer = Crimson50,
@@ -31,14 +32,14 @@ private val DarkColorScheme = darkColorScheme(
     surface = Mauve600,
     onSurface = Grey50,
     surfaceVariant = Plum600,
-    onSurfaceVariant = Mauve100,
-    surfaceTint = Crimson100,
+    onSurfaceVariant = Grey200,
+    surfaceTint = Crimson200,
     inverseSurface = Mauve50,
     inverseOnSurface = Mauve600,
 
     surfaceDim = Crimson600,
     surfaceBright = Plum500,
-    surfaceContainerLowest = Grey600,
+    surfaceContainerLowest = Mauve700,
     surfaceContainerLow = Crimson600,
     surfaceContainer = Plum600,
     surfaceContainerHigh = Mauve500,
