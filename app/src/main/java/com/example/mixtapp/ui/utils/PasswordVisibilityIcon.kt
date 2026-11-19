@@ -14,10 +14,12 @@ import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.theme.MixtappTheme
 
-// El ojo de los campos de contrasena: abierto si se ve la contrasena, cerrado si no
+// El ojo de los campos de contrasena: abierto si se ve la contrasena, cerrado si no. Con el campo en
+// foco va en rosado para que se note que se puede tocar
 @Composable
 fun PasswordVisibilityIcon(
     contrasenaVisible: Boolean,
+    resaltado: Boolean,
     modifier: Modifier = Modifier
 ) {
     Icon(
@@ -31,8 +33,8 @@ fun PasswordVisibilityIcon(
         contentDescription = stringResource(
             if (contrasenaVisible) R.string.ocultar_contrasena else R.string.mostrar_contrasena
         ),
-        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = modifier.size(18.dp)
+        tint = if (resaltado) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = modifier.size(24.dp)
     )
 }
 
@@ -42,8 +44,8 @@ fun PasswordVisibilityIcon(
 fun PasswordVisibilityIconPreview() {
     MixtappTheme(darkTheme = true) {
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            PasswordVisibilityIcon(contrasenaVisible = false)
-            PasswordVisibilityIcon(contrasenaVisible = true)
+            PasswordVisibilityIcon(contrasenaVisible = false, resaltado = false)
+            PasswordVisibilityIcon(contrasenaVisible = true, resaltado = true)
         }
     }
 }
