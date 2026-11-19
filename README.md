@@ -360,15 +360,23 @@ La pantalla de notificaciones tiene tres pestañas, todas en vivo:
   entrega `CoroutineModule`), así las pruebas pueden pasar uno de prueba.
 - **El color sale del `MaterialTheme`.** `Color.kt` tiene las cuatro escalas de la paleta (Crimson,
   Mauve, Plum y Gris, del 50 al 600) y `Theme.kt` elige el tono de cada rol: para cambiar el tema
-  basta con cambiar un tono en uno de los dos archivos. El modo oscuro usa los tonos pastel sobre el
-  fondo de vino casi negro y el modo claro, los fondos pastel. No hay colores quemados fuera de
+  basta con cambiar un tono en uno de los dos archivos. El modo oscuro usa el rosado vivo solo para
+  lo importante (botones, estrellas, pestaña activa) sobre el fondo de vino casi negro, y el modo
+  claro, los fondos pastel. Las barras de arriba (`BarraSuperior`) y de abajo van en el tono más
+  oscuro (`surfaceContainerLowest`) para que no se pierdan en el fondo. No hay colores quemados fuera de
   `Color.kt`, salvo el fondo de la ventana en `themes.xml` y los drawables XML (icono y marcadores de
   imagen), que se pintan sin Compose y repiten a mano los colores de la paleta.
+- **Un fondo por sección** (`AppBackground` con `TonoDeFondo`): el color de fondo con dos
+  resplandores difuminados en las esquinas y un grano fino. Cada sección tiene su tono (Inicio,
+  Buscar, Duelos, Perfil, lo social, el item, Tu año y la cuenta) y los resplandores se desvanecen
+  antes del centro, así no pasan detrás del contenido.
 - **Un solo campo de texto** (`AppTextField`): un `OutlinedTextField` ovalado con el fondo
-  translúcido, para que se vea el fondo con los círculos. Lo usan el correo, Buscar, la fecha de
+  translúcido. Lo usan el correo, Buscar, la fecha de
   escucha y los comentarios; la contraseña tiene su propio campo con el ojo (`AppPasswordField`).
-- **Tipografía de Google Fonts:** Playfair Display para los títulos e Inter para el texto. El
-  certificado está en `res/values/font_certs.xml`. Sin internet, Android usa la fuente por defecto.
+- **Una sola tipografía de Google Fonts, Outfit,** del normal al Black. La jerarquía sale del tamaño
+  y del grosor de cada estilo de `Type.kt`: display para las cifras grandes, headline para los
+  títulos en negrita, title para secciones y tarjetas, body para leer y label para botones y
+  metadatos. El certificado está en `res/values/font_certs.xml`. Sin internet, Android usa la fuente por defecto.
 - **Hilt se compila con KSP.** El proyecto está en AGP 9.0.0, que trae Kotlin integrado (por eso no
   se aplica `kotlin.android`) y deja `kapt` solo como transición. El plugin de KSP ya estaba en el
   build de clase. `firebase-storage` reemplaza a `firebase-storage-ktx`: desde el BoM 32.5 son el
