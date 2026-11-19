@@ -24,6 +24,9 @@ data class DueloUi(
 ) {
     val totalVotos: Int get() = votosA + votosB
 
+    // Sin votos no hay una distribucion real: la pantalla invita a votar en vez de mostrar 50 y 50
+    val sinVotos: Boolean get() = totalVotos == 0
+
     // Sin votos los dos quedan en 50, para que la barra salga pareja
     val porcentajeA: Int get() = if (totalVotos == 0) 50 else votosA * 100 / totalVotos
     val porcentajeB: Int get() = 100 - porcentajeA

@@ -5,6 +5,7 @@ import com.example.mixtapp.data.model.DueloEnVivoUi
 import com.example.mixtapp.data.model.DueloUi
 import com.example.mixtapp.data.model.ItemUi
 import com.example.mixtapp.data.model.TIPO_ALBUM
+import com.example.mixtapp.data.model.puedeVotar
 import com.example.mixtapp.ui.screens.duelos.model.dueloTabs
 import com.example.mixtapp.ui.utils.OpcionUi
 
@@ -28,4 +29,7 @@ data class DuelosState(
     @StringRes val errorMessageRes: Int? = null,
     val erroresDeVotos: Map<String, Int> = emptyMap(),
     @StringRes val errorVotoRes: Int? = null,
-)
+) {
+    // El boton Votar queda apagado hasta elegir uno de los dos; la regla esta en data/model
+    val puedeVotar: Boolean get() = puedeVotar(opcionElegida = opcionElegida, miOpcion = duelos[tipoElegido]?.miOpcion)
+}
