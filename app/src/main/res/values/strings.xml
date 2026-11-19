@@ -35,7 +35,7 @@
     <string name="seguidos">Seguidos</string>
     <string name="now_trending">En tendencia</string>
     <string name="albumes_populares">Álbumes populares</string>
-    <string name="sin_actividad_seguidos">Aún no hay reseñas de personas a quienes sigues</string>
+    <string name="sin_actividad_seguidos">Todavía no hay reseñas de las personas que sigues</string>
     <string name="resenas_de_seguidos">Reseñas de quienes sigues</string>
 
     <!-- Profile Extra -->
@@ -209,7 +209,7 @@
 
     <!-- Sonando ahora y sus reacciones -->
     <string name="sonando_ahora">Sonando ahora</string>
-    <string name="estoy_escuchando_esto">Estoy escuchando esto</string>
+    <string name="estoy_escuchando_esto">Contar a mis seguidores que lo escucho</string>
     <string name="sonando_publicado">Listo: tus seguidores lo ven en Sonando ahora</string>
     <string name="dejar_de_sonar">Ya no lo escucho</string>
     <string name="reaccion_fuego">🔥 %1$d</string>
@@ -358,4 +358,31 @@
     <string name="label_instagram">Instagram</string>
     <string name="instagram_placeholder">Tu usuario de Instagram, sin la @</string>
     <string name="error_instagram_invalido">El Instagram solo puede tener hasta 30 letras, números, puntos o guiones bajos</string>
+
+    <!-- el fragmento de 30 segundos que suena en la app -->
+    <string name="escuchar_fragmento">Escuchar 30 s</string>
+    <string name="cargando_fragmento">Cargando…</string>
+    <string name="detener_fragmento">Detener</string>
+    <string name="escuchar_fragmento_de">Escuchar un fragmento de %1$s</string>
+    <string name="error_vista_previa">No se pudo reproducir el fragmento. Inténtalo de nuevo</string>
+    <string name="error_sin_vista_previa">Deezer no tiene un fragmento de esto</string>
+
+    <!-- inicio: tendencia y reseñas de quienes sigo -->
+    <string name="tendencia_en">Tendencia en %1$s</string>
+    <string name="tendencia_en_colombia">Tendencia en Colombia</string>
+    <string name="descubrir_personas">Descubrir personas</string>
+
+    <!-- detalle: bloques, estadísticas y acciones -->
+    <string name="escuchar_y_ver">Escuchar y ver</string>
+    <string name="descubre_mas">Descubre más</string>
+    <string name="datos_curiosos_descripcion">Historias y datos reales detrás de la música</string>
+    <string name="resenas_de_la_comunidad">Reseñas de la comunidad</string>
+    <string name="youtube">YouTube</string>
+    <string name="spotify">Spotify</string>
+    <string name="recomiendan_de">%1$d de %2$d lo recomiendan</string>
+    <string name="sin_calificaciones_todavia">Todavía nadie lo califica</string>
+    <string name="promedio_label">promedio</string>
+    <string name="guardado">Guardado</string>
+    <string name="mixtape_accion">Mixtape</string>
+    <string name="calificacion_sobre_cinco">%1$d/5</string>
 </resources>
