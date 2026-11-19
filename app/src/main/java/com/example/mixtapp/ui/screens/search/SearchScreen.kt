@@ -3,6 +3,7 @@ package com.example.mixtapp.ui.screens.search
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -31,6 +32,7 @@ import com.example.mixtapp.ui.screens.search.components.SelectedCategoryHeader
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppBackground
 import com.example.mixtapp.ui.utils.AppTextField
+import com.example.mixtapp.ui.utils.BarraSuperior
 import com.example.mixtapp.ui.utils.EmptyMessage
 import com.example.mixtapp.ui.utils.ErrorBox
 import com.example.mixtapp.ui.utils.ErrorMessage
@@ -92,102 +94,110 @@ fun SearchScreenContent(
     Box(modifier = modifier.fillMaxSize()) {
         AppBackground(tono = TonoDeFondo.Buscar)
 
-        when {
-            isLoading -> LoadingBox()
-            // Sin catalogo no hay donde buscar: solo el motivo del error
-            errorMessageRes != null -> ErrorBox(messageRes = errorMessageRes)
-            else -> LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 20.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
+        Column(modifier = Modifier.fillMaxSize()) {
+            BarraSuperior {
+                ScreenTitle(title = stringResource(R.string.search_title), onBackClick = null)
+            }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
             ) {
-                item {
-                    ScreenTitle(title = stringResource(R.string.search_title), onBackClick = null)
-                }
-
-                item {
-                    AppTextField(
-                        value = query,
-                        onValueChange = onQueryChange,
-                        placeholder = stringResource(R.string.search_placeholder),
-                        leadingIcon = Icons.Outlined.Search,
-                        modifier = Modifier.testTag("txtBuscar"),
-                    )
-
-                    ErrorMessage(messageRes = errorSecundarioRes, modifier = Modifier.padding(top = 8.dp))
-                }
-
                 when {
-                    // Con texto: los items que coinciden y, aparte, las personas
-                    query.isNotBlank() -> {
-                        if (resultados.isEmpty() && usuarios.isEmpty()) {
-                            item {
-                                EmptyMessage(messageRes = R.string.sin_resultados, modifier = Modifier.fillMaxWidth())
-                            }
-                        }
-
-                        listaDeResultados(resultados = resultados, onItemClick = onItemClick)
-
-                        if (usuarios.isNotEmpty()) {
-                            item {
-                                SectionTitle(
-                                    title = stringResource(R.string.personas),
-                                    modifier = Modifier.padding(top = 12.dp),
-                                    actionText = null,
-                                    onActionClick = null,
-                                )
-                            }
-
-                            items(usuarios) { usuario ->
-                                UserRow(usuario = usuario, onUserClick = onUserClick)
-                            }
-                        }
-                    }
-
-                    // Con una tarjeta elegida: su titulo con la X y la lista en su orden
-                    categoriaElegida != null -> {
+                    isLoading -> LoadingBox()
+                    // Sin catalogo no hay donde buscar: solo el motivo del error
+                    errorMessageRes != null -> ErrorBox(messageRes = errorMessageRes)
+                    else -> LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                    ) {
                         item {
-                            SelectedCategoryHeader(
-                                titulo = stringResource(categoriaElegida.titleRes),
-                                onClearClick = onClearCategory,
+                            AppTextField(
+                                value = query,
+                                onValueChange = onQueryChange,
+                                placeholder = stringResource(R.string.search_placeholder),
+                                leadingIcon = Icons.Outlined.Search,
+                                modifier = Modifier.testTag("txtBuscar"),
                             )
+
+                            ErrorMessage(messageRes = errorSecundarioRes, modifier = Modifier.padding(top = 8.dp))
                         }
 
-                        if (resultados.isEmpty()) {
-                            item {
-                                EmptyMessage(messageRes = R.string.sin_resultados, modifier = Modifier.fillMaxWidth())
+                        when {
+                            // Con texto: los items que coinciden y, aparte, las personas
+                            query.isNotBlank() -> {
+                                if (resultados.isEmpty() && usuarios.isEmpty()) {
+                                    item {
+                                        EmptyMessage(messageRes = R.string.sin_resultados, modifier = Modifier.fillMaxWidth())
+                                    }
+                                }
+
+                                listaDeResultados(resultados = resultados, onItemClick = onItemClick)
+
+                                if (usuarios.isNotEmpty()) {
+                                    item {
+                                        SectionTitle(
+                                            title = stringResource(R.string.personas),
+                                            modifier = Modifier.padding(top = 12.dp),
+                                            actionText = null,
+                                            onActionClick = null,
+                                        )
+                                    }
+
+                                    items(usuarios) { usuario ->
+                                        UserRow(usuario = usuario, onUserClick = onUserClick)
+                                    }
+                                }
                             }
-                        }
 
-                        listaDeResultados(resultados = resultados, onItemClick = onItemClick)
-                    }
+                            // Con una tarjeta elegida: su titulo con la X y la lista en su orden
+                            categoriaElegida != null -> {
+                                item {
+                                    SelectedCategoryHeader(
+                                        titulo = stringResource(categoriaElegida.titleRes),
+                                        onClearClick = onClearCategory,
+                                    )
+                                }
 
-                    // Sin texto ni tarjeta: las tarjetas de Explorar por y de Generos, dos por fila
-                    else -> {
-                        item {
-                            SectionTitle(
-                                title = stringResource(R.string.browse_by),
-                                modifier = Modifier.padding(top = 8.dp),
-                                actionText = null,
-                                onActionClick = null,
-                            )
-                        }
+                                if (resultados.isEmpty()) {
+                                    item {
+                                        EmptyMessage(messageRes = R.string.sin_resultados, modifier = Modifier.fillMaxWidth())
+                                    }
+                                }
 
-                        items(ordenes.chunked(2)) { fila ->
-                            SearchCategoryCardsRow(categorias = fila, onCategoryClick = onCategoryClick)
-                        }
+                                listaDeResultados(resultados = resultados, onItemClick = onItemClick)
+                            }
 
-                        item {
-                            SectionTitle(
-                                title = stringResource(R.string.generos),
-                                modifier = Modifier.padding(top = 8.dp),
-                                actionText = null,
-                                onActionClick = null,
-                            )
-                        }
+                            // Sin texto ni tarjeta: las tarjetas de Explorar por y de Generos, dos por fila
+                            else -> {
+                                item {
+                                    SectionTitle(
+                                        title = stringResource(R.string.browse_by),
+                                        modifier = Modifier.padding(top = 8.dp),
+                                        actionText = null,
+                                        onActionClick = null,
+                                    )
+                                }
 
-                        items(generos.chunked(2)) { fila ->
-                            SearchCategoryCardsRow(categorias = fila, onCategoryClick = onCategoryClick)
+                                items(ordenes.chunked(2)) { fila ->
+                                    SearchCategoryCardsRow(categorias = fila, onCategoryClick = onCategoryClick)
+                                }
+
+                                item {
+                                    SectionTitle(
+                                        title = stringResource(R.string.generos),
+                                        modifier = Modifier.padding(top = 8.dp),
+                                        actionText = null,
+                                        onActionClick = null,
+                                    )
+                                }
+
+                                items(generos.chunked(2)) { fila ->
+                                    SearchCategoryCardsRow(categorias = fila, onCategoryClick = onCategoryClick)
+                                }
+                            }
                         }
                     }
                 }

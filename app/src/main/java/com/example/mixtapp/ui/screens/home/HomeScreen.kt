@@ -31,6 +31,7 @@ import com.example.mixtapp.ui.screens.home.components.TrendingCard
 import com.example.mixtapp.ui.screens.home.model.homeFilters
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppBackground
+import com.example.mixtapp.ui.utils.BarraSuperior
 import com.example.mixtapp.ui.utils.EmptyMessage
 import com.example.mixtapp.ui.utils.ErrorBox
 import com.example.mixtapp.ui.utils.ErrorMessage
@@ -115,121 +116,130 @@ fun HomeScreenContent(
     ) {
         AppBackground(tono = TonoDeFondo.Inicio)
 
-        when {
-            isLoading -> LoadingBox()
-            // Sin catalogo no hay nada que mostrar: solo el motivo del error
-            errorMessageRes != null -> ErrorBox(messageRes = errorMessageRes)
-            else -> LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 20.dp),
-                verticalArrangement = Arrangement.spacedBy(24.dp),
+        Column(modifier = Modifier.fillMaxSize()) {
+            // El logo y los accesos quedan fijos arriba, tambien mientras carga
+            BarraSuperior {
+                HomeHeader(
+                    onFollowingClick = onFollowingClick,
+                    onNotificationsClick = onNotificationsClick,
+                )
+            }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
             ) {
-                item {
-                    HomeHeader(
-                        onFollowingClick = onFollowingClick,
-                        onNotificationsClick = onNotificationsClick,
-                    )
-                }
+                when {
+                    isLoading -> LoadingBox()
+                    // Sin catalogo no hay nada que mostrar: solo el motivo del error
+                    errorMessageRes != null -> ErrorBox(messageRes = errorMessageRes)
+                    else -> LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(24.dp),
+                    ) {
+                        item {
+                            Column {
+                                FilaDeOpciones(
+                                    opciones = filters,
+                                    elegidaId = selectedFilterId,
+                                    onOpcionClick = onFilterSelected,
+                                    prefijoTestTag = "filtro",
+                                )
 
-                item {
-                    Column {
-                        FilaDeOpciones(
-                            opciones = filters,
-                            elegidaId = selectedFilterId,
-                            onOpcionClick = onFilterSelected,
-                            prefijoTestTag = "filtro",
-                        )
+                                // Si fallan mis favoritos o mis seguidos, el catalogo se sigue viendo
+                                ErrorMessage(messageRes = errorListasRes, modifier = Modifier.padding(top = 8.dp))
+                            }
+                        }
 
-                        // Si fallan mis favoritos o mis seguidos, el catalogo se sigue viendo
-                        ErrorMessage(messageRes = errorListasRes, modifier = Modifier.padding(top = 8.dp))
-                    }
-                }
+                        if (enTendencia != null) {
+                            item {
+                                Column {
+                                    SectionTitle(
+                                        title = stringResource(R.string.now_trending),
+                                        actionText = null,
+                                        onActionClick = null,
+                                    )
 
-                if (enTendencia != null) {
-                    item {
-                        Column {
-                            SectionTitle(
-                                title = stringResource(R.string.now_trending),
-                                actionText = null,
-                                onActionClick = null,
-                            )
+                                    Spacer(modifier = Modifier.height(8.dp))
 
-                            Spacer(modifier = Modifier.height(8.dp))
+                                    TrendingCard(
+                                        item = enTendencia,
+                                        enColombia = enTendenciaColombia,
+                                        onClick = { onItemClick(enTendencia.tipo, enTendencia.id) },
+                                        modifier = Modifier.testTag("tarjetaTendencia"),
+                                    )
+                                }
+                            }
+                        }
 
-                            TrendingCard(
-                                item = enTendencia,
-                                enColombia = enTendenciaColombia,
-                                onClick = { onItemClick(enTendencia.tipo, enTendencia.id) },
-                                modifier = Modifier.testTag("tarjetaTendencia"),
+                        // Una fila vacia no se muestra; si las tres lo estan, el filtro no tiene nada todavia
+                        if (canciones.isEmpty() && albumes.isEmpty() && artistas.isEmpty()) {
+                            item {
+                                EmptyMessage(messageRes = R.string.sin_items_filtro, modifier = Modifier.fillMaxWidth())
+                            }
+                        }
+
+                        if (canciones.isNotEmpty()) {
+                            item {
+                                HomeItemRow(
+                                    titulo = stringResource(R.string.canciones_populares),
+                                    items = canciones,
+                                    onItemClick = { onItemClick(it.tipo, it.id) },
+                                )
+                            }
+                        }
+
+                        if (albumes.isNotEmpty()) {
+                            item {
+                                HomeItemRow(
+                                    titulo = stringResource(R.string.albumes_populares),
+                                    items = albumes,
+                                    onItemClick = { onItemClick(it.tipo, it.id) },
+                                )
+                            }
+                        }
+
+                        if (artistas.isNotEmpty()) {
+                            item {
+                                HomeItemRow(
+                                    titulo = stringResource(R.string.artistas_populares),
+                                    items = artistas,
+                                    onItemClick = { onItemClick(it.tipo, it.id) },
+                                )
+                            }
+                        }
+
+                        item {
+                            Column {
+                                SectionTitle(
+                                    title = stringResource(R.string.resenas_de_seguidos),
+                                    actionText = null,
+                                    onActionClick = null,
+                                )
+
+                                // El error del like se ve junto a las tarjetas donde se toco
+                                ErrorMessage(messageRes = errorAccionRes)
+
+                                if (resenasDeSeguidos.isEmpty()) {
+                                    EmptyMessage(messageRes = R.string.sin_actividad_seguidos, modifier = Modifier.fillMaxWidth())
+                                }
+                            }
+                        }
+
+                        items(resenasDeSeguidos) { review ->
+                            ReviewCard(
+                                review = review,
+                                onAuthorClick = onAuthorClick,
+                                onLikeClick = onLikeClick,
+                                onCommentsClick = onCommentsClick,
+                                onItemClick = { item -> onItemClick(item.tipo, item.id) },
+                                onEditClick = null,
+                                onDeleteClick = null,
                             )
                         }
                     }
-                }
-
-                // Una fila vacia no se muestra; si las tres lo estan, el filtro no tiene nada todavia
-                if (canciones.isEmpty() && albumes.isEmpty() && artistas.isEmpty()) {
-                    item {
-                        EmptyMessage(messageRes = R.string.sin_items_filtro, modifier = Modifier.fillMaxWidth())
-                    }
-                }
-
-                if (canciones.isNotEmpty()) {
-                    item {
-                        HomeItemRow(
-                            titulo = stringResource(R.string.canciones_populares),
-                            items = canciones,
-                            onItemClick = { onItemClick(it.tipo, it.id) },
-                        )
-                    }
-                }
-
-                if (albumes.isNotEmpty()) {
-                    item {
-                        HomeItemRow(
-                            titulo = stringResource(R.string.albumes_populares),
-                            items = albumes,
-                            onItemClick = { onItemClick(it.tipo, it.id) },
-                        )
-                    }
-                }
-
-                if (artistas.isNotEmpty()) {
-                    item {
-                        HomeItemRow(
-                            titulo = stringResource(R.string.artistas_populares),
-                            items = artistas,
-                            onItemClick = { onItemClick(it.tipo, it.id) },
-                        )
-                    }
-                }
-
-                item {
-                    Column {
-                        SectionTitle(
-                            title = stringResource(R.string.resenas_de_seguidos),
-                            actionText = null,
-                            onActionClick = null,
-                        )
-
-                        // El error del like se ve junto a las tarjetas donde se toco
-                        ErrorMessage(messageRes = errorAccionRes)
-
-                        if (resenasDeSeguidos.isEmpty()) {
-                            EmptyMessage(messageRes = R.string.sin_actividad_seguidos, modifier = Modifier.fillMaxWidth())
-                        }
-                    }
-                }
-
-                items(resenasDeSeguidos) { review ->
-                    ReviewCard(
-                        review = review,
-                        onAuthorClick = onAuthorClick,
-                        onLikeClick = onLikeClick,
-                        onCommentsClick = onCommentsClick,
-                        onItemClick = { item -> onItemClick(item.tipo, item.id) },
-                        onEditClick = null,
-                        onDeleteClick = null,
-                    )
                 }
             }
         }

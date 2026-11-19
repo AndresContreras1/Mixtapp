@@ -38,6 +38,7 @@ import com.example.mixtapp.ui.screens.duelos.components.VotoForm
 import com.example.mixtapp.ui.screens.duelos.model.dueloTabs
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppBackground
+import com.example.mixtapp.ui.utils.BarraSuperior
 import com.example.mixtapp.ui.utils.EmptyMessage
 import com.example.mixtapp.ui.utils.ErrorBox
 import com.example.mixtapp.ui.utils.ErrorMessage
@@ -108,20 +109,21 @@ fun DuelosScreenContent(
         AppBackground(tono = TonoDeFondo.Duelos)
 
         Column(modifier = Modifier.fillMaxSize()) {
-            ScreenTitle(
-                title = stringResource(R.string.duelos_title),
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-                onBackClick = null,
-            )
+            // El titulo y las pestanas quedan fijos arriba para pasar de un duelo a otro
+            BarraSuperior {
+                ScreenTitle(
+                    title = stringResource(R.string.duelos_title),
+                    onBackClick = null,
+                )
 
-            // Las pestanas quedan fijas para pasar de un duelo a otro
-            FilaDeOpciones(
-                opciones = tabs,
-                elegidaId = tipoElegido,
-                onOpcionClick = onTabSelected,
-                prefijoTestTag = "tabDuelo",
-                modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
-            )
+                FilaDeOpciones(
+                    opciones = tabs,
+                    elegidaId = tipoElegido,
+                    onOpcionClick = onTabSelected,
+                    prefijoTestTag = "tabDuelo",
+                    modifier = Modifier.padding(bottom = 8.dp),
+                )
+            }
 
             when {
                 isLoading -> LoadingBox()
@@ -137,7 +139,7 @@ fun DuelosScreenContent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f),
-                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp),
+                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     item {
