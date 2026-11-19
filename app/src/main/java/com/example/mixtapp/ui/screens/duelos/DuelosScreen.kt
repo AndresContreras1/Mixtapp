@@ -42,6 +42,7 @@ import com.example.mixtapp.ui.utils.BarraSuperior
 import com.example.mixtapp.ui.utils.EmptyMessage
 import com.example.mixtapp.ui.utils.ErrorBox
 import com.example.mixtapp.ui.utils.ErrorMessage
+import com.example.mixtapp.ui.utils.EspacioDelFab
 import com.example.mixtapp.ui.utils.FilaDeOpciones
 import com.example.mixtapp.ui.utils.LoadingBox
 import com.example.mixtapp.ui.utils.OpcionUi
@@ -139,7 +140,7 @@ fun DuelosScreenContent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f),
-                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 16.dp),
+                    contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 16.dp, bottom = EspacioDelFab),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     item {

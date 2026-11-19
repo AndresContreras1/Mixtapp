@@ -36,6 +36,7 @@ import com.example.mixtapp.ui.utils.BarraSuperior
 import com.example.mixtapp.ui.utils.EmptyMessage
 import com.example.mixtapp.ui.utils.ErrorBox
 import com.example.mixtapp.ui.utils.ErrorMessage
+import com.example.mixtapp.ui.utils.EspacioDelFab
 import com.example.mixtapp.ui.utils.ItemRow
 import com.example.mixtapp.ui.utils.LoadingBox
 import com.example.mixtapp.ui.utils.ScreenTitle
@@ -110,7 +111,7 @@ fun SearchScreenContent(
                     errorMessageRes != null -> ErrorBox(messageRes = errorMessageRes)
                     else -> LazyColumn(
                         modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
+                        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = EspacioDelFab),
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                     ) {
                         item {

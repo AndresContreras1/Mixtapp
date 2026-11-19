@@ -35,6 +35,7 @@ import com.example.mixtapp.ui.utils.BarraSuperior
 import com.example.mixtapp.ui.utils.EmptyMessage
 import com.example.mixtapp.ui.utils.ErrorBox
 import com.example.mixtapp.ui.utils.ErrorMessage
+import com.example.mixtapp.ui.utils.EspacioDelFab
 import com.example.mixtapp.ui.utils.FilaDeOpciones
 import com.example.mixtapp.ui.utils.LoadingBox
 import com.example.mixtapp.ui.utils.OpcionUi
@@ -136,7 +137,7 @@ fun HomeScreenContent(
                     errorMessageRes != null -> ErrorBox(messageRes = errorMessageRes)
                     else -> LazyColumn(
                         modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
+                        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = EspacioDelFab),
                         verticalArrangement = Arrangement.spacedBy(24.dp),
                     ) {
                         item {

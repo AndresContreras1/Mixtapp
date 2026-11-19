@@ -10,8 +10,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.theme.MixtappTheme
+
+// Lo que dejan abajo las listas de las pantallas con el +: el alto del boton y su margen, asi el
+// ultimo elemento nunca queda debajo del boton
+val EspacioDelFab = 96.dp
 
 // El + de las pantallas con barra: abre la lista para elegir que calificar
 @Composable

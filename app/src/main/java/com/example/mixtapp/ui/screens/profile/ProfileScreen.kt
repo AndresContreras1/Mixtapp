@@ -52,6 +52,7 @@ import com.example.mixtapp.ui.utils.BarraSuperior
 import com.example.mixtapp.ui.utils.EmptyMessage
 import com.example.mixtapp.ui.utils.ErrorBox
 import com.example.mixtapp.ui.utils.ErrorMessage
+import com.example.mixtapp.ui.utils.EspacioDelFab
 import com.example.mixtapp.ui.utils.FavoriteSection
 import com.example.mixtapp.ui.utils.LoadingBox
 import com.example.mixtapp.ui.utils.MixtapeCard
@@ -239,7 +240,7 @@ fun ProfileScreenContent(
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         // Abajo queda espacio para que el boton + no tape el ultimo elemento
-        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 96.dp),
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = EspacioDelFab),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         item {
