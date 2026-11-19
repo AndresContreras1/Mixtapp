@@ -5,13 +5,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
 import com.example.mixtapp.data.injection.IoDispatcher
+import com.example.mixtapp.data.model.EstadoDeReproduccion
+import com.example.mixtapp.data.model.ItemUi
 import com.example.mixtapp.data.repository.CatalogoRepository
+import com.example.mixtapp.data.repository.ReproductorRepository
 import com.example.mixtapp.data.repository.ReviewRepository
 import com.example.mixtapp.data.repository.SonandoRepository
 import com.example.mixtapp.ui.utils.mensajeDeError
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,6 +29,7 @@ class DetailViewModel @Inject constructor(
     private val catalogoRepository: CatalogoRepository,
     private val reviewRepository: ReviewRepository,
     private val sonandoRepository: SonandoRepository,
+    private val reproductorRepository: ReproductorRepository,
     // Las corrutinas se lanzan en este hilo; las pruebas pasan uno de prueba
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
@@ -35,6 +40,9 @@ class DetailViewModel @Inject constructor(
     // El flujo se escucha mientras exista el ViewModel: si se volviera a pedir cada vez que la
     // pantalla se muestra, se acumularian listeners
     private var escuchando = false
+
+    // La corrutina que escucha el fragmento que suena; null si no suena nada
+    private var reproduccion: Job? = null
 
     // Datos en vivo: mi like, mi guardado y las resenas (una nueva, un like desde otro celular)
     // llegan solos y la pantalla se vuelve a pintar, sin salir y volver a entrar
@@ -190,4 +198,72 @@ class DetailViewModel @Inject constructor(
         }
     }
 
+    // El play del detalle: el fragmento del item que se esta viendo
+    fun alternarVistaPreviaDelItem() {
+        val item = _uiState.value.itemConResenas?.item ?: return
+        alternarVistaPrevia(item = item)
+    }
+
+    // Tocar play en lo que ya suena lo detiene; en otro item, detiene lo de antes y pide su fragmento.
+    // El audio suena mientras se escuche el flujo: cancelar la corrutina lo detiene y lo libera
+    fun alternarVistaPrevia(item: ItemUi) {
+        val eraEste = _uiState.value.vistaPreviaId == item.id
+        detenerVistaPrevia()
+        if (eraEste) return
+
+        reproduccion = viewModelScope.launch(ioDispatcher) {
+            _uiState.update {
+                it.copy(
+                    vistaPreviaId = item.id,
+                    vistaPreviaEstado = EstadoDeReproduccion.Cargando,
+                    errorVistaPreviaRes = null,
+                )
+            }
+
+            val result = reproductorRepository.getVistaPrevia(item = item)
+            val url = result.getOrNull()
+            if (url == null) {
+                _uiState.update {
+                    it.copy(
+                        vistaPreviaId = null,
+                        vistaPreviaEstado = null,
+                        errorVistaPreviaRes = mensajeDeError(
+                            error = result.exceptionOrNull(),
+                            generico = R.string.error_vista_previa,
+                        ),
+                    )
+                }
+                return@launch
+            }
+
+            reproductorRepository.escuchar(url = url)
+                .catch { e ->
+                    Log.d("DetailViewModel", "alternarVistaPrevia: ${e.message}")
+                    _uiState.update {
+                        it.copy(
+                            vistaPreviaId = null,
+                            vistaPreviaEstado = null,
+                            errorVistaPreviaRes = mensajeDeError(error = e, generico = R.string.error_vista_previa),
+                        )
+                    }
+                }
+                .collect { estado ->
+                    // Al terminar los 30 segundos el boton vuelve al play
+                    _uiState.update {
+                        if (estado == EstadoDeReproduccion.Terminada) {
+                            it.copy(vistaPreviaId = null, vistaPreviaEstado = null)
+                        } else {
+                            it.copy(vistaPreviaEstado = estado)
+                        }
+                    }
+                }
+        }
+    }
+
+    // Al salir de la pantalla o al tocar otro play: la musica no sigue sonando donde no se ve
+    fun detenerVistaPrevia() {
+        reproduccion?.cancel()
+        reproduccion = null
+        _uiState.update { it.copy(vistaPreviaId = null, vistaPreviaEstado = null) }
+    }
 }

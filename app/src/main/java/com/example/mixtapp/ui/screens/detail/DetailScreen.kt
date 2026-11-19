@@ -1,27 +1,36 @@
 package com.example.mixtapp.ui.screens.detail
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalPreviewProvider
+import com.example.mixtapp.data.model.EstadoDeReproduccion
 import com.example.mixtapp.data.model.ItemConResenasUi
 import com.example.mixtapp.ui.screens.detail.components.DatosCuriososButton
 import com.example.mixtapp.ui.screens.detail.components.EnlacesDelItem
@@ -62,18 +71,26 @@ fun DetailScreen(
         detailViewModel.getItem(tipo = tipo, itemId = itemId)
     }
 
+    // Al salir de la pantalla (a calificar, a otra pestana o atras) el fragmento deja de sonar
+    DisposableEffect(Unit) {
+        onDispose { detailViewModel.detenerVistaPrevia() }
+    }
+
     DetailScreenContent(
         isLoading = state.isLoading,
         itemConResenas = state.itemConResenas,
         errorMessageRes = state.errorMessageRes,
         errorAccionRes = state.errorAccionRes,
         avisoSonandoRes = state.avisoSonandoRes,
+        estadoVistaPrevia = state.vistaPreviaEstado,
+        errorVistaPreviaRes = state.errorVistaPreviaRes,
         onRateClick = onRateClick,
         onLikeClick = { detailViewModel.sendOrDeleteLikeItem() },
         onSaveClick = { detailViewModel.sendOrDeleteGuardado() },
         onAddToMixtapeClick = onAddToMixtapeClick,
         onDatosCuriososClick = onDatosCuriososClick,
         onSonandoClick = { detailViewModel.ponerSonando() },
+        onPlayClick = { detailViewModel.alternarVistaPreviaDelItem() },
         onReviewLikeClick = { detailViewModel.sendOrDeleteLikeResena(reviewId = it) },
         onDeleteMyReviewClick = { detailViewModel.eliminarMiResena(reviewId = it) },
         onBackClick = onBackClick,
@@ -90,12 +107,15 @@ fun DetailScreenContent(
     @StringRes errorMessageRes: Int?,
     @StringRes errorAccionRes: Int?,
     @StringRes avisoSonandoRes: Int?,
+    estadoVistaPrevia: EstadoDeReproduccion?,
+    @StringRes errorVistaPreviaRes: Int?,
     onRateClick: () -> Unit,
     onLikeClick: () -> Unit,
     onSaveClick: () -> Unit,
     onAddToMixtapeClick: () -> Unit,
     onDatosCuriososClick: () -> Unit,
     onSonandoClick: () -> Unit,
+    onPlayClick: () -> Unit,
     onReviewLikeClick: (String) -> Unit,
     onDeleteMyReviewClick: (String) -> Unit,
     onBackClick: () -> Unit,
@@ -103,8 +123,23 @@ fun DetailScreenContent(
     onCommentsClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    // El color de la portada solo decora: lo avisa la imagen al cargar y pinta el degradado de
+    // arriba. Es de la vista, no del estado, porque no cambia ningun dato
+    var colorDePortada by remember { mutableStateOf<Color?>(null) }
+
     Box(modifier = modifier.fillMaxSize().testTag("detailScreen")) {
         AppBackground(tono = TonoDeFondo.Item)
+
+        // El degradado con el color de la portada, detras de la imagen y desvanecido hacia abajo
+        val color = colorDePortada
+        if (color != null) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(520.dp)
+                    .background(Brush.verticalGradient(listOf(color.copy(alpha = 0.55f), Color.Transparent)))
+            )
+        }
 
         when {
             isLoading -> LoadingBox()
@@ -117,12 +152,16 @@ fun DetailScreenContent(
                     modifier = Modifier
                         .fillMaxSize()
                         .testTag("listaDetalle"),
-                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
+                    contentPadding = PaddingValues(start = 24.dp, end = 24.dp, top = 16.dp, bottom = 32.dp),
                 ) {
                     item {
                         // Si el listener falla despues de cargar, el aviso sale arriba y queda lo de antes
                         ErrorMessage(messageRes = errorMessageRes)
-                        ItemHeader(item = item, onBackClick = onBackClick)
+                        ItemHeader(
+                            item = item,
+                            onBackClick = onBackClick,
+                            onColorDePortada = { colorDePortada = it },
+                        )
                     }
 
                     item {
@@ -131,7 +170,7 @@ fun DetailScreenContent(
                             estrellas = itemConResenas.estrellas,
                             ratingCount = itemConResenas.ratingCount,
                             recommendRate = itemConResenas.recommendRate,
-                            likesText = item.likesText,
+                            recomiendan = itemConResenas.recomiendan,
                             modifier = Modifier.padding(top = 20.dp),
                         )
                     }
@@ -157,18 +196,35 @@ fun DetailScreenContent(
                         }
                     }
 
-                    // Los datos curiosos estan aparte: su pantalla los lee y avisa si el item no tiene
+                    // Bloque 1, escuchar y ver: el fragmento en la app y los enlaces para seguir afuera
                     item {
-                        DatosCuriososButton(
-                            onClick = onDatosCuriososClick,
-                            modifier = Modifier.padding(top = 16.dp),
+                        EnlacesDelItem(
+                            item = item,
+                            estadoVistaPrevia = estadoVistaPrevia,
+                            errorVistaPreviaRes = errorVistaPreviaRes,
+                            onPlayClick = onPlayClick,
+                            modifier = Modifier.padding(top = 28.dp),
                         )
                     }
 
-                    // Lo ven mis seguidores en Siguiendo; el aviso confirma que ya quedo
+                    // Bloque 2, descubre mas: los datos curiosos (su pantalla avisa si el item no
+                    // tiene) y contarles a mis seguidores que lo escucho
                     item {
-                        Column(modifier = Modifier.padding(top = 12.dp)) {
-                            SonandoButton(onClick = onSonandoClick)
+                        Column(modifier = Modifier.padding(top = 28.dp)) {
+                            SectionTitle(
+                                title = stringResource(R.string.descubre_mas),
+                                modifier = Modifier.padding(bottom = 10.dp),
+                                actionText = null,
+                                onActionClick = null,
+                            )
+
+                            DatosCuriososButton(onClick = onDatosCuriososClick)
+
+                            // Lo ven mis seguidores en Siguiendo; el aviso confirma que ya quedo
+                            SonandoButton(
+                                onClick = onSonandoClick,
+                                modifier = Modifier.padding(top = 10.dp),
+                            )
 
                             if (avisoSonandoRes != null) {
                                 Text(
@@ -183,16 +239,10 @@ fun DetailScreenContent(
                         }
                     }
 
-                    item {
-                        EnlacesDelItem(
-                            item = item,
-                            modifier = Modifier.padding(top = 24.dp),
-                        )
-                    }
-
+                    // Bloque 3, las resenas de la comunidad
                     item {
                         SectionTitle(
-                            title = stringResource(R.string.reviews),
+                            title = stringResource(R.string.resenas_de_la_comunidad),
                             modifier = Modifier.padding(top = 28.dp, bottom = 12.dp),
                             actionText = null,
                             onActionClick = null,
@@ -239,12 +289,15 @@ fun DetailScreenPreview() {
             errorMessageRes = null,
             errorAccionRes = null,
             avisoSonandoRes = null,
+            estadoVistaPrevia = null,
+            errorVistaPreviaRes = null,
             onRateClick = {},
             onLikeClick = {},
             onSaveClick = {},
             onAddToMixtapeClick = {},
             onDatosCuriososClick = {},
             onSonandoClick = {},
+            onPlayClick = {},
             onReviewLikeClick = {},
             onDeleteMyReviewClick = {},
             onBackClick = {},

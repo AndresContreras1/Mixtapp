@@ -2,12 +2,15 @@ package com.example.mixtapp.viewmodels
 
 import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalPreviewProvider
+import com.example.mixtapp.data.model.EstadoDeReproduccion
 import com.example.mixtapp.data.model.ItemConResenasUi
 import com.example.mixtapp.data.model.TIPO_ALBUM
 import com.example.mixtapp.data.repository.CatalogoRepository
 import com.example.mixtapp.data.repository.ContenidoNoEncontradoException
+import com.example.mixtapp.data.repository.ReproductorRepository
 import com.example.mixtapp.data.repository.ReviewRepository
 import com.example.mixtapp.data.repository.SinConexionException
+import com.example.mixtapp.data.repository.SinVistaPreviaException
 import com.example.mixtapp.data.repository.SonandoRepository
 import com.example.mixtapp.ui.screens.detail.DetailViewModel
 import com.google.common.truth.Truth.assertThat
@@ -35,6 +38,7 @@ class DetailViewModelTest {
     private lateinit var catalogoRepository: CatalogoRepository
     private lateinit var reviewRepository: ReviewRepository
     private lateinit var sonandoRepository: SonandoRepository
+    private lateinit var reproductorRepository: ReproductorRepository
     private lateinit var viewModel: DetailViewModel
 
     @Before
@@ -43,7 +47,10 @@ class DetailViewModelTest {
         catalogoRepository = mockk()
         reviewRepository = mockk()
         sonandoRepository = mockk()
-        viewModel = DetailViewModel(catalogoRepository, reviewRepository, sonandoRepository, testDispatcher)
+        reproductorRepository = mockk()
+        viewModel = DetailViewModel(
+            catalogoRepository, reviewRepository, sonandoRepository, reproductorRepository, testDispatcher
+        )
     }
 
     @After
@@ -131,5 +138,78 @@ class DetailViewModelTest {
         assertThat(state.itemConResenas).isNotNull()
         assertThat(state.errorMessageRes).isNull()
         assertThat(state.errorAccionRes).isEqualTo(R.string.error_sin_conexion)
+    }
+
+    // Carga el item para que el play tenga que sonar
+    private fun conElItem() {
+        coEvery { catalogoRepository.getItemLive(TIPO_ALBUM, "album_from_zero") } returns
+            flowOf(LocalPreviewProvider.itemConResenas)
+        viewModel.getItem(TIPO_ALBUM, "album_from_zero")
+    }
+
+    @Test
+    fun alternarVistaPreviaDelItem_hayFragmento_quedaSonando() = runTest {
+        //Arrange
+        conElItem()
+        coEvery { reproductorRepository.getVistaPrevia(any()) } returns Result.success("https://preview.mp3")
+        coEvery { reproductorRepository.escuchar("https://preview.mp3") } returns
+            flowOf(EstadoDeReproduccion.Cargando, EstadoDeReproduccion.Sonando)
+        //Act
+        advanceUntilIdle()
+        viewModel.alternarVistaPreviaDelItem()
+        advanceUntilIdle()
+        //Assert
+        val state = viewModel.uiState.value
+        assertThat(state.vistaPreviaId).isEqualTo(LocalPreviewProvider.itemConResenas.item.id)
+        assertThat(state.vistaPreviaEstado).isEqualTo(EstadoDeReproduccion.Sonando)
+        assertThat(state.errorVistaPreviaRes).isNull()
+    }
+
+    @Test
+    fun alternarVistaPreviaDelItem_sinFragmento_avisaYNoSuena() = runTest {
+        //Arrange
+        conElItem()
+        coEvery { reproductorRepository.getVistaPrevia(any()) } returns Result.failure(SinVistaPreviaException())
+        //Act
+        advanceUntilIdle()
+        viewModel.alternarVistaPreviaDelItem()
+        advanceUntilIdle()
+        //Assert
+        val state = viewModel.uiState.value
+        assertThat(state.vistaPreviaId).isNull()
+        assertThat(state.vistaPreviaEstado).isNull()
+        assertThat(state.errorVistaPreviaRes).isEqualTo(R.string.error_sin_vista_previa)
+    }
+
+    @Test
+    fun alternarVistaPreviaDelItem_terminaLosTreintaSegundos_vuelveAlPlay() = runTest {
+        //Arrange
+        conElItem()
+        coEvery { reproductorRepository.getVistaPrevia(any()) } returns Result.success("https://preview.mp3")
+        coEvery { reproductorRepository.escuchar("https://preview.mp3") } returns
+            flowOf(EstadoDeReproduccion.Sonando, EstadoDeReproduccion.Terminada)
+        //Act
+        advanceUntilIdle()
+        viewModel.alternarVistaPreviaDelItem()
+        advanceUntilIdle()
+        //Assert
+        assertThat(viewModel.uiState.value.vistaPreviaId).isNull()
+        assertThat(viewModel.uiState.value.vistaPreviaEstado).isNull()
+    }
+
+    @Test
+    fun detenerVistaPrevia_mientrasSuena_quedaSinSonar() = runTest {
+        //Arrange
+        conElItem()
+        coEvery { reproductorRepository.getVistaPrevia(any()) } returns Result.success("https://preview.mp3")
+        coEvery { reproductorRepository.escuchar("https://preview.mp3") } returns flowOf(EstadoDeReproduccion.Sonando)
+        advanceUntilIdle()
+        viewModel.alternarVistaPreviaDelItem()
+        advanceUntilIdle()
+        //Act
+        viewModel.detenerVistaPrevia()
+        //Assert
+        assertThat(viewModel.uiState.value.vistaPreviaId).isNull()
+        assertThat(viewModel.uiState.value.vistaPreviaEstado).isNull()
     }
 }
