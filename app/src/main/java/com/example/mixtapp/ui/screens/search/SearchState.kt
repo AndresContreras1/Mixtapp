@@ -1,6 +1,7 @@
 package com.example.mixtapp.ui.screens.search
 
 import androidx.annotation.StringRes
+import com.example.mixtapp.data.model.CATEGORIA_FECHA_LANZAMIENTO
 import com.example.mixtapp.data.model.ItemConResenasUi
 import com.example.mixtapp.data.model.SearchCategoryUi
 import com.example.mixtapp.data.model.UsuarioUi
@@ -12,6 +13,8 @@ data class SearchState(
     val generos: List<SearchCategoryUi> = emptyList(),
     // null mientras no se toque una tarjeta
     val categoriaElegida: SearchCategoryUi? = null,
+    // Los lanzamientos van de lo mas nuevo a lo mas viejo; el chip del titulo lo invierte
+    val masRecientesPrimero: Boolean = true,
     // Todo el catalogo en vivo: buscar y elegir una categoria trabajan sobre esta lista
     val catalogo: List<ItemConResenasUi> = emptyList(),
     // Ya vienen filtrados y ordenados por el ViewModel
@@ -24,4 +27,7 @@ data class SearchState(
     @StringRes val errorMessageRes: Int? = null,
     @StringRes val errorCategoriasRes: Int? = null,
     @StringRes val errorUsuariosRes: Int? = null,
-)
+) {
+    // Con la tarjeta de fecha de lanzamiento cada fila muestra su fecha y el titulo dice el orden
+    val ordenaPorFecha: Boolean get() = categoriaElegida?.id == CATEGORIA_FECHA_LANZAMIENTO
+}

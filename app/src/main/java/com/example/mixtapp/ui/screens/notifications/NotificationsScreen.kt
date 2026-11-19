@@ -26,6 +26,7 @@ import com.example.mixtapp.data.local.LocalPreviewProvider
 import com.example.mixtapp.data.model.ItemUi
 import com.example.mixtapp.data.model.NotificationUi
 import com.example.mixtapp.data.model.ReviewUi
+import com.example.mixtapp.data.model.fechaDeSalida
 import com.example.mixtapp.ui.screens.notifications.components.DiscusionRow
 import com.example.mixtapp.ui.screens.notifications.components.NotificationRow
 import com.example.mixtapp.ui.screens.notifications.model.TAB_DISCUSIONES
@@ -156,16 +157,16 @@ fun NotificationsScreenContent(
                     modifier = Modifier.weight(1f),
                 ) {
                     items(lanzamientos) { item ->
-                        // Los lanzamientos llevan su anio al lado de la etiqueta
+                        // Los lanzamientos llevan su fecha de salida al lado de la etiqueta
                         ItemRow(
                             item = item,
                             onClick = { onItemClick(item) },
                             modifier = Modifier.testTag("lanzamiento_${item.id}"),
                         ) {
                             Text(
-                                text = item.anio,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                style = MaterialTheme.typography.labelSmall,
+                                text = item.fechaDeSalida,
+                                color = MaterialTheme.colorScheme.primary,
+                                style = MaterialTheme.typography.labelMedium,
                             )
                         }
                     }

@@ -67,7 +67,12 @@ class SearchViewModel @Inject constructor(
                         it.copy(
                             catalogo = catalogo,
                             // Si ya se escribio algo o se eligio una tarjeta, se resuelve con lo que llego
-                            resultados = resultadosPara(texto = it.query, categoria = it.categoriaElegida, catalogo = catalogo),
+                            resultados = resultadosPara(
+                                texto = it.query,
+                                categoria = it.categoriaElegida,
+                                catalogo = catalogo,
+                                masRecientesPrimero = it.masRecientesPrimero,
+                            ),
                             isLoading = false,
                             errorMessageRes = null,
                         )
@@ -108,7 +113,12 @@ class SearchViewModel @Inject constructor(
         _uiState.update {
             it.copy(
                 query = texto,
-                resultados = resultadosPara(texto = texto, categoria = it.categoriaElegida, catalogo = it.catalogo),
+                resultados = resultadosPara(
+                    texto = texto,
+                    categoria = it.categoriaElegida,
+                    catalogo = it.catalogo,
+                    masRecientesPrimero = it.masRecientesPrimero,
+                ),
                 usuarios = if (buscarPersonas) it.usuarios else emptyList(),
                 errorUsuariosRes = null,
             )
@@ -124,17 +134,45 @@ class SearchViewModel @Inject constructor(
 
             it.copy(
                 categoriaElegida = categoria,
-                resultados = resultadosPara(texto = it.query, categoria = categoria, catalogo = it.catalogo),
+                // Cada vez que se abre una tarjeta empieza por lo mas reciente
+                masRecientesPrimero = true,
+                resultados = resultadosPara(
+                    texto = it.query,
+                    categoria = categoria,
+                    catalogo = it.catalogo,
+                    masRecientesPrimero = true,
+                ),
             )
         }
     }
 
-    // La X de la categoria vuelve a mostrar las tarjetas
+    // El chip del titulo de los lanzamientos: de lo mas nuevo a lo mas viejo o al reves
+    fun invertirOrden() {
+        _uiState.update {
+            val masRecientes = !it.masRecientesPrimero
+            it.copy(
+                masRecientesPrimero = masRecientes,
+                resultados = resultadosPara(
+                    texto = it.query,
+                    categoria = it.categoriaElegida,
+                    catalogo = it.catalogo,
+                    masRecientesPrimero = masRecientes,
+                ),
+            )
+        }
+    }
+
+    // La flecha de la categoria vuelve a mostrar las tarjetas
     fun clearCategory() {
         _uiState.update {
             it.copy(
                 categoriaElegida = null,
-                resultados = resultadosPara(texto = it.query, categoria = null, catalogo = it.catalogo),
+                resultados = resultadosPara(
+                    texto = it.query,
+                    categoria = null,
+                    catalogo = it.catalogo,
+                    masRecientesPrimero = it.masRecientesPrimero,
+                ),
             )
         }
     }
@@ -164,9 +202,10 @@ class SearchViewModel @Inject constructor(
         texto: String,
         categoria: SearchCategoryUi?,
         catalogo: List<ItemConResenasUi>,
+        masRecientesPrimero: Boolean,
     ): List<ItemConResenasUi> = when {
         texto.isNotBlank() -> conTexto(texto = texto.trim(), catalogo = catalogo)
-        categoria != null -> deCategoria(categoria = categoria, catalogo = catalogo)
+        categoria != null -> deCategoria(categoria = categoria, catalogo = catalogo, masRecientesPrimero = masRecientesPrimero)
         else -> emptyList()
     }
 
@@ -174,14 +213,19 @@ class SearchViewModel @Inject constructor(
     private fun conTexto(texto: String, catalogo: List<ItemConResenasUi>): List<ItemConResenasUi> =
         catalogo.filter { it.item.contieneTexto(texto) }.sortedByDescending { it.popularidad }
 
-    private fun deCategoria(categoria: SearchCategoryUi, catalogo: List<ItemConResenasUi>): List<ItemConResenasUi> =
+    private fun deCategoria(
+        categoria: SearchCategoryUi,
+        catalogo: List<ItemConResenasUi>,
+        masRecientesPrimero: Boolean,
+    ): List<ItemConResenasUi> =
         when {
             // En los generos el id es el mismo texto que guarda la base en el campo genero
             categoria.esGenero -> catalogo.filter { it.item.genero == categoria.id }
                 .sortedByDescending { it.popularidad }
             // Los artistas no tienen fecha. Va como AAAA-MM-DD: ordenar el texto ordena las fechas
             categoria.id == CATEGORIA_FECHA_LANZAMIENTO -> catalogo.filter { it.item.tipo != TIPO_ARTISTA }
-                .sortedByDescending { it.item.fechaLanzamiento }
+                .sortedBy { it.item.fechaLanzamiento }
+                .let { if (masRecientesPrimero) it.reversed() else it }
             categoria.id == CATEGORIA_MAS_POPULARES -> catalogo.sortedByDescending { it.popularidad }
             // Sin resenas no hay promedio que comparar
             categoria.id == CATEGORIA_MEJOR_CALIFICADOS -> catalogo.filter { it.ratingCount > 0 }

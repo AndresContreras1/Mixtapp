@@ -13,6 +13,8 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -27,12 +29,15 @@ import com.example.mixtapp.data.local.LocalSearchCategoriesProvider
 import com.example.mixtapp.data.model.ItemConResenasUi
 import com.example.mixtapp.data.model.SearchCategoryUi
 import com.example.mixtapp.data.model.UsuarioUi
+import com.example.mixtapp.data.model.fechaDeSalida
+import com.example.mixtapp.ui.screens.search.components.CriteriosDeBusqueda
 import com.example.mixtapp.ui.screens.search.components.SearchCategoryCardsRow
 import com.example.mixtapp.ui.screens.search.components.SelectedCategoryHeader
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppBackground
 import com.example.mixtapp.ui.utils.AppTextField
 import com.example.mixtapp.ui.utils.BarraSuperior
+import com.example.mixtapp.ui.utils.CalificacionDeLaComunidad
 import com.example.mixtapp.ui.utils.EmptyMessage
 import com.example.mixtapp.ui.utils.ErrorBox
 import com.example.mixtapp.ui.utils.ErrorMessage
@@ -41,7 +46,6 @@ import com.example.mixtapp.ui.utils.ItemRow
 import com.example.mixtapp.ui.utils.LoadingBox
 import com.example.mixtapp.ui.utils.ScreenTitle
 import com.example.mixtapp.ui.utils.SectionTitle
-import com.example.mixtapp.ui.utils.StarRating
 import com.example.mixtapp.ui.utils.TonoDeFondo
 import com.example.mixtapp.ui.utils.UserRow
 
@@ -62,12 +66,15 @@ fun SearchScreen(
         ordenes = state.ordenes,
         generos = state.generos,
         categoriaElegida = state.categoriaElegida,
+        ordenaPorFecha = state.ordenaPorFecha,
+        masRecientesPrimero = state.masRecientesPrimero,
         resultados = state.resultados,
         usuarios = state.usuarios,
         errorSecundarioRes = state.errorCategoriasRes ?: state.errorUsuariosRes,
         onQueryChange = { searchViewModel.updateQuery(texto = it) },
         onCategoryClick = { searchViewModel.selectCategory(id = it) },
         onClearCategory = { searchViewModel.clearCategory() },
+        onInvertirOrden = { searchViewModel.invertirOrden() },
         onItemClick = onItemClick,
         onUserClick = onUserClick,
         modifier = modifier,
@@ -82,12 +89,15 @@ fun SearchScreenContent(
     ordenes: List<SearchCategoryUi>,
     generos: List<SearchCategoryUi>,
     categoriaElegida: SearchCategoryUi?,
+    ordenaPorFecha: Boolean,
+    masRecientesPrimero: Boolean,
     resultados: List<ItemConResenasUi>,
     usuarios: List<UsuarioUi>,
     @StringRes errorSecundarioRes: Int?,
     onQueryChange: (String) -> Unit,
     onCategoryClick: (String) -> Unit,
     onClearCategory: () -> Unit,
+    onInvertirOrden: () -> Unit,
     onItemClick: (String, String) -> Unit,
     onUserClick: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -135,7 +145,7 @@ fun SearchScreenContent(
                                     }
                                 }
 
-                                listaDeResultados(resultados = resultados, onItemClick = onItemClick)
+                                listaDeResultados(resultados = resultados, conFecha = false, onItemClick = onItemClick)
 
                                 if (usuarios.isNotEmpty()) {
                                     item {
@@ -157,8 +167,18 @@ fun SearchScreenContent(
                             categoriaElegida != null -> {
                                 item {
                                     SelectedCategoryHeader(
-                                        titulo = stringResource(categoriaElegida.titleRes),
-                                        onClearClick = onClearCategory,
+                                        titulo = when {
+                                            !ordenaPorFecha -> stringResource(categoriaElegida.titleRes)
+                                            masRecientesPrimero -> stringResource(R.string.lanzamientos_recientes)
+                                            else -> stringResource(R.string.lanzamientos_antiguos)
+                                        },
+                                        orden = when {
+                                            !ordenaPorFecha -> null
+                                            masRecientesPrimero -> stringResource(R.string.orden_mas_recientes)
+                                            else -> stringResource(R.string.orden_mas_antiguos)
+                                        },
+                                        onBackClick = onClearCategory,
+                                        onOrdenClick = if (ordenaPorFecha) onInvertirOrden else null,
                                     )
                                 }
 
@@ -168,7 +188,7 @@ fun SearchScreenContent(
                                     }
                                 }
 
-                                listaDeResultados(resultados = resultados, onItemClick = onItemClick)
+                                listaDeResultados(resultados = resultados, conFecha = ordenaPorFecha, onItemClick = onItemClick)
                             }
 
                             // Sin texto ni tarjeta: las tarjetas de Explorar por y de Generos, dos por fila
@@ -182,8 +202,8 @@ fun SearchScreenContent(
                                     )
                                 }
 
-                                items(ordenes.chunked(2)) { fila ->
-                                    SearchCategoryCardsRow(categorias = fila, onCategoryClick = onCategoryClick)
+                                item {
+                                    CriteriosDeBusqueda(criterios = ordenes, onCategoryClick = onCategoryClick)
                                 }
 
                                 item {
@@ -207,10 +227,11 @@ fun SearchScreenContent(
     }
 }
 
-// Los items que coinciden, con su promedio de estrellas: la misma lista con texto y con una tarjeta
-// elegida
+// Los items que coinciden: la misma lista con texto y con una tarjeta elegida. Cada fila lleva la
+// calificacion de la comunidad o, en los lanzamientos, su fecha de salida, que es lo que los ordena
 private fun LazyListScope.listaDeResultados(
     resultados: List<ItemConResenasUi>,
+    conFecha: Boolean,
     onItemClick: (String, String) -> Unit,
 ) {
     items(resultados) { itemConResenas ->
@@ -219,7 +240,15 @@ private fun LazyListScope.listaDeResultados(
             onClick = { onItemClick(itemConResenas.item.tipo, itemConResenas.item.id) },
             modifier = Modifier.testTag("resultado_${itemConResenas.item.id}"),
         ) {
-            StarRating(rating = itemConResenas.estrellas, starSize = 14.dp, onRatingChange = null)
+            if (conFecha) {
+                Text(
+                    text = itemConResenas.item.fechaDeSalida,
+                    color = MaterialTheme.colorScheme.primary,
+                    style = MaterialTheme.typography.labelMedium,
+                )
+            } else {
+                CalificacionDeLaComunidad(rating = itemConResenas.rating, ratingCount = itemConResenas.ratingCount)
+            }
         }
     }
 }
@@ -235,12 +264,15 @@ fun SearchScreenPreview() {
             ordenes = LocalSearchCategoriesProvider.categories.filter { !it.esGenero },
             generos = LocalSearchCategoriesProvider.categories.filter { it.esGenero },
             categoriaElegida = null,
+            ordenaPorFecha = false,
+            masRecientesPrimero = true,
             resultados = emptyList(),
             usuarios = emptyList(),
             errorSecundarioRes = null,
             onQueryChange = {},
             onCategoryClick = {},
             onClearCategory = {},
+            onInvertirOrden = {},
             onItemClick = { _, _ -> },
             onUserClick = {},
         )
@@ -258,12 +290,15 @@ fun SearchScreenResultadosPreview() {
             ordenes = emptyList(),
             generos = emptyList(),
             categoriaElegida = null,
+            ordenaPorFecha = false,
+            masRecientesPrimero = true,
             resultados = LocalPreviewProvider.catalogo,
             usuarios = listOf(LocalPreviewProvider.otroUsuario),
             errorSecundarioRes = null,
             onQueryChange = {},
             onCategoryClick = {},
             onClearCategory = {},
+            onInvertirOrden = {},
             onItemClick = { _, _ -> },
             onUserClick = {},
         )

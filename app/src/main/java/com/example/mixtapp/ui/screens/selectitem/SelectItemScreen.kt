@@ -27,6 +27,7 @@ import com.example.mixtapp.ui.screens.selectitem.model.selectItemFilters
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppBackground
 import com.example.mixtapp.ui.utils.AppTextField
+import com.example.mixtapp.ui.utils.CalificacionDeLaComunidad
 import com.example.mixtapp.ui.utils.EmptyMessage
 import com.example.mixtapp.ui.utils.ErrorBox
 import com.example.mixtapp.ui.utils.FilaDeOpciones
@@ -34,7 +35,6 @@ import com.example.mixtapp.ui.utils.ItemRow
 import com.example.mixtapp.ui.utils.LoadingBox
 import com.example.mixtapp.ui.utils.OpcionUi
 import com.example.mixtapp.ui.utils.ScreenTitle
-import com.example.mixtapp.ui.utils.StarRating
 import com.example.mixtapp.ui.utils.TonoDeFondo
 
 // El boton + de la barra abre esta pantalla para elegir que calificar antes de escribir la resena
@@ -85,7 +85,8 @@ fun SelectItemScreenContent(
             errorMessageRes != null -> ErrorBox(messageRes = errorMessageRes)
             else -> LazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 20.dp),
+                // Abajo queda aire para que el ultimo resultado no quede pegado al borde
+                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 20.dp, bottom = 48.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 item {
@@ -130,7 +131,9 @@ fun SelectItemScreenContent(
                         onClick = { onItemClick(itemConResenas.item.tipo, itemConResenas.item.id) },
                         modifier = Modifier.testTag("elegir_${itemConResenas.item.id}"),
                     ) {
-                        StarRating(rating = itemConResenas.estrellas, starSize = 14.dp, onRatingChange = null)
+                        // La calificacion de la comunidad queda pequena: lo importante es reconocer
+                        // que se va a calificar, sin que la nota de otros influya
+                        CalificacionDeLaComunidad(rating = itemConResenas.rating, ratingCount = itemConResenas.ratingCount)
                     }
                 }
             }
