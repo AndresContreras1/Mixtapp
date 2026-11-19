@@ -31,10 +31,11 @@ fun HomeHeader(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        // El logo no compite con el contenido: tamano de titulo pequeno, en el grosor mas fuerte
         LogoText(
-            fontSize = MaterialTheme.typography.headlineLarge.fontSize,
-            fontWeight = FontWeight.Bold,
-            lineHeight = MaterialTheme.typography.headlineLarge.lineHeight,
+            fontSize = MaterialTheme.typography.headlineSmall.fontSize,
+            fontWeight = FontWeight.Black,
+            lineHeight = MaterialTheme.typography.headlineSmall.lineHeight,
             modifier = Modifier.weight(1f),
         )
 

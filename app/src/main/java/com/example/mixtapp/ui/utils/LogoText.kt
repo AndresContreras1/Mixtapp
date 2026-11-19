@@ -14,9 +14,10 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.theme.MixtappTheme
-import com.example.mixtapp.ui.theme.displayFontFamily
+import com.example.mixtapp.ui.theme.appFontFamily
 
-// El nombre de la app con la letra del logo: "Mixt" en el color del texto y "app" en el terciario
+// El nombre de la app con la letra de toda la app: "Mixt" en el color del texto y "app" en el
+// rosado de la marca. Quien lo usa elige el tamano y el grosor
 @Composable
 fun LogoText(
     fontSize: TextUnit,
@@ -32,7 +33,7 @@ fun LogoText(
             withStyle(SpanStyle(color = MaterialTheme.colorScheme.onSurface)) {
                 append(nombreClaro)
             }
-            withStyle(SpanStyle(color = MaterialTheme.colorScheme.tertiary)) {
+            withStyle(SpanStyle(color = MaterialTheme.colorScheme.primary)) {
                 append(nombreRosa)
             }
         },
@@ -40,7 +41,7 @@ fun LogoText(
         fontSize = fontSize,
         lineHeight = lineHeight,
         fontWeight = fontWeight,
-        fontFamily = displayFontFamily
+        fontFamily = appFontFamily
     )
 }
 
