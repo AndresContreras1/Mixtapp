@@ -22,7 +22,8 @@ data class ResumenState(
     val favoritos: List<ItemResumenUi> = emptyList(),
     val seguidores: Int = 0,
     val seguidos: Int = 0,
-    // El resumen ya calculado
+    // El resumen ya calculado. El ano va en el titulo ("Tu 2026 en Mixtapp")
+    val anio: Int = 0,
     val totalResenas: Int = 0,
     val promedio: Double = 0.0,
     val totalMeGusta: Int = 0,
@@ -31,6 +32,8 @@ data class ResumenState(
     val mejorCalificado: ItemResumenUi? = null,
     val mejorCalificacion: Int = 0,
     val masQuerida: ReviewUi? = null,
+    // Con muy pocas reseñas y me gusta no se afirma cual es mi genero ni mi artista (data/model)
+    val pocosDatos: Boolean = false,
     // Las tarjetas que hay y cuantas ya se descubrieron
     val tarjetas: List<String> = emptyList(),
     val reveladas: Int = 1,

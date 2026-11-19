@@ -7,6 +7,7 @@ import com.example.mixtapp.R
 import com.example.mixtapp.data.injection.IoDispatcher
 import com.example.mixtapp.data.model.ItemUi
 import com.example.mixtapp.data.model.ReviewUi
+import com.example.mixtapp.data.model.hayPocosDatos
 import com.example.mixtapp.data.model.itemsQueMeGustan
 import com.example.mixtapp.data.model.toItemResumenUi
 import com.example.mixtapp.data.repository.CatalogoRepository
@@ -153,6 +154,7 @@ class ResumenViewModel @Inject constructor(
         )
 
         return estado.copy(
+            anio = anio,
             totalResenas = misResenas.size,
             promedio = promedio(misResenas.map { it.first.rating }),
             totalMeGusta = estado.favoritos.size,
@@ -161,6 +163,7 @@ class ResumenViewModel @Inject constructor(
             mejorCalificado = mejor?.second?.toItemResumenUi(),
             mejorCalificacion = mejor?.first?.rating ?: 0,
             masQuerida = querida,
+            pocosDatos = hayPocosDatos(resenas = misResenas.size, meGusta = estado.favoritos.size),
             tarjetas = tarjetas,
             // Si llegan datos nuevos no se pierde lo que ya se descubrio
             reveladas = estado.reveladas.coerceIn(1, tarjetas.size),
