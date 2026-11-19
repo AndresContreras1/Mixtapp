@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -26,13 +27,13 @@ import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalPreviewProvider
 import com.example.mixtapp.data.model.ReviewUi
 import com.example.mixtapp.ui.theme.MixtappTheme
-import com.example.mixtapp.ui.utils.CommentsButton
+import com.example.mixtapp.ui.utils.ItemAsyncImage
 import com.example.mixtapp.ui.utils.ProfileAsyncImage
 import com.example.mixtapp.ui.utils.TiempoTranscurrido
 
-// Una resena nueva de alguien que sigo, pintada como una notificacion: su foto y su nombre (tocarlos
-// abre su perfil), sobre que abrio la discusion, cuanto hace y cuantos comentarios lleva. Tocar la
-// fila abre la discusion
+// Una resena nueva de alguien que sigo, con la estructura de las notificaciones: arriba "Nueva
+// discusion"; la foto y el nombre (tocarlos abre su perfil), lo resenado resaltado con su miniatura,
+// cuanto hace y cuantos comentarios lleva, con su etiqueta. Tocar la fila abre la discusion
 @Composable
 fun DiscusionRow(
     review: ReviewUi,
@@ -44,10 +45,10 @@ fun DiscusionRow(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(20.dp))
-            .background(MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.8f))
+            .background(MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.5f))
             .clickable { onClick() }
             .testTag("discusion_${review.id}")
-            .padding(12.dp),
+            .padding(horizontal = 12.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         ProfileAsyncImage(
@@ -61,33 +62,51 @@ fun DiscusionRow(
 
         Column(modifier = Modifier.weight(1f)) {
             Text(
+                text = stringResource(R.string.evento_discusion),
+                color = MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.labelMedium,
+            )
+            Text(
                 text = review.author,
                 color = MaterialTheme.colorScheme.onSurface,
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.titleSmall,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
                     .clickable { onAuthorClick() }
                     .testTag("autor_discusion_${review.id}"),
             )
+            // Lo resenado, resaltado en rosado
             Text(
-                text = stringResource(R.string.discusion_abierta_sobre, review.item.titulo),
-                color = MaterialTheme.colorScheme.onSurface,
+                text = review.item.titulo,
+                color = MaterialTheme.colorScheme.primary,
                 style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
             )
 
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(2.dp))
 
-            TiempoTranscurrido(timeAgo = review.timeAgo)
+            // Cuanto hace y cuantos comentarios lleva, con su etiqueta para que se entienda el numero
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                TiempoTranscurrido(timeAgo = review.timeAgo)
+                Text(
+                    text = "  ·  " + stringResource(R.string.comentarios_count, review.comments),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.labelSmall,
+                )
+            }
         }
 
         Spacer(modifier = Modifier.width(10.dp))
 
-        // El total de comentarios; tocarlo tambien abre la discusion
-        CommentsButton(
-            comments = review.comments,
-            onCommentsClick = onClick,
+        // La miniatura de lo resenado
+        ItemAsyncImage(
+            imagenUrl = review.item.imagenUrl,
+            titulo = review.item.titulo,
+            esquinas = 10.dp,
+            modifier = Modifier.size(46.dp),
         )
     }
 }
