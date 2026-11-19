@@ -29,6 +29,7 @@ import com.example.mixtapp.ui.utils.ErrorBox
 import com.example.mixtapp.ui.utils.ItemHeader
 import com.example.mixtapp.ui.utils.LoadingBox
 import com.example.mixtapp.ui.utils.SectionTitle
+import com.example.mixtapp.ui.utils.TonoDeFondo
 
 // Los datos curiosos de un album, una cancion o un artista, por secciones, debajo del mismo
 // encabezado del detalle
@@ -69,7 +70,7 @@ fun DatosCuriososScreenContent(
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier.fillMaxSize().testTag("datosCuriososScreen")) {
-        AppBackground()
+        AppBackground(tono = TonoDeFondo.Item)
 
         when {
             isLoading -> LoadingBox()

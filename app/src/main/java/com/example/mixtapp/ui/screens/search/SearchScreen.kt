@@ -39,6 +39,7 @@ import com.example.mixtapp.ui.utils.LoadingBox
 import com.example.mixtapp.ui.utils.ScreenTitle
 import com.example.mixtapp.ui.utils.SectionTitle
 import com.example.mixtapp.ui.utils.StarRating
+import com.example.mixtapp.ui.utils.TonoDeFondo
 import com.example.mixtapp.ui.utils.UserRow
 
 @Composable
@@ -89,7 +90,7 @@ fun SearchScreenContent(
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier.fillMaxSize()) {
-        AppBackground()
+        AppBackground(tono = TonoDeFondo.Buscar)
 
         when {
             isLoading -> LoadingBox()

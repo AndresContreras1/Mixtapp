@@ -43,6 +43,7 @@ import com.example.mixtapp.ui.utils.LoadingBox
 import com.example.mixtapp.ui.utils.OpcionUi
 import com.example.mixtapp.ui.utils.ScreenTitle
 import com.example.mixtapp.ui.utils.SectionTitle
+import com.example.mixtapp.ui.utils.TonoDeFondo
 
 @Composable
 fun NotificationsScreen(
@@ -109,7 +110,7 @@ fun NotificationsScreenContent(
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier.fillMaxSize().testTag("notificationsScreen")) {
-        AppBackground()
+        AppBackground(tono = TonoDeFondo.Social)
 
         Column(modifier = Modifier.fillMaxSize()) {
             // El titulo queda fijo para poder volver aunque falle la carga

@@ -33,6 +33,7 @@ import com.example.mixtapp.ui.utils.LoadingBox
 import com.example.mixtapp.ui.utils.ReviewCard
 import com.example.mixtapp.ui.utils.ScreenTitle
 import com.example.mixtapp.ui.utils.SectionTitle
+import com.example.mixtapp.ui.utils.TonoDeFondo
 
 // Recibe solo el id de la resena; el ViewModel se encarga de escuchar la discusion
 @Composable
@@ -96,7 +97,7 @@ fun DiscussionScreenContent(
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier.fillMaxSize().testTag("discussionScreen")) {
-        AppBackground()
+        AppBackground(tono = TonoDeFondo.Social)
 
         when {
             isLoading -> LoadingBox()

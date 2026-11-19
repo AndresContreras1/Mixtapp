@@ -32,6 +32,7 @@ import com.example.mixtapp.ui.utils.AppBackground
 import com.example.mixtapp.ui.utils.ErrorBox
 import com.example.mixtapp.ui.utils.LoadingBox
 import com.example.mixtapp.ui.utils.PedirPermisoDeUbicacion
+import com.example.mixtapp.ui.utils.TonoDeFondo
 
 @Composable
 fun MapaScreen(
@@ -87,7 +88,7 @@ fun MapaScreenContent(
             .fillMaxSize()
             .testTag("mapaScreen")
     ) {
-        AppBackground()
+        AppBackground(tono = TonoDeFondo.Inicio)
 
         when {
             isLoading -> LoadingBox()

@@ -27,6 +27,7 @@ import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppBackground
 import com.example.mixtapp.ui.utils.AuthFooter
 import com.example.mixtapp.ui.utils.ErrorMessage
+import com.example.mixtapp.ui.utils.TonoDeFondo
 
 @Composable
 fun SignUpScreen(
@@ -100,7 +101,7 @@ fun SignUpScreenContent(
             .fillMaxSize()
             .testTag("signUpScreen")
     ) {
-        AppBackground()
+        AppBackground(tono = TonoDeFondo.Cuenta)
 
         // Son cinco campos: en pantallas pequenas o con el teclado abierto la columna se desplaza
         Column(

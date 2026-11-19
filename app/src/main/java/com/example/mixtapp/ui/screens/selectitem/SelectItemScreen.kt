@@ -35,6 +35,7 @@ import com.example.mixtapp.ui.utils.LoadingBox
 import com.example.mixtapp.ui.utils.OpcionUi
 import com.example.mixtapp.ui.utils.ScreenTitle
 import com.example.mixtapp.ui.utils.StarRating
+import com.example.mixtapp.ui.utils.TonoDeFondo
 
 // El boton + de la barra abre esta pantalla para elegir que calificar antes de escribir la resena
 @Composable
@@ -76,7 +77,7 @@ fun SelectItemScreenContent(
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier.fillMaxSize()) {
-        AppBackground()
+        AppBackground(tono = TonoDeFondo.Item)
 
         when {
             isLoading -> LoadingBox()

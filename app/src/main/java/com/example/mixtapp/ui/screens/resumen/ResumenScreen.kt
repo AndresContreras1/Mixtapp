@@ -33,6 +33,7 @@ import com.example.mixtapp.ui.utils.ErrorBox
 import com.example.mixtapp.ui.utils.ErrorMessage
 import com.example.mixtapp.ui.utils.LoadingBox
 import com.example.mixtapp.ui.utils.ScreenTitle
+import com.example.mixtapp.ui.utils.TonoDeFondo
 
 @Composable
 fun ResumenScreen(
@@ -65,7 +66,7 @@ fun ResumenScreenContent(
             .fillMaxSize()
             .testTag("resumenScreen")
     ) {
-        AppBackground()
+        AppBackground(tono = TonoDeFondo.Resumen)
 
         Column(modifier = Modifier.fillMaxSize()) {
             ScreenTitle(

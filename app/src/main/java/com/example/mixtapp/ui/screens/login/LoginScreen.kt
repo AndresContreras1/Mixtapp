@@ -28,6 +28,7 @@ import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppBackground
 import com.example.mixtapp.ui.utils.AuthFooter
 import com.example.mixtapp.ui.utils.ErrorMessage
+import com.example.mixtapp.ui.utils.TonoDeFondo
 
 @Composable
 fun LoginScreen(
@@ -79,7 +80,7 @@ fun LoginScreenContent(
             .fillMaxSize()
             .testTag("loginScreen")
     ) {
-        AppBackground()
+        AppBackground(tono = TonoDeFondo.Cuenta)
 
         // Con el teclado abierto el formulario no cabe: la columna se desplaza. Si cabe, queda
         // centrada en la pantalla

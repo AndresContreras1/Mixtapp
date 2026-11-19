@@ -39,6 +39,7 @@ import com.example.mixtapp.ui.utils.LoadingBox
 import com.example.mixtapp.ui.utils.OpcionUi
 import com.example.mixtapp.ui.utils.ReviewCard
 import com.example.mixtapp.ui.utils.SectionTitle
+import com.example.mixtapp.ui.utils.TonoDeFondo
 
 @Composable
 fun HomeScreen(
@@ -112,7 +113,7 @@ fun HomeScreenContent(
             .fillMaxSize()
             .testTag("homeScreen")
     ) {
-        AppBackground()
+        AppBackground(tono = TonoDeFondo.Inicio)
 
         when {
             isLoading -> LoadingBox()

@@ -46,6 +46,7 @@ import com.example.mixtapp.ui.utils.LoadingBox
 import com.example.mixtapp.ui.utils.OpcionUi
 import com.example.mixtapp.ui.utils.ScreenTitle
 import com.example.mixtapp.ui.utils.SectionTitle
+import com.example.mixtapp.ui.utils.TonoDeFondo
 
 @Composable
 fun DuelosScreen(
@@ -104,7 +105,7 @@ fun DuelosScreenContent(
             .fillMaxSize()
             .testTag("duelosScreen")
     ) {
-        AppBackground()
+        AppBackground(tono = TonoDeFondo.Duelos)
 
         Column(modifier = Modifier.fillMaxSize()) {
             ScreenTitle(

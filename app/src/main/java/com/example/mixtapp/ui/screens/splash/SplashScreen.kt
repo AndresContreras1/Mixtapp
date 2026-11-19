@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.sp
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppBackground
 import com.example.mixtapp.ui.utils.LogoText
+import com.example.mixtapp.ui.utils.TonoDeFondo
 
 // Su unica tarea es decidir a donde entrar. Quien navega sigue siendo la pantalla, con lambdas,
 // no el ViewModel
@@ -43,7 +44,7 @@ fun SplashScreen(
 @Composable
 fun SplashScreenContent(modifier: Modifier = Modifier) {
     Box(modifier = modifier.fillMaxSize()) {
-        AppBackground()
+        AppBackground(tono = TonoDeFondo.Cuenta)
 
         LogoText(
             fontSize = 56.sp,

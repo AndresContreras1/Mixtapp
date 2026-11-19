@@ -38,6 +38,7 @@ import com.example.mixtapp.ui.utils.LoadingBox
 import com.example.mixtapp.ui.utils.ReviewCard
 import com.example.mixtapp.ui.utils.ScreenTitle
 import com.example.mixtapp.ui.utils.SectionTitle
+import com.example.mixtapp.ui.utils.TonoDeFondo
 
 @Composable
 fun FollowingScreen(
@@ -94,7 +95,7 @@ fun FollowingScreenContent(
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier.fillMaxSize()) {
-        AppBackground()
+        AppBackground(tono = TonoDeFondo.Social)
 
         Column(modifier = Modifier.fillMaxSize()) {
             // El titulo queda fijo para poder volver aunque falle la carga

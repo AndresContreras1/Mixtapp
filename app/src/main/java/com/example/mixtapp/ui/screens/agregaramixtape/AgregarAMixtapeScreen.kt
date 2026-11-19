@@ -34,6 +34,7 @@ import com.example.mixtapp.ui.utils.ErrorMessage
 import com.example.mixtapp.ui.utils.LoadingBox
 import com.example.mixtapp.ui.utils.MixtapeCard
 import com.example.mixtapp.ui.utils.ScreenTitle
+import com.example.mixtapp.ui.utils.TonoDeFondo
 
 @Composable
 fun AgregarAMixtapeScreen(
@@ -90,7 +91,7 @@ fun AgregarAMixtapeScreenContent(
             .fillMaxSize()
             .testTag("agregarAMixtapeScreen")
     ) {
-        AppBackground()
+        AppBackground(tono = TonoDeFondo.Item)
 
         Column(modifier = Modifier.fillMaxSize()) {
             // El titulo queda fijo para poder volver aunque falle la carga

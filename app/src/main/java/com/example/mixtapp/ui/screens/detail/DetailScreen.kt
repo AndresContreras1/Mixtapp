@@ -37,6 +37,7 @@ import com.example.mixtapp.ui.utils.ItemHeader
 import com.example.mixtapp.ui.utils.LoadingBox
 import com.example.mixtapp.ui.utils.ReviewCard
 import com.example.mixtapp.ui.utils.SectionTitle
+import com.example.mixtapp.ui.utils.TonoDeFondo
 
 // El detalle de un album, una cancion o un artista: recibe el tipo y el id, y el ViewModel se
 // encarga de escuchar el item
@@ -103,7 +104,7 @@ fun DetailScreenContent(
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier.fillMaxSize().testTag("detailScreen")) {
-        AppBackground()
+        AppBackground(tono = TonoDeFondo.Item)
 
         when {
             isLoading -> LoadingBox()

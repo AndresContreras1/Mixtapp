@@ -35,6 +35,7 @@ import com.example.mixtapp.ui.utils.ProfileHeader
 import com.example.mixtapp.ui.utils.ReviewCard
 import com.example.mixtapp.ui.utils.ScreenTitle
 import com.example.mixtapp.ui.utils.SectionTitle
+import com.example.mixtapp.ui.utils.TonoDeFondo
 
 @Composable
 fun UserProfileScreen(
@@ -61,7 +62,7 @@ fun UserProfileScreen(
     val usuario = state.usuario
 
     Box(modifier = modifier.fillMaxSize()) {
-        AppBackground()
+        AppBackground(tono = TonoDeFondo.Social)
 
         when {
             state.isLoading -> {
@@ -222,7 +223,7 @@ fun UserProfileScreenContent(
 fun UserProfileScreenPreview() {
     MixtappTheme(darkTheme = true) {
         Box {
-            AppBackground()
+            AppBackground(tono = TonoDeFondo.Social)
 
             UserProfileScreenContent(
                 usuario = LocalPreviewProvider.otroUsuario,

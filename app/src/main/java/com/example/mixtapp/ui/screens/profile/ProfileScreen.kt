@@ -60,6 +60,7 @@ import com.example.mixtapp.ui.utils.ProfileHeader
 import com.example.mixtapp.ui.utils.ReviewCard
 import com.example.mixtapp.ui.utils.ScreenTitle
 import com.example.mixtapp.ui.utils.SectionTitle
+import com.example.mixtapp.ui.utils.TonoDeFondo
 
 @Composable
 fun ProfileScreen(
@@ -94,7 +95,7 @@ fun ProfileScreen(
     val errorMessageRes = state.errorMessageRes
 
     Box(modifier = modifier.fillMaxSize()) {
-        AppBackground()
+        AppBackground(tono = TonoDeFondo.Perfil)
 
         when {
             state.isLoading -> {
@@ -406,7 +407,7 @@ fun ProfileScreenPreview() {
         val usuario = LocalPreviewProvider.usuario
 
         Box {
-            AppBackground()
+            AppBackground(tono = TonoDeFondo.Perfil)
 
             ProfileScreenContent(
                 usuario = usuario.username,
