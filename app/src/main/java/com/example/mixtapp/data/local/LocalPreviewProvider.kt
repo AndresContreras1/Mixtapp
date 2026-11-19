@@ -179,6 +179,7 @@ object LocalPreviewProvider {
         estrellas = 5,
         ratingCount = 2,
         recommendRate = 100,
+        recomiendan = 2,
         yaCalificado = true,
         reviews = reviews,
     )

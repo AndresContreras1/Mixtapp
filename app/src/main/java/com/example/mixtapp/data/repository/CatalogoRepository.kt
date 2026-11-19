@@ -381,6 +381,7 @@ class CatalogoRepository @Inject constructor(
             estrellas = promedio.roundToInt(),
             ratingCount = reviews.size,
             recommendRate = porcentaje,
+            recomiendan = recomiendan,
             yaCalificado = miResena != null,
             // Las fechas van en formato ISO, asi que ordenar el texto ordena las fechas
             reviews = reviews.sortedByDescending { it.updatedAt },

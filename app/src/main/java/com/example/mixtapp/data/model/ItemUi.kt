@@ -62,6 +62,8 @@ data class ItemConResenasUi(
     val estrellas: Int,
     val ratingCount: Int,
     val recommendRate: Int,
+    // Cuantas resenas lo recomiendan: con el total se lee "1 de 1 lo recomiendan"
+    val recomiendan: Int,
     // Si ya escribi mi resena: solo hay una por item, asi que el boton cambia a editarla
     val yaCalificado: Boolean,
     val reviews: List<ReviewUi>,
