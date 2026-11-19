@@ -7,11 +7,13 @@ import com.example.mixtapp.data.model.ItemResumenUi
 import com.example.mixtapp.data.model.TIPO_ALBUM
 import com.example.mixtapp.data.model.TIPO_CANCION
 import com.example.mixtapp.data.repository.CatalogoRepository
+import com.example.mixtapp.data.repository.ReproductorRepository
 import com.example.mixtapp.data.repository.ReviewRepository
 import com.example.mixtapp.data.repository.SinConexionException
 import com.example.mixtapp.data.repository.UsuarioRepository
 import com.example.mixtapp.ui.screens.home.HomeViewModel
 import com.example.mixtapp.ui.screens.home.model.FILTRO_DESCUBRE
+import com.example.mixtapp.ui.screens.home.model.FILTRO_SEGUIDOS
 import com.example.mixtapp.ui.screens.home.model.FILTRO_TENDENCIAS
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
@@ -38,6 +40,7 @@ class HomeViewModelTest {
     private lateinit var catalogoRepository: CatalogoRepository
     private lateinit var usuarioRepository: UsuarioRepository
     private lateinit var reviewRepository: ReviewRepository
+    private lateinit var reproductorRepository: ReproductorRepository
 
     // 10 canciones de metal y 10 de reggaeton; las de reggaeton son mas populares
     private val metal = (1..10).map { cancion(id = "metal_$it", genero = "Metal", likes = it) }
@@ -49,6 +52,7 @@ class HomeViewModelTest {
         catalogoRepository = mockk()
         usuarioRepository = mockk()
         reviewRepository = mockk()
+        reproductorRepository = mockk()
         coEvery { usuarioRepository.getMisSeguidosLive() } returns flowOf(emptyList())
     }
 
@@ -78,6 +82,7 @@ class HomeViewModelTest {
         estrellas = 0,
         ratingCount = 0,
         recommendRate = 0,
+        recomiendan = 0,
         yaCalificado = false,
         reviews = emptyList(),
     )
@@ -94,7 +99,7 @@ class HomeViewModelTest {
     private fun crearViewModel(catalogo: List<ItemConResenasUi>, favoritos: List<ItemResumenUi>): HomeViewModel {
         coEvery { catalogoRepository.getCatalogoLive() } returns flowOf(catalogo)
         coEvery { usuarioRepository.getMisFavoritosLive() } returns flowOf(favoritos)
-        return HomeViewModel(catalogoRepository, usuarioRepository, reviewRepository, testDispatcher)
+        return HomeViewModel(catalogoRepository, usuarioRepository, reviewRepository, reproductorRepository, testDispatcher)
     }
 
     @Test
@@ -102,7 +107,7 @@ class HomeViewModelTest {
         //Arrange
         coEvery { catalogoRepository.getCatalogoLive() } returns flow { throw SinConexionException() }
         coEvery { usuarioRepository.getMisFavoritosLive() } returns flowOf(emptyList())
-        val viewModel = HomeViewModel(catalogoRepository, usuarioRepository, reviewRepository, testDispatcher)
+        val viewModel = HomeViewModel(catalogoRepository, usuarioRepository, reviewRepository, reproductorRepository, testDispatcher)
         //Act
         advanceUntilIdle()
         //Assert
@@ -116,7 +121,7 @@ class HomeViewModelTest {
         //Arrange
         coEvery { catalogoRepository.getCatalogoLive() } returns flowOf(metal + reggaeton)
         coEvery { usuarioRepository.getMisFavoritosLive() } returns flow { throw SinConexionException() }
-        val viewModel = HomeViewModel(catalogoRepository, usuarioRepository, reviewRepository, testDispatcher)
+        val viewModel = HomeViewModel(catalogoRepository, usuarioRepository, reviewRepository, reproductorRepository, testDispatcher)
         //Act
         advanceUntilIdle()
         //Assert: el error de mis likes no tapa las filas
@@ -232,5 +237,24 @@ class HomeViewModelTest {
         advanceUntilIdle()
         //Assert: empatan en popularidad y queda el primero, siempre el mismo
         assertThat(viewModel.uiState.value.enTendencia?.id).isEqualTo("album_1")
+    }
+
+    @Test
+    fun updateSelectedFilter_descubreYSeguidos_sinTarjetaEnTendencia() = runTest {
+        //Arrange
+        val viewModel = crearViewModel(catalogo = metal + listOf(album(id = "album_1", genero = "Metal", tendencia = 1)), favoritos = emptyList())
+        advanceUntilIdle()
+        val enParaTi = viewModel.uiState.value.enTendencia
+        //Act
+        viewModel.updateSelectedFilter(FILTRO_DESCUBRE)
+        advanceUntilIdle()
+        val enDescubre = viewModel.uiState.value.enTendencia
+        viewModel.updateSelectedFilter(FILTRO_SEGUIDOS)
+        advanceUntilIdle()
+        val enSeguidos = viewModel.uiState.value.enTendencia
+        //Assert: la tarjeta grande solo va en Para ti (y en Tendencias)
+        assertThat(enParaTi?.id).isEqualTo("album_1")
+        assertThat(enDescubre).isNull()
+        assertThat(enSeguidos).isNull()
     }
 }

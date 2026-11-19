@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
 import com.example.mixtapp.data.injection.IoDispatcher
+import com.example.mixtapp.data.model.EstadoDeReproduccion
 import com.example.mixtapp.data.model.ItemConResenasUi
 import com.example.mixtapp.data.model.ItemResumenUi
 import com.example.mixtapp.data.model.ItemUi
@@ -14,15 +15,18 @@ import com.example.mixtapp.data.model.TIPO_ALBUM
 import com.example.mixtapp.data.model.TIPO_ARTISTA
 import com.example.mixtapp.data.model.TIPO_CANCION
 import com.example.mixtapp.data.repository.CatalogoRepository
+import com.example.mixtapp.data.repository.ReproductorRepository
 import com.example.mixtapp.data.repository.ReviewRepository
 import com.example.mixtapp.data.repository.UsuarioRepository
 import com.example.mixtapp.ui.screens.home.model.FILTRO_DESCUBRE
+import com.example.mixtapp.ui.screens.home.model.FILTRO_PARA_TI
 import com.example.mixtapp.ui.screens.home.model.FILTRO_SEGUIDOS
 import com.example.mixtapp.ui.screens.home.model.FILTRO_TENDENCIAS
 import com.example.mixtapp.ui.utils.mensajeDeError
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -41,12 +45,16 @@ class HomeViewModel @Inject constructor(
     private val catalogoRepository: CatalogoRepository,
     private val usuarioRepository: UsuarioRepository,
     private val reviewRepository: ReviewRepository,
+    private val reproductorRepository: ReproductorRepository,
     // Las corrutinas se lanzan en este hilo; las pruebas pasan uno de prueba
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeState())
     val uiState: StateFlow<HomeState> = _uiState.asStateFlow()
+
+    // La corrutina que escucha el fragmento de la tarjeta en tendencia; null si no suena nada
+    private var reproduccion: Job? = null
 
     // Los tres flujos son en vivo y no reciben parametros: se escuchan una sola vez al crear el
     // ViewModel. Si se pidieran en cada LaunchedEffect se acumularian listeners
@@ -161,10 +169,12 @@ class HomeViewModel @Inject constructor(
         return estado.copy(
             albumEnTendenciaId = albumEnTendenciaId,
             enTendenciaColombia = enColombia,
-            enTendencia = if (enColombia) {
-                primeroEnColombia(catalogo = estado.catalogo)
-            } else {
-                enTendencia(catalogo = estado.catalogo, pesos = pesos, elegidoId = albumEnTendenciaId)
+            // La tarjeta grande va en Para ti y en Tendencias. En Descubre y en Seguidos no sale: ahi
+            // lo importante es lo nuevo y lo de las personas que sigo
+            enTendencia = when (estado.selectedFilterId) {
+                FILTRO_TENDENCIAS -> primeroEnColombia(catalogo = estado.catalogo)
+                FILTRO_PARA_TI -> enTendencia(catalogo = estado.catalogo, pesos = pesos, elegidoId = albumEnTendenciaId)
+                else -> null
             },
             canciones = armarFila(tipo = TIPO_CANCION, estado = estado, pesos = pesos, afinidad = afinidad),
             albumes = armarFila(tipo = TIPO_ALBUM, estado = estado, pesos = pesos, afinidad = afinidad),
@@ -204,7 +214,7 @@ class HomeViewModel @Inject constructor(
         return if (sigue) estado.albumEnTendenciaId else candidatos.randomOrNull()?.item?.id
     }
 
-    // La tarjeta de Para ti, Descubre y Seguidos: el album elegido al azar. Si ninguno de mis
+    // La tarjeta de Para ti: el album elegido al azar. Si ninguno de mis
     // generos tiene albumes en su lista, el mas popular de mi genero favorito o, sin generos, de todos
     private fun enTendencia(catalogo: List<ItemConResenasUi>, pesos: Map<String, Int>, elegidoId: String?): ItemUi? {
         val albumes = catalogo.filter { it.item.tipo == TIPO_ALBUM }
@@ -346,4 +356,66 @@ class HomeViewModel @Inject constructor(
             .sortedByDescending { it.updatedAt }
             .take(RESENAS_DE_SEGUIDOS)
 
+    // Tocar play en lo que ya suena lo detiene; en otro item, detiene lo de antes y pide su fragmento.
+    // El audio suena mientras se escuche el flujo: cancelar la corrutina lo detiene y lo libera
+    fun alternarVistaPrevia(item: ItemUi) {
+        val eraEste = _uiState.value.vistaPreviaId == item.id
+        detenerVistaPrevia()
+        if (eraEste) return
+
+        reproduccion = viewModelScope.launch(ioDispatcher) {
+            _uiState.update {
+                it.copy(
+                    vistaPreviaId = item.id,
+                    vistaPreviaEstado = EstadoDeReproduccion.Cargando,
+                    errorVistaPreviaRes = null,
+                )
+            }
+
+            val result = reproductorRepository.getVistaPrevia(item = item)
+            val url = result.getOrNull()
+            if (url == null) {
+                _uiState.update {
+                    it.copy(
+                        vistaPreviaId = null,
+                        vistaPreviaEstado = null,
+                        errorVistaPreviaRes = mensajeDeError(
+                            error = result.exceptionOrNull(),
+                            generico = R.string.error_vista_previa,
+                        ),
+                    )
+                }
+                return@launch
+            }
+
+            reproductorRepository.escuchar(url = url)
+                .catch { e ->
+                    Log.d("HomeViewModel", "alternarVistaPrevia: ${e.message}")
+                    _uiState.update {
+                        it.copy(
+                            vistaPreviaId = null,
+                            vistaPreviaEstado = null,
+                            errorVistaPreviaRes = mensajeDeError(error = e, generico = R.string.error_vista_previa),
+                        )
+                    }
+                }
+                .collect { estado ->
+                    // Al terminar los 30 segundos el boton vuelve al play
+                    _uiState.update {
+                        if (estado == EstadoDeReproduccion.Terminada) {
+                            it.copy(vistaPreviaId = null, vistaPreviaEstado = null)
+                        } else {
+                            it.copy(vistaPreviaEstado = estado)
+                        }
+                    }
+                }
+        }
+    }
+
+    // Al salir de la pantalla o al tocar otro play: la musica no sigue sonando donde no se ve
+    fun detenerVistaPrevia() {
+        reproduccion?.cancel()
+        reproduccion = null
+        _uiState.update { it.copy(vistaPreviaId = null, vistaPreviaEstado = null) }
+    }
 }
