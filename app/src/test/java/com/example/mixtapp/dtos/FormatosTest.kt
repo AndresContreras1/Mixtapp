@@ -8,6 +8,7 @@ import com.example.mixtapp.data.dtos.formatoCantidad
 import com.example.mixtapp.data.dtos.haceCuanto
 import com.example.mixtapp.data.dtos.perfilDeInstagram
 import com.example.mixtapp.data.dtos.toItemUi
+import com.example.mixtapp.data.model.fechaConMes
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 import java.time.Instant
@@ -75,11 +76,27 @@ class FormatosTest {
     }
 
     @Test
-    fun haceCuanto_masDeUnaSemana_muestraLaFecha() {
+    fun haceCuanto_masDeUnaSemana_muestraElDiaYElMes() {
         //Act
         val texto = haceCuanto(fechaIso = "2026-09-01T12:00:00Z", ahora = ahora)
         //Assert
-        assertThat(texto).isEqualTo("2026-09-01")
+        assertThat(texto).isEqualTo("1 sep")
+    }
+
+    @Test
+    fun haceCuanto_deOtroAnio_llevaElAnio() {
+        //Act
+        val texto = haceCuanto(fechaIso = "2025-12-24T12:00:00Z", ahora = ahora)
+        //Assert
+        assertThat(texto).isEqualTo("24 dic 2025")
+    }
+
+    @Test
+    fun fechaConMes_fechaDeSalida_diaMesYAnio() {
+        //Act
+        val texto = fechaConMes(fechaIso = "1986-03-03", anioActual = null)
+        //Assert
+        assertThat(texto).isEqualTo("3 mar 1986")
     }
 
     @Test

@@ -72,6 +72,9 @@ data class ItemConResenasUi(
     val popularidad: Int get() = item.likes + reviews.size
 }
 
+// La fecha de salida para mostrar ("3 mar 1986"); vacia en los artistas
+val ItemUi.fechaDeSalida: String get() = if (fechaLanzamiento.isEmpty()) anio else fechaConMes(fechaIso = fechaLanzamiento, anioActual = null)
+
 // Si el titulo, el subtitulo o el detalle contienen el texto, sin importar las mayusculas. Lo usan
 // Buscar y Elegir que calificar
 fun ItemUi.contieneTexto(texto: String): Boolean =
