@@ -80,7 +80,7 @@ fun DatosCuriososScreenContent(
                 contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
             ) {
                 item {
-                    ItemHeader(item = item, onBackClick = onBackClick)
+                    ItemHeader(item = item, onBackClick = onBackClick, onColorDePortada = null)
                 }
 
                 item {

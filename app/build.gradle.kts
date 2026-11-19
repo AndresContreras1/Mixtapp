@@ -84,6 +84,8 @@ dependencies {
     implementation(libs.kotlinx.coroutines.play.services)
     // Las imagenes desde una URL
     implementation(libs.coil.compose)
+    // Palette saca el color de la portada para el degradado del detalle
+    implementation(libs.androidx.palette)
     // Retrofit para el backend de Express, con Gson para el JSON
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.scalars)
