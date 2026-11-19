@@ -14,15 +14,14 @@ import androidx.compose.ui.graphics.PointMode
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.mixtapp.ui.theme.Black
+import com.example.mixtapp.ui.theme.Coral
 import com.example.mixtapp.ui.theme.Crimson300
 import com.example.mixtapp.ui.theme.Crimson400
-import com.example.mixtapp.ui.theme.Crimson500
-import com.example.mixtapp.ui.theme.Mauve400
-import com.example.mixtapp.ui.theme.Mauve500
+import com.example.mixtapp.ui.theme.Magenta
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.theme.Plum300
 import com.example.mixtapp.ui.theme.Plum400
-import com.example.mixtapp.ui.theme.Plum500
+import com.example.mixtapp.ui.theme.Violeta
 import com.example.mixtapp.ui.theme.White
 import kotlin.random.Random
 
@@ -33,29 +32,29 @@ enum class TonoDeFondo(
     val abajo: Color,
     val intensidad: Float,
 ) {
-    // Inicio: el rosado de la marca
-    Inicio(arriba = Crimson400, abajo = Plum500, intensidad = 0.55f),
+    // Inicio: magenta arriba y violeta abajo, el aire de fiesta de la marca
+    Inicio(arriba = Magenta, abajo = Violeta, intensidad = 0.45f),
 
-    // Buscar: ciruela, mas frio
-    Buscar(arriba = Plum400, abajo = Mauve500, intensidad = 0.5f),
+    // Buscar: violeta y ciruela, mas frio
+    Buscar(arriba = Violeta, abajo = Plum400, intensidad = 0.45f),
 
-    // Duelos: rojo intenso, la seccion que mas llama la atencion
-    Duelos(arriba = Crimson300, abajo = Crimson500, intensidad = 0.75f),
+    // Duelos: rojo y coral intensos, la seccion que mas llama la atencion
+    Duelos(arriba = Crimson300, abajo = Coral, intensidad = 0.6f),
 
-    // Perfil y Tu ano: malva
-    Perfil(arriba = Mauve400, abajo = Plum500, intensidad = 0.5f),
+    // Perfil: magenta suave y ciruela
+    Perfil(arriba = Plum300, abajo = Magenta, intensidad = 0.4f),
 
     // Lo de las personas: Siguiendo, notificaciones, discusiones y otros perfiles
-    Social(arriba = Plum500, abajo = Crimson500, intensidad = 0.5f),
+    Social(arriba = Violeta, abajo = Crimson400, intensidad = 0.4f),
 
     // Un item y lo que se hace con el: detalle, datos curiosos, resenas y mixtapes
-    Item(arriba = Mauve400, abajo = Plum500, intensidad = 0.45f),
+    Item(arriba = Plum400, abajo = Violeta, intensidad = 0.4f),
 
     // Tu ano en Mixtapp: los colores mas vivos
-    Resumen(arriba = Crimson300, abajo = Plum300, intensidad = 0.65f),
+    Resumen(arriba = Coral, abajo = Magenta, intensidad = 0.65f),
 
     // Entrar y registrarse: sobrio, solo un resplandor suave arriba para no competir con los campos
-    Cuenta(arriba = Crimson500, abajo = Color.Transparent, intensidad = 0.45f),
+    Cuenta(arriba = Magenta, abajo = Color.Transparent, intensidad = 0.3f),
 }
 
 // Cuantos puntos lleva el grano por cada 10.000 px de pantalla

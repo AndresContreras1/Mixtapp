@@ -360,8 +360,9 @@ La pantalla de notificaciones tiene tres pestañas, todas en vivo:
   entrega `CoroutineModule`), así las pruebas pueden pasar uno de prueba.
 - **El color sale del `MaterialTheme`.** `Color.kt` tiene las cuatro escalas de la paleta (Crimson,
   Mauve, Plum y Gris, del 50 al 600) y `Theme.kt` elige el tono de cada rol: para cambiar el tema
-  basta con cambiar un tono en uno de los dos archivos. El modo oscuro usa el rosado vivo solo para
-  lo importante (botones, estrellas, pestaña activa) sobre el fondo de vino casi negro, y el modo
+  basta con cambiar un tono en uno de los dos archivos. El modo oscuro usa el rosado chicle solo para
+  lo importante (botones, estrellas, filtros elegidos, pestaña activa) sobre un fondo ciruela casi
+  negro (`Noche`), con acentos magenta, violeta y coral en los resplandores del fondo, y el modo
   claro, los fondos pastel. Las barras de arriba (`BarraSuperior`) y de abajo van en el tono más
   oscuro (`surfaceContainerLowest`) para que no se pierdan en el fondo. No hay colores quemados fuera de
   `Color.kt`, salvo el fondo de la ventana en `themes.xml` y los drawables XML (icono y marcadores de

@@ -24,7 +24,7 @@ val Mauve400 = Color(0xFF853953)
 val Mauve500 = Color(0xFF542132)
 val Mauve600 = Color(0xFF260B15)
 // Mas oscuro que el fondo: las barras de arriba y de abajo, para que no se pierdan en el fondo
-val Mauve700 = Color(0xFF16060C)
+val Mauve700 = Color(0xFF12060F)
 
 // Plum: los circulos del fondo y los detalles
 val Plum50 = Color(0xFFF8EEF5)
@@ -47,6 +47,17 @@ val Grey600 = Color(0xFF191616)
 // Los dos grises base de la paleta
 val Carbon = Color(0xFF303030)
 val Graphite = Color(0xFF4F4F4F)
+
+// Los acentos vivos del modo oscuro: le dan a la app el aire de musica y de fiesta. El chicle es el
+// rosado de lo importante; magenta, violeta y coral son los resplandores del fondo de cada seccion
+val Chicle = Color(0xFFFF8CC6)
+val Magenta = Color(0xFFE0449E)
+val Violeta = Color(0xFF8A4FD8)
+val Coral = Color(0xFFFF7A6B)
+
+// El fondo del modo oscuro: ciruela casi negra con un toque violeta, y la superficie de las tarjetas
+val Noche = Color(0xFF1C0B1C)
+val Uva = Color(0xFF3A1A3C)
 
 val White = Color(0xFFFFFFFF)
 val Black = Color(0xFF000000)
