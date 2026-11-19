@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalPreviewProvider
 import com.example.mixtapp.data.model.ItemUi
+import com.example.mixtapp.data.model.TIPO_ARTISTA
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.ItemCard
 import com.example.mixtapp.ui.utils.SectionTitle
@@ -33,13 +34,14 @@ fun HomeItemRow(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        LazyRow(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             items(items) { item ->
                 ItemCard(
                     titulo = item.titulo,
                     subtitulo = item.subtitulo,
                     detalle = item.detalle,
                     imagenUrl = item.imagenUrl,
+                    circular = item.tipo == TIPO_ARTISTA,
                     onClick = { onItemClick(item) },
                     modifier = Modifier.testTag("item_${item.id}"),
                 )

@@ -34,13 +34,13 @@ fun CommentsButton(
                 imageVector = Icons.Outlined.ChatBubbleOutline,
                 contentDescription = stringResource(R.string.open_discussion),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(18.dp),
+                modifier = Modifier.size(21.dp),
             )
         }
         Text(
             text = comments.toString(),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            style = MaterialTheme.typography.labelMedium,
+            style = MaterialTheme.typography.labelLarge,
         )
     }
 }
