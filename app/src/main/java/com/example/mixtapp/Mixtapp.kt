@@ -74,9 +74,9 @@ fun Mixtapp(modifier: Modifier = Modifier) {
 
     Scaffold(
         modifier = modifier,
-        // Lo que queda fuera de las pantallas (la franja de la hora arriba) va en el tono de las
-        // barras, asi la barra de arriba de cada pestana llega hasta el borde
-        containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+        // Lo que queda fuera de las pantallas (la franja de la hora arriba) va en el color del fondo:
+        // arriba no hay panel, solo la barra de abajo es solida
+        containerColor = MaterialTheme.colorScheme.background,
         bottomBar = {
             if (mostrarBarra) {
                 BottomNav(navController = navController)
