@@ -322,8 +322,11 @@ La pantalla de notificaciones tiene tres pestañas, todas en vivo:
   en votar" y oculta los porcentajes. Votar queda apagado hasta elegir uno (`puedeVotar` en
   `ReglasDeDuelo`); la tarjeta elegida lleva borde, check y elevación, y la barra se anima cuando
   llega un voto.
-- **Tu año se ve como una historia:** una tarjeta a la vez con los segmentos de progreso, un
-  degradado distinto por tarjeta y, al final, Compartir (un `Intent.ACTION_SEND` con el texto). Con
+- **Tu año se ve como una historia:** una tarjeta a la vez con los segmentos de progreso y, al
+  final, Compartir (un `Intent.ACTION_SEND` con el texto). Son cuatro tarjetas: mis reseñas (con la
+  más querida, el total y el promedio), mi género con la portada grande de un álbum de ese género, mi
+  artista con su foto y lo que mejor califiqué. Con imagen, el degradado de la tarjeta sale del color
+  de esa imagen (Palette). Con
   pocos datos (`hayPocosDatos` en `ReglasDelResumen`) no afirma el género ni el artista.
 - **Las fechas se leen igual en toda la app** (`fechaConMes` en `data/model/Fechas.kt`): "3 h", "2 d"
   y, desde una semana, "21 oct" (con el año si es de otro). Los lanzamientos muestran su fecha de
