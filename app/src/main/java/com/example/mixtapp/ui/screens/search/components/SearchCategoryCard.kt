@@ -26,19 +26,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorMatrix
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalSearchCategoriesProvider
 import com.example.mixtapp.data.model.CATEGORIA_FECHA_LANZAMIENTO
 import com.example.mixtapp.data.model.CATEGORIA_MAS_POPULARES
 import com.example.mixtapp.data.model.SearchCategoryUi
 import com.example.mixtapp.ui.theme.Black
-import com.example.mixtapp.ui.theme.Chicle
-import com.example.mixtapp.ui.theme.Coral
-import com.example.mixtapp.ui.theme.Crimson300
 import com.example.mixtapp.ui.theme.Magenta
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.theme.Violeta
@@ -88,8 +92,8 @@ fun SearchCategoryCard(
     }
 }
 
-// Las tres formas de explorar en una sola fila pareja: cada una con su icono y su color, porque son
-// criterios y no musica (una portada no explica "Mas populares")
+// Las tres formas de explorar en una sola fila pareja: cada una con su icono, porque son criterios y
+// no musica (una portada no explica "Mas populares"). Las tres llevan el mismo degradado de la marca
 @Composable
 fun CriteriosDeBusqueda(
     criterios: List<SearchCategoryUi>,
@@ -101,10 +105,10 @@ fun CriteriosDeBusqueda(
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         criterios.forEach { criterio ->
-            val (icono, colores) = when (criterio.id) {
-                CATEGORIA_FECHA_LANZAMIENTO -> Icons.Outlined.CalendarMonth to listOf(Violeta, Magenta)
-                CATEGORIA_MAS_POPULARES -> Icons.AutoMirrored.Filled.TrendingUp to listOf(Coral, Crimson300)
-                else -> Icons.Outlined.Star to listOf(Magenta, Chicle)
+            val icono = when (criterio.id) {
+                CATEGORIA_FECHA_LANZAMIENTO -> Icons.Outlined.CalendarMonth
+                CATEGORIA_MAS_POPULARES -> Icons.AutoMirrored.Filled.TrendingUp
+                else -> Icons.Outlined.Star
             }
 
             Card(
@@ -118,7 +122,7 @@ fun CriteriosDeBusqueda(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(Brush.linearGradient(colores))
+                        .background(Brush.linearGradient(listOf(Magenta, Violeta)))
                         .padding(12.dp),
                     verticalArrangement = Arrangement.SpaceBetween,
                 ) {
@@ -136,6 +140,62 @@ fun CriteriosDeBusqueda(
                     )
                 }
             }
+        }
+    }
+}
+
+// Un genero en una tarjeta horizontal a todo el ancho. La portada va en gris con el degradado rosado y
+// morado de la marca encima, asi todas se ven parejas aunque las portadas tengan colores distintos.
+// El nombre va grande a la izquierda
+@Composable
+fun TarjetaDeGenero(
+    genero: SearchCategoryUi,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val titulo = stringResource(genero.titleRes)
+    val gris = ColorMatrix().apply { setToSaturation(0f) }
+
+    Card(
+        onClick = onClick,
+        modifier = modifier
+            .fillMaxWidth()
+            .height(92.dp),
+        shape = RoundedCornerShape(22.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(genero.imagenUrl)
+                    .crossfade(true)
+                    .build(),
+                contentDescription = stringResource(R.string.portada_de, titulo),
+                contentScale = ContentScale.Crop,
+                colorFilter = ColorFilter.colorMatrix(gris),
+                modifier = Modifier.fillMaxSize(),
+            )
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.horizontalGradient(
+                            listOf(Magenta.copy(alpha = 0.92f), Violeta.copy(alpha = 0.7f), Violeta.copy(alpha = 0.35f))
+                        )
+                    )
+            )
+
+            Text(
+                text = titulo,
+                color = White,
+                style = MaterialTheme.typography.headlineSmall,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .padding(horizontal = 22.dp),
+            )
         }
     }
 }
