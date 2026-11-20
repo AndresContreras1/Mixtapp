@@ -336,6 +336,19 @@ La pantalla de notificaciones tiene tres pestañas, todas en vivo:
   rosado y morado encima, así se ven parejas.
 - **Sonando ahora** (`SonandoAhoraRow` en `ui/utils`) sale en Siguiendo y arriba de las
   notificaciones.
+- **Comunidad** (la ruta de Siguiendo) tiene cuatro pestañas:
+  - **Siguiendo:** la pantalla de siempre con su `FollowingViewModel`.
+  - **Afinidad:** las personas con gustos parecidos, aunque no las siga. `ComunidadRepository` lee
+    mis likes y los de los demás una vez y calcula el match con `porcentajeDeAfinidad` en
+    `data/model/ReglasDeComunidad` (60 % los items en común y 40 % los géneros).
+  - **Foros:** uno por álbum, canción o artista (`foros/{itemId}` con su subcolección `mensajes`,
+    en vivo). El mensaje y el documento del foro se escriben en un batch. También se entra desde el
+    detalle.
+  - **Mensajes:** chats directos (`chats/{uidA_uidB}`; el id sale de `idDelChat` con los dos uid
+    ordenados, y así lo protegen las reglas). Se abren desde Afinidad o con "Enviar mensaje" en el
+    perfil de otro usuario.
+  - Todo va por capas: `ComunidadRemoteDataSource` (Firestore, y en Retrofit las listas vacías),
+    `ComunidadRepository`, `ComunidadViewModel`, `ForoViewModel` y `ChatViewModel`.
 - **El detalle y los datos curiosos toman el color de la portada** con Palette (`PortadaConColor`),
   pero solo en un degradado decorativo arriba (`DegradadoDePortada`): los textos y el resto del fondo
   no cambian. En el detalle, Datos curiosos va destacado justo debajo de Calificar; después, Escuchar
