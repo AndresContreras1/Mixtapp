@@ -328,9 +328,10 @@ La pantalla de notificaciones tiene tres pestañas, todas en vivo:
 - **Las fechas se leen igual en toda la app** (`fechaConMes` en `data/model/Fechas.kt`): "3 h", "2 d"
   y, desde una semana, "21 oct" (con el año si es de otro). Los lanzamientos muestran su fecha de
   salida y en Buscar se pueden ordenar de lo más nuevo a lo más viejo o al revés.
-- **El detalle toma el color de la portada** con Palette (`PortadaConColor`), pero solo en un
-  degradado decorativo arriba: los textos y el resto del fondo no cambian. Abajo de las acciones el
-  detalle se agrupa en tres bloques: Escuchar y ver, Descubre más y Reseñas de la comunidad.
+- **El detalle y los datos curiosos toman el color de la portada** con Palette (`PortadaConColor`),
+  pero solo en un degradado decorativo arriba (`DegradadoDePortada`): los textos y el resto del fondo
+  no cambian. En el detalle, Datos curiosos va destacado justo debajo de Calificar; después, Escuchar
+  y ver en una fila (el play, YouTube y Spotify), Descubre más y Reseñas de la comunidad.
 - **Los datos curiosos van en su propia colección** (`historias`), con el mismo id del item: el
   inicio escucha todo el catálogo y así no descarga ese texto. La pantalla de datos curiosos los lee
   una sola vez, porque no cambian mientras se usa la app.
