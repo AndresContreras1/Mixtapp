@@ -6,13 +6,11 @@ import com.example.mixtapp.data.model.ItemUi
 import com.example.mixtapp.data.model.ReviewUi
 
 // Las tarjetas del resumen, en el orden en que se descubren. Las que no tienen datos (por ejemplo,
-// sin reseñas no hay mejor calificada) no salen
+// sin reseñas no hay mejor calificada) no salen. La reseña mas querida va dentro de la de reseñas
 const val TARJETA_RESENAS = "resenas"
 const val TARJETA_GENERO = "genero"
 const val TARJETA_ARTISTA = "artista"
 const val TARJETA_MEJOR = "mejor"
-const val TARJETA_QUERIDA = "querida"
-const val TARJETA_SOCIAL = "social"
 
 data class ResumenState(
     // Con esto el ViewModel calcula el resumen: mis reseñas y mis me gusta en vivo, mis contadores
@@ -28,7 +26,11 @@ data class ResumenState(
     val promedio: Double = 0.0,
     val totalMeGusta: Int = 0,
     val generoFavorito: String? = null,
+    // La portada de un album de mi genero y la foto de mi artista, grandes en sus tarjetas; null si
+    // el catalogo no tiene ninguna
+    val portadaDelGenero: String? = null,
     val artistaFavorito: String? = null,
+    val fotoDelArtista: String? = null,
     val mejorCalificado: ItemResumenUi? = null,
     val mejorCalificacion: Int = 0,
     val masQuerida: ReviewUi? = null,

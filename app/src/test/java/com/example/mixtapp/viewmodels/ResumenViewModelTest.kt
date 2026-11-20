@@ -12,9 +12,7 @@ import com.example.mixtapp.data.repository.SinConexionException
 import com.example.mixtapp.data.repository.UsuarioRepository
 import com.example.mixtapp.ui.screens.resumen.ResumenViewModel
 import com.example.mixtapp.ui.screens.resumen.TARJETA_MEJOR
-import com.example.mixtapp.ui.screens.resumen.TARJETA_QUERIDA
 import com.example.mixtapp.ui.screens.resumen.TARJETA_RESENAS
-import com.example.mixtapp.ui.screens.resumen.TARJETA_SOCIAL
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -134,7 +132,23 @@ class ResumenViewModelTest {
     }
 
     @Test
-    fun init_sinResenas_soloLaTarjetaDeResenasYLaSocial() = runTest {
+    fun init_meGustanMasMetal_laPortadaDeUnAlbumDeMetal() = runTest {
+        //Arrange: el album de metal que me gusta tiene su propia portada
+        val metal = album("album_a", "Metal", "Metallica").copy(imagenUrl = "portada_metal")
+        val items = listOf(metal, album("album_c", "Rock", "Queen").copy(imagenUrl = "portada_rock"))
+        val viewModel = crearViewModel(
+            resenas = emptyList(),
+            items = items,
+            favoritos = flowOf(listOf(like("album_a"))),
+        )
+        //Act
+        advanceUntilIdle()
+        //Assert
+        assertThat(viewModel.uiState.value.portadaDelGenero).isEqualTo("portada_metal")
+    }
+
+    @Test
+    fun init_sinResenas_soloLaTarjetaDeResenas() = runTest {
         //Arrange
         val viewModel = crearViewModel(resenas = emptyList(), items = listOf(album("album_a", "Metal", "Metallica")))
         //Act
@@ -142,7 +156,7 @@ class ResumenViewModelTest {
         //Assert
         val state = viewModel.uiState.value
         assertThat(state.totalResenas).isEqualTo(0)
-        assertThat(state.tarjetas).containsExactly(TARJETA_RESENAS, TARJETA_SOCIAL).inOrder()
+        assertThat(state.tarjetas).containsExactly(TARJETA_RESENAS)
     }
 
     @Test
@@ -171,7 +185,6 @@ class ResumenViewModelTest {
         //Assert
         val state = viewModel.uiState.value
         assertThat(state.masQuerida?.id).isEqualTo("r2")
-        assertThat(state.tarjetas).contains(TARJETA_QUERIDA)
     }
 
     @Test
@@ -219,22 +232,26 @@ class ResumenViewModelTest {
 
     @Test
     fun avanzar_hastaElFinal_noPasaDeLasTarjetas() = runTest {
-        //Arrange: sin datos hay dos tarjetas
-        val viewModel = crearViewModel(resenas = emptyList(), items = emptyList())
+        //Arrange: con una reseña hay varias tarjetas
+        val viewModel = crearViewModel(
+            resenas = listOf(resena("r1", "album_a", 5)),
+            items = listOf(album("album_a", "Metal", "Metallica")),
+        )
         advanceUntilIdle()
+        val total = viewModel.uiState.value.tarjetas.size
         //Act
-        viewModel.avanzar()
+        repeat(total - 1) { viewModel.avanzar() }
         //Assert
-        assertThat(viewModel.uiState.value.reveladas).isEqualTo(2)
+        assertThat(total).isGreaterThan(1)
+        assertThat(viewModel.uiState.value.reveladas).isEqualTo(total)
         assertThat(viewModel.uiState.value.quedanPorVer).isFalse()
     }
 
     @Test
     fun avanzar_alFinal_vuelveALaPrimera() = runTest {
-        //Arrange
+        //Arrange: sin datos solo esta la tarjeta de reseñas, que ya es la ultima
         val viewModel = crearViewModel(resenas = emptyList(), items = emptyList())
         advanceUntilIdle()
-        viewModel.avanzar()
         //Act
         viewModel.avanzar()
         //Assert

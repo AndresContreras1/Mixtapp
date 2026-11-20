@@ -15,11 +15,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Album
-import androidx.compose.material.icons.outlined.Favorite
-import androidx.compose.material.icons.outlined.Groups
 import androidx.compose.material.icons.outlined.LibraryMusic
 import androidx.compose.material.icons.outlined.MicExternalOn
-import androidx.compose.material.icons.outlined.RateReview
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -37,8 +34,8 @@ import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalPreviewProvider
 import com.example.mixtapp.data.model.toItemResumenUi
+import com.example.mixtapp.ui.screens.resumen.components.TarjetaDeResenas
 import com.example.mixtapp.ui.screens.resumen.components.TarjetaResumen
-import com.example.mixtapp.ui.theme.Chicle
 import com.example.mixtapp.ui.theme.Coral
 import com.example.mixtapp.ui.theme.Crimson300
 import com.example.mixtapp.ui.theme.Magenta
@@ -219,35 +216,35 @@ private fun ContenidoDeTarjeta(
     val detalleDeGustos = if (state.pocosDatos) stringResource(R.string.resumen_pocos_datos) else null
 
     when (tarjeta) {
-        TARJETA_RESENAS -> TarjetaResumen(
-            titulo = stringResource(R.string.resumen_resenas_titulo),
-            valor = state.totalResenas.toString(),
-            detalle = if (state.totalResenas == 0) {
-                stringResource(R.string.resumen_sin_resenas)
-            } else {
-                stringResource(R.string.resumen_promedio, state.promedio.toString())
-            },
-            icono = Icons.Outlined.RateReview,
-            colores = listOf(Coral, Magenta),
+        // La mas llamativa: la reseña con mas me gusta, cuantas escribi y mi promedio
+        TARJETA_RESENAS -> TarjetaDeResenas(
+            totalResenas = state.totalResenas,
+            promedio = state.promedio,
+            masQuerida = state.masQuerida,
             modifier = modifier,
         )
+        // La portada grande de un album del genero y el degradado con su color
         TARJETA_GENERO -> TarjetaResumen(
             titulo = stringResource(R.string.resumen_genero_titulo),
             valor = state.generoFavorito ?: "",
             detalle = detalleDeGustos ?: stringResource(R.string.resumen_genero_detalle),
             icono = Icons.Outlined.LibraryMusic,
             colores = listOf(Violeta, Magenta),
+            imagenUrl = state.portadaDelGenero,
             modifier = modifier,
         )
+        // La foto grande del artista con su nombre abajo
         TARJETA_ARTISTA -> TarjetaResumen(
             titulo = stringResource(R.string.resumen_artista_titulo),
             valor = state.artistaFavorito ?: "",
             detalle = detalleDeGustos ?: stringResource(R.string.resumen_artista_detalle),
             icono = Icons.Outlined.MicExternalOn,
             colores = listOf(Magenta, Crimson300),
+            imagenUrl = state.fotoDelArtista,
             modifier = modifier,
         )
-        TARJETA_MEJOR -> TarjetaResumen(
+        // TARJETA_MEJOR
+        else -> TarjetaResumen(
             titulo = stringResource(R.string.resumen_mejor_titulo),
             valor = state.mejorCalificado?.titulo ?: "",
             detalle = stringResource(
@@ -258,24 +255,6 @@ private fun ContenidoDeTarjeta(
             icono = Icons.Outlined.Album,
             colores = listOf(Crimson300, Coral),
             imagenUrl = state.mejorCalificado?.imagenUrl,
-            modifier = modifier,
-        )
-        TARJETA_QUERIDA -> TarjetaResumen(
-            titulo = stringResource(R.string.resumen_querida_titulo),
-            valor = state.masQuerida?.item?.titulo ?: "",
-            detalle = stringResource(R.string.resumen_querida_detalle, state.masQuerida?.likes ?: 0),
-            icono = Icons.Outlined.Favorite,
-            colores = listOf(Chicle, Violeta),
-            imagenUrl = state.masQuerida?.item?.imagenUrl,
-            modifier = modifier,
-        )
-        // TARJETA_SOCIAL
-        else -> TarjetaResumen(
-            titulo = stringResource(R.string.resumen_social_titulo),
-            valor = state.totalMeGusta.toString(),
-            detalle = stringResource(R.string.resumen_social_detalle, state.seguidores, state.seguidos),
-            icono = Icons.Outlined.Groups,
-            colores = listOf(Violeta, Coral),
             modifier = modifier,
         )
     }
@@ -297,7 +276,7 @@ fun ResumenScreenPreview() {
                 mejorCalificacion = 5,
                 seguidores = 8,
                 seguidos = 5,
-                tarjetas = listOf(TARJETA_RESENAS, TARJETA_GENERO, TARJETA_ARTISTA, TARJETA_MEJOR, TARJETA_SOCIAL),
+                tarjetas = listOf(TARJETA_RESENAS, TARJETA_GENERO, TARJETA_ARTISTA, TARJETA_MEJOR),
                 reveladas = 1,
                 isLoading = false,
             ),
