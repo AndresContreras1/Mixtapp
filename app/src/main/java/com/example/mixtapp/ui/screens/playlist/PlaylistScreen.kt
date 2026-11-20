@@ -1,6 +1,11 @@
 package com.example.mixtapp.ui.screens.playlist
 
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,6 +29,9 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -47,12 +55,14 @@ import com.example.mixtapp.ui.utils.ErrorBox
 import com.example.mixtapp.ui.utils.ErrorMessage
 import com.example.mixtapp.ui.utils.ItemAsyncImage
 import com.example.mixtapp.ui.utils.LoadingBox
+import com.example.mixtapp.ui.utils.MiniReproductor
 import com.example.mixtapp.ui.utils.MosaicoDePlaylist
 import com.example.mixtapp.ui.utils.TonoDeFondo
 import com.example.mixtapp.ui.utils.descripcionDePlaylist
 import com.example.mixtapp.ui.utils.rebote
 import com.example.mixtapp.ui.utils.texturaDeTarjeta
 import com.example.mixtapp.ui.utils.tituloDePlaylist
+import com.example.mixtapp.ui.utils.aparecer
 
 @Composable
 fun PlaylistScreen(
@@ -119,7 +129,7 @@ fun PlaylistScreenContent(
             }
             else -> LazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 32.dp),
+                contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 110.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
                 item {
@@ -176,8 +186,32 @@ fun PlaylistScreenContent(
                         estado = if (vistaPreviaId == cancion.id) vistaPreviaEstado else null,
                         onPlayClick = { onPlayClick(cancion) },
                         onClick = { onItemClick(cancion) },
+                        modifier = Modifier.aparecer(indice + 1),
                     )
                 }
+            }
+        }
+
+        // Lo que suena flota abajo: sube al empezar y baja al detenerse
+        val sonando = playlist?.canciones?.firstOrNull { it.id == vistaPreviaId }
+        AnimatedVisibility(
+            visible = sonando != null,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(16.dp),
+            enter = slideInVertically { alto -> alto * 2 } + fadeIn(),
+            exit = slideOutVertically { alto -> alto * 2 } + fadeOut(),
+        ) {
+            // Mientras baja, la ultima cancion sigue en la barra
+            var ultima by remember { mutableStateOf(sonando) }
+            if (sonando != null) ultima = sonando
+            ultima?.let { cancion ->
+                MiniReproductor(
+                    cancion = cancion,
+                    estado = vistaPreviaEstado,
+                    onClick = { onItemClick(cancion) },
+                    onPlayClick = { onPlayClick(cancion) },
+                )
             }
         }
     }
