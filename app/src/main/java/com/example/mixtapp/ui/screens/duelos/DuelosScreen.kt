@@ -50,6 +50,7 @@ import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.theme.White
 import com.example.mixtapp.ui.utils.AppBackground
 import com.example.mixtapp.ui.utils.BarraSuperior
+import com.example.mixtapp.ui.utils.Confeti
 import com.example.mixtapp.ui.utils.EmptyMessage
 import com.example.mixtapp.ui.utils.ErrorBox
 import com.example.mixtapp.ui.utils.ErrorMessage
@@ -234,6 +235,10 @@ fun DuelosScreenContent(
                 }
             }
         }
+
+        // Cuando llega mi voto por el listener, cae el confeti. La pestana reinicia la cuenta para no
+        // celebrar el voto que ya tenia en el otro duelo ni el que llega al cargar
+        Confeti(activo = duelo?.miOpcion != null, clave = "$tipoElegido-${duelo != null}")
     }
 }
 
