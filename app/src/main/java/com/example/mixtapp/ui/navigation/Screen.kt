@@ -16,6 +16,7 @@ sealed class Screen(val route: String) {
     data object Resumen : Screen(route = "resumen")
     data object MyReviews : Screen(route = "myReviews")
     data object Profile : Screen(route = "profile")
+    // Comunidad: Siguiendo, Afinidad, Foros y Mensajes. Conserva la ruta de Siguiendo
     data object Following : Screen(route = "following")
     data object Notifications : Screen(route = "notifications")
     data object SelectItem : Screen(route = "selectItem")
@@ -54,6 +55,16 @@ sealed class Screen(val route: String) {
     }
 
     data object CrearMixtape : Screen(route = "crearMixtape")
+
+    // El foro de un album, una cancion o un artista
+    data object Foro : Screen(route = "foro/{tipo}/{itemId}") {
+        fun createRoute(tipo: String, itemId: String) = "foro/$tipo/$itemId"
+    }
+
+    // El chat directo con otra persona
+    data object Chat : Screen(route = "chat/{userId}") {
+        fun createRoute(userId: String) = "chat/$userId"
+    }
 
     // Elegir en cual de mis mixtapes va el item del detalle
     data object AgregarAMixtape : Screen(route = "agregarAMixtape/{tipo}/{itemId}") {
