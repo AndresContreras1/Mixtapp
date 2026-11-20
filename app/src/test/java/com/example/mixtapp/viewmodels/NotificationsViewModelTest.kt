@@ -8,6 +8,7 @@ import com.example.mixtapp.data.repository.CatalogoRepository
 import com.example.mixtapp.data.repository.ErrorInesperadoException
 import com.example.mixtapp.data.repository.SinConexionException
 import com.example.mixtapp.data.repository.SocialRepository
+import com.example.mixtapp.data.repository.SonandoRepository
 import com.example.mixtapp.ui.screens.notifications.NotificationsViewModel
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
@@ -35,6 +36,7 @@ class NotificationsViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var socialRepository: SocialRepository
     private lateinit var catalogoRepository: CatalogoRepository
+    private lateinit var sonandoRepository: SonandoRepository
 
     // La primera es de hoy y sin leer; las otras dos son de antes y ya estan leidas
     private val notificaciones: List<NotificationUi> = LocalPreviewProvider.notifications
@@ -44,6 +46,7 @@ class NotificationsViewModelTest {
         Dispatchers.setMain(testDispatcher)
         socialRepository = mockk()
         catalogoRepository = mockk()
+        sonandoRepository = mockk()
     }
 
     @After
@@ -59,7 +62,8 @@ class NotificationsViewModelTest {
         every { socialRepository.getNotificacionesLive() } returns flujoNotificaciones
         every { socialRepository.getFollowingLive() } returns flowOf(LocalPreviewProvider.following)
         every { catalogoRepository.getLanzamientosLive() } returns flujoLanzamientos
-        return NotificationsViewModel(socialRepository, catalogoRepository, testDispatcher)
+        every { sonandoRepository.getSonandoLive(any()) } returns flowOf(LocalPreviewProvider.sonando)
+        return NotificationsViewModel(socialRepository, catalogoRepository, sonandoRepository, testDispatcher)
     }
 
     @Test
@@ -125,5 +129,16 @@ class NotificationsViewModelTest {
         viewModel.selectTab(id = "lanzamientos")
         //Assert
         assertThat(viewModel.uiState.value.selectedTabId).isEqualTo("lanzamientos")
+    }
+
+    @Test
+    fun init_sonando_llegaLaFilaDeQuienesSigo() = runTest {
+        //Arrange
+        val viewModel = crearViewModel()
+        //Act
+        advanceUntilIdle()
+        //Assert
+        assertThat(viewModel.uiState.value.sonando).isEqualTo(LocalPreviewProvider.sonando)
+        assertThat(viewModel.uiState.value.errorSonandoRes).isNull()
     }
 }

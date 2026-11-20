@@ -5,16 +5,29 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.Chat
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -45,6 +58,7 @@ fun UserProfileScreen(
     onCommentsClick: (String) -> Unit,
     onSeguidoresClick: (String) -> Unit,
     onSeguidosClick: (String) -> Unit,
+    onMensajeClick: (String) -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -94,6 +108,7 @@ fun UserProfileScreen(
                 errorSeguimientoRes = state.errorSeguimientoRes,
                 errorLikeRes = state.errorLikeRes,
                 onFollowClick = { userProfileViewModel.followOrUnfollow() },
+                onMensajeClick = { onMensajeClick(usuario.id) },
                 onSeguidoresClick = { onSeguidoresClick(userId) },
                 onSeguidosClick = { onSeguidosClick(userId) },
                 onItemClick = { item -> onItemClick(item.tipo, item.id) },
@@ -118,6 +133,7 @@ fun UserProfileScreenContent(
     @StringRes errorSeguimientoRes: Int?,
     @StringRes errorLikeRes: Int?,
     onFollowClick: () -> Unit,
+    onMensajeClick: () -> Unit,
     onSeguidoresClick: () -> Unit,
     onSeguidosClick: () -> Unit,
     onItemClick: (ItemResumenUi) -> Unit,
@@ -155,12 +171,39 @@ fun UserProfileScreenContent(
                 fotoEditable = null,
             ) {
                 // Desde una lista se puede llegar a mi propio perfil publico: ahi no se sigue a nadie
+                // Desde una lista se puede llegar a mi propio perfil publico: ahi no se sigue ni se escribe
                 if (!usuario.esMiPerfil) {
-                    FollowButton(
-                        siguiendo = usuario.siguiendo,
-                        onFollowClick = onFollowClick,
-                        modifier = Modifier.padding(top = 12.dp)
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        FollowButton(
+                            siguiendo = usuario.siguiendo,
+                            onFollowClick = onFollowClick,
+                            modifier = Modifier.padding(top = 12.dp)
+                        )
+
+                        Spacer(modifier = Modifier.width(10.dp))
+
+                        // Escribirle directo, sin necesidad de seguirlo
+                        OutlinedButton(
+                            onClick = onMensajeClick,
+                            modifier = Modifier
+                                .padding(top = 26.dp)
+                                .height(44.dp)
+                                .testTag("btnMensaje"),
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Outlined.Chat,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(18.dp),
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = stringResource(R.string.enviar_mensaje),
+                                color = MaterialTheme.colorScheme.primary,
+                                style = MaterialTheme.typography.titleSmall,
+                            )
+                        }
+                    }
                 }
 
                 ErrorMessage(
@@ -238,6 +281,7 @@ fun UserProfileScreenPreview() {
                 errorSeguimientoRes = null,
                 errorLikeRes = null,
                 onFollowClick = {},
+                onMensajeClick = {},
                 onSeguidoresClick = {},
                 onSeguidosClick = {},
                 onItemClick = {},

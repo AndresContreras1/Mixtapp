@@ -12,7 +12,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -24,6 +28,7 @@ import com.example.mixtapp.data.model.ItemUi
 import com.example.mixtapp.ui.screens.datoscuriosos.components.DatoCuriosoCard
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppBackground
+import com.example.mixtapp.ui.utils.DegradadoDePortada
 import com.example.mixtapp.ui.utils.EmptyMessage
 import com.example.mixtapp.ui.utils.ErrorBox
 import com.example.mixtapp.ui.utils.ItemHeader
@@ -69,8 +74,13 @@ fun DatosCuriososScreenContent(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    // El color de la portada solo decora, como en el detalle: es de la vista, no del estado
+    var colorDePortada by remember { mutableStateOf<Color?>(null) }
+
     Box(modifier = modifier.fillMaxSize().testTag("datosCuriososScreen")) {
         AppBackground(tono = TonoDeFondo.Item)
+
+        DegradadoDePortada(color = colorDePortada)
 
         when {
             isLoading -> LoadingBox()
@@ -80,7 +90,7 @@ fun DatosCuriososScreenContent(
                 contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
             ) {
                 item {
-                    ItemHeader(item = item, onBackClick = onBackClick, onColorDePortada = null)
+                    ItemHeader(item = item, onBackClick = onBackClick, onColorDePortada = { colorDePortada = it })
                 }
 
                 item {

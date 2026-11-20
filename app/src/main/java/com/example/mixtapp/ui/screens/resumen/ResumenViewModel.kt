@@ -7,6 +7,8 @@ import com.example.mixtapp.R
 import com.example.mixtapp.data.injection.IoDispatcher
 import com.example.mixtapp.data.model.ItemUi
 import com.example.mixtapp.data.model.ReviewUi
+import com.example.mixtapp.data.model.TIPO_ALBUM
+import com.example.mixtapp.data.model.TIPO_ARTISTA
 import com.example.mixtapp.data.model.hayPocosDatos
 import com.example.mixtapp.data.model.itemsQueMeGustan
 import com.example.mixtapp.data.model.toItemResumenUi
@@ -143,14 +145,24 @@ class ResumenViewModel @Inject constructor(
         val generoFavorito = masRepetido(meGustan.map { it.genero })
         val artistaFavorito = masRepetido(meGustan.map { it.artista })
 
+        // La portada del genero: primero un album que me gusta de ese genero; si no, el mas popular
+        val albumesDelGenero = estado.items.filter { it.tipo == TIPO_ALBUM && it.genero == generoFavorito }
+        val portadaDelGenero = (
+            meGustan.firstOrNull { it.tipo == TIPO_ALBUM && it.genero == generoFavorito }
+                ?: albumesDelGenero.maxByOrNull { it.likes }
+            )?.imagenUrl
+        // La foto del artista: el artista del catalogo de esa banda o, si no esta, lo que me gusta de el
+        val fotoDelArtista = (
+            estado.items.firstOrNull { it.tipo == TIPO_ARTISTA && it.artista == artistaFavorito }
+                ?: meGustan.firstOrNull { it.artista == artistaFavorito }
+            )?.imagenUrl
+
         // El orden en que se descubren; las que no tienen datos no salen
         val tarjetas = listOfNotNull(
             TARJETA_RESENAS,
             TARJETA_GENERO.takeIf { generoFavorito != null },
             TARJETA_ARTISTA.takeIf { artistaFavorito != null },
             TARJETA_MEJOR.takeIf { mejor != null },
-            TARJETA_QUERIDA.takeIf { querida != null },
-            TARJETA_SOCIAL,
         )
 
         return estado.copy(
@@ -159,7 +171,9 @@ class ResumenViewModel @Inject constructor(
             promedio = promedio(misResenas.map { it.first.rating }),
             totalMeGusta = estado.favoritos.size,
             generoFavorito = generoFavorito,
+            portadaDelGenero = portadaDelGenero,
             artistaFavorito = artistaFavorito,
+            fotoDelArtista = fotoDelArtista,
             mejorCalificado = mejor?.second?.toItemResumenUi(),
             mejorCalificacion = mejor?.first?.rating ?: 0,
             masQuerida = querida,

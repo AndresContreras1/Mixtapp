@@ -15,28 +15,37 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.data.local.LocalPreviewProvider
+import com.example.mixtapp.ui.theme.Black
 import com.example.mixtapp.ui.theme.Coral
 import com.example.mixtapp.ui.theme.Magenta
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.theme.White
-import com.example.mixtapp.ui.utils.ItemAsyncImage
+import com.example.mixtapp.ui.utils.PortadaConColor
 
 // Los datos cortos (un numero, "4.5") van enormes; un nombre largo, grande pero sin cortarse
 private const val LARGO_DE_UN_NUMERO = 5
 
-// Una tarjeta de Tu año como historia: ocupa la pantalla con su propio degradado vivo, un icono
-// musical, que se cuenta, el dato muy grande y una linea que lo explica. Si el dato es un item, va su
-// portada. Los colores vienen de la pantalla para que cada tarjeta se vea distinta
+// Una tarjeta de Tu año como historia: ocupa la pantalla con un degradado vivo, un icono musical, que
+// se cuenta, la imagen grande (la portada del genero, la foto del artista o lo mejor calificado), el
+// dato con su titulo abajo y una linea que lo explica. Con imagen, el degradado sale del color de esa
+// imagen (Palette); sin imagen, de los colores que pasa la pantalla
 @Composable
 fun TarjetaResumen(
     titulo: String,
@@ -47,11 +56,16 @@ fun TarjetaResumen(
     modifier: Modifier = Modifier,
     imagenUrl: String? = null,
 ) {
+    // El color de la imagen solo decora: es de la vista, no del estado
+    var colorDeLaImagen by remember(imagenUrl) { mutableStateOf<Color?>(null) }
+    val color = colorDeLaImagen
+    val degradado = if (color != null) listOf(color, lerp(color, Black, 0.65f)) else colores
+
     Column(
         modifier = modifier
             .fillMaxSize()
             .clip(RoundedCornerShape(32.dp))
-            .background(Brush.linearGradient(colores))
+            .background(Brush.linearGradient(degradado))
             .padding(28.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -60,10 +74,10 @@ fun TarjetaResumen(
             imageVector = icono,
             contentDescription = null,
             tint = White.copy(alpha = 0.9f),
-            modifier = Modifier.size(44.dp),
+            modifier = Modifier.size(36.dp),
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         Text(
             text = titulo,
@@ -74,15 +88,18 @@ fun TarjetaResumen(
 
         if (imagenUrl != null) {
             Spacer(modifier = Modifier.height(20.dp))
-            ItemAsyncImage(
+            PortadaConColor(
                 imagenUrl = imagenUrl,
                 titulo = valor,
-                esquinas = 24.dp,
-                modifier = Modifier.size(190.dp),
+                esquinas = 28.dp,
+                onColor = { colorDeLaImagen = it },
+                modifier = Modifier
+                    .size(230.dp)
+                    .shadow(elevation = 16.dp, shape = RoundedCornerShape(28.dp)),
             )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(18.dp))
 
         Text(
             text = valor,
@@ -93,9 +110,11 @@ fun TarjetaResumen(
                 MaterialTheme.typography.displaySmall
             },
             textAlign = TextAlign.Center,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(10.dp))
 
         Text(
             text = detalle,
@@ -107,13 +126,13 @@ fun TarjetaResumen(
 }
 
 @Composable
-@Preview(showBackground = true, heightDp = 560)
+@Preview(showBackground = true, heightDp = 640)
 fun TarjetaResumenPreview() {
     MixtappTheme(darkTheme = true) {
         TarjetaResumen(
-            titulo = "Lo que mejor calificaste",
-            valor = LocalPreviewProvider.fromZero.titulo,
-            detalle = "Linkin Park · 5/5",
+            titulo = "El género que más te gusta",
+            valor = "Nu metal",
+            detalle = "Sale de tus me gusta y de lo que mejor calificaste",
             icono = Icons.Outlined.Album,
             colores = listOf(Coral, Magenta),
             imagenUrl = LocalPreviewProvider.fromZero.imagenUrl,

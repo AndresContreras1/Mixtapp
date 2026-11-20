@@ -1,8 +1,6 @@
 package com.example.mixtapp.ui.screens.duelos
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.HowToVote
 import androidx.compose.material3.Icon
@@ -25,9 +22,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -289,22 +290,26 @@ private fun DueloCaraACara(
             )
         }
 
-        // El VS encima, entre las dos portadas
-        Box(
+        // El VS encima, entre las dos portadas: en cursiva, en el grosor mas fuerte, inclinado y con
+        // una sombra rosada, como el cartel de una pelea
+        Text(
+            text = stringResource(R.string.vs),
+            color = White,
+            style = MaterialTheme.typography.displayMedium.copy(
+                fontSize = 52.sp,
+                fontWeight = FontWeight.Black,
+                fontStyle = FontStyle.Italic,
+                letterSpacing = (-2).sp,
+                shadow = Shadow(
+                    color = MaterialTheme.colorScheme.primary,
+                    offset = Offset(x = 6f, y = 6f),
+                    blurRadius = 4f,
+                ),
+            ),
             modifier = Modifier
-                .size(64.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.primary)
-                .border(3.dp, White, CircleShape),
-            contentAlignment = Alignment.Center,
-        ) {
-            Text(
-                text = stringResource(R.string.vs),
-                color = White,
-                style = MaterialTheme.typography.headlineMedium,
-                fontSize = 30.sp,
-            )
-        }
+                .rotate(-10f)
+                .testTag("vs"),
+        )
     }
 }
 

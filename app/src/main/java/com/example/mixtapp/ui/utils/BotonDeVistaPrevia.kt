@@ -36,7 +36,9 @@ fun BotonDeVistaPrevia(
 ) {
     FilledIconButton(
         onClick = onClick,
-        modifier = modifier.size(tamano),
+        modifier = modifier
+            .rebote()
+            .size(tamano),
         shape = CircleShape,
         colors = IconButtonDefaults.filledIconButtonColors(
             containerColor = MaterialTheme.colorScheme.primary,

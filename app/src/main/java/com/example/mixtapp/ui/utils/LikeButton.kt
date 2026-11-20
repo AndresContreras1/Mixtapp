@@ -36,7 +36,7 @@ fun LikeButton(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        IconButton(onClick = onLikeClick, modifier = botonModifier) {
+        IconButton(onClick = onLikeClick, modifier = botonModifier.rebote()) {
             Icon(
                 imageVector = if (isLiked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
                 contentDescription = stringResource(if (isLiked) R.string.quitar_like else contentDescriptionRes),

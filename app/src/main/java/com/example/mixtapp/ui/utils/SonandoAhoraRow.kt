@@ -1,4 +1,4 @@
-package com.example.mixtapp.ui.screens.following.components
+package com.example.mixtapp.ui.utils
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -28,12 +28,9 @@ import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalPreviewProvider
 import com.example.mixtapp.data.model.SonandoUi
 import com.example.mixtapp.ui.theme.MixtappTheme
-import com.example.mixtapp.ui.utils.ItemAsyncImage
-import com.example.mixtapp.ui.utils.ProfileAsyncImage
-import com.example.mixtapp.ui.utils.TarjetaTranslucida
-import com.example.mixtapp.ui.utils.TiempoTranscurrido
 
-// La fila "Sonando ahora" de Siguiendo: lo que escucho yo y lo que escuchan quienes sigo
+// La fila "Sonando ahora": lo que escucho yo y lo que escuchan quienes sigo. La usan Siguiendo y
+// las notificaciones
 @Composable
 fun SonandoAhoraRow(
     sonando: List<SonandoUi>,

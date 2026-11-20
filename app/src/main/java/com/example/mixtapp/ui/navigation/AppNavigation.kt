@@ -11,6 +11,10 @@ import androidx.navigation.navArgument
 import com.example.mixtapp.data.model.TIPO_ALBUM
 import com.example.mixtapp.ui.screens.agregaramixtape.AgregarAMixtapeScreen
 import com.example.mixtapp.ui.screens.agregaramixtape.AgregarAMixtapeViewModel
+import com.example.mixtapp.ui.screens.chat.ChatScreen
+import com.example.mixtapp.ui.screens.chat.ChatViewModel
+import com.example.mixtapp.ui.screens.comunidad.ComunidadScreen
+import com.example.mixtapp.ui.screens.comunidad.ComunidadViewModel
 import com.example.mixtapp.ui.screens.crearmixtape.CrearMixtapeScreen
 import com.example.mixtapp.ui.screens.crearmixtape.CrearMixtapeViewModel
 import com.example.mixtapp.ui.screens.datoscuriosos.DatosCuriososScreen
@@ -27,8 +31,9 @@ import com.example.mixtapp.ui.screens.followlist.FollowListScreen
 import com.example.mixtapp.ui.screens.followlist.FollowListViewModel
 import com.example.mixtapp.ui.screens.followlist.LISTA_SEGUIDORES
 import com.example.mixtapp.ui.screens.followlist.LISTA_SEGUIDOS
-import com.example.mixtapp.ui.screens.following.FollowingScreen
 import com.example.mixtapp.ui.screens.following.FollowingViewModel
+import com.example.mixtapp.ui.screens.foro.ForoScreen
+import com.example.mixtapp.ui.screens.foro.ForoViewModel
 import com.example.mixtapp.ui.screens.home.HomeScreen
 import com.example.mixtapp.ui.screens.home.HomeViewModel
 import com.example.mixtapp.ui.screens.login.LoginScreen
@@ -41,6 +46,8 @@ import com.example.mixtapp.ui.screens.myreviews.MyReviewsScreen
 import com.example.mixtapp.ui.screens.myreviews.MyReviewsViewModel
 import com.example.mixtapp.ui.screens.notifications.NotificationsScreen
 import com.example.mixtapp.ui.screens.notifications.NotificationsViewModel
+import com.example.mixtapp.ui.screens.playlist.PlaylistScreen
+import com.example.mixtapp.ui.screens.playlist.PlaylistViewModel
 import com.example.mixtapp.ui.screens.profile.ProfileScreen
 import com.example.mixtapp.ui.screens.profile.ProfileViewModel
 import com.example.mixtapp.ui.screens.resumen.ResumenScreen
@@ -86,6 +93,14 @@ private fun NavHostController.abrirPerfil(userId: String) {
 
 private fun NavHostController.abrirEscribirResena(tipo: String, itemId: String) {
     navigate(Screen.WriteReview.createRoute(tipo = tipo, itemId = itemId))
+}
+
+private fun NavHostController.abrirForo(tipo: String, itemId: String) {
+    navigate(Screen.Foro.createRoute(tipo = tipo, itemId = itemId))
+}
+
+private fun NavHostController.abrirChat(userId: String) {
+    navigate(Screen.Chat.createRoute(userId = userId))
 }
 
 private fun NavHostController.abrirLista(userId: String, tipo: String) {
@@ -167,6 +182,9 @@ fun AppNavigation(
                 },
                 onFollowingClick = { navController.navigate(Screen.Following.route) },
                 onNotificationsClick = { navController.navigate(Screen.Notifications.route) },
+                onPlaylistClick = { playlistId ->
+                    navController.navigate(Screen.Playlist.createRoute(playlistId = playlistId))
+                },
                 // Como la pestana de la barra: Buscar queda encima del inicio y atras vuelve a el
                 onDescubrirPersonasClick = {
                     navController.navigate(Screen.Search.route) {
@@ -397,6 +415,9 @@ fun AppNavigation(
                 onAddToMixtapeClick = {
                     navController.navigate(Screen.AgregarAMixtape.createRoute(tipo = tipo, itemId = itemId))
                 },
+                onForoClick = {
+                    navController.abrirForo(tipo = tipo, itemId = itemId)
+                },
                 onBackClick = { navController.popBackStack() },
                 onAuthorClick = { userId ->
                     navController.abrirPerfil(userId = userId)
@@ -446,6 +467,9 @@ fun AppNavigation(
                 onSeguidosClick = { otherUserId ->
                     navController.abrirLista(userId = otherUserId, tipo = LISTA_SEGUIDOS)
                 },
+                onMensajeClick = { otherUserId ->
+                    navController.abrirChat(userId = otherUserId)
+                },
                 onBackClick = { navController.popBackStack() }
             )
         }
@@ -474,9 +498,11 @@ fun AppNavigation(
         }
 
         composable(route = Screen.Following.route) {
+            val comunidadViewModel: ComunidadViewModel = hiltViewModel()
             val followingViewModel: FollowingViewModel = hiltViewModel()
 
-            FollowingScreen(
+            ComunidadScreen(
+                comunidadViewModel = comunidadViewModel,
                 followingViewModel = followingViewModel,
                 onAuthorClick = { userId ->
                     navController.abrirPerfil(userId = userId)
@@ -486,6 +512,74 @@ fun AppNavigation(
                 },
                 onCommentsClick = { reviewId ->
                     navController.abrirDiscusion(reviewId = reviewId)
+                },
+                onForoClick = { tipo, itemId ->
+                    navController.abrirForo(tipo = tipo, itemId = itemId)
+                },
+                onChatClick = { userId ->
+                    navController.abrirChat(userId = userId)
+                },
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable(
+            route = Screen.Foro.route,
+            arguments = argumentosDelItem
+        ) {
+            // Solo se obtienen el tipo y el id; buscar el item y los mensajes es tarea del ViewModel
+            val tipo = it.arguments?.getString(ARG_TIPO) ?: TIPO_ALBUM
+            val itemId = it.arguments?.getString(ARG_ITEM_ID) ?: ""
+            val foroViewModel: ForoViewModel = hiltViewModel()
+
+            ForoScreen(
+                tipo = tipo,
+                itemId = itemId,
+                foroViewModel = foroViewModel,
+                onAuthorClick = { userId ->
+                    navController.abrirPerfil(userId = userId)
+                },
+                onItemClick = { tipoItem, id ->
+                    navController.abrirItem(tipo = tipoItem, itemId = id)
+                },
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable(
+            route = Screen.Playlist.route,
+            arguments = listOf(
+                navArgument(name = "playlistId") { type = NavType.StringType }
+            )
+        ) {
+            // Solo se obtiene el id; armar la playlist es tarea del ViewModel
+            val playlistId = it.arguments?.getString("playlistId") ?: ""
+            val playlistViewModel: PlaylistViewModel = hiltViewModel()
+
+            PlaylistScreen(
+                playlistId = playlistId,
+                playlistViewModel = playlistViewModel,
+                onItemClick = { tipo, itemId ->
+                    navController.abrirItem(tipo = tipo, itemId = itemId)
+                },
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable(
+            route = Screen.Chat.route,
+            arguments = listOf(
+                navArgument(name = "userId") { type = NavType.StringType }
+            )
+        ) {
+            val userId = it.arguments?.getString("userId") ?: ""
+            val chatViewModel: ChatViewModel = hiltViewModel()
+
+            ChatScreen(
+                otroId = userId,
+                chatViewModel = chatViewModel,
+                onPerfilClick = { otroId ->
+                    navController.abrirPerfil(userId = otroId)
                 },
                 onBackClick = { navController.popBackStack() }
             )

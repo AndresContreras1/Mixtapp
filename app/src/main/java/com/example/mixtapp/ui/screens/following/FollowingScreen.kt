@@ -27,18 +27,15 @@ import com.example.mixtapp.data.model.ItemResumenUi
 import com.example.mixtapp.data.model.ReviewUi
 import com.example.mixtapp.data.model.SonandoUi
 import com.example.mixtapp.ui.screens.following.components.FollowingUsersRow
-import com.example.mixtapp.ui.screens.following.components.SonandoAhoraRow
 import com.example.mixtapp.ui.theme.MixtappTheme
-import com.example.mixtapp.ui.utils.AppBackground
 import com.example.mixtapp.ui.utils.AppTextField
 import com.example.mixtapp.ui.utils.EmptyMessage
 import com.example.mixtapp.ui.utils.ErrorBox
 import com.example.mixtapp.ui.utils.ErrorMessage
 import com.example.mixtapp.ui.utils.LoadingBox
 import com.example.mixtapp.ui.utils.ReviewCard
-import com.example.mixtapp.ui.utils.ScreenTitle
 import com.example.mixtapp.ui.utils.SectionTitle
-import com.example.mixtapp.ui.utils.TonoDeFondo
+import com.example.mixtapp.ui.utils.SonandoAhoraRow
 
 @Composable
 fun FollowingScreen(
@@ -46,7 +43,6 @@ fun FollowingScreen(
     onAuthorClick: (String) -> Unit,
     onItemClick: (String, String) -> Unit,
     onCommentsClick: (String) -> Unit,
-    onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val state by followingViewModel.uiState.collectAsState()
@@ -68,7 +64,6 @@ fun FollowingScreen(
         onAuthorClick = onAuthorClick,
         onItemClick = { item -> onItemClick(item.tipo, item.id) },
         onCommentsClick = onCommentsClick,
-        onBackClick = onBackClick,
         modifier = modifier,
     )
 }
@@ -91,123 +86,113 @@ fun FollowingScreenContent(
     onAuthorClick: (String) -> Unit,
     onItemClick: (ItemResumenUi) -> Unit,
     onCommentsClick: (String) -> Unit,
-    onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(modifier = modifier.fillMaxSize()) {
-        AppBackground(tono = TonoDeFondo.Social)
+    // El cuerpo de la pestana Siguiendo: el marco (fondo, titulo y pestanas) lo pone Comunidad
+    Column(modifier = modifier.fillMaxSize()) {
+        when {
+            isLoading -> LoadingBox()
+            // Sin datos solo se muestra el motivo del error
+            following == null -> ErrorBox(messageRes = errorMessageRes ?: R.string.error_cargar_contenido)
+            else -> LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                contentPadding = PaddingValues(bottom = 24.dp),
+            ) {
+                item {
+                    // Si el listener falla despues de cargar, el aviso sale arriba y queda lo de antes
+                    ErrorMessage(messageRes = errorMessageRes, modifier = Modifier.padding(horizontal = 20.dp))
+                    Text(
+                        text = stringResource(
+                            R.string.following_followers_count,
+                            following.followingCount,
+                            following.followersCount,
+                        ),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        style = MaterialTheme.typography.titleSmall,
+                        modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 16.dp),
+                    )
+                }
 
-        Column(modifier = Modifier.fillMaxSize()) {
-            // El titulo queda fijo para poder volver aunque falle la carga
-            ScreenTitle(
-                title = stringResource(R.string.following_title),
-                onBackClick = onBackClick,
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
-            )
-
-            when {
-                isLoading -> LoadingBox()
-                // Sin datos solo se muestra el motivo del error
-                following == null -> ErrorBox(messageRes = errorMessageRes ?: R.string.error_cargar_contenido)
-                else -> LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                    contentPadding = PaddingValues(bottom = 24.dp),
-                ) {
+                // Lo que suena ahora: si nadie esta escuchando nada, la fila no sale
+                if (sonando.isNotEmpty() || errorSonandoRes != null || errorAccionSonandoRes != null) {
                     item {
-                        // Si el listener falla despues de cargar, el aviso sale arriba y queda lo de antes
-                        ErrorMessage(messageRes = errorMessageRes, modifier = Modifier.padding(horizontal = 20.dp))
-                        Text(
-                            text = stringResource(
-                                R.string.following_followers_count,
-                                following.followingCount,
-                                following.followersCount,
-                            ),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            style = MaterialTheme.typography.titleSmall,
-                            modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 16.dp),
-                        )
-                    }
-
-                    // Lo que suena ahora: si nadie esta escuchando nada, la fila no sale
-                    if (sonando.isNotEmpty() || errorSonandoRes != null || errorAccionSonandoRes != null) {
-                        item {
-                            Column(modifier = Modifier.padding(bottom = 16.dp)) {
-                                SectionTitle(
-                                    title = stringResource(R.string.sonando_ahora),
-                                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
-                                    actionText = null,
-                                    onActionClick = null,
-                                )
-                                ErrorMessage(
-                                    messageRes = errorSonandoRes,
-                                    modifier = Modifier.padding(horizontal = 20.dp),
-                                )
-                                ErrorMessage(
-                                    messageRes = errorAccionSonandoRes,
-                                    modifier = Modifier.padding(horizontal = 20.dp),
-                                )
-                                SonandoAhoraRow(
-                                    sonando = sonando,
-                                    onItemClick = { onItemClick(it.item) },
-                                    onUserClick = onAuthorClick,
-                                    onReaccionarClick = onReaccionarClick,
-                                    onQuitarClick = onQuitarSonandoClick,
-                                )
-                            }
-                        }
-                    }
-
-                    // Si todavia no sigo a nadie no se deja la fila vacia
-                    if (following.seguidos.isNotEmpty()) {
-                        item {
-                            FollowingUsersRow(
-                                seguidos = following.seguidos,
+                        Column(modifier = Modifier.padding(bottom = 16.dp)) {
+                            SectionTitle(
+                                title = stringResource(R.string.sonando_ahora),
+                                modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
+                                actionText = null,
+                                onActionClick = null,
+                            )
+                            ErrorMessage(
+                                messageRes = errorSonandoRes,
+                                modifier = Modifier.padding(horizontal = 20.dp),
+                            )
+                            ErrorMessage(
+                                messageRes = errorAccionSonandoRes,
+                                modifier = Modifier.padding(horizontal = 20.dp),
+                            )
+                            SonandoAhoraRow(
+                                sonando = sonando,
+                                onItemClick = { onItemClick(it.item) },
                                 onUserClick = onAuthorClick,
-                                modifier = Modifier.padding(bottom = 16.dp),
+                                onReaccionarClick = onReaccionarClick,
+                                onQuitarClick = onQuitarSonandoClick,
                             )
                         }
                     }
+                }
 
+                // Si todavia no sigo a nadie no se deja la fila vacia
+                if (following.seguidos.isNotEmpty()) {
                     item {
-                        AppTextField(
-                            value = friendQuery,
-                            onValueChange = onFriendQueryChange,
-                            placeholder = stringResource(R.string.find_friends),
-                            leadingIcon = Icons.Outlined.Search,
-                            modifier = Modifier.padding(horizontal = 20.dp),
+                        FollowingUsersRow(
+                            seguidos = following.seguidos,
+                            onUserClick = onAuthorClick,
+                            modifier = Modifier.padding(bottom = 16.dp),
                         )
                     }
+                }
 
+                item {
+                    AppTextField(
+                        value = friendQuery,
+                        onValueChange = onFriendQueryChange,
+                        placeholder = stringResource(R.string.find_friends),
+                        leadingIcon = Icons.Outlined.Search,
+                        // Aire debajo: la busqueda no queda pegada a las resenas
+                        modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 16.dp),
+                    )
+                }
+
+                item {
+                    ErrorMessage(
+                        messageRes = errorAccionRes,
+                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)
+                    )
+                }
+
+                if (reviews.isEmpty()) {
                     item {
-                        ErrorMessage(
-                            messageRes = errorAccionRes,
-                            modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)
+                        EmptyMessage(
+                            messageRes = R.string.sin_actividad_seguidos,
+                            modifier = Modifier.fillMaxWidth()
                         )
                     }
+                }
 
-                    if (reviews.isEmpty()) {
-                        item {
-                            EmptyMessage(
-                                messageRes = R.string.sin_actividad_seguidos,
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                        }
-                    }
-
-                    items(reviews, key = { it.id }) { review ->
-                        ReviewCard(
-                            review = review,
-                            onAuthorClick = onAuthorClick,
-                            onLikeClick = onLikeClick,
-                            onCommentsClick = onCommentsClick,
-                            onItemClick = onItemClick,
-                            modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 16.dp),
-                            onEditClick = null,
-                            onDeleteClick = null,
-                        )
-                    }
+                items(reviews, key = { it.id }) { review ->
+                    ReviewCard(
+                        review = review,
+                        onAuthorClick = onAuthorClick,
+                        onLikeClick = onLikeClick,
+                        onCommentsClick = onCommentsClick,
+                        onItemClick = onItemClick,
+                        modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 16.dp),
+                        onEditClick = null,
+                        onDeleteClick = null,
+                    )
                 }
             }
         }
@@ -237,7 +222,6 @@ fun FollowingScreenPreview() {
             onAuthorClick = {},
             onItemClick = {},
             onCommentsClick = {},
-            onBackClick = {},
         )
     }
 }

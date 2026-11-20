@@ -10,6 +10,7 @@ import com.example.mixtapp.data.repository.DatosDeRegistroInvalidosException
 import com.example.mixtapp.data.repository.CuotaExcedidaException
 import com.example.mixtapp.data.repository.DemasiadosIntentosException
 import com.example.mixtapp.data.repository.ErrorDelServidorException
+import com.example.mixtapp.data.repository.MensajeASiMismoException
 import com.example.mixtapp.data.repository.PermisoDenegadoException
 import com.example.mixtapp.data.repository.SeguirseASiMismoException
 import com.example.mixtapp.data.repository.SinConexionException
@@ -40,5 +41,6 @@ fun mensajeDeError(
     is SeguirseASiMismoException -> R.string.error_seguirse_a_si_mismo
     is ReaccionarALoMioException -> R.string.error_reaccionar_a_lo_mio
     is SinVistaPreviaException -> R.string.error_sin_vista_previa
+    is MensajeASiMismoException -> R.string.error_mensaje_a_si_mismo
     else -> generico
 }

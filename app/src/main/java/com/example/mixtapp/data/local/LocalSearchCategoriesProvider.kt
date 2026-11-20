@@ -52,11 +52,5 @@ object LocalSearchCategoriesProvider {
             imagenUrl = "https://cdn-images.dzcdn.net/images/artist/5b0aab23f8d2856951a92f3a9faf70e3/1000x1000-000000-80-0-0.jpg",
             esGenero = true,
         ),
-        SearchCategoryUi(
-            id = "Música popular",
-            titleRes = R.string.genero_musica_popular,
-            imagenUrl = "https://cdn-images.dzcdn.net/images/cover/bf25843546476d6a01ce92caf4313ee1/1000x1000-000000-80-0-0.jpg",
-            esGenero = true,
-        ),
     )
 }

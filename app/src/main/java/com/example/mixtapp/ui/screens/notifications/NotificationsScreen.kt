@@ -23,9 +23,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalPreviewProvider
+import com.example.mixtapp.data.model.ItemResumenUi
 import com.example.mixtapp.data.model.ItemUi
 import com.example.mixtapp.data.model.NotificationUi
 import com.example.mixtapp.data.model.ReviewUi
+import com.example.mixtapp.data.model.SonandoUi
 import com.example.mixtapp.data.model.fechaDeSalida
 import com.example.mixtapp.ui.screens.notifications.components.DiscusionRow
 import com.example.mixtapp.ui.screens.notifications.components.NotificationRow
@@ -44,6 +46,7 @@ import com.example.mixtapp.ui.utils.LoadingBox
 import com.example.mixtapp.ui.utils.OpcionUi
 import com.example.mixtapp.ui.utils.ScreenTitle
 import com.example.mixtapp.ui.utils.SectionTitle
+import com.example.mixtapp.ui.utils.SonandoAhoraRow
 import com.example.mixtapp.ui.utils.TonoDeFondo
 
 @Composable
@@ -64,6 +67,8 @@ fun NotificationsScreen(
         antes = state.antes,
         discusiones = state.discusiones,
         lanzamientos = state.lanzamientos,
+        sonando = state.sonando,
+        errorSonandoRes = state.errorSonandoRes ?: state.errorAccionSonandoRes,
         tabs = state.tabs,
         selectedTabId = state.selectedTabId,
         isLoading = state.isLoading,
@@ -82,6 +87,9 @@ fun NotificationsScreen(
         onReviewClick = onReviewClick,
         onUserClick = onUserClick,
         onItemClick = { item -> onItemClick(item.tipo, item.id) },
+        onSonandoItemClick = { item -> onItemClick(item.tipo, item.id) },
+        onReaccionarClick = { notificationsViewModel.reaccionar(sonando = it) },
+        onQuitarSonandoClick = { notificationsViewModel.quitarSonando() },
         onBackClick = onBackClick,
         modifier = modifier,
     )
@@ -93,6 +101,8 @@ fun NotificationsScreenContent(
     antes: List<NotificationUi>,
     discusiones: List<ReviewUi>,
     lanzamientos: List<ItemUi>,
+    sonando: List<SonandoUi>,
+    @StringRes errorSonandoRes: Int?,
     tabs: List<OpcionUi>,
     selectedTabId: String,
     isLoading: Boolean,
@@ -107,6 +117,9 @@ fun NotificationsScreenContent(
     onReviewClick: (String) -> Unit,
     onUserClick: (String) -> Unit,
     onItemClick: (ItemUi) -> Unit,
+    onSonandoItemClick: (ItemResumenUi) -> Unit,
+    onReaccionarClick: (SonandoUi) -> Unit,
+    onQuitarSonandoClick: () -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -120,6 +133,25 @@ fun NotificationsScreenContent(
                 onBackClick = onBackClick,
                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
             )
+
+            // Lo que escuchan quienes sigo, arriba de todo; si nadie escucha nada, la fila no sale
+            if (sonando.isNotEmpty() || errorSonandoRes != null) {
+                SectionTitle(
+                    title = stringResource(R.string.sonando_ahora),
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 4.dp),
+                    actionText = null,
+                    onActionClick = null,
+                )
+                ErrorMessage(messageRes = errorSonandoRes, modifier = Modifier.padding(horizontal = 20.dp))
+                SonandoAhoraRow(
+                    sonando = sonando,
+                    onItemClick = { onSonandoItemClick(it.item) },
+                    onUserClick = onUserClick,
+                    onReaccionarClick = onReaccionarClick,
+                    onQuitarClick = onQuitarSonandoClick,
+                    modifier = Modifier.padding(bottom = 8.dp),
+                )
+            }
 
             // Las pestanas tambien quedan fijas: cada una tiene su carga y su error, asi que si una
             // falla se puede pasar a las otras
@@ -267,6 +299,8 @@ fun NotificationsScreenPreview() {
             antes = todas.filter { !it.isToday },
             discusiones = LocalPreviewProvider.following.reviews,
             lanzamientos = listOf(LocalPreviewProvider.karolG, LocalPreviewProvider.fromZero, LocalPreviewProvider.emptinessMachine),
+            sonando = emptyList(),
+            errorSonandoRes = null,
             tabs = notificationTabs,
             selectedTabId = TAB_MIAS,
             isLoading = false,
@@ -281,6 +315,9 @@ fun NotificationsScreenPreview() {
             onReviewClick = {},
             onUserClick = {},
             onItemClick = {},
+            onSonandoItemClick = {},
+            onReaccionarClick = {},
+            onQuitarSonandoClick = {},
             onBackClick = {},
         )
     }

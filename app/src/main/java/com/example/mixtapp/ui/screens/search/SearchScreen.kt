@@ -31,8 +31,8 @@ import com.example.mixtapp.data.model.SearchCategoryUi
 import com.example.mixtapp.data.model.UsuarioUi
 import com.example.mixtapp.data.model.fechaDeSalida
 import com.example.mixtapp.ui.screens.search.components.CriteriosDeBusqueda
-import com.example.mixtapp.ui.screens.search.components.SearchCategoryCardsRow
 import com.example.mixtapp.ui.screens.search.components.SelectedCategoryHeader
+import com.example.mixtapp.ui.screens.search.components.TarjetaDeGenero
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppBackground
 import com.example.mixtapp.ui.utils.AppTextField
@@ -215,8 +215,12 @@ fun SearchScreenContent(
                                     )
                                 }
 
-                                items(generos.chunked(2)) { fila ->
-                                    SearchCategoryCardsRow(categorias = fila, onCategoryClick = onCategoryClick)
+                                items(generos, key = { it.id }) { genero ->
+                                    TarjetaDeGenero(
+                                        genero = genero,
+                                        onClick = { onCategoryClick(genero.id) },
+                                        modifier = Modifier.testTag("categoria_${genero.id}"),
+                                    )
                                 }
                             }
                         }

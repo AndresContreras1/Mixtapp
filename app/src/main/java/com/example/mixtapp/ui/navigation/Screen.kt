@@ -1,5 +1,7 @@
 package com.example.mixtapp.ui.navigation
 
+import android.net.Uri
+
 // Los nombres de los argumentos de las rutas, para no repetirlos como texto suelto
 const val ARG_TIPO = "tipo"
 const val ARG_ITEM_ID = "itemId"
@@ -16,6 +18,7 @@ sealed class Screen(val route: String) {
     data object Resumen : Screen(route = "resumen")
     data object MyReviews : Screen(route = "myReviews")
     data object Profile : Screen(route = "profile")
+    // Comunidad: Siguiendo, Afinidad, Foros y Mensajes. Conserva la ruta de Siguiendo
     data object Following : Screen(route = "following")
     data object Notifications : Screen(route = "notifications")
     data object SelectItem : Screen(route = "selectItem")
@@ -54,6 +57,22 @@ sealed class Screen(val route: String) {
     }
 
     data object CrearMixtape : Screen(route = "crearMixtape")
+
+    // El foro de un album, una cancion o un artista
+    data object Foro : Screen(route = "foro/{tipo}/{itemId}") {
+        fun createRoute(tipo: String, itemId: String) = "foro/$tipo/$itemId"
+    }
+
+    // Una playlist hecha para mi. El id lleva el genero ("mezcla_Nu metal"): se codifica para que los
+    // espacios y las tildes no rompan la ruta
+    data object Playlist : Screen(route = "playlist/{playlistId}") {
+        fun createRoute(playlistId: String) = "playlist/${Uri.encode(playlistId)}"
+    }
+
+    // El chat directo con otra persona
+    data object Chat : Screen(route = "chat/{userId}") {
+        fun createRoute(userId: String) = "chat/$userId"
+    }
 
     // Elegir en cual de mis mixtapes va el item del detalle
     data object AgregarAMixtape : Screen(route = "agregarAMixtape/{tipo}/{itemId}") {

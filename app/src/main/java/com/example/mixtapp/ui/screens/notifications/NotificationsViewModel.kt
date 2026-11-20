@@ -6,8 +6,10 @@ import androidx.lifecycle.viewModelScope
 import com.example.mixtapp.R
 import com.example.mixtapp.data.injection.IoDispatcher
 import com.example.mixtapp.data.model.NotificationUi
+import com.example.mixtapp.data.model.SonandoUi
 import com.example.mixtapp.data.repository.CatalogoRepository
 import com.example.mixtapp.data.repository.SocialRepository
+import com.example.mixtapp.data.repository.SonandoRepository
 import com.example.mixtapp.ui.utils.mensajeDeError
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -24,6 +26,7 @@ import javax.inject.Inject
 class NotificationsViewModel @Inject constructor(
     private val socialRepository: SocialRepository,
     private val catalogoRepository: CatalogoRepository,
+    private val sonandoRepository: SonandoRepository,
     // Las corrutinas se lanzan en este hilo; las pruebas pasan uno de prueba
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
@@ -38,6 +41,57 @@ class NotificationsViewModel @Inject constructor(
         escucharNotificaciones()
         escucharDiscusiones()
         escucharLanzamientos()
+        escucharSonando()
+    }
+
+    // Lo que escuchan quienes sigo, en vivo: la misma fila de Siguiendo
+    private fun escucharSonando() {
+        viewModelScope.launch(ioDispatcher) {
+            sonandoRepository.getSonandoLive()
+                .catch { e ->
+                    Log.d("NotificationsViewModel", "escucharSonando: ${e.message}")
+                    _uiState.update {
+                        it.copy(errorSonandoRes = mensajeDeError(error = e, generico = R.string.error_cargar_contenido))
+                    }
+                }
+                .collect { sonando ->
+                    _uiState.update { it.copy(sonando = sonando, errorSonandoRes = null) }
+                }
+        }
+    }
+
+    // El 🔥 a lo que escucha alguien que sigo. El contador sube cuando llega por el listener
+    fun reaccionar(sonando: SonandoUi) {
+        viewModelScope.launch(ioDispatcher) {
+            val result = sonandoRepository.reaccionar(sonando = sonando)
+
+            _uiState.update {
+                it.copy(
+                    errorAccionSonandoRes = if (result.isSuccess) {
+                        null
+                    } else {
+                        mensajeDeError(error = result.exceptionOrNull(), generico = R.string.error_reaccionar)
+                    }
+                )
+            }
+        }
+    }
+
+    // Quitar lo que yo estoy escuchando; desaparece de la fila por el listener
+    fun quitarSonando() {
+        viewModelScope.launch(ioDispatcher) {
+            val result = sonandoRepository.quitarSonando()
+
+            _uiState.update {
+                it.copy(
+                    errorAccionSonandoRes = if (result.isSuccess) {
+                        null
+                    } else {
+                        mensajeDeError(error = result.exceptionOrNull(), generico = R.string.error_sonando)
+                    }
+                )
+            }
+        }
     }
 
     // La app no crea notificaciones: las crean las Cloud Functions cuando alguien da like a mi resena

@@ -1,7 +1,6 @@
 package com.example.mixtapp.ui.screens.detail
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -11,6 +10,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Forum
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,7 +23,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -39,11 +39,13 @@ import com.example.mixtapp.ui.screens.detail.components.ItemStats
 import com.example.mixtapp.ui.screens.detail.components.SonandoButton
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppBackground
+import com.example.mixtapp.ui.utils.DegradadoDePortada
 import com.example.mixtapp.ui.utils.EmptyMessage
 import com.example.mixtapp.ui.utils.ErrorBox
 import com.example.mixtapp.ui.utils.ErrorMessage
 import com.example.mixtapp.ui.utils.ItemHeader
 import com.example.mixtapp.ui.utils.LoadingBox
+import com.example.mixtapp.ui.utils.OpcionOvalada
 import com.example.mixtapp.ui.utils.ReviewCard
 import com.example.mixtapp.ui.utils.SectionTitle
 import com.example.mixtapp.ui.utils.TonoDeFondo
@@ -58,6 +60,7 @@ fun DetailScreen(
     onRateClick: () -> Unit,
     onDatosCuriososClick: () -> Unit,
     onAddToMixtapeClick: () -> Unit,
+    onForoClick: () -> Unit,
     onBackClick: () -> Unit,
     onAuthorClick: (String) -> Unit,
     onCommentsClick: (String) -> Unit,
@@ -90,6 +93,7 @@ fun DetailScreen(
         onAddToMixtapeClick = onAddToMixtapeClick,
         onDatosCuriososClick = onDatosCuriososClick,
         onSonandoClick = { detailViewModel.ponerSonando() },
+        onForoClick = onForoClick,
         onPlayClick = { detailViewModel.alternarVistaPreviaDelItem() },
         onReviewLikeClick = { detailViewModel.sendOrDeleteLikeResena(reviewId = it) },
         onDeleteMyReviewClick = { detailViewModel.eliminarMiResena(reviewId = it) },
@@ -115,6 +119,7 @@ fun DetailScreenContent(
     onAddToMixtapeClick: () -> Unit,
     onDatosCuriososClick: () -> Unit,
     onSonandoClick: () -> Unit,
+    onForoClick: () -> Unit,
     onPlayClick: () -> Unit,
     onReviewLikeClick: (String) -> Unit,
     onDeleteMyReviewClick: (String) -> Unit,
@@ -131,15 +136,7 @@ fun DetailScreenContent(
         AppBackground(tono = TonoDeFondo.Item)
 
         // El degradado con el color de la portada, detras de la imagen y desvanecido hacia abajo
-        val color = colorDePortada
-        if (color != null) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(520.dp)
-                    .background(Brush.verticalGradient(listOf(color.copy(alpha = 0.55f), Color.Transparent)))
-            )
-        }
+        DegradadoDePortada(color = colorDePortada)
 
         when {
             isLoading -> LoadingBox()
@@ -187,6 +184,8 @@ fun DetailScreenContent(
                                 onLikeClick = onLikeClick,
                                 onSaveClick = onSaveClick,
                                 onAddToMixtapeClick = onAddToMixtapeClick,
+                                // Los datos curiosos, llamativos, justo debajo de Calificar
+                                destacado = { DatosCuriososButton(onClick = onDatosCuriososClick) },
                             )
 
                             ErrorMessage(
@@ -207,8 +206,7 @@ fun DetailScreenContent(
                         )
                     }
 
-                    // Bloque 2, descubre mas: los datos curiosos (su pantalla avisa si el item no
-                    // tiene) y contarles a mis seguidores que lo escucho
+                    // Bloque 2, descubre mas: el foro del item y contarles a mis seguidores que lo escucho
                     item {
                         Column(modifier = Modifier.padding(top = 28.dp)) {
                             SectionTitle(
@@ -218,13 +216,18 @@ fun DetailScreenContent(
                                 onActionClick = null,
                             )
 
-                            DatosCuriososButton(onClick = onDatosCuriososClick)
+                            // Hablar del item con quienes tambien lo escuchan
+                            OpcionOvalada(
+                                icono = Icons.Outlined.Forum,
+                                texto = stringResource(R.string.foro_de_esto),
+                                onClick = onForoClick,
+                                modifier = Modifier
+                                    .padding(bottom = 10.dp)
+                                    .testTag("btnForo"),
+                            )
 
                             // Lo ven mis seguidores en Siguiendo; el aviso confirma que ya quedo
-                            SonandoButton(
-                                onClick = onSonandoClick,
-                                modifier = Modifier.padding(top = 10.dp),
-                            )
+                            SonandoButton(onClick = onSonandoClick)
 
                             if (avisoSonandoRes != null) {
                                 Text(
@@ -297,6 +300,7 @@ fun DetailScreenPreview() {
             onAddToMixtapeClick = {},
             onDatosCuriososClick = {},
             onSonandoClick = {},
+            onForoClick = {},
             onPlayClick = {},
             onReviewLikeClick = {},
             onDeleteMyReviewClick = {},

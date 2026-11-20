@@ -386,6 +386,10 @@
     <string name="mixtape_accion">Mixtape</string>
     <string name="calificacion_sobre_cinco">%1$d/5</string>
 
+    <!-- detalle: la fila de escuchar y ver -->
+    <string name="escuchar_corto">Escuchar</string>
+    <string name="detener_corto">Detener</string>
+
     <!-- duelos: sin votos, la seleccion y mi voto -->
     <string name="duelo_del_dia">Duelo del día</string>
     <string name="duelo_pregunta">¿Cuál es el mejor de %1$s hoy?</string>
@@ -423,8 +427,54 @@
     <string name="discusion_sobre">reseñó %1$s</string>
     <string name="comentarios_count">%1$d comentarios</string>
 
+    <!-- comunidad: afinidad, foros y mensajes -->
+    <string name="comunidad_titulo">Comunidad</string>
+    <string name="tab_siguiendo">Siguiendo</string>
+    <string name="tab_afinidad">Afinidad</string>
+    <string name="tab_foros">Foros</string>
+    <string name="tab_mensajes">Mensajes</string>
+    <string name="porcentaje_match">%1$d %% de match</string>
+    <string name="les_gusta_a_los_dos">Les gusta a los dos</string>
+    <string name="genero_en_comun">Comparten %1$s</string>
+    <string name="sin_afinidad">Dale me gusta a canciones, álbumes y artistas para encontrar personas con tus gustos</string>
+    <string name="error_afinidad">No se pudo calcular la afinidad. Inténtalo de nuevo</string>
+    <string name="foros_activos">Foros con conversación</string>
+    <string name="foros_de_lo_que_te_gusta">Empieza un foro de lo que te gusta</string>
+    <string name="sin_foros">Todavía no hay foros: entra al de algo que te guste y escribe el primer mensaje</string>
+    <string name="mensajes_count">%1$d mensajes</string>
+    <string name="foro_de">Foro de %1$s</string>
+    <string name="foro_de_esto">Entrar al foro</string>
+    <string name="foro_descripcion">Habla con quienes también escuchan esto</string>
+    <string name="sin_mensajes_foro">Nadie ha escrito todavía. ¡Abre la conversación!</string>
+    <string name="escribe_al_foro">Escribe algo sobre esto…</string>
+    <string name="sin_chats">Todavía no tienes conversaciones. Escríbele a alguien desde Afinidad o desde su perfil</string>
+    <string name="escribe_un_mensaje">Escribe un mensaje…</string>
+    <string name="sin_mensajes_chat">Saluda y empieza la conversación</string>
+    <string name="enviar">Enviar</string>
+    <string name="enviar_mensaje">Enviar mensaje</string>
+    <string name="error_enviar_mensaje">No se pudo enviar el mensaje. Inténtalo de nuevo</string>
+    <string name="error_mensaje_vacio">Escribe algo antes de enviar</string>
+    <string name="error_mensaje_a_si_mismo">No puedes escribirte a ti mismo</string>
+
+    <!-- playlists hechas para mi -->
+    <string name="hecho_para_ti">Hecho para ti</string>
+    <string name="playlist_mezcla">Tu mezcla de %1$s</string>
+    <string name="playlist_mezcla_descripcion">Lo más sonado de %1$s, el género que más te gusta</string>
+    <string name="playlist_descubre">Descubre esta semana</string>
+    <string name="playlist_descubre_descripcion">De tus géneros, lo que todavía no has escuchado</string>
+    <string name="playlist_top_colombia">Top Colombia</string>
+    <string name="playlist_top_colombia_descripcion">Lo que más suena hoy en Colombia</string>
+    <string name="playlist_lo_mas_escuchado">Lo más escuchado</string>
+    <string name="playlist_lo_mas_escuchado_descripcion">Lo más popular de Mixtapp</string>
+    <string name="cantidad_canciones">%1$d canciones</string>
+    <string name="reproducir_todo">Reproducir todo</string>
+    <string name="detener_todo">Detener</string>
+    <string name="playlist_no_encontrada">Esta playlist ya no está</string>
+
     <!-- Tu año como historia -->
     <string name="resumen_titulo_anio">Tu %1$d en Mixtapp</string>
+    <string name="resumen_mas_querida">Tu reseña más querida</string>
+    <string name="resumen_resenas_y_promedio">reseñas este año · %1$s ★ de promedio</string>
     <string name="resumen_toca">Toca la tarjeta para seguir</string>
     <string name="resumen_pocos_datos">Todavía es pronto para decirlo: sigue calificando y tu año se va armando</string>
     <string name="resumen_compartir">Compartir mi año</string>

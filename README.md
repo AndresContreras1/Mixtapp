@@ -322,15 +322,46 @@ La pantalla de notificaciones tiene tres pestañas, todas en vivo:
   en votar" y oculta los porcentajes. Votar queda apagado hasta elegir uno (`puedeVotar` en
   `ReglasDeDuelo`); la tarjeta elegida lleva borde, check y elevación, y la barra se anima cuando
   llega un voto.
-- **Tu año se ve como una historia:** una tarjeta a la vez con los segmentos de progreso, un
-  degradado distinto por tarjeta y, al final, Compartir (un `Intent.ACTION_SEND` con el texto). Con
+- **Tu año se ve como una historia:** una tarjeta a la vez con los segmentos de progreso y, al
+  final, Compartir (un `Intent.ACTION_SEND` con el texto). Son cuatro tarjetas: mis reseñas (con la
+  más querida, el total y el promedio), mi género con la portada grande de un álbum de ese género, mi
+  artista con su foto y lo que mejor califiqué. Con imagen, el degradado de la tarjeta sale del color
+  de esa imagen (Palette). Con
   pocos datos (`hayPocosDatos` en `ReglasDelResumen`) no afirma el género ni el artista.
 - **Las fechas se leen igual en toda la app** (`fechaConMes` en `data/model/Fechas.kt`): "3 h", "2 d"
   y, desde una semana, "21 oct" (con el año si es de otro). Los lanzamientos muestran su fecha de
   salida y en Buscar se pueden ordenar de lo más nuevo a lo más viejo o al revés.
-- **El detalle toma el color de la portada** con Palette (`PortadaConColor`), pero solo en un
-  degradado decorativo arriba: los textos y el resto del fondo no cambian. Abajo de las acciones el
-  detalle se agrupa en tres bloques: Escuchar y ver, Descubre más y Reseñas de la comunidad.
+- **Buscar** tiene los tres criterios con ícono y el mismo degradado de la marca, y los cuatro géneros
+  (Rock, Metal, Nu metal y Reggaetón) en tarjetas horizontales: la portada en gris con el degradado
+  rosado y morado encima, así se ven parejas.
+- **Sonando ahora** (`SonandoAhoraRow` en `ui/utils`) sale en Siguiendo y arriba de las
+  notificaciones.
+- **Playlists hechas para mí:** la fila "Hecho para ti" del inicio. `armarPlaylists` (en
+  `data/model/ReglasDePlaylist`) arma, con el catálogo y lo que me gusta, una mezcla por cada uno de
+  mis dos géneros, Descubre (lo de mis géneros que todavía no me gusta), Top Colombia y Lo más
+  escuchado. Como el resultado siempre es el mismo para los mismos datos, la pantalla de la
+  playlist la vuelve a armar con su id. Cada canción suena 30 segundos y "Reproducir todo" las
+  encadena: al terminar una sigue la siguiente.
+- **Todo lo que se toca rebota** (`Modifier.rebote()` en `ui/utils`): se encoge un poco mientras
+  el dedo está encima y vuelve con un resorte al soltar. Escucha el toque sin consumirlo, así que el
+  clic sigue igual. Lo usan los botones, los chips, las tarjetas, las pastillas, el play y el corazón.
+- **Comunidad** (la ruta de Siguiendo) tiene cuatro pestañas:
+  - **Siguiendo:** la pantalla de siempre con su `FollowingViewModel`.
+  - **Afinidad:** las personas con gustos parecidos, aunque no las siga. `ComunidadRepository` lee
+    mis likes y los de los demás una vez y calcula el match con `porcentajeDeAfinidad` en
+    `data/model/ReglasDeComunidad` (60 % los items en común y 40 % los géneros).
+  - **Foros:** uno por álbum, canción o artista (`foros/{itemId}` con su subcolección `mensajes`,
+    en vivo). El mensaje y el documento del foro se escriben en un batch. También se entra desde el
+    detalle.
+  - **Mensajes:** chats directos (`chats/{uidA_uidB}`; el id sale de `idDelChat` con los dos uid
+    ordenados, y así lo protegen las reglas). Se abren desde Afinidad o con "Enviar mensaje" en el
+    perfil de otro usuario.
+  - Todo va por capas: `ComunidadRemoteDataSource` (Firestore, y en Retrofit las listas vacías),
+    `ComunidadRepository`, `ComunidadViewModel`, `ForoViewModel` y `ChatViewModel`.
+- **El detalle y los datos curiosos toman el color de la portada** con Palette (`PortadaConColor`),
+  pero solo en un degradado decorativo arriba (`DegradadoDePortada`): los textos y el resto del fondo
+  no cambian. En el detalle, Datos curiosos va destacado justo debajo de Calificar; después, Escuchar
+  y ver en una fila (el play, YouTube y Spotify), Descubre más y Reseñas de la comunidad.
 - **Los datos curiosos van en su propia colección** (`historias`), con el mismo id del item: el
   inicio escucha todo el catálogo y así no descarga ese texto. La pantalla de datos curiosos los lee
   una sola vez, porque no cambian mientras se usa la app.
@@ -390,12 +421,14 @@ La pantalla de notificaciones tiene tres pestañas, todas en vivo:
   basta con cambiar un tono en uno de los dos archivos. El modo oscuro usa el rosado chicle solo para
   lo importante (botones, estrellas, filtros elegidos, pestaña activa) sobre un fondo ciruela casi
   negro (`Noche`), con acentos magenta, violeta y coral en los resplandores del fondo, y el modo
-  claro, los fondos pastel. Las barras de arriba (`BarraSuperior`) y de abajo van en el tono más
-  oscuro (`surfaceContainerLowest`) para que no se pierdan en el fondo. No hay colores quemados fuera de
+  claro, los fondos pastel. Solo la barra de abajo es sólida, en el tono más oscuro
+  (`surfaceContainerLowest`); la de arriba (`BarraSuperior`) se funde con el fondo. Las tarjetas que
+  informan llevan `texturaDeTarjeta`: sombra suave, degradado, brillo arriba y grano. No hay colores quemados fuera de
   `Color.kt`, salvo el fondo de la ventana en `themes.xml` y los drawables XML (icono y marcadores de
   imagen), que se pintan sin Compose y repiten a mano los colores de la paleta.
 - **Un fondo por sección** (`AppBackground` con `TonoDeFondo`): el color de fondo con dos
-  resplandores difuminados en las esquinas y un grano fino. Cada sección tiene su tono (Inicio,
+  resplandores difuminados en las esquinas, las burbujas de la marca (círculos difuminados con un
+  borde tenue, en otro lugar en cada sección) y un grano fino. Cada sección tiene su tono (Inicio,
   Buscar, Duelos, Perfil, lo social, el item, Tu año y la cuenta) y los resplandores se desvanecen
   antes del centro, así no pasan detrás del contenido.
 - **Un solo campo de texto** (`AppTextField`): un `OutlinedTextField` ovalado de 56 dp con el fondo

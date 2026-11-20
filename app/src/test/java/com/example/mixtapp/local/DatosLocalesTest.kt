@@ -25,7 +25,7 @@ class DatosLocalesTest {
         //Act
         val generos = categorias.filter { it.esGenero }.map { it.id }
         //Assert
-        assertThat(generos).containsExactly("Rock", "Metal", "Nu metal", "Reggaetón", "Música popular").inOrder()
+        assertThat(generos).containsExactly("Rock", "Metal", "Nu metal", "Reggaetón").inOrder()
     }
 
     @Test

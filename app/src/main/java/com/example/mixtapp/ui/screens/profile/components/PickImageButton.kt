@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.ProfileAsyncImage
+import com.example.mixtapp.ui.utils.rebote
 
 // Mi foto de perfil, que se cambia al tocarla: la camara rosada en la esquina lo indica. Abre la
 // galeria del celular y entrega la imagen elegida; si se cancela no hace nada. Mientras la foto sube
@@ -47,6 +48,7 @@ fun PickImageButton(
     Box(
         modifier = modifier
             .size(88.dp)
+            .rebote()
             .clickable(enabled = !cargando) { launcher.launch("image/*") }
             .testTag("tab_cambiar_foto"),
     ) {

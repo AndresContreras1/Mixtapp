@@ -5,6 +5,7 @@ import com.example.mixtapp.data.model.EstadoDeReproduccion
 import com.example.mixtapp.data.model.ItemConResenasUi
 import com.example.mixtapp.data.model.ItemResumenUi
 import com.example.mixtapp.data.model.ItemUi
+import com.example.mixtapp.data.model.PlaylistUi
 import com.example.mixtapp.data.model.ReviewUi
 import com.example.mixtapp.ui.screens.home.model.FILTRO_PARA_TI
 import com.example.mixtapp.ui.screens.home.model.homeFilters
@@ -35,6 +36,8 @@ data class HomeState(
     val artistas: List<ItemUi> = emptyList(),
     // Las resenas de quienes sigo, la mas nueva primero
     val resenasDeSeguidos: List<ReviewUi> = emptyList(),
+    // Las playlists hechas para mi: mis generos, Descubre, Top Colombia y lo mas escuchado
+    val playlists: List<PlaylistUi> = emptyList(),
     // Se pone en true al empezar a escuchar el catalogo y en false cuando llega o falla
     val isLoading: Boolean = false,
     // El error del catalogo tapa la pantalla. Los de favoritos y seguidos van aparte para que un

@@ -41,6 +41,7 @@ import com.example.mixtapp.ui.theme.Black
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.theme.White
 import com.example.mixtapp.ui.utils.ItemAsyncImage
+import com.example.mixtapp.ui.utils.rebote
 
 // Uno de los dos del duelo: la portada, el titulo con peso y, si ya hay votos, su porcentaje y
 // cuantos lleva. Tocar la tarjeta lo elige para votar: el borde rosado, el check y la elevacion lo
@@ -62,7 +63,7 @@ fun DueloItemCard(
 ) {
     Card(
         onClick = onClick,
-        modifier = modifier,
+        modifier = modifier.rebote(),
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(
             containerColor = if (elegido) {

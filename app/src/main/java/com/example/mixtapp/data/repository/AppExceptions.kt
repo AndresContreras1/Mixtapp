@@ -46,6 +46,8 @@ class UbicacionNoDisponibleException : Exception("El celular no pudo leer la ubi
 
 class SinVistaPreviaException : Exception("Deezer no tiene un fragmento de esto")
 
+class MensajeASiMismoException : Exception("No se puede abrir un chat con uno mismo")
+
 // Lo que no tiene un catch propio; el detalle de la excepcion original queda en el log
 class ErrorInesperadoException : Exception("Fallo inesperado")
 

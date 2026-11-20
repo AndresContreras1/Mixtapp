@@ -41,7 +41,9 @@ fun OpcionOvalada(
 ) {
     OutlinedCard(
         onClick = onClick,
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .rebote()
+            .fillMaxWidth(),
         shape = CircleShape,
         colors = CardDefaults.outlinedCardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)

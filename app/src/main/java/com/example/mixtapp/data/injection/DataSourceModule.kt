@@ -3,6 +3,7 @@ package com.example.mixtapp.data.injection
 import com.example.mixtapp.data.datasource.AlbumRemoteDataSource
 import com.example.mixtapp.data.datasource.ArtistaRemoteDataSource
 import com.example.mixtapp.data.datasource.CancionRemoteDataSource
+import com.example.mixtapp.data.datasource.ComunidadRemoteDataSource
 import com.example.mixtapp.data.datasource.DueloRemoteDataSource
 import com.example.mixtapp.data.datasource.HistoriaRemoteDataSource
 import com.example.mixtapp.data.datasource.MixtapeRemoteDataSource
@@ -18,6 +19,7 @@ import com.example.mixtapp.data.datasource.impl.android.UbicacionAndroidDataSour
 import com.example.mixtapp.data.datasource.impl.firestore.AlbumFirestoreDataSourceImpl
 import com.example.mixtapp.data.datasource.impl.firestore.ArtistaFirestoreDataSourceImpl
 import com.example.mixtapp.data.datasource.impl.firestore.CancionFirestoreDataSourceImpl
+import com.example.mixtapp.data.datasource.impl.firestore.ComunidadFirestoreDataSourceImpl
 import com.example.mixtapp.data.datasource.impl.firestore.DueloFirestoreDataSourceImpl
 import com.example.mixtapp.data.datasource.impl.firestore.HistoriaFirestoreDataSourceImpl
 import com.example.mixtapp.data.datasource.impl.firestore.MixtapeFirestoreDataSourceImpl
@@ -92,6 +94,12 @@ abstract class DataSourceModule {
     abstract fun bindUbicacionDataSource(
         impl: UbicacionAndroidDataSourceImpl
     ): UbicacionDataSource
+
+    // La comunidad: personas con gustos parecidos, foros y mensajes directos
+    @Binds
+    abstract fun bindComunidadRemoteDataSource(
+        impl: ComunidadFirestoreDataSourceImpl
+    ): ComunidadRemoteDataSource
 
     // El fragmento de 30 segundos sale de Deezer, que no tiene version de Firestore
     @Binds

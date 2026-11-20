@@ -1,6 +1,5 @@
 package com.example.mixtapp.ui.screens.mixtapedetail.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,7 +13,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -25,6 +23,8 @@ import com.example.mixtapp.data.model.ItemResumenUi
 import com.example.mixtapp.data.model.toItemResumenUi
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.PortadaConTitulo
+import com.example.mixtapp.ui.utils.rebote
+import com.example.mixtapp.ui.utils.texturaDeTarjeta
 
 // Un item de la mixtape: su portada, el titulo y el subtitulo. Tocarlo abre su detalle; si la
 // mixtape es mia, la X lo quita
@@ -39,8 +39,8 @@ fun MixtapeItemRow(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(18.dp))
-            .background(MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.8f))
+            .rebote()
+            .texturaDeTarjeta(RoundedCornerShape(18.dp))
             .clickable { onClick() }
             .testTag("itemMixtape_${item.id}")
             .padding(10.dp),

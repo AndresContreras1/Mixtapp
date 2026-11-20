@@ -1,6 +1,5 @@
 package com.example.mixtapp.ui.screens.notifications.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,7 +15,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -30,6 +28,8 @@ import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.ItemAsyncImage
 import com.example.mixtapp.ui.utils.ProfileAsyncImage
 import com.example.mixtapp.ui.utils.TiempoTranscurrido
+import com.example.mixtapp.ui.utils.rebote
+import com.example.mixtapp.ui.utils.texturaDeTarjeta
 
 // Una resena nueva de alguien que sigo, con la estructura de las notificaciones: arriba "Nueva
 // discusion"; la foto y el nombre (tocarlos abre su perfil), lo resenado resaltado con su miniatura,
@@ -44,8 +44,8 @@ fun DiscusionRow(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(20.dp))
-            .background(MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.5f))
+            .rebote()
+            .texturaDeTarjeta(RoundedCornerShape(20.dp))
             .clickable { onClick() }
             .testTag("discusion_${review.id}")
             .padding(horizontal = 12.dp, vertical = 10.dp),

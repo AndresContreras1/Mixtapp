@@ -33,9 +33,10 @@ import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalPreviewProvider
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppButton
+import com.example.mixtapp.ui.utils.rebote
 
-// Las acciones del item: calificarlo (o editar mi calificacion) como accion principal y debajo tres
-// acciones con su icono y su etiqueta: me gusta, agregar a una mixtape y guardar. Cada una ocupa un
+// Las acciones del item: calificarlo (o editar mi calificacion) como accion principal, debajo lo que
+// la pantalla quiera destacar (los datos curiosos) y despues tres acciones con su icono y su etiqueta: me gusta, agregar a una mixtape y guardar. Cada una ocupa un
 // area amplia y, cuando esta activa, se rellena en rosado. El corazon y el marcador cambian cuando
 // llega el item por el listener
 @Composable
@@ -50,6 +51,8 @@ fun ItemActions(
     onSaveClick: () -> Unit,
     onAddToMixtapeClick: () -> Unit,
     modifier: Modifier = Modifier,
+    // Lo que va justo debajo de Calificar
+    destacado: @Composable () -> Unit,
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         AppButton(
@@ -60,6 +63,10 @@ fun ItemActions(
                 .testTag("btnCalificar"),
             cargando = false,
         )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        destacado()
 
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -123,6 +130,7 @@ private fun AccionDelItem(
 
     Column(
         modifier = modifier
+            .rebote()
             .clip(RoundedCornerShape(18.dp))
             .background(fondo)
             .clickable { onClick() }
@@ -160,6 +168,7 @@ fun ItemActionsPreview() {
             onLikeClick = {},
             onSaveClick = {},
             onAddToMixtapeClick = {},
+            destacado = {},
         )
     }
 }

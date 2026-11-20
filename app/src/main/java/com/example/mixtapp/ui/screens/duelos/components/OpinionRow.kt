@@ -1,6 +1,5 @@
 package com.example.mixtapp.ui.screens.duelos.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,7 +14,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -28,6 +26,7 @@ import com.example.mixtapp.data.model.VotoUi
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.ProfileAsyncImage
 import com.example.mixtapp.ui.utils.TiempoTranscurrido
+import com.example.mixtapp.ui.utils.texturaDeTarjeta
 
 // La opinion de quien voto: su foto y su nombre (tocarlos abre su perfil), por cual voto, cuanto
 // hace y lo que escribio. El color de "voto por" es el del lado de la barra
@@ -41,8 +40,7 @@ fun OpinionRow(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(20.dp))
-            .background(MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.8f))
+            .texturaDeTarjeta(RoundedCornerShape(20.dp))
             .testTag("opinion_${voto.usuarioId}")
             .padding(12.dp),
         verticalAlignment = Alignment.Top,
