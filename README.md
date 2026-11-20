@@ -390,12 +390,14 @@ La pantalla de notificaciones tiene tres pestañas, todas en vivo:
   basta con cambiar un tono en uno de los dos archivos. El modo oscuro usa el rosado chicle solo para
   lo importante (botones, estrellas, filtros elegidos, pestaña activa) sobre un fondo ciruela casi
   negro (`Noche`), con acentos magenta, violeta y coral en los resplandores del fondo, y el modo
-  claro, los fondos pastel. Las barras de arriba (`BarraSuperior`) y de abajo van en el tono más
-  oscuro (`surfaceContainerLowest`) para que no se pierdan en el fondo. No hay colores quemados fuera de
+  claro, los fondos pastel. Solo la barra de abajo es sólida, en el tono más oscuro
+  (`surfaceContainerLowest`); la de arriba (`BarraSuperior`) se funde con el fondo. Las tarjetas que
+  informan llevan `texturaDeTarjeta`: sombra suave, degradado, brillo arriba y grano. No hay colores quemados fuera de
   `Color.kt`, salvo el fondo de la ventana en `themes.xml` y los drawables XML (icono y marcadores de
   imagen), que se pintan sin Compose y repiten a mano los colores de la paleta.
 - **Un fondo por sección** (`AppBackground` con `TonoDeFondo`): el color de fondo con dos
-  resplandores difuminados en las esquinas y un grano fino. Cada sección tiene su tono (Inicio,
+  resplandores difuminados en las esquinas, las burbujas de la marca (círculos difuminados con un
+  borde tenue, en otro lugar en cada sección) y un grano fino. Cada sección tiene su tono (Inicio,
   Buscar, Duelos, Perfil, lo social, el item, Tu año y la cuenta) y los resplandores se desvanecen
   antes del centro, así no pasan detrás del contenido.
 - **Un solo campo de texto** (`AppTextField`): un `OutlinedTextField` ovalado de 56 dp con el fondo
