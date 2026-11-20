@@ -331,6 +331,11 @@ La pantalla de notificaciones tiene tres pestañas, todas en vivo:
 - **Las fechas se leen igual en toda la app** (`fechaConMes` en `data/model/Fechas.kt`): "3 h", "2 d"
   y, desde una semana, "21 oct" (con el año si es de otro). Los lanzamientos muestran su fecha de
   salida y en Buscar se pueden ordenar de lo más nuevo a lo más viejo o al revés.
+- **Buscar** tiene los tres criterios con ícono y el mismo degradado de la marca, y los cuatro géneros
+  (Rock, Metal, Nu metal y Reggaetón) en tarjetas horizontales: la portada en gris con el degradado
+  rosado y morado encima, así se ven parejas.
+- **Sonando ahora** (`SonandoAhoraRow` en `ui/utils`) sale en Siguiendo y arriba de las
+  notificaciones.
 - **El detalle y los datos curiosos toman el color de la portada** con Palette (`PortadaConColor`),
   pero solo en un degradado decorativo arriba (`DegradadoDePortada`): los textos y el resto del fondo
   no cambian. En el detalle, Datos curiosos va destacado justo debajo de Calificar; después, Escuchar
