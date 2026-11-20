@@ -336,6 +336,15 @@ La pantalla de notificaciones tiene tres pestañas, todas en vivo:
   rosado y morado encima, así se ven parejas.
 - **Sonando ahora** (`SonandoAhoraRow` en `ui/utils`) sale en Siguiendo y arriba de las
   notificaciones.
+- **Playlists hechas para mí:** la fila "Hecho para ti" del inicio. `armarPlaylists` (en
+  `data/model/ReglasDePlaylist`) arma, con el catálogo y lo que me gusta, una mezcla por cada uno de
+  mis dos géneros, Descubre (lo de mis géneros que todavía no me gusta), Top Colombia y Lo más
+  escuchado. Como el resultado siempre es el mismo para los mismos datos, la pantalla de la
+  playlist la vuelve a armar con su id. Cada canción suena 30 segundos y "Reproducir todo" las
+  encadena: al terminar una sigue la siguiente.
+- **Todo lo que se toca rebota** (`Modifier.rebote()` en `ui/utils`): se encoge un poco mientras
+  el dedo está encima y vuelve con un resorte al soltar. Escucha el toque sin consumirlo, así que el
+  clic sigue igual. Lo usan los botones, los chips, las tarjetas, las pastillas, el play y el corazón.
 - **Comunidad** (la ruta de Siguiendo) tiene cuatro pestañas:
   - **Siguiendo:** la pantalla de siempre con su `FollowingViewModel`.
   - **Afinidad:** las personas con gustos parecidos, aunque no las siga. `ComunidadRepository` lee
