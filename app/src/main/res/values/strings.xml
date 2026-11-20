@@ -427,6 +427,35 @@
     <string name="discusion_sobre">reseñó %1$s</string>
     <string name="comentarios_count">%1$d comentarios</string>
 
+    <!-- comunidad: afinidad, foros y mensajes -->
+    <string name="comunidad_titulo">Comunidad</string>
+    <string name="tab_siguiendo">Siguiendo</string>
+    <string name="tab_afinidad">Afinidad</string>
+    <string name="tab_foros">Foros</string>
+    <string name="tab_mensajes">Mensajes</string>
+    <string name="porcentaje_match">%1$d %% de match</string>
+    <string name="les_gusta_a_los_dos">Les gusta a los dos</string>
+    <string name="genero_en_comun">Comparten %1$s</string>
+    <string name="sin_afinidad">Dale me gusta a canciones, álbumes y artistas para encontrar personas con tus gustos</string>
+    <string name="error_afinidad">No se pudo calcular la afinidad. Inténtalo de nuevo</string>
+    <string name="foros_activos">Foros con conversación</string>
+    <string name="foros_de_lo_que_te_gusta">Empieza un foro de lo que te gusta</string>
+    <string name="sin_foros">Todavía no hay foros: entra al de algo que te guste y escribe el primer mensaje</string>
+    <string name="mensajes_count">%1$d mensajes</string>
+    <string name="foro_de">Foro de %1$s</string>
+    <string name="foro_de_esto">Entrar al foro</string>
+    <string name="foro_descripcion">Habla con quienes también escuchan esto</string>
+    <string name="sin_mensajes_foro">Nadie ha escrito todavía. ¡Abre la conversación!</string>
+    <string name="escribe_al_foro">Escribe algo sobre esto…</string>
+    <string name="sin_chats">Todavía no tienes conversaciones. Escríbele a alguien desde Afinidad o desde su perfil</string>
+    <string name="escribe_un_mensaje">Escribe un mensaje…</string>
+    <string name="sin_mensajes_chat">Saluda y empieza la conversación</string>
+    <string name="enviar">Enviar</string>
+    <string name="enviar_mensaje">Enviar mensaje</string>
+    <string name="error_enviar_mensaje">No se pudo enviar el mensaje. Inténtalo de nuevo</string>
+    <string name="error_mensaje_vacio">Escribe algo antes de enviar</string>
+    <string name="error_mensaje_a_si_mismo">No puedes escribirte a ti mismo</string>
+
     <!-- Tu año como historia -->
     <string name="resumen_titulo_anio">Tu %1$d en Mixtapp</string>
     <string name="resumen_mas_querida">Tu reseña más querida</string>
