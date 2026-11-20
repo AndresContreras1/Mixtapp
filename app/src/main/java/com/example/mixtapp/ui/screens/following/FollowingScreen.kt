@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.MaterialTheme
@@ -36,6 +37,7 @@ import com.example.mixtapp.ui.utils.LoadingBox
 import com.example.mixtapp.ui.utils.ReviewCard
 import com.example.mixtapp.ui.utils.SectionTitle
 import com.example.mixtapp.ui.utils.SonandoAhoraRow
+import com.example.mixtapp.ui.utils.aparecer
 
 @Composable
 fun FollowingScreen(
@@ -182,14 +184,16 @@ fun FollowingScreenContent(
                     }
                 }
 
-                items(reviews, key = { it.id }) { review ->
+                itemsIndexed(reviews, key = { _, review -> review.id }) { indice, review ->
                     ReviewCard(
                         review = review,
                         onAuthorClick = onAuthorClick,
                         onLikeClick = onLikeClick,
                         onCommentsClick = onCommentsClick,
                         onItemClick = onItemClick,
-                        modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 16.dp),
+                        modifier = Modifier
+                            .aparecer(indice)
+                            .padding(start = 20.dp, end = 20.dp, bottom = 16.dp),
                         onEditClick = null,
                         onDeleteClick = null,
                     )

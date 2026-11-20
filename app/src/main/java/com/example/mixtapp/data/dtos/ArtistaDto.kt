@@ -21,13 +21,15 @@ data class ArtistaDto(
     // Puesto en el Top Colombia de Deezer; null si no esta en esa lista
     val tendenciaColombia: Int?,
     val likesCount: Int,
+    // La animacion corta de su genero (WebP animado en un enlace publico); null si no tiene
+    val gifUrl: String?,
     val createdAt: String?,
     val updatedAt: String?,
     // No esta en la base: el data source lo llena buscando mi uid en la subcoleccion likes
     var liked: Boolean = false,
 ) {
     // Firestore necesita un constructor vacio para convertir el documento en el DTO
-    constructor() : this("", "", null, "", "", null, null, null, null, 0, null, null)
+    constructor() : this("", "", null, "", "", null, null, null, null, 0, null, null, null)
 }
 
 // Debajo del nombre va su banda; si es solista, su genero. Los artistas no tienen anio ni fecha
@@ -52,5 +54,6 @@ fun ArtistaDto.toItemUi(): ItemUi {
         spotifyUrl = busquedaEnSpotify(grupo ?: nombre),
         instagram = instagram ?: "",
         instagramUrl = perfilDeInstagram(instagram),
+        gifUrl = gifUrl ?: "",
     )
 }

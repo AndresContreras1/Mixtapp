@@ -36,6 +36,7 @@ import com.example.mixtapp.ui.screens.home.components.TrendingCard
 import com.example.mixtapp.ui.screens.home.model.homeFilters
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppBackground
+import com.example.mixtapp.ui.utils.Aparece
 import com.example.mixtapp.ui.utils.BarraSuperior
 import com.example.mixtapp.ui.utils.EmptyMessage
 import com.example.mixtapp.ui.utils.ErrorBox
@@ -168,78 +169,86 @@ fun HomeScreenContent(
                         verticalArrangement = Arrangement.spacedBy(28.dp),
                     ) {
                         item {
-                            Column {
-                                FilaDeOpciones(
-                                    opciones = filters,
-                                    elegidaId = selectedFilterId,
-                                    onOpcionClick = onFilterSelected,
-                                    prefijoTestTag = "filtro",
-                                )
+                            Aparece(indice = 0) {
+                                Column {
+                                    FilaDeOpciones(
+                                        opciones = filters,
+                                        elegidaId = selectedFilterId,
+                                        onOpcionClick = onFilterSelected,
+                                        prefijoTestTag = "filtro",
+                                    )
 
-                                // Si fallan mis favoritos o mis seguidos, el catalogo se sigue viendo
-                                ErrorMessage(messageRes = errorListasRes, modifier = Modifier.padding(top = 8.dp))
+                                    // Si fallan mis favoritos o mis seguidos, el catalogo se sigue viendo
+                                    ErrorMessage(messageRes = errorListasRes, modifier = Modifier.padding(top = 8.dp))
+                                }
                             }
                         }
 
                         // Solo en Para ti y en Tendencias: el ViewModel la deja en null en los demas
                         if (enTendencia != null) {
                             item {
-                                Column {
-                                    SectionTitle(
-                                        title = stringResource(R.string.now_trending),
-                                        actionText = null,
-                                        onActionClick = null,
-                                    )
+                                Aparece(indice = 1) {
+                                    Column {
+                                        SectionTitle(
+                                            title = stringResource(R.string.now_trending),
+                                            actionText = null,
+                                            onActionClick = null,
+                                        )
 
-                                    Spacer(modifier = Modifier.height(10.dp))
+                                        Spacer(modifier = Modifier.height(10.dp))
 
-                                    TrendingCard(
-                                        item = enTendencia,
-                                        enColombia = enTendenciaColombia,
-                                        estadoVistaPrevia = estadoVistaPrevia,
-                                        onClick = { onItemClick(enTendencia.tipo, enTendencia.id) },
-                                        onPlayClick = { onPlayClick(enTendencia) },
-                                        modifier = Modifier.testTag("tarjetaTendencia"),
-                                    )
+                                        TrendingCard(
+                                            item = enTendencia,
+                                            enColombia = enTendenciaColombia,
+                                            estadoVistaPrevia = estadoVistaPrevia,
+                                            onClick = { onItemClick(enTendencia.tipo, enTendencia.id) },
+                                            onPlayClick = { onPlayClick(enTendencia) },
+                                            modifier = Modifier.testTag("tarjetaTendencia"),
+                                        )
 
-                                    ErrorMessage(
-                                        messageRes = errorVistaPreviaRes,
-                                        modifier = Modifier.padding(top = 8.dp),
-                                    )
+                                        ErrorMessage(
+                                            messageRes = errorVistaPreviaRes,
+                                            modifier = Modifier.padding(top = 8.dp),
+                                        )
+                                    }
                                 }
                             }
                         }
 
                         item {
-                            ResenasDeSeguidos(
-                                resenas = resenasDeSeguidos,
-                                errorAccionRes = errorAccionRes,
-                                onAuthorClick = onAuthorClick,
-                                onLikeClick = onLikeClick,
-                                onCommentsClick = onCommentsClick,
-                                onItemClick = { item -> onItemClick(item.tipo, item.id) },
-                                onDescubrirPersonasClick = onDescubrirPersonasClick,
-                            )
+                            Aparece(indice = 2) {
+                                ResenasDeSeguidos(
+                                    resenas = resenasDeSeguidos,
+                                    errorAccionRes = errorAccionRes,
+                                    onAuthorClick = onAuthorClick,
+                                    onLikeClick = onLikeClick,
+                                    onCommentsClick = onCommentsClick,
+                                    onItemClick = { item -> onItemClick(item.tipo, item.id) },
+                                    onDescubrirPersonasClick = onDescubrirPersonasClick,
+                                )
+                            }
                         }
 
                         // Las playlists hechas para mi, en mosaico: se abren y suenan en la app
                         if (playlists.isNotEmpty()) {
                             item {
-                                Column {
-                                    SectionTitle(
-                                        title = stringResource(R.string.hecho_para_ti),
-                                        actionText = null,
-                                        onActionClick = null,
-                                    )
+                                Aparece(indice = 3) {
+                                    Column {
+                                        SectionTitle(
+                                            title = stringResource(R.string.hecho_para_ti),
+                                            actionText = null,
+                                            onActionClick = null,
+                                        )
 
-                                    Spacer(modifier = Modifier.height(10.dp))
+                                        Spacer(modifier = Modifier.height(10.dp))
 
-                                    LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                                        items(playlists, key = { it.id }) { playlist ->
-                                            TarjetaDePlaylist(
-                                                playlist = playlist,
-                                                onClick = { onPlaylistClick(playlist.id) },
-                                            )
+                                        LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                                            items(playlists, key = { it.id }) { playlist ->
+                                                TarjetaDePlaylist(
+                                                    playlist = playlist,
+                                                    onClick = { onPlaylistClick(playlist.id) },
+                                                )
+                                            }
                                         }
                                     }
                                 }
@@ -249,37 +258,45 @@ fun HomeScreenContent(
                         // Una fila vacia no se muestra; si las tres lo estan, el filtro no tiene nada todavia
                         if (canciones.isEmpty() && albumes.isEmpty() && artistas.isEmpty()) {
                             item {
-                                EmptyMessage(messageRes = R.string.sin_items_filtro, modifier = Modifier.fillMaxWidth())
+                                Aparece(indice = 4) {
+                                    EmptyMessage(messageRes = R.string.sin_items_filtro, modifier = Modifier.fillMaxWidth())
+                                }
                             }
                         }
 
                         if (canciones.isNotEmpty()) {
                             item {
-                                HomeItemRow(
-                                    titulo = stringResource(R.string.canciones_populares),
-                                    items = canciones,
-                                    onItemClick = { onItemClick(it.tipo, it.id) },
-                                )
+                                Aparece(indice = 5) {
+                                    HomeItemRow(
+                                        titulo = stringResource(R.string.canciones_populares),
+                                        items = canciones,
+                                        onItemClick = { onItemClick(it.tipo, it.id) },
+                                    )
+                                }
                             }
                         }
 
                         if (albumes.isNotEmpty()) {
                             item {
-                                HomeItemRow(
-                                    titulo = stringResource(R.string.albumes_populares),
-                                    items = albumes,
-                                    onItemClick = { onItemClick(it.tipo, it.id) },
-                                )
+                                Aparece(indice = 6) {
+                                    HomeItemRow(
+                                        titulo = stringResource(R.string.albumes_populares),
+                                        items = albumes,
+                                        onItemClick = { onItemClick(it.tipo, it.id) },
+                                    )
+                                }
                             }
                         }
 
                         if (artistas.isNotEmpty()) {
                             item {
-                                HomeItemRow(
-                                    titulo = stringResource(R.string.artistas_populares),
-                                    items = artistas,
-                                    onItemClick = { onItemClick(it.tipo, it.id) },
-                                )
+                                Aparece(indice = 7) {
+                                    HomeItemRow(
+                                        titulo = stringResource(R.string.artistas_populares),
+                                        items = artistas,
+                                        onItemClick = { onItemClick(it.tipo, it.id) },
+                                    )
+                                }
                             }
                         }
                     }

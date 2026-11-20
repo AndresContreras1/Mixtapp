@@ -123,7 +123,12 @@ fun AppNavigation(
     NavHost(
         navController = navController,
         startDestination = Screen.Splash.route,
-        modifier = modifier
+        modifier = modifier,
+        // Como cambia una pantalla por otra (Transiciones.kt)
+        enterTransition = { entrada() },
+        exitTransition = { salida() },
+        popEnterTransition = { regreso() },
+        popExitTransition = { cierre() },
     ) {
         composable(route = Screen.Splash.route) {
             val splashViewModel: SplashViewModel = hiltViewModel()

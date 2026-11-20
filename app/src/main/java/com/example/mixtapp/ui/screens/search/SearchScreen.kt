@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.MaterialTheme
@@ -48,6 +49,7 @@ import com.example.mixtapp.ui.utils.ScreenTitle
 import com.example.mixtapp.ui.utils.SectionTitle
 import com.example.mixtapp.ui.utils.TonoDeFondo
 import com.example.mixtapp.ui.utils.UserRow
+import com.example.mixtapp.ui.utils.aparecer
 
 @Composable
 fun SearchScreen(
@@ -238,11 +240,13 @@ private fun LazyListScope.listaDeResultados(
     conFecha: Boolean,
     onItemClick: (String, String) -> Unit,
 ) {
-    items(resultados) { itemConResenas ->
+    itemsIndexed(resultados) { indice, itemConResenas ->
         ItemRow(
             item = itemConResenas.item,
             onClick = { onItemClick(itemConResenas.item.tipo, itemConResenas.item.id) },
-            modifier = Modifier.testTag("resultado_${itemConResenas.item.id}"),
+            modifier = Modifier
+                .aparecer(indice)
+                .testTag("resultado_${itemConResenas.item.id}"),
         ) {
             if (conFecha) {
                 Text(

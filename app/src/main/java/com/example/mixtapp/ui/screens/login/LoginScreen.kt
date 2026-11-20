@@ -26,10 +26,9 @@ import com.example.mixtapp.data.model.CampoDeLaCuenta
 import com.example.mixtapp.ui.screens.login.components.LoginForm
 import com.example.mixtapp.ui.screens.login.components.LoginHeader
 import com.example.mixtapp.ui.theme.MixtappTheme
-import com.example.mixtapp.ui.utils.AppBackground
+import com.example.mixtapp.ui.utils.FondoDeVideo
 import com.example.mixtapp.ui.utils.AuthFooter
 import com.example.mixtapp.ui.utils.ErrorMessage
-import com.example.mixtapp.ui.utils.TonoDeFondo
 
 @Composable
 fun LoginScreen(
@@ -83,7 +82,8 @@ fun LoginScreenContent(
             .fillMaxSize()
             .testTag("loginScreen")
     ) {
-        AppBackground(tono = TonoDeFondo.Cuenta)
+        // De fondo, el video corto de la marca en bucle y sin sonido
+        FondoDeVideo(video = R.raw.fondo_login)
 
         // Con el teclado abierto el formulario no cabe: la columna se desplaza. Si cabe, queda
         // centrada en la pantalla
