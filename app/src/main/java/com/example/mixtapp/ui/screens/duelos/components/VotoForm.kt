@@ -12,11 +12,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.R
-import com.example.mixtapp.data.model.MAX_OPINION
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppButton
 import com.example.mixtapp.ui.utils.AppTextField
@@ -48,26 +46,14 @@ fun VotoForm(
             )
         }
 
-        // Una sola linea: el ViewModel la corta en MAX_OPINION caracteres
+        // Solo el recuadro con la pregunta: el ViewModel la corta en MAX_OPINION caracteres
         AppTextField(
             value = opinion,
             onValueChange = onOpinionChange,
-            label = stringResource(R.string.label_opinion, MAX_OPINION),
             placeholder = stringResource(R.string.opinion_placeholder),
             modifier = Modifier
                 .fillMaxWidth()
                 .testTag("txtOpinion"),
-        )
-
-        // Cuanto lleva de los 140
-        Text(
-            text = stringResource(R.string.contador_caracteres, opinion.length, MAX_OPINION),
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            style = MaterialTheme.typography.labelSmall,
-            textAlign = TextAlign.End,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 4.dp, end = 16.dp),
         )
 
         ErrorMessage(messageRes = errorVotoRes)
