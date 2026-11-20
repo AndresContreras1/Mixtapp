@@ -11,6 +11,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PointMode
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.mixtapp.ui.theme.Black
@@ -60,9 +61,13 @@ enum class TonoDeFondo(
 // Cuantos puntos lleva el grano por cada 10.000 px de pantalla
 private const val PUNTOS_DEL_GRANO = 6
 
+// Cuantas burbujas lleva el fondo
+private const val BURBUJAS = 8
+
 // El fondo de Mixtapp: el color de fondo con dos resplandores difuminados (arriba a la izquierda y
-// abajo a la derecha) del tono de la seccion y un grano muy fino que le da textura. Los
-// resplandores se desvanecen hacia el centro, asi no pasan detras de los textos ni de las tarjetas.
+// abajo a la derecha) del tono de la seccion, las burbujas de la marca y un grano muy fino. Las
+// burbujas son circulos difuminados de varios tamanos, con un borde tenue que deja ver su forma: se
+// notan como textura sin tapar el contenido. Cambian de lugar en cada seccion (la semilla es el tono).
 // Va detras de todas las pantallas, dentro de un Box con el contenido encima
 @Composable
 fun AppBackground(
@@ -103,9 +108,37 @@ fun AppBackground(
                     Offset(x = azar.nextFloat() * ancho, y = azar.nextFloat() * alto)
                 }
 
+                // Las burbujas: cada seccion las tiene en otro lugar, pero siempre en el mismo
+                val azarDeBurbujas = Random(seed = tono.ordinal + 3)
+                val burbujas = List(BURBUJAS) { indice ->
+                    val radio = ancho * (0.12f + azarDeBurbujas.nextFloat() * 0.26f)
+                    val centro = Offset(x = azarDeBurbujas.nextFloat() * ancho, y = azarDeBurbujas.nextFloat() * alto)
+                    val color = if (indice % 2 == 0) tono.arriba else tono.abajo
+                    val alfa = fuerza * (0.28f + azarDeBurbujas.nextFloat() * 0.22f)
+                    Burbuja(
+                        centro = centro,
+                        radio = radio,
+                        relleno = Brush.radialGradient(
+                            colors = listOf(color.copy(alpha = alfa), color.copy(alpha = alfa * 0.45f), Color.Transparent),
+                            center = centro,
+                            radius = radio,
+                        ),
+                        borde = color.copy(alpha = alfa * 0.5f),
+                    )
+                }
+
                 onDrawBehind {
                     drawRect(brush = resplandorArriba)
                     drawRect(brush = resplandorAbajo)
+                    burbujas.forEach { burbuja ->
+                        drawCircle(brush = burbuja.relleno, radius = burbuja.radio, center = burbuja.centro)
+                        drawCircle(
+                            color = burbuja.borde,
+                            radius = burbuja.radio * 0.9f,
+                            center = burbuja.centro,
+                            style = Stroke(width = 1.5f),
+                        )
+                    }
                     drawPoints(points = puntos, pointMode = PointMode.Points, color = grano, strokeWidth = 2f)
                 }
             }
@@ -135,3 +168,11 @@ fun AppBackgroundLightPreview() {
         AppBackground(tono = TonoDeFondo.Perfil)
     }
 }
+
+// Una burbuja del fondo: donde va, su tamano, el relleno difuminado y el borde tenue
+private class Burbuja(
+    val centro: Offset,
+    val radio: Float,
+    val relleno: Brush,
+    val borde: Color,
+)
