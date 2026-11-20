@@ -36,6 +36,8 @@ data class ItemUi(
     val spotifyUrl: String = "",
     val instagram: String = "",
     val instagramUrl: String = "",
+    // Solo artistas: la animacion corta que va de fondo en su detalle. Vacia si no tiene
+    val gifUrl: String = "",
     // No estan en el documento del item: el like lo busca el data source con mi uid y el
     // guardado sale de mis guardados
     val isLiked: Boolean = false,

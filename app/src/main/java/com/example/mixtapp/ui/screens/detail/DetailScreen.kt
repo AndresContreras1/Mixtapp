@@ -38,6 +38,7 @@ import com.example.mixtapp.ui.screens.detail.components.ItemActions
 import com.example.mixtapp.ui.screens.detail.components.ItemStats
 import com.example.mixtapp.ui.screens.detail.components.SonandoButton
 import com.example.mixtapp.ui.theme.MixtappTheme
+import com.example.mixtapp.ui.utils.AnimacionDeFondo
 import com.example.mixtapp.ui.utils.AppBackground
 import com.example.mixtapp.ui.utils.DegradadoDePortada
 import com.example.mixtapp.ui.utils.EmptyMessage
@@ -137,6 +138,9 @@ fun DetailScreenContent(
 
         // El degradado con el color de la portada, detras de la imagen y desvanecido hacia abajo
         DegradadoDePortada(color = colorDePortada)
+
+        // Los artistas tienen ademas la animacion de su genero de fondo, arriba
+        AnimacionDeFondo(url = itemConResenas?.item?.gifUrl ?: "")
 
         when {
             isLoading -> LoadingBox()
