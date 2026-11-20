@@ -32,6 +32,7 @@ fun AppChip(
 ) {
     Box(
         modifier = modifier
+            .rebote()
             .clip(CircleShape)
             .background(
                 if (isSelected) MaterialTheme.colorScheme.primary

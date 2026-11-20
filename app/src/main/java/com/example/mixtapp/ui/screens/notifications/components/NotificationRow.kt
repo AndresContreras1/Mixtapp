@@ -48,6 +48,7 @@ import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.ItemAsyncImage
 import com.example.mixtapp.ui.utils.ProfileAsyncImage
 import com.example.mixtapp.ui.utils.TiempoTranscurrido
+import com.example.mixtapp.ui.utils.rebote
 import com.example.mixtapp.ui.utils.texturaDeTarjeta
 
 // Una notificacion con una estructura fija: arriba que paso ("Respondieron tu comentario") con su
@@ -71,6 +72,7 @@ fun NotificationRow(
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .rebote()
             .texturaDeTarjeta(RoundedCornerShape(18.dp))
             // Sin leer, encima de la textura va un tinte rosado; leida queda solo la textura
             .background(

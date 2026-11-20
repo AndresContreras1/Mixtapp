@@ -23,6 +23,7 @@ import com.example.mixtapp.data.model.ItemResumenUi
 import com.example.mixtapp.data.model.toItemResumenUi
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.PortadaConTitulo
+import com.example.mixtapp.ui.utils.rebote
 import com.example.mixtapp.ui.utils.texturaDeTarjeta
 
 // Un item de la mixtape: su portada, el titulo y el subtitulo. Tocarlo abre su detalle; si la
@@ -38,6 +39,7 @@ fun MixtapeItemRow(
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .rebote()
             .texturaDeTarjeta(RoundedCornerShape(18.dp))
             .clickable { onClick() }
             .testTag("itemMixtape_${item.id}")

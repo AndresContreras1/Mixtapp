@@ -31,6 +31,7 @@ import com.example.mixtapp.ui.theme.Magenta
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.theme.Violeta
 import com.example.mixtapp.ui.theme.White
+import com.example.mixtapp.ui.utils.rebote
 
 // El acceso a los datos curiosos del item, justo debajo de Calificar: una tarjeta llamativa con el
 // degradado de la marca, el bombillo, el titulo y una linea que cuenta que trae la pantalla
@@ -44,6 +45,7 @@ fun DatosCuriososButton(
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .rebote()
             .shadow(elevation = 8.dp, shape = forma)
             .clip(forma)
             .background(Brush.linearGradient(listOf(Magenta, Violeta)))

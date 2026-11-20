@@ -32,7 +32,9 @@ fun AppButton(
 ) {
     Button(
         onClick = onClick,
-        modifier = modifier.height(56.dp),
+        modifier = modifier
+            .rebote()
+            .height(56.dp),
         enabled = !cargando && habilitado,
         shape = CircleShape,
         colors = ButtonDefaults.buttonColors(

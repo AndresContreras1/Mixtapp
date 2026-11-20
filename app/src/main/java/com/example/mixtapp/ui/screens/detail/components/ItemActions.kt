@@ -33,6 +33,7 @@ import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalPreviewProvider
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppButton
+import com.example.mixtapp.ui.utils.rebote
 
 // Las acciones del item: calificarlo (o editar mi calificacion) como accion principal, debajo lo que
 // la pantalla quiera destacar (los datos curiosos) y despues tres acciones con su icono y su etiqueta: me gusta, agregar a una mixtape y guardar. Cada una ocupa un
@@ -129,6 +130,7 @@ private fun AccionDelItem(
 
     Column(
         modifier = modifier
+            .rebote()
             .clip(RoundedCornerShape(18.dp))
             .background(fondo)
             .clickable { onClick() }

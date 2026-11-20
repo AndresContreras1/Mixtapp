@@ -46,6 +46,7 @@ fun ItemCard(
     Column(
         modifier = modifier
             .width(tamano)
+            .rebote()
             .clickable { onClick() }
     ) {
         ItemAsyncImage(

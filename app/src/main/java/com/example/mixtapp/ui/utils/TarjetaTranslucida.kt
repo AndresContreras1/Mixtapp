@@ -30,7 +30,7 @@ fun TarjetaTranslucida(
     )
 
     if (onClick != null) {
-        Card(onClick = onClick, modifier = modifier.texturaDeTarjeta(forma), shape = forma, colors = colores, content = contenido)
+        Card(onClick = onClick, modifier = modifier.rebote().texturaDeTarjeta(forma), shape = forma, colors = colores, content = contenido)
     } else {
         Card(modifier = modifier.texturaDeTarjeta(forma), shape = forma, colors = colores, content = contenido)
     }

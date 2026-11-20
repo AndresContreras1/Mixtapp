@@ -36,6 +36,7 @@ import com.example.mixtapp.ui.utils.BotonDeVistaPrevia
 import com.example.mixtapp.ui.utils.ErrorMessage
 import com.example.mixtapp.ui.utils.OpcionOvalada
 import com.example.mixtapp.ui.utils.SectionTitle
+import com.example.mixtapp.ui.utils.rebote
 
 // El bloque "Escuchar y ver" en una sola fila de tres pastillas del mismo tamano: el play para
 // escuchar 30 segundos sin salir de la app y los enlaces con el logo de YouTube (solo canciones) y de
@@ -141,7 +142,7 @@ private fun Pastilla(
 ) {
     OutlinedCard(
         onClick = onClick,
-        modifier = modifier,
+        modifier = modifier.rebote(),
         shape = CircleShape,
         colors = CardDefaults.outlinedCardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.7f)

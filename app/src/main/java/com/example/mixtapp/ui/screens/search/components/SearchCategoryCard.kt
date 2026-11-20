@@ -48,6 +48,7 @@ import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.theme.Violeta
 import com.example.mixtapp.ui.theme.White
 import com.example.mixtapp.ui.utils.ItemAsyncImage
+import com.example.mixtapp.ui.utils.rebote
 
 // Una tarjeta de Generos: la imagen de fondo con el mismo degradado oscuro abajo en todas y el
 // nombre en blanco y con peso, para que se lea aunque la portada tenga mucho detalle
@@ -115,6 +116,7 @@ fun CriteriosDeBusqueda(
                 onClick = { onCategoryClick(criterio.id) },
                 modifier = Modifier
                     .weight(1f)
+                    .rebote()
                     .height(104.dp)
                     .testTag("categoria_${criterio.id}"),
                 shape = RoundedCornerShape(20.dp),
@@ -160,6 +162,7 @@ fun TarjetaDeGenero(
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
+            .rebote()
             .height(92.dp),
         shape = RoundedCornerShape(22.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),

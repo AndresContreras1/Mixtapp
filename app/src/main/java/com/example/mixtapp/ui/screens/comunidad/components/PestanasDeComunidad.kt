@@ -48,6 +48,7 @@ import com.example.mixtapp.ui.utils.ItemAsyncImage
 import com.example.mixtapp.ui.utils.LoadingBox
 import com.example.mixtapp.ui.utils.ProfileAsyncImage
 import com.example.mixtapp.ui.utils.SectionTitle
+import com.example.mixtapp.ui.utils.rebote
 import com.example.mixtapp.ui.utils.texturaDeTarjeta
 
 // ---------------------------------------------------------------- Afinidad
@@ -91,6 +92,7 @@ fun AfinidadRow(
     Column(
         modifier = modifier
             .fillMaxWidth()
+            .rebote()
             .texturaDeTarjeta(RoundedCornerShape(22.dp))
             .clickable { onClick() }
             .padding(14.dp)
@@ -217,6 +219,7 @@ fun ForoRow(
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .rebote()
             .texturaDeTarjeta(RoundedCornerShape(20.dp))
             .clickable { onClick() }
             .padding(12.dp)
@@ -268,6 +271,7 @@ fun ForoSugeridoRow(
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .rebote()
             .texturaDeTarjeta(RoundedCornerShape(20.dp))
             .clickable { onClick() }
             .padding(12.dp),
@@ -328,6 +332,7 @@ fun ChatRow(
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .rebote()
             .texturaDeTarjeta(RoundedCornerShape(20.dp))
             .clickable { onClick() }
             .padding(12.dp)

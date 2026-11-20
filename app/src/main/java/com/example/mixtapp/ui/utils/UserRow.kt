@@ -36,6 +36,7 @@ fun UserRow(
         onClick = { onUserClick(usuario.id) },
         modifier = modifier
             .fillMaxWidth()
+            .rebote()
             .texturaDeTarjeta(RoundedCornerShape(24.dp)),
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),

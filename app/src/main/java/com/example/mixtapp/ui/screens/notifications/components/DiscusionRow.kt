@@ -28,6 +28,7 @@ import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.ItemAsyncImage
 import com.example.mixtapp.ui.utils.ProfileAsyncImage
 import com.example.mixtapp.ui.utils.TiempoTranscurrido
+import com.example.mixtapp.ui.utils.rebote
 import com.example.mixtapp.ui.utils.texturaDeTarjeta
 
 // Una resena nueva de alguien que sigo, con la estructura de las notificaciones: arriba "Nueva
@@ -43,6 +44,7 @@ fun DiscusionRow(
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .rebote()
             .texturaDeTarjeta(RoundedCornerShape(20.dp))
             .clickable { onClick() }
             .testTag("discusion_${review.id}")

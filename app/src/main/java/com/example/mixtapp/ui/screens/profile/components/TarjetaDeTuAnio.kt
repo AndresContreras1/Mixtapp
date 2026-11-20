@@ -31,6 +31,7 @@ import com.example.mixtapp.ui.theme.Magenta
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.theme.Violeta
 import com.example.mixtapp.ui.theme.White
+import com.example.mixtapp.ui.utils.rebote
 
 // El acceso a Tu ano en el perfil: no es una opcion mas, asi que va con el degradado vivo del resumen
 // (coral, magenta y violeta), el destello y una linea que cuenta que hay adentro
@@ -42,6 +43,7 @@ fun TarjetaDeTuAnio(
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .rebote()
             .clip(RoundedCornerShape(24.dp))
             .background(Brush.linearGradient(listOf(Coral, Magenta, Violeta)))
             .clickable { onClick() }
