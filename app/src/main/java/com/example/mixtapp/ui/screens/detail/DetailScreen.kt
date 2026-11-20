@@ -158,6 +158,7 @@ fun DetailScreenContent(
                             item = item,
                             onBackClick = onBackClick,
                             onColorDePortada = { colorDePortada = it },
+                            sonando = estadoVistaPrevia == EstadoDeReproduccion.Sonando,
                         )
                     }
 
