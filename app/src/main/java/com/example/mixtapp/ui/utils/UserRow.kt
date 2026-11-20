@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -24,7 +25,7 @@ import com.example.mixtapp.data.model.UsuarioUi
 import com.example.mixtapp.ui.theme.MixtappTheme
 
 // Un usuario en una lista (seguidores, seguidos o resultados de Buscar): tocarlo abre su perfil. Tiene
-// la misma superficie de TarjetaTranslucida, sin borde
+// la misma textura de TarjetaTranslucida
 @Composable
 fun UserRow(
     usuario: UsuarioUi,
@@ -33,11 +34,11 @@ fun UserRow(
 ) {
     Card(
         onClick = { onUserClick(usuario.id) },
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .texturaDeTarjeta(RoundedCornerShape(24.dp)),
         shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.6f)
-        ),
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
     ) {
         Row(
             modifier = Modifier.padding(12.dp),

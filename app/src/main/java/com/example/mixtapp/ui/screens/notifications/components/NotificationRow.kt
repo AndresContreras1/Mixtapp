@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -47,6 +48,7 @@ import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.ItemAsyncImage
 import com.example.mixtapp.ui.utils.ProfileAsyncImage
 import com.example.mixtapp.ui.utils.TiempoTranscurrido
+import com.example.mixtapp.ui.utils.texturaDeTarjeta
 
 // Una notificacion con una estructura fija: arriba que paso ("Respondieron tu comentario") con su
 // icono; despues la foto, el nombre en negrita, la accion y lo resenado resaltado; cuanto hace en gris
@@ -69,13 +71,11 @@ fun NotificationRow(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(18.dp))
+            .texturaDeTarjeta(RoundedCornerShape(18.dp))
+            // Sin leer, encima de la textura va un tinte rosado; leida queda solo la textura
             .background(
-                if (sinLeer) {
-                    MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
-                } else {
-                    MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.35f)
-                }
+                if (sinLeer) MaterialTheme.colorScheme.primary.copy(alpha = 0.14f) else Color.Transparent,
+                RoundedCornerShape(18.dp),
             )
             .clickable { onClick() }
             .testTag("notificacion_${notification.id}")

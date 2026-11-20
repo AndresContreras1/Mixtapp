@@ -5,16 +5,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mixtapp.ui.theme.MixtappTheme
 
-// La tarjeta translucida de la app: una superficie mas clara que el fondo, sin borde, para que se
-// separe del fondo por la luz y no por una linea. Los bordes quedan para los campos y para lo
+// La tarjeta de la app con textura (texturaDeTarjeta): sombra suave, degradado y grano, para que se
+// separe del fondo y no se vea plana. Los bordes de color quedan para los campos y para lo
 // seleccionado. La usan la resena, los datos y los datos curiosos del detalle, lo que se califica, los
 // resultados de la busqueda, los lanzamientos, las mixtapes y lo que suena. onClick es null si la
 // tarjeta no se toca
@@ -26,13 +26,13 @@ fun TarjetaTranslucida(
 ) {
     val forma = RoundedCornerShape(24.dp)
     val colores = CardDefaults.cardColors(
-        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.6f)
+        containerColor = Color.Transparent
     )
 
     if (onClick != null) {
-        Card(onClick = onClick, modifier = modifier, shape = forma, colors = colores, content = contenido)
+        Card(onClick = onClick, modifier = modifier.texturaDeTarjeta(forma), shape = forma, colors = colores, content = contenido)
     } else {
-        Card(modifier = modifier, shape = forma, colors = colores, content = contenido)
+        Card(modifier = modifier.texturaDeTarjeta(forma), shape = forma, colors = colores, content = contenido)
     }
 }
 
