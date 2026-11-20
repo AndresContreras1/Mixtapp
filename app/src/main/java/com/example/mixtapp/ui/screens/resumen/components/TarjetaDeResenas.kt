@@ -38,6 +38,7 @@ import com.example.mixtapp.ui.theme.Magenta
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.theme.White
 import com.example.mixtapp.ui.utils.ItemAsyncImage
+import com.example.mixtapp.ui.utils.numeroQueCuenta
 
 // La primera tarjeta de Tu año, con el degradado mas llamativo: arriba la reseña con mas me gusta
 // (lo que califique, su texto y sus me gusta) y abajo cuantas reseñas escribi y mi promedio de
@@ -145,8 +146,9 @@ fun TarjetaDeResenas(
 
         Spacer(modifier = Modifier.height(18.dp))
 
+        // El total cuenta desde 0 al aparecer la tarjeta
         Text(
-            text = totalResenas.toString(),
+            text = numeroQueCuenta(valor = totalResenas).toString(),
             color = White,
             style = MaterialTheme.typography.displayLarge,
         )

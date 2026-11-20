@@ -2,12 +2,15 @@ package com.example.mixtapp.ui.screens.resumen
 
 import android.content.Intent
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -44,6 +47,7 @@ import com.example.mixtapp.ui.theme.Violeta
 import com.example.mixtapp.ui.theme.White
 import com.example.mixtapp.ui.utils.AppBackground
 import com.example.mixtapp.ui.utils.AppButton
+import com.example.mixtapp.ui.utils.Confeti
 import com.example.mixtapp.ui.utils.ErrorBox
 import com.example.mixtapp.ui.utils.ErrorMessage
 import com.example.mixtapp.ui.utils.LoadingBox
@@ -179,6 +183,9 @@ fun ResumenScreenContent(
                 }
             }
         }
+
+        // Al llegar a la ultima tarjeta, el confeti
+        Confeti(activo = !state.quedanPorVer, clave = state.isLoading)
     }
 }
 
@@ -194,13 +201,26 @@ private fun SegmentosDeLaHistoria(
         horizontalArrangement = Arrangement.spacedBy(6.dp),
     ) {
         repeat(total) { indice ->
+            // El segmento de la tarjeta nueva se llena de izquierda a derecha
+            val lleno by animateFloatAsState(
+                targetValue = if (indice < vistas) 1f else 0f,
+                animationSpec = tween(durationMillis = 450),
+                label = "segmento$indice",
+            )
             Box(
                 modifier = Modifier
                     .weight(1f)
                     .height(4.dp)
                     .clip(CircleShape)
-                    .background(if (indice < vistas) White else White.copy(alpha = 0.25f))
-            )
+                    .background(White.copy(alpha = 0.25f))
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(lleno)
+                        .fillMaxHeight()
+                        .background(White)
+                )
+            }
         }
     }
 }
