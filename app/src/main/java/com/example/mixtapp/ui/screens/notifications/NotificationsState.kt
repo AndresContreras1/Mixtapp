@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import com.example.mixtapp.data.model.ItemUi
 import com.example.mixtapp.data.model.NotificationUi
 import com.example.mixtapp.data.model.ReviewUi
+import com.example.mixtapp.data.model.SonandoUi
 import com.example.mixtapp.ui.screens.notifications.model.TAB_MIAS
 import com.example.mixtapp.ui.screens.notifications.model.notificationTabs
 import com.example.mixtapp.ui.utils.OpcionUi
@@ -16,6 +17,10 @@ data class NotificationsState(
     val discusiones: List<ReviewUi> = emptyList(),
     // Los albumes y las canciones de los artistas que me gustan, el mas nuevo primero
     val lanzamientos: List<ItemUi> = emptyList(),
+    // Lo que escuchan ahora quienes sigo (y yo), arriba de las pestanas como en Siguiendo
+    val sonando: List<SonandoUi> = emptyList(),
+    @StringRes val errorSonandoRes: Int? = null,
+    @StringRes val errorAccionSonandoRes: Int? = null,
     // Las pestanas las provee el estado; el componente solo las pinta. La elegida se conserva al
     // volver de la discusion, un perfil o un detalle
     val tabs: List<OpcionUi> = notificationTabs,

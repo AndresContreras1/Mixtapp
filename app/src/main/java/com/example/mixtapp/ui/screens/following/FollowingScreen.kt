@@ -27,7 +27,6 @@ import com.example.mixtapp.data.model.ItemResumenUi
 import com.example.mixtapp.data.model.ReviewUi
 import com.example.mixtapp.data.model.SonandoUi
 import com.example.mixtapp.ui.screens.following.components.FollowingUsersRow
-import com.example.mixtapp.ui.screens.following.components.SonandoAhoraRow
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppBackground
 import com.example.mixtapp.ui.utils.AppTextField
@@ -38,6 +37,7 @@ import com.example.mixtapp.ui.utils.LoadingBox
 import com.example.mixtapp.ui.utils.ReviewCard
 import com.example.mixtapp.ui.utils.ScreenTitle
 import com.example.mixtapp.ui.utils.SectionTitle
+import com.example.mixtapp.ui.utils.SonandoAhoraRow
 import com.example.mixtapp.ui.utils.TonoDeFondo
 
 @Composable
