@@ -21,6 +21,9 @@ import com.example.mixtapp.ui.theme.MixtappTheme
 // La calificacion es de 0 a 5 estrellas, como pide el cliente
 private const val MAX_ESTRELLAS = 5
 
+// Cuanto espera cada estrella para latir despues de la anterior
+private const val RETRASO_DE_LA_OLA_MS = 60
+
 // Las cinco estrellas: llenas hasta la calificacion y el contorno en las demas
 @Composable
 fun StarRating(
@@ -57,14 +60,17 @@ fun StarRating(
                 )
             } else {
                 IconButton(
-                    onClick = { onRatingChange(starValue) },
+                    onClick = conVibracion { onRatingChange(starValue) },
                     modifier = Modifier.size(starSize + 8.dp)
                 ) {
+                    // Las que se encienden laten una tras otra, como una ola hasta la que se toco
                     Icon(
                         imageVector = if (isFilled) Icons.Filled.Star else Icons.Outlined.StarOutline,
                         contentDescription = descripcion,
                         tint = tinte,
-                        modifier = Modifier.size(starSize)
+                        modifier = Modifier
+                            .size(starSize)
+                            .latido(activo = isFilled, retrasoMs = index * RETRASO_DE_LA_OLA_MS)
                     )
                 }
             }

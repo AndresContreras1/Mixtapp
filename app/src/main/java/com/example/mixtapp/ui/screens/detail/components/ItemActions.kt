@@ -1,5 +1,6 @@
 package com.example.mixtapp.ui.screens.detail.components
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,6 +22,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,6 +35,9 @@ import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalPreviewProvider
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppButton
+import com.example.mixtapp.ui.utils.conVibracion
+import com.example.mixtapp.ui.utils.estallido
+import com.example.mixtapp.ui.utils.latido
 import com.example.mixtapp.ui.utils.rebote
 
 // Las acciones del item: calificarlo (o editar mi calificacion) como accion principal, debajo lo que
@@ -125,23 +130,35 @@ private fun AccionDelItem(
     modifier: Modifier = Modifier,
 ) {
     val colores = MaterialTheme.colorScheme
-    val fondo = if (activa) colores.primary.copy(alpha = 0.2f) else colores.surfaceContainerHigh.copy(alpha = 0.6f)
-    val color = if (activa) colores.primary else colores.onSurface
+    // El fondo y el color cambian con una transicion al activarse
+    val fondo by animateColorAsState(
+        targetValue = if (activa) colores.primary.copy(alpha = 0.2f) else colores.surfaceContainerHigh.copy(alpha = 0.6f),
+        label = "fondoDeLaAccion",
+    )
+    val color by animateColorAsState(
+        targetValue = if (activa) colores.primary else colores.onSurface,
+        label = "colorDeLaAccion",
+    )
+    val alTocar = conVibracion(onClick)
 
     Column(
         modifier = modifier
             .rebote()
             .clip(RoundedCornerShape(18.dp))
             .background(fondo)
-            .clickable { onClick() }
+            .clickable { alTocar() }
             .padding(vertical = 12.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        // Al activarse (me gusta o guardar) el icono late y suelta el estallido
         Icon(
             imageVector = icono,
             contentDescription = descripcion,
             tint = color,
-            modifier = Modifier.size(24.dp),
+            modifier = Modifier
+                .size(24.dp)
+                .estallido(activo = activa, color = colores.primary)
+                .latido(activo = activa),
         )
         Text(
             text = etiqueta,

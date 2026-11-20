@@ -1,6 +1,7 @@
 package com.example.mixtapp.ui.utils
 
 import androidx.annotation.StringRes
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -11,6 +12,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -36,17 +38,27 @@ fun LikeButton(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        IconButton(onClick = onLikeClick, modifier = botonModifier.rebote()) {
+        // El color pasa de gris a rosado con una transicion y no de golpe
+        val color by animateColorAsState(
+            targetValue = if (isLiked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+            label = "colorDelLike",
+        )
+
+        IconButton(onClick = conVibracion(onLikeClick), modifier = botonModifier.rebote()) {
             Icon(
                 imageVector = if (isLiked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
                 contentDescription = stringResource(if (isLiked) R.string.quitar_like else contentDescriptionRes),
-                tint = if (isLiked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(22.dp),
+                tint = color,
+                // Al dar like el corazon late y suelta el estallido de puntos rosados
+                modifier = Modifier
+                    .size(22.dp)
+                    .estallido(activo = isLiked, color = MaterialTheme.colorScheme.primary)
+                    .latido(activo = isLiked),
             )
         }
         Text(
             text = likesText,
-            color = if (isLiked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+            color = color,
             style = MaterialTheme.typography.labelLarge,
             modifier = contadorModifier,
         )
