@@ -1,7 +1,6 @@
 package com.example.mixtapp.ui.screens.detail
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -22,7 +21,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -39,6 +37,7 @@ import com.example.mixtapp.ui.screens.detail.components.ItemStats
 import com.example.mixtapp.ui.screens.detail.components.SonandoButton
 import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.utils.AppBackground
+import com.example.mixtapp.ui.utils.DegradadoDePortada
 import com.example.mixtapp.ui.utils.EmptyMessage
 import com.example.mixtapp.ui.utils.ErrorBox
 import com.example.mixtapp.ui.utils.ErrorMessage
@@ -131,15 +130,7 @@ fun DetailScreenContent(
         AppBackground(tono = TonoDeFondo.Item)
 
         // El degradado con el color de la portada, detras de la imagen y desvanecido hacia abajo
-        val color = colorDePortada
-        if (color != null) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(520.dp)
-                    .background(Brush.verticalGradient(listOf(color.copy(alpha = 0.55f), Color.Transparent)))
-            )
-        }
+        DegradadoDePortada(color = colorDePortada)
 
         when {
             isLoading -> LoadingBox()
@@ -187,6 +178,8 @@ fun DetailScreenContent(
                                 onLikeClick = onLikeClick,
                                 onSaveClick = onSaveClick,
                                 onAddToMixtapeClick = onAddToMixtapeClick,
+                                // Los datos curiosos, llamativos, justo debajo de Calificar
+                                destacado = { DatosCuriososButton(onClick = onDatosCuriososClick) },
                             )
 
                             ErrorMessage(
@@ -207,8 +200,7 @@ fun DetailScreenContent(
                         )
                     }
 
-                    // Bloque 2, descubre mas: los datos curiosos (su pantalla avisa si el item no
-                    // tiene) y contarles a mis seguidores que lo escucho
+                    // Bloque 2, descubre mas: contarles a mis seguidores que lo escucho
                     item {
                         Column(modifier = Modifier.padding(top = 28.dp)) {
                             SectionTitle(
@@ -218,13 +210,8 @@ fun DetailScreenContent(
                                 onActionClick = null,
                             )
 
-                            DatosCuriososButton(onClick = onDatosCuriososClick)
-
                             // Lo ven mis seguidores en Siguiendo; el aviso confirma que ya quedo
-                            SonandoButton(
-                                onClick = onSonandoClick,
-                                modifier = Modifier.padding(top = 10.dp),
-                            )
+                            SonandoButton(onClick = onSonandoClick)
 
                             if (avisoSonandoRes != null) {
                                 Text(

@@ -1,6 +1,5 @@
 package com.example.mixtapp.ui.screens.detail.components
 
-import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -37,12 +36,11 @@ import com.example.mixtapp.ui.utils.BotonDeVistaPrevia
 import com.example.mixtapp.ui.utils.ErrorMessage
 import com.example.mixtapp.ui.utils.OpcionOvalada
 import com.example.mixtapp.ui.utils.SectionTitle
-import com.example.mixtapp.ui.utils.TarjetaTranslucida
 
-// El bloque "Escuchar y ver": primero el fragmento de 30 segundos que suena sin salir de la app y
-// debajo los enlaces para seguir afuera, cada uno con el logo de su app (YouTube solo en canciones,
-// Spotify y el Instagram del artista). LocalUriHandler abre el link en el navegador o en la app que lo
-// tenga. Un link vacio no se muestra
+// El bloque "Escuchar y ver" en una sola fila de tres pastillas del mismo tamano: el play para
+// escuchar 30 segundos sin salir de la app y los enlaces con el logo de YouTube (solo canciones) y de
+// Spotify. Debajo, si lo tiene, el Instagram del artista. LocalUriHandler abre el link en el navegador
+// o en la app que lo tenga. Un link vacio no se muestra
 @Composable
 fun EnlacesDelItem(
     item: ItemUi,
@@ -64,79 +62,63 @@ fun EnlacesDelItem(
             onActionClick = null,
         )
 
-        // El fragmento: toda la tarjeta se puede tocar, no solo el boton
-        TarjetaTranslucida(
-            onClick = onPlayClick,
-            modifier = Modifier
-                .fillMaxWidth()
-                .testTag("btnVistaPrevia"),
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Row(
-                modifier = Modifier.padding(12.dp),
-                verticalAlignment = Alignment.CenterVertically,
+            // El play: toda la pastilla se puede tocar, no solo el circulo
+            Pastilla(
+                texto = stringResource(
+                    if (estadoVistaPrevia == EstadoDeReproduccion.Sonando) R.string.detener_corto else R.string.escuchar_corto
+                ),
+                onClick = onPlayClick,
+                modifier = Modifier
+                    .weight(1f)
+                    .testTag("btnVistaPrevia"),
             ) {
                 BotonDeVistaPrevia(
                     estado = estadoVistaPrevia,
                     titulo = item.titulo,
-                    tamano = 52.dp,
+                    tamano = 26.dp,
                     onClick = onPlayClick,
                 )
+            }
 
-                Spacer(modifier = Modifier.width(14.dp))
-
-                Column {
-                    Text(
-                        text = stringResource(
-                            when (estadoVistaPrevia) {
-                                EstadoDeReproduccion.Cargando -> R.string.cargando_fragmento
-                                EstadoDeReproduccion.Sonando -> R.string.detener_fragmento
-                                else -> R.string.escuchar_fragmento
-                            }
-                        ),
-                        color = MaterialTheme.colorScheme.onSurface,
-                        style = MaterialTheme.typography.titleMedium,
+            if (item.youtubeUrl.isNotEmpty()) {
+                Pastilla(
+                    texto = stringResource(R.string.youtube),
+                    onClick = { uriHandler.openUri(item.youtubeUrl) },
+                    modifier = Modifier
+                        .weight(1f)
+                        .testTag("btnYoutube"),
+                ) {
+                    // El texto de al lado ya dice a donde lleva
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_youtube),
+                        contentDescription = null,
+                        modifier = Modifier.size(22.dp),
                     )
-                    Text(
-                        text = item.titulo,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        style = MaterialTheme.typography.bodySmall,
-                        maxLines = 1,
+                }
+            }
+
+            if (item.spotifyUrl.isNotEmpty()) {
+                Pastilla(
+                    texto = stringResource(R.string.spotify),
+                    onClick = { uriHandler.openUri(item.spotifyUrl) },
+                    modifier = Modifier
+                        .weight(1f)
+                        .testTag("btnSpotify"),
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_spotify),
+                        contentDescription = null,
+                        modifier = Modifier.size(22.dp),
                     )
                 }
             }
         }
 
         ErrorMessage(messageRes = errorVistaPreviaRes)
-
-        // Para seguir afuera: los dos enlaces lado a lado, cada uno con su logo
-        if (item.youtubeUrl.isNotEmpty() || item.spotifyUrl.isNotEmpty()) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-            ) {
-                if (item.youtubeUrl.isNotEmpty()) {
-                    EnlaceConLogo(
-                        logo = R.drawable.ic_youtube,
-                        texto = stringResource(R.string.youtube),
-                        onClick = { uriHandler.openUri(item.youtubeUrl) },
-                        modifier = Modifier
-                            .weight(1f)
-                            .testTag("btnYoutube"),
-                    )
-                }
-
-                if (item.spotifyUrl.isNotEmpty()) {
-                    EnlaceConLogo(
-                        logo = R.drawable.ic_spotify,
-                        texto = stringResource(R.string.spotify),
-                        onClick = { uriHandler.openUri(item.spotifyUrl) },
-                        modifier = Modifier
-                            .weight(1f)
-                            .testTag("btnSpotify"),
-                    )
-                }
-            }
-        }
 
         if (item.instagramUrl.isNotEmpty()) {
             OpcionOvalada(
@@ -149,44 +131,39 @@ fun EnlacesDelItem(
     }
 }
 
-// Un enlace ovalado con el logo de la app a la que lleva y su nombre. Los logos van con sus colores:
-// asi se reconocen sin leer
+// Una pastilla pequena de la fila: el icono o el logo a la izquierda y un texto corto
 @Composable
-private fun EnlaceConLogo(
-    @DrawableRes logo: Int,
+private fun Pastilla(
     texto: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    icono: @Composable () -> Unit,
 ) {
     OutlinedCard(
         onClick = onClick,
         modifier = modifier,
         shape = CircleShape,
         colors = CardDefaults.outlinedCardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.6f)
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.7f)
         ),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.35f)),
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .padding(horizontal = 10.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
         ) {
-            // El texto de al lado ya dice a donde lleva
-            Image(
-                painter = painterResource(id = logo),
-                contentDescription = null,
-                modifier = Modifier.size(22.dp),
-            )
+            icono()
 
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(6.dp))
 
             Text(
                 text = texto,
                 color = MaterialTheme.colorScheme.onSurface,
-                style = MaterialTheme.typography.titleSmall,
+                style = MaterialTheme.typography.labelLarge,
+                maxLines = 1,
             )
         }
     }

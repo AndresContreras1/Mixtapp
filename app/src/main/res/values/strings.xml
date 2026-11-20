@@ -386,6 +386,10 @@
     <string name="mixtape_accion">Mixtape</string>
     <string name="calificacion_sobre_cinco">%1$d/5</string>
 
+    <!-- detalle: la fila de escuchar y ver -->
+    <string name="escuchar_corto">Escuchar</string>
+    <string name="detener_corto">Detener</string>
+
     <!-- duelos: sin votos, la seleccion y mi voto -->
     <string name="duelo_del_dia">Duelo del día</string>
     <string name="duelo_pregunta">¿Cuál es el mejor de %1$s hoy?</string>

@@ -38,9 +38,10 @@ fun ItemStats(
     ) {
         Column(modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp)) {
             Row(modifier = Modifier.fillMaxWidth()) {
+                // El promedio se entiende por sus estrellas: no lleva etiqueta
                 StatItem(
                     value = stringResource(R.string.rating_promedio, rating),
-                    label = stringResource(R.string.promedio_label),
+                    label = null,
                     estrellas = estrellas,
                     modifier = Modifier.weight(1f),
                 )
@@ -75,11 +76,12 @@ fun ItemStats(
     }
 }
 
-// Un numero grande y debajo su etiqueta; el promedio lleva tambien sus estrellas
+// Un numero grande y debajo su etiqueta; el promedio lleva sus estrellas en vez de la etiqueta
 @Composable
 private fun StatItem(
     value: String,
-    label: String,
+    // null en el promedio
+    label: String?,
     estrellas: Int?,
     modifier: Modifier = Modifier,
 ) {
@@ -95,11 +97,13 @@ private fun StatItem(
         if (estrellas != null) {
             StarRating(rating = estrellas, starSize = 14.dp, onRatingChange = null)
         }
-        Text(
-            text = label,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            style = MaterialTheme.typography.labelLarge,
-        )
+        if (label != null) {
+            Text(
+                text = label,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.labelLarge,
+            )
+        }
     }
 }
 
