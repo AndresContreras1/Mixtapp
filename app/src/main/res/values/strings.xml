@@ -456,6 +456,21 @@
     <string name="error_mensaje_vacio">Escribe algo antes de enviar</string>
     <string name="error_mensaje_a_si_mismo">No puedes escribirte a ti mismo</string>
 
+    <!-- playlists hechas para mi -->
+    <string name="hecho_para_ti">Hecho para ti</string>
+    <string name="playlist_mezcla">Tu mezcla de %1$s</string>
+    <string name="playlist_mezcla_descripcion">Lo más sonado de %1$s, el género que más te gusta</string>
+    <string name="playlist_descubre">Descubre esta semana</string>
+    <string name="playlist_descubre_descripcion">De tus géneros, lo que todavía no has escuchado</string>
+    <string name="playlist_top_colombia">Top Colombia</string>
+    <string name="playlist_top_colombia_descripcion">Lo que más suena hoy en Colombia</string>
+    <string name="playlist_lo_mas_escuchado">Lo más escuchado</string>
+    <string name="playlist_lo_mas_escuchado_descripcion">Lo más popular de Mixtapp</string>
+    <string name="cantidad_canciones">%1$d canciones</string>
+    <string name="reproducir_todo">Reproducir todo</string>
+    <string name="detener_todo">Detener</string>
+    <string name="playlist_no_encontrada">Esta playlist ya no está</string>
+
     <!-- Tu año como historia -->
     <string name="resumen_titulo_anio">Tu %1$d en Mixtapp</string>
     <string name="resumen_mas_querida">Tu reseña más querida</string>

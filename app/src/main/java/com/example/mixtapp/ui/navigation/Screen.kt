@@ -1,5 +1,7 @@
 package com.example.mixtapp.ui.navigation
 
+import android.net.Uri
+
 // Los nombres de los argumentos de las rutas, para no repetirlos como texto suelto
 const val ARG_TIPO = "tipo"
 const val ARG_ITEM_ID = "itemId"
@@ -59,6 +61,12 @@ sealed class Screen(val route: String) {
     // El foro de un album, una cancion o un artista
     data object Foro : Screen(route = "foro/{tipo}/{itemId}") {
         fun createRoute(tipo: String, itemId: String) = "foro/$tipo/$itemId"
+    }
+
+    // Una playlist hecha para mi. El id lleva el genero ("mezcla_Nu metal"): se codifica para que los
+    // espacios y las tildes no rompan la ruta
+    data object Playlist : Screen(route = "playlist/{playlistId}") {
+        fun createRoute(playlistId: String) = "playlist/${Uri.encode(playlistId)}"
     }
 
     // El chat directo con otra persona

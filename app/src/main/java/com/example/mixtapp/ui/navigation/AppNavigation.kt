@@ -46,6 +46,8 @@ import com.example.mixtapp.ui.screens.myreviews.MyReviewsScreen
 import com.example.mixtapp.ui.screens.myreviews.MyReviewsViewModel
 import com.example.mixtapp.ui.screens.notifications.NotificationsScreen
 import com.example.mixtapp.ui.screens.notifications.NotificationsViewModel
+import com.example.mixtapp.ui.screens.playlist.PlaylistScreen
+import com.example.mixtapp.ui.screens.playlist.PlaylistViewModel
 import com.example.mixtapp.ui.screens.profile.ProfileScreen
 import com.example.mixtapp.ui.screens.profile.ProfileViewModel
 import com.example.mixtapp.ui.screens.resumen.ResumenScreen
@@ -180,6 +182,9 @@ fun AppNavigation(
                 },
                 onFollowingClick = { navController.navigate(Screen.Following.route) },
                 onNotificationsClick = { navController.navigate(Screen.Notifications.route) },
+                onPlaylistClick = { playlistId ->
+                    navController.navigate(Screen.Playlist.createRoute(playlistId = playlistId))
+                },
                 // Como la pestana de la barra: Buscar queda encima del inicio y atras vuelve a el
                 onDescubrirPersonasClick = {
                     navController.navigate(Screen.Search.route) {
@@ -536,6 +541,26 @@ fun AppNavigation(
                 },
                 onItemClick = { tipoItem, id ->
                     navController.abrirItem(tipo = tipoItem, itemId = id)
+                },
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable(
+            route = Screen.Playlist.route,
+            arguments = listOf(
+                navArgument(name = "playlistId") { type = NavType.StringType }
+            )
+        ) {
+            // Solo se obtiene el id; armar la playlist es tarea del ViewModel
+            val playlistId = it.arguments?.getString("playlistId") ?: ""
+            val playlistViewModel: PlaylistViewModel = hiltViewModel()
+
+            PlaylistScreen(
+                playlistId = playlistId,
+                playlistViewModel = playlistViewModel,
+                onItemClick = { tipo, itemId ->
+                    navController.abrirItem(tipo = tipo, itemId = itemId)
                 },
                 onBackClick = { navController.popBackStack() }
             )

@@ -9,11 +9,12 @@ import com.example.mixtapp.data.model.EstadoDeReproduccion
 import com.example.mixtapp.data.model.ItemConResenasUi
 import com.example.mixtapp.data.model.ItemResumenUi
 import com.example.mixtapp.data.model.ItemUi
-import com.example.mixtapp.data.model.itemsQueMeGustan
+import com.example.mixtapp.data.model.armarPlaylists
 import com.example.mixtapp.data.model.ReviewUi
 import com.example.mixtapp.data.model.TIPO_ALBUM
 import com.example.mixtapp.data.model.TIPO_ARTISTA
 import com.example.mixtapp.data.model.TIPO_CANCION
+import com.example.mixtapp.data.model.loQueMeGustaDelCatalogo
 import com.example.mixtapp.data.repository.CatalogoRepository
 import com.example.mixtapp.data.repository.ReproductorRepository
 import com.example.mixtapp.data.repository.ReviewRepository
@@ -180,21 +181,14 @@ class HomeViewModel @Inject constructor(
             albumes = armarFila(tipo = TIPO_ALBUM, estado = estado, pesos = pesos, afinidad = afinidad),
             artistas = armarFila(tipo = TIPO_ARTISTA, estado = estado, pesos = pesos, afinidad = afinidad),
             resenasDeSeguidos = resenasDeSeguidos(catalogo = estado.catalogo, seguidosIds = estado.seguidosIds),
+            // Las playlists hechas para mi no dependen del filtro: salen de lo que me gusta
+            playlists = armarPlaylists(catalogo = estado.catalogo, meGustan = meGustan),
         )
     }
 
     // Lo que me gusta (la regla esta en data/model): solo cuenta lo que tiene genero
-    private fun loQueMeGusta(catalogo: List<ItemConResenasUi>, favoritos: List<ItemResumenUi>): List<ItemUi> {
-        val misCalificaciones = catalogo.flatMap { conResenas ->
-            conResenas.reviews.filter { it.isMine }.map { conResenas.item.id to it.rating }
-        }.toMap()
-
-        return itemsQueMeGustan(
-            items = catalogo.map { it.item },
-            idsConMiLike = favoritos.map { it.id }.toSet(),
-            misCalificaciones = misCalificaciones,
-        ).filter { it.genero.isNotEmpty() }
-    }
+    private fun loQueMeGusta(catalogo: List<ItemConResenasUi>, favoritos: List<ItemResumenUi>): List<ItemUi> =
+        loQueMeGustaDelCatalogo(catalogo = catalogo, idsConMiLike = favoritos.map { it.id }.toSet())
 
     // Los albumes que estan en la lista de Deezer de alguno de mis generos; sin generos, los de
     // todas las listas. De aqui sale al azar la tarjeta grande

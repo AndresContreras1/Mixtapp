@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -25,6 +27,7 @@ import com.example.mixtapp.R
 import com.example.mixtapp.data.local.LocalPreviewProvider
 import com.example.mixtapp.data.model.EstadoDeReproduccion
 import com.example.mixtapp.data.model.ItemUi
+import com.example.mixtapp.data.model.PlaylistUi
 import com.example.mixtapp.data.model.ReviewUi
 import com.example.mixtapp.ui.screens.home.components.HomeHeader
 import com.example.mixtapp.ui.screens.home.components.HomeItemRow
@@ -42,6 +45,7 @@ import com.example.mixtapp.ui.utils.FilaDeOpciones
 import com.example.mixtapp.ui.utils.LoadingBox
 import com.example.mixtapp.ui.utils.OpcionUi
 import com.example.mixtapp.ui.utils.SectionTitle
+import com.example.mixtapp.ui.utils.TarjetaDePlaylist
 import com.example.mixtapp.ui.utils.TonoDeFondo
 
 @Composable
@@ -53,6 +57,7 @@ fun HomeScreen(
     onFollowingClick: () -> Unit,
     onNotificationsClick: () -> Unit,
     onDescubrirPersonasClick: () -> Unit,
+    onPlaylistClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     // El catalogo, mis favoritos y mis seguidos llegan en vivo desde el ViewModel: la pantalla
@@ -83,6 +88,7 @@ fun HomeScreen(
         albumes = state.albumes,
         artistas = state.artistas,
         resenasDeSeguidos = state.resenasDeSeguidos,
+        playlists = state.playlists,
         errorListasRes = state.errorFavoritosRes ?: state.errorSeguidosRes,
         errorAccionRes = state.errorAccionRes,
         onFilterSelected = { homeViewModel.updateSelectedFilter(filtroId = it) },
@@ -94,6 +100,7 @@ fun HomeScreen(
         onFollowingClick = onFollowingClick,
         onNotificationsClick = onNotificationsClick,
         onDescubrirPersonasClick = onDescubrirPersonasClick,
+        onPlaylistClick = onPlaylistClick,
         modifier = modifier,
     )
 }
@@ -113,6 +120,7 @@ fun HomeScreenContent(
     albumes: List<ItemUi>,
     artistas: List<ItemUi>,
     resenasDeSeguidos: List<ReviewUi>,
+    playlists: List<PlaylistUi>,
     @StringRes errorListasRes: Int?,
     @StringRes errorAccionRes: Int?,
     onFilterSelected: (String) -> Unit,
@@ -124,6 +132,7 @@ fun HomeScreenContent(
     onFollowingClick: () -> Unit,
     onNotificationsClick: () -> Unit,
     onDescubrirPersonasClick: () -> Unit,
+    onPlaylistClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -213,6 +222,30 @@ fun HomeScreenContent(
                             )
                         }
 
+                        // Las playlists hechas para mi, en mosaico: se abren y suenan en la app
+                        if (playlists.isNotEmpty()) {
+                            item {
+                                Column {
+                                    SectionTitle(
+                                        title = stringResource(R.string.hecho_para_ti),
+                                        actionText = null,
+                                        onActionClick = null,
+                                    )
+
+                                    Spacer(modifier = Modifier.height(10.dp))
+
+                                    LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                                        items(playlists, key = { it.id }) { playlist ->
+                                            TarjetaDePlaylist(
+                                                playlist = playlist,
+                                                onClick = { onPlaylistClick(playlist.id) },
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
                         // Una fila vacia no se muestra; si las tres lo estan, el filtro no tiene nada todavia
                         if (canciones.isEmpty() && albumes.isEmpty() && artistas.isEmpty()) {
                             item {
@@ -273,6 +306,7 @@ fun HomeScreenPreview() {
             albumes = listOf(LocalPreviewProvider.karolG, LocalPreviewProvider.fromZero),
             artistas = listOf(LocalPreviewProvider.mikeShinoda),
             resenasDeSeguidos = listOf(LocalPreviewProvider.review),
+            playlists = emptyList(),
             errorListasRes = null,
             errorAccionRes = null,
             onFilterSelected = {},
@@ -284,6 +318,7 @@ fun HomeScreenPreview() {
             onFollowingClick = {},
             onNotificationsClick = {},
             onDescubrirPersonasClick = {},
+            onPlaylistClick = {},
         )
     }
 }

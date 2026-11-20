@@ -40,6 +40,7 @@ import com.example.mixtapp.ui.theme.MixtappTheme
 import com.example.mixtapp.ui.theme.White
 import com.example.mixtapp.ui.utils.BotonDeVistaPrevia
 import com.example.mixtapp.ui.utils.ItemAsyncImage
+import com.example.mixtapp.ui.utils.rebote
 
 // La tarjeta grande del inicio: la portada del album en tendencia a todo el ancho con un degradado
 // suave abajo (sin franja), la etiqueta de en que es tendencia, su titulo, el artista, su puesto y el
@@ -56,7 +57,9 @@ fun TrendingCard(
 ) {
     Card(
         onClick = onClick,
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .rebote()
+            .fillMaxWidth(),
         shape = RoundedCornerShape(28.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
