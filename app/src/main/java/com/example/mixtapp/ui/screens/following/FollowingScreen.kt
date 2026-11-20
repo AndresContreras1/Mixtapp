@@ -176,7 +176,8 @@ fun FollowingScreenContent(
                             onValueChange = onFriendQueryChange,
                             placeholder = stringResource(R.string.find_friends),
                             leadingIcon = Icons.Outlined.Search,
-                            modifier = Modifier.padding(horizontal = 20.dp),
+                            // Aire debajo: la busqueda no queda pegada a las resenas
+                            modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 16.dp),
                         )
                     }
 
