@@ -19,17 +19,6 @@ algoritmo que no explica nada.
 
 **Mixtapp** junta todo eso en una sola app:
 
-- **Opinar:** calificas de 0 a 5 estrellas y reseñas álbumes, canciones y artistas de un catálogo
-  real de rock, metal, nu metal y reggaetón.
-- **Escuchar:** cada canción suena 30 segundos dentro de la app, y las playlists se arman solas con
-  lo que te gusta.
-- **Conectar:** la app encuentra a las personas con gustos parecidos a los tuyos, y hay un foro por
-  cada álbum y mensajes directos.
-- **Jugar:** cada día hay un duelo entre dos discos, y a fin de año, tu resumen listo para compartir.
-
-Todo pasa **en tiempo real**: un me gusta, un voto o un mensaje llega al otro celular al instante.
-
-## Capturas
 
 <p align="center">
   <img src="Docs/img/capturas/inicio.png" alt="Inicio" width="30%" />
